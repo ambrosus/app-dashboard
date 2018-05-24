@@ -71,3 +71,18 @@
 	@include min-1200 {
 		bottom: 40px;
   	right: -40px; }}
+
+
+// AMB buttons
+
+.abtn {
+  font-family: $font-family--primary;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  height: 40px;
+  width: 120px;
+  padding: 1px 6px;
+
+  &:hover {
+    opacity: .85; }}

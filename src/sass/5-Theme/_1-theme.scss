@@ -4,7 +4,7 @@
 
 
 
-// --- btn themes ---
+// --- btn 1 themes ---
 
 .btn-solid-_1 {
 	background: $_1;
@@ -33,6 +33,26 @@
 .btn-solid-white {
 	background: #fff;
 	color: $_1; }
+
+
+// --- AMB button themes ---
+
+.btn-solid-ablue {
+  background: $ablue;
+  color: #fff; }
+
+.btn-solid-agreen {
+  background: $agreen;
+  color: #fff; }
+
+.btn-solid-aorange {
+  background: $aorange;
+  color: #fff; }
+
+.btn-solid-awhite {
+  background: #fff;
+  color: $ablue; }
+
 
 
 

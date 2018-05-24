@@ -1,19 +1,23 @@
-<h3 class="title m-b-35 color-_1--base">Login to the dashboard</h3>
 
-<div class="m-w-3 center">
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-    <div class="m-b-15">
-      <label for="address">Address</label>
-      <input formControlName="address" type="text" name="address" id="address" class="form-input" spellcheck="false">
-    </div>
-    <div class="m-b-15">
-      <label for="secret">Secret</label>
-      <input formControlName="secret" type="password" name="secret" id="secret" class="form-input" spellcheck="false">
-    </div>
-    <h4 *ngIf="error" style="color: firebrick">Error, try again!</h4>
-    <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-      <svg *ngIf="spinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
-      <button type="submit" class="btn-medium btn-solid-_1 font-weight--bold m-l-15">Sign in</button>
-    </div>
-  </form>
+<div class="login-wrapper">
+  <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="block-center p-t-25" style="max-width: 200px;">
+  <h2 class="m-t-75 m-b-25 color-blacks--base center" style="font-size: 24px;">Welcome</h2>
+  <p class="lead m-b-35 center" style="font-size: 14px;">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
+
+  <div class="m-w-4 block-center">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="form-group">
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="address">Address</label>
+        <input formControlName="address" type="text" name="address" id="address" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="secret">Secret</label>
+        <input formControlName="secret" type="password" name="secret" id="secret" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
+        <svg *ngIf="spinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+        <button type="submit" class="abtn m-l-25 btn-solid-ablue">Sign in</button>
+      </div>
+    </form>
+  </div>
 </div>

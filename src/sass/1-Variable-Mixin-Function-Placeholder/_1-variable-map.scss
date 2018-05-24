@@ -17,7 +17,7 @@ $base__line-height: 17px;
 // -- Font Family --
 
 $font-family--primary: 'Roboto',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue', Arial, sans-serif;
-$font-family--secondary: 'Lato',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue', Arial, sans-serif;
+$font-family--secondary: 'Roboto',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue', Arial, sans-serif;
 $font-family--tertiary: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 $font-family--print: Georgia,Cambria,'Times New Roman',Times,serif;
 
@@ -42,8 +42,8 @@ $font-weight--black: 900;
 
 
 $white: #fff;
-$black: #141925;
-$grey: #454a53;
+$black: #4a4a4a;
+$grey: #9b9b9b;
 
 
 // -- Colorful --
@@ -54,6 +54,13 @@ $_3: #20acfa;
 $_4: #5411c9;
 $_5: #2873f5;
 $_6: #2e5d78;
+
+
+// AMB colors
+
+$ablue: #5078f1;
+$agreen: #57b846;
+$aorange: #fcbc58;
 
 
 // --- Color Map ---
@@ -88,6 +95,15 @@ $palettes: (
   ),
   _6: (
     base: $_6
+  ),
+  ablue: (
+    base: $ablue
+  ),
+  agreen: (
+    base: $agreen
+  ),
+  aorange: (
+    base: $aorange
   ),
 );
 

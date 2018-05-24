@@ -1,6 +1,13 @@
 @import '../../../sass/var';
 
-input {
-  padding: 5px 7px;
-  border: 1px solid #ddd !important;
-  margin-left: 5px; }
+
+.login-wrapper {
+  background-image: url('/assets/raster/bg.jpg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }

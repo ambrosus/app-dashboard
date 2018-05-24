@@ -8,6 +8,7 @@ import {Subject} from "rxjs";
 })
 export class AuthService {
   loggedin: Subject<boolean> = new Subject<boolean>();
+  cleanForm: Subject<boolean> = new Subject<boolean>();
 
   urls = {
     'token': 'https://gateway-dev.ambrosus.com/token',

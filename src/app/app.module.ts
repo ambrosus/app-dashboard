@@ -9,6 +9,7 @@ import {AuthModule} from "./auth/auth.module";
 import {CoreModule} from "./core/core.module";
 import {DashboardModule} from "./dashboard/dashboard.module";
 import {SharedModule} from "./shared/shared.module";
+import { InputDirective } from './shared/directives/input.directive';
 
 @NgModule({
   declarations: [

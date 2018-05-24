@@ -1,6 +1,6 @@
 
 
-// Start code here 
+// Start code here
 
 
 
@@ -32,7 +32,7 @@ h1, h2, h3, h4, h5, h6,
   color: $black; }
 
 h1, .h1 {
-  font-size: em(22px); 
+  font-size: em(22px);
 
   @include min-480 {
     font-size: em(27px); }
@@ -53,8 +53,8 @@ h1, .h1 {
     font-size: em(40px); }}
 
 h2, .h2 {
-  font-size: em(20px); 
-  
+  font-size: em(20px);
+
   @include min-480 {
     font-size: em(24px); }
 
@@ -74,7 +74,7 @@ h2, .h2 {
     font-size: em(30px); }}
 
 h3, .h3 {
-  font-size: em(18px); 
+  font-size: em(18px);
 
   @include min-480 {
     font-size: em(18px); }
@@ -86,7 +86,7 @@ h3, .h3 {
     font-size: em(20px); }
 
   @include min-1200 {
-    font-size: em(21px); }}
+    font-size: em(24px); }}
 
 h4, .h4 {
   font-size: em(17px); }
@@ -126,7 +126,7 @@ h6, .h6 {
     font-size: em(70px); }}
 
 .d2 {
-  font-size: em(24px);  
+  font-size: em(24px);
 
   @include min-480 {
     font-size: em(29px); }
@@ -314,7 +314,7 @@ pre code {
 
 
 
-// --- Text Transform --- 
+// --- Text Transform ---
 
 .lowercase {
   text-transform: lowercase; }
@@ -333,7 +333,7 @@ pre code {
 
 
 
-// --- "..." instead of the text overflow --- 
+// --- "..." instead of the text overflow ---
 
 .webkit {
   display: -webkit-box;

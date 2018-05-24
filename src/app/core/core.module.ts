@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from '../shared/header/header.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 import { NotfoundComponent } from './notfound/notfound.component';
 import {SharedModule} from "../shared/shared.module";
 import {AppRoutingModule} from "../app-routing.module";
@@ -15,13 +15,9 @@ import {LoaderInterceptor} from "../interceptors/loader-interceptor.service";
     AppRoutingModule
   ],
   exports: [
-    AppRoutingModule,
-    HeaderComponent,
-    FooterComponent
+    AppRoutingModule
   ],
   declarations: [
-    HeaderComponent,
-    FooterComponent,
     NotfoundComponent
   ],
   providers: [

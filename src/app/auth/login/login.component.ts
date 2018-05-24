@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit {
               this.error = true;
               this.spinner = false;
               this.loginForm.reset();
+              this.auth.cleanForm.next(true);
             }
           );
         },
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit {
           this.error = true;
           this.spinner = false;
           this.loginForm.reset();
+          this.auth.cleanForm.next(true);
         }
       );
     }

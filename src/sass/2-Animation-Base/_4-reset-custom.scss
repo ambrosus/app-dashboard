@@ -1,6 +1,6 @@
 
 
-// Start code here 
+// Start code here
 
 
 
@@ -15,7 +15,7 @@
   touch-action: manipulation; }
 
 html {
-  min-height: 100%; // Fallback to "vh" unit 
+  min-height: 100%; // Fallback to "vh" unit
   min-height: 100vh;
   font-size: 1em; }
 
@@ -24,14 +24,14 @@ body {
   font-size: $base__font-size;
   // body is always 1em, I change font-size's in typography as I would
   line-height: $base__line-height;
-  color: $grey;
+  color: $black;
   background-color: #fff;
   margin:0;
   padding:0;
   font-weight: normal;
   font-style: normal;
   position: relative;
-  min-height: 100%; // Fallback to "vh" unit 
+  min-height: 100%; // Fallback to "vh" unit
   min-height: 100vh;
   cursor: auto;
   overflow-x: hidden; }
@@ -97,7 +97,7 @@ select::-ms-expand { /* for IE 11 */
   display: none; }
 
 input[type="checkbox"] {
-  appearance: none; } 
+  appearance: none; }
 
 
 
