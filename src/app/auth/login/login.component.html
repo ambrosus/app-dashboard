@@ -1,0 +1,19 @@
+<h3 class="title m-b-35 color-_1--base">Login to the dashboard</h3>
+
+<div class="m-w-3 center">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+    <div class="m-b-15">
+      <label for="address">Address</label>
+      <input formControlName="address" type="text" name="address" id="address" class="form-input" spellcheck="false">
+    </div>
+    <div class="m-b-15">
+      <label for="secret">Secret</label>
+      <input formControlName="secret" type="password" name="secret" id="secret" class="form-input" spellcheck="false">
+    </div>
+    <h4 *ngIf="error" style="color: firebrick">Error, try again!</h4>
+    <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
+      <svg *ngIf="spinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+      <button type="submit" class="btn-medium btn-solid-_1 font-weight--bold m-l-15">Sign in</button>
+    </div>
+  </form>
+</div>
