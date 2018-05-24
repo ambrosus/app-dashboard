@@ -1,0 +1,540 @@
+
+
+// Start code here
+
+
+
+// --- Sprite Image Map ---
+
+// ie. @include icon(0,0,24px,24px,100px), to add icon to a class, with retina fallback
+
+//@mixin icon($x, $y, $w, $h, $size) {
+//	background-image: url(../img/sprite-x1.png);
+//	background-repeat: no-repeat;
+//	background-position: #{$x} #{$y};
+//	width: #{$w};
+//	height: #{$h};
+//
+//	@media
+//	only screen and (-webkit-min-device-pixel-ratio: 2),
+//	only screen and (   min--moz-device-pixel-ratio: 2),
+//	only screen and (     -o-min-device-pixel-ratio: 2/1),
+//	only screen and (        min-device-pixel-ratio: 2),
+//	only screen and (                min-resolution: 192dpi),
+//	only screen and (                min-resolution: 2dppx) {
+//
+//	& {
+//	background-image: url(../img/sprite-x2.png);
+//	background-repeat: no-repeat;
+//	background-size: #{$size};
+//	background-position: #{$x} #{$y};
+//	width: #{$w};
+//	height: #{$h}; } }
+//}
+
+
+
+// --- Pseudo Elements ---
+
+// ie. p {@include p-e(after, 15px, 20px) {top: 35px, left: -40px;}}
+
+@mixin p-e($element, $element-w: null, $element-h: null) {
+
+ @if $element == "before" or $element == "after" {
+  &:#{$element} {
+    @extend %pseudos;
+    width: #{$element-w};
+    height: #{$element-h};
+    @content; }
+ }
+
+ @else {
+  @error "'#{$el}' is not a valid pseudo-element."; }
+}
+
+
+
+// --- Font-size in REM with PX fallback ---
+
+// ie. @include font-size-rem(24px), result: font-size: 24px; font-size: 1.5rem;
+
+@mixin font-size-rem($size) {
+  font-size: $size; // Will be overridden if browser supports rem
+  font-size: rem($size); }
+
+
+
+// --- Simple $map Classes Generator ---
+
+// ie. @include bg-colors($ui-color)
+
+@mixin bg-colors($map) {
+  @each $theme, $color in $map {
+    bg--#{$theme} {
+      background-color: #{$color}; }
+  }
+}
+
+
+
+// --- Complex Nested $map Classes Generator ---
+
+// ie. @include bg-colors($palettes, background-color, '.bg', '-', '--');
+
+@mixin map-to-classes($map, $property, $sel, $divider: '', $divider2: '') {
+    @each $k, $v in $map {
+      @each $k2, $v2 in $v {
+        @at-root {
+          #{$sel}#{$divider}#{$k}#{$divider2}#{$k2} {
+            #{$property}: $v2;
+          }
+        }
+      }
+    }
+}
+
+
+
+// --- Media Queries / Responsive Breakpoints ---
+
+
+// -- Major Breakpoints --
+
+// Mobile-first, TV last approach (min-width / down to up queries)
+// ie. @include min-768 { ... }
+
+// It is important that media query breakpoint units, be in 'em'
+// px to em: 320px = 20em; 480px = 30em; 640px = 40em; 768px = 48em; 980px = 61.25em; 1024px = 64em;
+// 1100px = 68.75em; 1200px = 75em; 1440px = 90em; 1650px = 103.125em; 1920px = 120em;
+
+
+@mixin min-320 {
+  @media only screen and (min-width: 20em) {
+    @content; }
+}
+
+@mixin min-480 {
+  @media only screen and (min-width: 30em) {
+    @content; }
+}
+
+@mixin min-640 {
+  @media only screen and (min-width: 40em) {
+    @content; }
+}
+
+@mixin min-768 {
+  @media only screen and (min-width: 48em) {
+    @content; }
+}
+
+@mixin min-980 {
+  @media only screen and (min-width: 61.25em) {
+    @content; }
+}
+
+@mixin min-1024 {
+  @media only screen and (min-width: 64em) {
+    @content; }
+}
+
+@mixin min-1100 {
+  @media only screen and (min-width: 68.75em) {
+    @content; }
+}
+
+@mixin min-1200 {
+  @media only screen and (min-width: 75em) {
+    @content; }
+}
+
+@mixin min-1440 {
+  @media only screen and (min-width: 90em) {
+    @content; }
+}
+
+@mixin min-1650 {
+  @media only screen and (min-width: 103.125em) {
+    @content; }
+}
+
+@mixin min-1920 {
+  @media only screen and (min-width: 120em) {
+    @content; }
+}
+
+
+// TV first, Mobile last approach (max-width / up to down queries)
+// ie. @include max-768 { ... }
+
+
+@mixin max-320 {
+  @media only screen and (max-width: 20em) {
+    @content; }
+}
+
+@mixin max-480 {
+  @media only screen and (max-width: 30em) {
+    @content; }
+}
+
+@mixin max-640 {
+  @media only screen and (max-width: 40em) {
+    @content; }
+}
+
+@mixin max-768 {
+  @media only screen and (max-width: 48em) {
+    @content; }
+}
+
+@mixin max-980 {
+  @media only screen and (max-width: 61.25em) {
+    @content; }
+}
+
+@mixin max-1024 {
+  @media only screen and (max-width: 64em) {
+    @content; }
+}
+
+@mixin max-1100 {
+  @media only screen and (max-width: 68.75em) {
+    @content; }
+}
+
+@mixin max-1200 {
+  @media only screen and (max-width: 75em) {
+    @content; }
+}
+
+@mixin max-1440 {
+  @media only screen and (max-width: 90em) {
+    @content; }
+}
+
+@mixin max-1650 {
+  @media only screen and (max-width: 103.125em) {
+    @content; }
+}
+
+@mixin max-1920 {
+  @media only screen and (max-width: 120em) {
+    @content; }
+}
+
+
+// -- Minor Breakpoints --
+
+// Between min and max (min-width and max-width queries)
+// ie. @include min-768-max-1100 { ... }
+
+// It is important that media query breakpoint units, be in 'em'
+// Also, mixin says it's min-320-max-480 (it's 479 instead), but 480 is easier to remember, to include
+// px to em: 479px = 29.9375em; 639px = 39.9375em; 767px = 47.9375em; 979px = 61.1875em; 1023px = 63.9375em;
+// 1099px = 68.6875em; 1199px = 74.9375em; 1439px = 89.9375em; 1649px = 103.0625em; 1919px = 119.9375em;
+
+
+// 320 and up
+
+@mixin min-320-max-480 {
+  @media only screen and (min-width: 20em) and (max-width: 29.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-640 {
+  @media only screen and (min-width: 20em) and (max-width: 39.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-768 {
+  @media only screen and (min-width: 20em) and (max-width: 47.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-980 {
+  @media only screen and (min-width: 20em) and (max-width: 61.1875em) {
+    @content; }
+}
+
+@mixin min-320-max-1024 {
+  @media only screen and (min-width: 20em) and (max-width: 63.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-1100 {
+  @media only screen and (min-width: 20em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-320-max-1200 {
+  @media only screen and (min-width: 20em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-1440 {
+  @media only screen and (min-width: 20em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-320-max-1650 {
+  @media only screen and (min-width: 20em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-320-max-1920 {
+  @media only screen and (min-width: 20em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 480 and up
+
+@mixin min-480-max-640 {
+  @media only screen and (min-width: 30em) and (max-width: 39.9375em) {
+    @content; }
+}
+
+@mixin min-480-max-768 {
+  @media only screen and (min-width: 30em) and (max-width: 47.9375em) {
+    @content; }
+}
+
+@mixin min-480-max-980 {
+  @media only screen and (min-width: 30em) and (max-width: 61.1875em) {
+    @content; }
+}
+
+@mixin min-480-max-1024 {
+  @media only screen and (min-width: 30em) and (max-width: 63.9375em) {
+    @content; }
+}
+
+@mixin min-480-max-1100 {
+  @media only screen and (min-width: 30em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-480-max-1200 {
+  @media only screen and (min-width: 30em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-480-max-1440 {
+  @media only screen and (min-width: 30em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-480-max-1650 {
+  @media only screen and (min-width: 30em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-480-max-1920 {
+  @media only screen and (min-width: 30em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 640 and up
+
+@mixin min-640-max-768 {
+  @media only screen and (min-width: 40em) and (max-width: 47.9375em) {
+    @content; }
+}
+
+@mixin min-640-max-980 {
+  @media only screen and (min-width: 40em) and (max-width: 61.1875em) {
+    @content; }
+}
+
+@mixin min-640-max-1024 {
+  @media only screen and (min-width: 40em) and (max-width: 63.9375em) {
+    @content; }
+}
+
+@mixin min-640-max-1100 {
+  @media only screen and (min-width: 40em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-640-max-1200 {
+  @media only screen and (min-width: 40em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-640-max-1440 {
+  @media only screen and (min-width: 40em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-640-max-1650 {
+  @media only screen and (min-width: 40em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-640-max-1920 {
+  @media only screen and (min-width: 40em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 768 and up
+
+@mixin min-768-max-980 {
+  @media only screen and (min-width: 48em) and (max-width: 61.1875em) {
+    @content; }
+}
+
+@mixin min-768-max-1024 {
+  @media only screen and (min-width: 48em) and (max-width: 63.9375em) {
+    @content; }
+}
+
+@mixin min-768-max-1100 {
+  @media only screen and (min-width: 48em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-768-max-1200 {
+  @media only screen and (min-width: 48em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-768-max-1440 {
+  @media only screen and (min-width: 48em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-768-max-1650 {
+  @media only screen and (min-width: 48em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-768-max-1920 {
+  @media only screen and (min-width: 48em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 980 and up
+
+@mixin min-980-max-1024 {
+  @media only screen and (min-width: 61.25em) and (max-width: 63.9375em) {
+    @content; }
+}
+
+@mixin min-980-max-1100 {
+  @media only screen and (min-width: 61.25em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-980-max-1200 {
+  @media only screen and (min-width: 61.25em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-980-max-1440 {
+  @media only screen and (min-width: 61.25em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-980-max-1650 {
+  @media only screen and (min-width: 61.25em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-980-max-1920 {
+  @media only screen and (min-width: 61.25em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 1024 and up
+
+@mixin min-1024-max-1100 {
+  @media only screen and (min-width: 64em) and (max-width: 68.6875em) {
+    @content; }
+}
+
+@mixin min-1024-max-1200 {
+  @media only screen and (min-width: 64em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-1024-max-1440 {
+  @media only screen and (min-width: 64em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-1024-max-1650 {
+  @media only screen and (min-width: 64em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-1024-max-1920 {
+  @media only screen and (min-width: 64em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 1100 and up
+
+@mixin min-1100-max-1200 {
+  @media only screen and (min-width: 68.75em) and (max-width: 74.9375em) {
+    @content; }
+}
+
+@mixin min-1100-max-1440 {
+  @media only screen and (min-width: 68.75em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-1100-max-1650 {
+  @media only screen and (min-width: 68.75em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-1100-max-1920 {
+  @media only screen and (min-width: 68.75em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 1200 and up
+
+@mixin min-1200-max-1440 {
+  @media only screen and (min-width: 75em) and (max-width: 89.9375em) {
+    @content; }
+}
+
+@mixin min-1200-max-1650 {
+  @media only screen and (min-width: 75em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-1200-max-1920 {
+  @media only screen and (min-width: 75em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 1440 and up
+
+@mixin min-1440-max-1650 {
+  @media only screen and (min-width: 90em) and (max-width: 103.0625em) {
+    @content; }
+}
+
+@mixin min-1440-max-1920 {
+  @media only screen and (min-width: 90em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+// 1650 and up
+
+@mixin min-1650-max-1920 {
+  @media only screen and (min-width: 103.125em) and (max-width: 119.9375em) {
+    @content; }
+}
+
+
+
+// --- Media for Print ---
+
+@mixin print {
+  @media print {
+    @content; }
+}

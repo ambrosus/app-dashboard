@@ -1,0 +1,361 @@
+
+
+// Start code here 
+
+
+
+// --- Paragraph and lead ---
+
+p,.p,.lead {
+  line-height: 1.5;
+  font-family: $font-family--secondary;
+  font-weight: $font-weight--regular;
+  color: $grey; }
+
+p,.p {
+  font-size: 13px; }
+
+.lead {
+  font-size: 15px; }
+
+
+
+// --- Headings ---
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.d1,.d2,.d3,.d4 {
+  font-family: $font-family--primary;
+  font-weight: $font-weight--bold;
+  line-height: 1.3;
+  margin-bottom: 0;
+  color: $black; }
+
+h1, .h1 {
+  font-size: em(22px); 
+
+  @include min-480 {
+    font-size: em(27px); }
+
+  @include min-640 {
+    font-size: em(29px); }
+
+  @include min-768 {
+    font-size: em(31px); }
+
+  @include min-980 {
+    font-size: em(33px); }
+
+  @include min-1100 {
+    font-size: em(35px); }
+
+  @include min-1200 {
+    font-size: em(40px); }}
+
+h2, .h2 {
+  font-size: em(20px); 
+  
+  @include min-480 {
+    font-size: em(24px); }
+
+  @include min-640 {
+    font-size: em(25px); }
+
+  @include min-768 {
+    font-size: em(26px); }
+
+  @include min-980 {
+    font-size: em(27px); }
+
+  @include min-1100 {
+    font-size: em(28px); }
+
+  @include min-1200 {
+    font-size: em(30px); }}
+
+h3, .h3 {
+  font-size: em(18px); 
+
+  @include min-480 {
+    font-size: em(18px); }
+
+  @include min-640 {
+    font-size: em(19px); }
+
+  @include min-768 {
+    font-size: em(20px); }
+
+  @include min-1200 {
+    font-size: em(21px); }}
+
+h4, .h4 {
+  font-size: em(17px); }
+
+h5, .h5 {
+  font-size: em(16px); }
+
+h6, .h6 {
+  font-size: em(15px); }
+
+
+
+// --- Display ---
+
+.d1 {
+  font-size: em(25px);
+
+  @include min-480 {
+    font-size: em(31px); }
+
+  @include min-640 {
+    font-size: em(37px); }
+
+  @include min-768 {
+    font-size: em(43px); }
+
+  @include min-1024 {
+    font-size: em(49px); }
+
+  @include min-1200 {
+    font-size: em(55px); }
+
+  @include min-1440 {
+    font-size: em(61px); }
+
+  @include min-1650 {
+    font-size: em(70px); }}
+
+.d2 {
+  font-size: em(24px);  
+
+  @include min-480 {
+    font-size: em(29px); }
+
+  @include min-640 {
+    font-size: em(34px); }
+
+  @include min-768 {
+    font-size: em(39px); }
+
+  @include min-1024 {
+    font-size: em(44px); }
+
+  @include min-1200 {
+    font-size: em(49px); }
+
+  @include min-1440 {
+    font-size: em(54px); }
+
+  @include min-1650 {
+    font-size: em(60px); }}
+
+.d3 {
+  font-size: em(23px);
+
+  @include min-480 {
+    font-size: em(27px); }
+
+  @include min-640 {
+    font-size: em(31px); }
+
+  @include min-768 {
+    font-size: em(35px); }
+
+  @include min-1024 {
+    font-size: em(39px); }
+
+  @include min-1200 {
+    font-size: em(43px); }
+
+  @include min-1440 {
+    font-size: em(46px); }
+
+  @include min-1650 {
+    font-size: em(50px); }}
+
+.d4 {
+  font-size: em(22px);
+
+  @include min-480 {
+    font-size: em(25px); }
+
+  @include min-640 {
+    font-size: em(27px); }
+
+  @include min-768 {
+    font-size: em(30px); }
+
+  @include min-1024 {
+    font-size: em(33px); }
+
+  @include min-1200 {
+    font-size: em(36px); }
+
+  @include min-1440 {
+    font-size: em(39px); }
+
+  @include min-1650 {
+    font-size: em(45px); }}
+
+
+
+// --- blockquote ---
+
+blockquote,.blockquote {
+  padding: 0.5em 1em;
+  margin-bottom: 1em;
+  font-size: em(20px);
+  border-left: 0.25em solid #eceeef; }
+
+
+
+// --- code, kbd, pre and samp ---
+
+code,kbd,pre,samp {
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+code {
+  padding: 0.2em 0.4em;
+  font-size: 90%;
+  color: #bd4147;
+  background-color: #f7f7f9;
+  border-radius: 0.25em; }
+
+a > code {
+  padding: 0;
+  color: inherit;
+  background-color: inherit; }
+
+kbd {
+  padding: 0.2em 0.4em;
+  font-size: 90%;
+  color: palette(whites,base);
+  background-color: #292b2c;
+  border-radius: 0.2em; }
+
+kbd kbd {
+  padding: 0;
+  font-size: 100%;
+  font-weight: bold; }
+
+pre {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1em;
+  font-size: 90%;
+  color: #292b2c; }
+
+pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  background-color: transparent;
+  border-radius: 0; }
+
+
+
+// --- Font Family ---
+
+.font-family--primary {
+  font-family: $font-family--primary; }
+
+.font-family--secondary {
+  font-family: $font-family--secondary; }
+
+.font-family--tertiary {
+  font-family: $font-family--tertiary; }
+
+.font-family--print {
+  font-family: $font-family--print; }
+
+
+
+// --- Font Weight ---
+
+.font-weight--thin {
+  font-weight: $font-weight--thin; }
+
+.font-weight--light {
+  font-weight: $font-weight--light; }
+
+.font-weight--regular {
+  font-weight: $font-weight--regular; }
+
+.font-weight--medium {
+  font-weight: $font-weight--medium; }
+
+.font-weight--semi-bold {
+  font-weight: $font-weight--semi-bold; }
+
+.font-weight--bold {
+  font-weight: $font-weight--bold; }
+
+.font-weight--black {
+  font-weight: $font-weight--black; }
+
+
+
+// --- Text Align ---
+
+.left {
+  text-align: left; }
+
+.right {
+  text-align: right; }
+
+.center {
+  text-align: center; }
+
+.justify {
+  text-align: justify; }
+
+.nowrap {
+  white-space: nowrap; }
+
+
+
+// --- Text Transform --- 
+
+.lowercase {
+  text-transform: lowercase; }
+
+.uppercase {
+  text-transform: uppercase; }
+
+.capitalize {
+  text-transform: capitalize; }
+
+.underline {
+  text-decoration: underline; }
+
+.decoration-none {
+  text-decoration: none; }
+
+
+
+// --- "..." instead of the text overflow --- 
+
+.webkit {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.25em;
+  overflow: hidden; }
+
+.line-clamp-1 {
+  max-height: 1.7em;
+  -webkit-line-clamp: 1; }
+
+.line-clamp-2 {
+  max-height: 2.7em;
+  -webkit-line-clamp: 2; }
+
+.line-clamp-3 {
+  max-height: 3.7em;
+  -webkit-line-clamp: 3; }
+
+.line-clamp-4 {
+  max-height: 4.7em;
+  -webkit-line-clamp: 4; }

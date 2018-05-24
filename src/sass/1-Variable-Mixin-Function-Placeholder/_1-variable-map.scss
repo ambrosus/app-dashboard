@@ -1,0 +1,101 @@
+
+
+// Start code here
+
+
+
+// --- Font ---
+
+
+// -- Base Font --
+
+
+$base__font-size: 13px;
+$base__line-height: 17px;
+
+
+// -- Font Family --
+
+$font-family--primary: 'Roboto',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue', Arial, sans-serif;
+$font-family--secondary: 'Lato',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI','Roboto','Helvetica Neue', Arial, sans-serif;
+$font-family--tertiary: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+$font-family--print: Georgia,Cambria,'Times New Roman',Times,serif;
+
+
+// -- Font Weights --
+
+
+$font-weight--thin: 200;
+$font-weight--light: 300;
+$font-weight--regular: 400;
+$font-weight--medium: 500;
+$font-weight--semi-bold: 600;
+$font-weight--bold: 700;
+$font-weight--black: 900;
+
+
+
+// --- Colors ---
+
+
+// -- Black and White --
+
+
+$white: #fff;
+$black: #141925;
+$grey: #454a53;
+
+
+// -- Colorful --
+
+$_1: #002c87;
+$_2: #061f4c;
+$_3: #20acfa;
+$_4: #5411c9;
+$_5: #2873f5;
+$_6: #2e5d78;
+
+
+// --- Color Map ---
+
+
+// -- All Color Palettes --
+
+$palettes: (
+  whites: (
+    base: $white
+  ),
+  greys: (
+    base: $grey
+  ),
+  blacks: (
+    base: $black
+  ),
+  _1: (
+    base: $_1
+  ),
+  _2: (
+    base: $_2
+  ),
+  _3: (
+    base: $_3
+  ),
+  _4: (
+    base: $_4
+  ),
+  _5: (
+    base: $_5
+  ),
+  _6: (
+    base: $_6
+  ),
+);
+
+
+
+// --- Transitions ---
+
+$tr: cubic-bezier(0, 0, 0.2, 1);
+$g: cubic-bezier(.55,0,.55,.2);
+$g2: cubic-bezier(.25,.8,.25,1);
+$iv: 2s;

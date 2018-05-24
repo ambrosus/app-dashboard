@@ -1,0 +1,151 @@
+
+
+// Start code here 
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  font-size: 100%;
+  background: transparent;
+  box-sizing: border-box;
+  touch-action: manipulation; }
+
+html {
+  min-height: 100%; // Fallback to "vh" unit 
+  min-height: 100vh;
+  font-size: 1em; }
+
+body {
+  font-family: $font-family--secondary;
+  font-size: $base__font-size;
+  // body is always 1em, I change font-size's in typography as I would
+  line-height: $base__line-height;
+  color: $grey;
+  background-color: #fff;
+  margin:0;
+  padding:0;
+  font-weight: normal;
+  font-style: normal;
+  position: relative;
+  min-height: 100%; // Fallback to "vh" unit 
+  min-height: 100vh;
+  cursor: auto;
+  overflow-x: hidden; }
+
+
+
+// --- Other Elements ---
+
+img, embed, object, video {
+  max-width:100%;
+  height:auto; }
+
+button {
+  cursor: pointer; }
+
+input {
+  appearance:none; }
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+  transition: background-color 50000s ease-in-out 0s; }
+
+input[type="search"] {
+  appearance:none;
+  box-sizing: border-box;
+  border-style: none;
+  border:none; }
+
+input[type="tel"] {
+  appearance:none;
+  box-sizing: border-box; }
+
+input[type="email"], input[type="text"], textarea {
+  appearance:none;
+  box-sizing: border-box;
+  border-style: none;
+  border: none;
+  border-radius: 0; }
+
+input[type="date"] {
+  appearance:none;
+  box-sizing: border-box; }
+
+input[type="password"] {
+  appearance:none;
+  box-sizing: border-box; }
+
+textarea {
+  appearance:none;
+  box-sizing: border-box; }
+
+datalist {
+  appearance:none;
+  box-sizing: border-box; }
+
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: searchfield-cancel-button; }
+
+select {
+  appearance: none;
+  -webkit-appearance: none; }
+
+select::-ms-expand { /* for IE 11 */
+  display: none; }
+
+input[type="checkbox"] {
+  appearance: none; } 
+
+
+
+// --- Typography reset ---
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+p {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+abbr[title],
+abbr[data-original-title] {
+  cursor: help; }
+
+address {
+  margin-bottom: 1em;
+  font-style: normal;
+  line-height: inherit; }
+
+ul,dl {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none; }
+
+ol {
+  list-style-type: decimal; }
+
+ol ol,ul ul,ol ul,ul ol {
+  margin-bottom: 0; }
+
+dt {
+  font-weight: $font-weight--bold; }
+
+dd {
+  margin-bottom: .5em;
+  margin-left: 0; }
+
+blockquote {
+  margin: 0 0 1em; }
+
+a {
+  color: $_1;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1; }
+
+section, li {
+  line-height: 0; }

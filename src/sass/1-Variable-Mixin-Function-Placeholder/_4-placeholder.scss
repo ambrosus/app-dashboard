@@ -1,0 +1,48 @@
+
+
+// Start code here 
+
+
+
+// --- Clearfix --- 
+
+%clearfix {
+	&:after {
+	content: "";
+	display: table;
+	clear: both; }
+}
+
+
+
+// --- Pseudo Elements ---
+
+%pseudos {
+	content: '';
+	display: block;
+	position: absolute; }
+
+
+
+// --- Container and Row --- 
+
+
+// -- Container -- 
+
+%container {
+	position: relative;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+
+	@include print {
+		width: 650px; }
+} 
+
+
+// -- Row -- 
+
+%row {
+	position: relative;
+	width: 100%;
+}
