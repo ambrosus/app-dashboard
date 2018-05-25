@@ -1,5 +1,5 @@
 import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from "app/services/auth.service";
 
 @Directive({
   selector: '[appInput]'

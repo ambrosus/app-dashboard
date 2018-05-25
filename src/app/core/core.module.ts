@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
-import { HeaderComponent } from '../shared/header/header.component';
-import { FooterComponent } from '../shared/footer/footer.component';
 import { NotfoundComponent } from './notfound/notfound.component';
-import {SharedModule} from "../shared/shared.module";
-import {AppRoutingModule} from "../app-routing.module";
-import {DataStorageService} from "../services/data-storage.service";
-import {AuthService} from "../services/auth.service";
+import {SharedModule} from "app/shared/shared.module";
+import {AppRoutingModule} from "app/app-routing.module";
+import {DataStorageService} from "app/services/data-storage.service";
+import {AuthService} from "app/services/auth.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {LoaderInterceptor} from "../interceptors/loader-interceptor.service";
+import {LoaderInterceptor} from "app/interceptors/loader-interceptor.service";
 
 @NgModule({
   imports: [
