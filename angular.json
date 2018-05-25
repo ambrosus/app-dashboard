@@ -26,7 +26,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/normalize.css/normalize.css"
             ],
             "scripts": []
           },
@@ -46,7 +47,13 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "bundle",
+                  "maximumError": "300kb"
+                }
+              ]
             }
           }
         },
