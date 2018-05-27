@@ -1,11 +1,28 @@
-<h2>
-  header works!
-</h2>
+<header class="header">
+  <div class="header-container">
+    <a class="header-logo" routerLink="/">
+      <img src="/assets/raster/amb-logo.png" alt="Ambrosus">
+    </a>
 
-<button routerLink="/login">-Login-</button>
-<button routerLink="/dashboard">-Dashboard-</button>
-<button routerLink="/dashboard/asset/123">-Asset 123-</button>
-<button routerLink="/">-Home-</button>
-<button (click)="logout()" *ngIf="loggedin">-Logout-</button>
-
-<div style="margin-bottom: 20px;"></div>
+    <ul class="header-menu">
+      <li class="header-menu__item" routerLink="new">
+        <a>
+          <img src="/assets/raster/add.png" alt="Add asset" title="Add asset">
+        </a>
+      </li>
+      <li id="header-dropdown" class="header-menu__item" appClickThisActive>
+        <a>
+          <img src="/assets/raster/arrow-down.png" alt="Menu">
+        </a>
+        <ul class="header-dropdown-menu">
+          <li>
+            Settings
+          </li>
+          <li (click)="onLogout()">
+            Logout
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</header>

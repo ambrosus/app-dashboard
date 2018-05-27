@@ -16,7 +16,7 @@ p,.p {
   font-size: 13px; }
 
 .lead {
-  font-size: 15px; }
+  font-size: 14px; }
 
 
 
@@ -32,70 +32,42 @@ h1, h2, h3, h4, h5, h6,
   color: $black; }
 
 h1, .h1 {
-  font-size: em(22px);
+  font-size: 24px; }
 
-  @include min-480 {
-    font-size: em(27px); }
-
-  @include min-640 {
-    font-size: em(29px); }
-
-  @include min-768 {
-    font-size: em(31px); }
-
-  @include min-980 {
-    font-size: em(33px); }
-
-  @include min-1100 {
-    font-size: em(35px); }
-
-  @include min-1200 {
-    font-size: em(40px); }}
+  //font-size: em(22px);
+  //
+  //@include min-480 {
+  //  font-size: em(27px); }
+  //
+  //@include min-640 {
+  //  font-size: em(29px); }
+  //
+  //@include min-768 {
+  //  font-size: em(31px); }
+  //
+  //@include min-980 {
+  //  font-size: em(33px); }
+  //
+  //@include min-1100 {
+  //  font-size: em(35px); }
+  //
+  //@include min-1200 {
+  //  font-size: em(40px); }}
 
 h2, .h2 {
-  font-size: em(20px);
-
-  @include min-480 {
-    font-size: em(24px); }
-
-  @include min-640 {
-    font-size: em(25px); }
-
-  @include min-768 {
-    font-size: em(26px); }
-
-  @include min-980 {
-    font-size: em(27px); }
-
-  @include min-1100 {
-    font-size: em(28px); }
-
-  @include min-1200 {
-    font-size: em(30px); }}
+  font-size: 22px; }
 
 h3, .h3 {
-  font-size: em(18px);
-
-  @include min-480 {
-    font-size: em(18px); }
-
-  @include min-640 {
-    font-size: em(19px); }
-
-  @include min-768 {
-    font-size: em(20px); }
-
-  @include min-1200 {
-    font-size: em(24px); }}
+  font-size: 20px; }
 
 h4, .h4 {
-  font-size: em(17px); }
+  font-size: 18px; }
 
 h5, .h5 {
-  font-size: em(16px); }
+  font-size: 16px; }
 
 h6, .h6 {
-  font-size: em(15px); }
+  font-size: 14px; }
 
 
 
