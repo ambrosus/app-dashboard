@@ -1,7 +1,7 @@
 <main class="main">
-  <h1 class="center m-v-50">Add an asset</h1>
+  <h1 class="center m-v-50">Event add</h1>
   <div class="m-w-4 block-center">
-    <form [formGroup]="assetForm" (ngSubmit)="onSave()" class="form-group">
+    <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group">
       <div class="form-control m-b-15" [ngClass]="{error: error}">
         <label for="input1">Input1</label>
         <input formControlName="input1" type="text" name="input1" id="input1" class="form-input" spellcheck="false" appInput>

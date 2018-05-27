@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-asset',
-  templateUrl: './asset.component.html',
-  styleUrls: ['./asset.component.scss']
+  selector: 'app-event',
+  templateUrl: './event.component.html',
+  styleUrls: ['./event.component.scss']
 })
-export class AssetComponent implements OnInit {
+export class EventComponent implements OnInit {
 
   constructor(private route: ActivatedRoute) { }
 
@@ -14,6 +14,7 @@ export class AssetComponent implements OnInit {
     this.route.params.subscribe(
       params => {
         console.log('Asset id:', params.assetid);
+        console.log('Event id:', params.eventid);
       }
     );
   }

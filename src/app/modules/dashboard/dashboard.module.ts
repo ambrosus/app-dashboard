@@ -9,6 +9,8 @@ import { AssetsComponent } from 'app/modules/dashboard/assets/assets.component';
 import {AssetAddComponent} from "./asset-add/asset-add.component";
 import {RouterModule} from "@angular/router";
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { EventComponent } from './event/event.component';
+import { EventAddComponent } from './event-add/event-add.component';
 
 @NgModule({
   imports: [
@@ -22,7 +24,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AssetComponent,
     AssetsComponent,
     AssetAddComponent,
-    DashboardComponent
+    DashboardComponent,
+    EventComponent,
+    EventAddComponent
   ]
 })
 export class DashboardModule { }

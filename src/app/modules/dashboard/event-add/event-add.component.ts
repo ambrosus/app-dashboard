@@ -3,17 +3,17 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "app/services/auth.service";
 
 @Component({
-  selector: 'app-asset-add',
-  templateUrl: './asset-add.component.html',
-  styleUrls: ['./asset-add.component.scss']
+  selector: 'app-event-add',
+  templateUrl: './event-add.component.html',
+  styleUrls: ['./event-add.component.scss']
 })
-export class AssetAddComponent implements OnInit {
-  assetForm: FormGroup;
+export class EventAddComponent implements OnInit {
+  eventForm: FormGroup;
   error: boolean = false;
   spinner: boolean = false;
 
   constructor(private auth: AuthService) {
-    this.assetForm = new FormGroup({
+    this.eventForm = new FormGroup({
       'input1': new FormControl(null, [Validators.required]),
       'input2': new FormControl(null, [Validators.required]),
       'input3': new FormControl(null, [Validators.required]),
@@ -25,12 +25,12 @@ export class AssetAddComponent implements OnInit {
   }
 
   onSave() {
-    const i1 = this.assetForm.get('input1').value;
-    const i2 = this.assetForm.get('input2').value;
-    const i3 = this.assetForm.get('input3').value;
-    const i4 = this.assetForm.get('input4').value;
+    const i1 = this.eventForm.get('input1').value;
+    const i2 = this.eventForm.get('input2').value;
+    const i3 = this.eventForm.get('input3').value;
+    const i4 = this.eventForm.get('input4').value;
 
-    if (!this.assetForm.valid) {
+    if (!this.eventForm.valid) {
       this.error = true;
     } else {
       this.error = false;
@@ -42,10 +42,9 @@ export class AssetAddComponent implements OnInit {
       console.log(i1, i2, i3, i4);
       setTimeout(() => {
         this.spinner = false;
-        this.assetForm.reset();
+        this.eventForm.reset();
         this.auth.cleanForm.next(true);
       }, 2000);
     }
   }
-
 }
