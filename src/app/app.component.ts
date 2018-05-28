@@ -12,14 +12,15 @@ export class AppComponent {
 
   @HostListener('click', ['$event']) onDocumentClick(e) {
     const dropdownParent = this.el.nativeElement.querySelector('#header-dropdown');
-    if (dropdownParent !== null) {
-      if(dropdownParent.contains(e.target)) {
-        // inside the dropdown
-      } else {
-        // outside the dropdown
-        if (dropdownParent.classList.contains('active')) {
-          this.renderer.removeClass(dropdownParent, 'active');
-        }
+    if (!dropdownParent) {
+      return null
+    }
+    if(dropdownParent.contains(e.target)) {
+      // inside the dropdown
+    } else {
+      // outside the dropdown
+      if (dropdownParent.classList.contains('active')) {
+        this.renderer.removeClass(dropdownParent, 'active');
       }
     }
   }

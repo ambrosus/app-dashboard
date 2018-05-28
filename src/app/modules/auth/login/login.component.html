@@ -15,7 +15,7 @@
         <input formControlName="secret" type="password" name="secret" id="secret" class="form-input" spellcheck="false" appInput>
       </div>
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-        <svg *ngIf="spinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+        <app-spinner *ngIf="spinner"></app-spinner>
         <button type="submit" class="abtn m-l-25 btn-solid-ablue">Sign in</button>
       </div>
     </form>
@@ -60,7 +60,7 @@
         </label>
       </div>
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-        <svg *ngIf="sspinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+        <app-spinner *ngIf="sspinner"></app-spinner>
         <button type="submit" class="abtn m-l-25 btn-solid-ablue">Sign up</button>
       </div>
     </form>
