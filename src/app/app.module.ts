@@ -5,9 +5,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {HttpClientModule} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
-import {AuthModule} from "./auth/auth.module";
+import {AuthModule} from "./modules/auth/auth.module";
 import {CoreModule} from "./core/core.module";
-import {DashboardModule} from "./dashboard/dashboard.module";
+import {DashboardModule} from "./modules/dashboard/dashboard.module";
 import {SharedModule} from "./shared/shared.module";
 
 

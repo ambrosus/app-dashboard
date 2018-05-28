@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
               this.error = false;
               this.spinner = false;
               this.auth.loggedin.next(true);
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/assets']);
             },
             (err: any) => {
               this.error = true;

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NotfoundComponent } from './notfound/notfound.component';
+import { NotfoundComponent } from 'app/core/notfound/notfound.component';
 import {SharedModule} from "app/shared/shared.module";
 import {AppRoutingModule} from "app/app-routing.module";
 import {DataStorageService} from "app/services/data-storage.service";
