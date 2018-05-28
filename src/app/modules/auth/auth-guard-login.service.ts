@@ -15,7 +15,7 @@ export class AuthGuardLogin implements CanActivate {
       this.auth.address().subscribe(
         (resp: any) => {
           resolve(false);
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/assets']);
         },
         () => {
           resolve(true);

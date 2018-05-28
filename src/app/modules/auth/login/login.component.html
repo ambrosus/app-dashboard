@@ -1,8 +1,8 @@
 
-<div class="login-wrapper">
+<div class="wrapper">
   <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="block-center p-t-25" style="max-width: 200px;">
-  <h2 *ngIf="login" class="m-t-75 m-b-25 color-blacks--base center" style="font-size: 24px;">Welcome</h2>
-  <p *ngIf="login" class="lead m-b-35 center" style="font-size: 14px;">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
+  <h1 *ngIf="login" class="m-t-75 m-b-25 color-blacks--base center">Welcome</h1>
+  <p *ngIf="login" class="lead m-b-35 center">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
 
   <div *ngIf="login" class="m-w-4 block-center">
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="form-group">
@@ -15,7 +15,7 @@
         <input formControlName="secret" type="password" name="secret" id="secret" class="form-input" spellcheck="false" appInput>
       </div>
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-        <svg *ngIf="spinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+        <app-spinner *ngIf="spinner"></app-spinner>
         <button type="submit" class="abtn m-l-25 btn-solid-ablue">Sign in</button>
       </div>
     </form>
@@ -53,16 +53,20 @@
         </textarea>
       </div>
       <div class="form-control checkbox m-b-15" [ngClass]="{error: serror}">
-        <label for="terms" class="checkbox"><input formControlName="terms" type="checkbox" name="terms" id="terms" class="form-checkbox"> I accept Terms & Conditions</label>
+        <label for="terms" class="checkbox">
+          <input formControlName="terms" type="checkbox" name="terms" id="terms" class="form-checkbox" appOnchecked>
+          I accept Terms & Conditions *
+          <svg class="checkbox__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path></svg>
+        </label>
       </div>
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-        <svg *ngIf="sspinner" class="spinner" viewBox="25 25 50 50"><circle class="spinner-path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg>
+        <app-spinner *ngIf="sspinner"></app-spinner>
         <button type="submit" class="abtn m-l-25 btn-solid-ablue">Sign up</button>
       </div>
     </form>
   </div>
 
   <p class="center m-b-35" style="cursor: pointer;">
-    <span class="lead" (click)="login=true">Login</span> / <span class="lead" (click)="login=false">Sign up</span>
+    <span class="lead" (click)="login=true">Login</span> / <span class="lead" (click)="login=false" >Sign up</span>
   </p>
 </div>

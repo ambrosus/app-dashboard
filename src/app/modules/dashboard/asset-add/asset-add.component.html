@@ -1,0 +1,27 @@
+<main class="main">
+  <h1 class="center m-v-50">Add an asset</h1>
+  <div class="m-w-4 block-center">
+    <form [formGroup]="assetForm" (ngSubmit)="onSave()" class="form-group">
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="input1">Input1</label>
+        <input formControlName="input1" type="text" name="input1" id="input1" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="input2">Input2</label>
+        <input formControlName="input2" type="text" name="input2" id="input2" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="input3">Input3</label>
+        <input formControlName="input3" type="text" name="input3" id="input3" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="form-control m-b-15" [ngClass]="{error: error}">
+        <label for="input4">Input4</label>
+        <input formControlName="input4" type="text" name="input4" id="input4" class="form-input" spellcheck="false" appInput>
+      </div>
+      <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
+        <app-spinner *ngIf="spinner"></app-spinner>
+        <button type="submit" class="abtn m-l-25 btn-solid-ablue">Save asset</button>
+      </div>
+    </form>
+  </div>
+</main>

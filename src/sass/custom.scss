@@ -1,38 +1,5 @@
 
 
-// Spinner
-
-.spinner {
-  animation: rotate 2s linear infinite;
-  height: 32px;
-  width: 32px;
-  transform-origin: center center; }
-
-.spinner-path {
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
-  animation: dash 1.5s ease-in-out infinite;
-  stroke: $ablue;
-
-  &.dark {
-    stroke: $ablue; }}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg); }}
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0; }
-  50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px; }
-  100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px; }}
-
-
 // Forms
 
 
@@ -76,18 +43,28 @@
   &.textarea {
     height: 120px; }
 
+  &.checkbox {
+    min-height: 1px;
+    user-select: none;
+
+    & .checkbox__icon {
+      display: none;
+      font-size: inherit;
+      height: 1em;
+      position: absolute;
+      color: #5078f1;
+      left: 4px; }
+
+    & .checked {
+      & .checkbox__icon {
+        display: inline-block; }}}
+
   & .form-checkbox {
     width: 20px;
     height: 20px;
     border-radius: 5px;
     background: rgba(80,120,241,.1);
-    margin-right: 8px;
-
-    &:checked {
-      background-color: $ablue; }}
-
-  &.checkbox {
-    min-height: 1px; }
+    margin-right: 8px; }
 
   &:after {
     content: '';
@@ -141,3 +118,28 @@
       background: #cc4411; }
     & label {
       color: #cc4411; }}}
+
+.wrapper {
+  background-image: url('./assets/raster/bg.jpg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+
+.header {
+  position: relative;
+  z-index: 3; }
+
+.main {
+  min-height: calc(100vh - 240px);
+  position: relative;
+  z-index: 1; }
+
+.footer {
+  position: relative;
+  z-index: 2; }
+

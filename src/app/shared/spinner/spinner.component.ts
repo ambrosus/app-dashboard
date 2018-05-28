@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 
 @Component({
-  selector: 'app-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
+  selector: 'app-spinner',
+  templateUrl: './spinner.component.html',
+  styleUrls: ['./spinner.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class FooterComponent implements OnInit {
+export class SpinnerComponent implements OnInit {
 
   constructor() { }
 
