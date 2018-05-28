@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --aot",
-    "build": "ng build --prod --stats-json",
+    "start": "node server.js",
+    "build": "ng build --prod --aot",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "postinstall": "ng build --prod --output-path=dist --aot",
     "bundle-report": "webpack-bundle-analyzer dist/dashboard/stats.json"
   },
   "private": true,
