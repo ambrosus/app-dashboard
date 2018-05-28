@@ -8,8 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "ng build --prod --output-path=dist --aot",
-    "bundle-report": "webpack-bundle-analyzer dist/dashboard/stats.json"
+    "postinstall": "ng build --prod --output-path=dist --aot"
   },
   "private": true,
   "dependencies": {
