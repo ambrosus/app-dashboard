@@ -7,7 +7,7 @@ Dashboard's Angular app documentation overview.
 * [ angular.json, tsconfig.json ](#angularjson-tsconfigjson)
 * [src/sass](#srcsass)
 * [src/assets](#srcassets)
-* src/app
+* [src/app](#srcapp)
 
 ## angular.json, tsconfig.json
 
@@ -48,3 +48,12 @@ Reusable classes for typography and other repeatable css code like: relative (cl
 Code regarding the different themes for other features, e.g. .btn-solid-white, .btn-solid-orange
 
 ## src/assets
+
+Assets folder holds all the media files.\
+Organized as following:
+1. Favicons folder holds favicons.
+2. Raster folder holds all the pixel type media files: .jpg, .jpeg, .png, .gif
+3. Vector folder holds all vector type media files: .svg
+4. Video folder holds all video type of files: .mp4
+
+## src/app
