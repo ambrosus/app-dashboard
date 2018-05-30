@@ -9,7 +9,7 @@ Dashboard's Angular app documentation overview.
 * src/assets
 * src/app
 
-## angular.json
+## angular.json, tsconfig.json
 
 Angular.json holds some specific configuration for the Angular app.\
 Few things to note:
