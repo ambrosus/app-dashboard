@@ -11,11 +11,11 @@ Dashboard's Angular app documentation overview.
 
 ## angular.json, tsconfig.json
 
-Few things to note:\
+Few things to note:
 
 1. **Relative paths for .ts and .scss** file imports\
  - *.scss* import relative path is set for src/sass in angular.json:\
-`projects > dashboard > architect > build > options > styles > stylePreprocessorOptions > includePaths`\
+`projects > dashboard > architect > build > options > styles > stylePreprocessorOptions > includePaths`
  - For *.ts* files, relative path (src as root) is set in tsconfig.json:\
 `compilerOptions > baseUrl`
 2. **scss** is a style extension\
