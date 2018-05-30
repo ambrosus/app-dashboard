@@ -50,10 +50,23 @@ Code regarding the different themes for other features, e.g. .btn-solid-white, .
 ## src/assets
 
 Assets folder holds all the media files.\
-Organized as following:
+Organized as follows:
 1. Favicons folder holds favicons.
 2. Raster folder holds all the pixel type media files: .jpg, .jpeg, .png, .gif
 3. Vector folder holds all vector type media files: .svg
 4. Video folder holds all video type of files: .mp4
 
 ## src/app
+
+App is organized into modules + services + interceptors.\
+Overview per folder as follows:
+
+1. Core (module)\
+In core module we import all providers and basically anything we would otherwise import in app.module. This is to keep app.module clean and organized. When we import core module to app.module, it just imports everything in it as we would have had imported it in app.module in the first place.\
+There's also not-found component in it, as it's a component that is globally used (displayed on not found pages).
+2. Shared (module)\
+Shared module holds all componenets, pipes and directives that are to be reused across entire app, in any module.\
+e.g. <app-spinner>, <app-header->, <app-footer>\
+Everything that's created in this module and is declared, is also exported so it can be used in other modules.\
+In other modules we just import this module, and we can use it's shared components, directives and pipes.
+3. 
