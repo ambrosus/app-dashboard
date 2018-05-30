@@ -4,8 +4,8 @@ Dashboard's Angular app documentation overview.
 
 ## Overview:
 
-* [ angular.json, tsconfig.json ](angularjson-tsconfigjson)
-* [src/sass](srcsass)
+* [ angular.json, tsconfig.json ](#angularjson-tsconfigjson)
+* [src/sass](#srcsass)
 * src/assets
 * src/app
 
@@ -27,15 +27,15 @@ Few things to note:
 
 ## src/sass
 
-All the scss code is in the sass folder.\
+All the scss code is in the SASS folder.\
 SASS folder is organized into different folders, each specific to the scss codes purpose.\
 Each folder imports all of the scss files inside it in index.scss inside it.\
-Then, all the index.scss files from every folder + sass/custom.scss is imported in sass/partials.scss, sass/partials file is imported in sass/style.scss, and at then src/sass/style.scss is imported to src/style.scss which at the end gets compiled to the final css code for the app.
+Then, all the index.scss files from every folder + sass/custom.scss is imported in sass/partials.scss, sass/partials file is imported in sass/style.scss, and then src/sass/style.scss is imported to src/style.scss which at the end gets compiled to the final css code for the app.
 
 Folders are: 
 
 1. Variables...\
-This folder holds all SCSS regarding all the variables + some useful mixins, functions and placeholders (scss syntax)./
+This folder holds all SCSS regarding all the variables + some useful mixins, functions and placeholders (scss syntax).\
 **Note:** only this folder is specifically imported to sass/var.scss file, so that we could use that file in angular components\
 e.g. `@import 'var';`
 2. 
