@@ -61,12 +61,31 @@ Organized as follows:
 App is organized into modules + services + interceptors.\
 Overview per folder as follows:
 
-1. Core (module)\
+1. **Core** (module)\
 In core module we import all providers and basically anything we would otherwise import in app.module. This is to keep app.module clean and organized. When we import core module to app.module, it just imports everything in it as we would have had imported it in app.module in the first place.\
 There's also not-found component in it, as it's a component that is globally used (displayed on not found pages).
-2. Shared (module)\
+2. **Shared** (module)\
 Shared module holds all componenets, pipes and directives that are to be reused across entire app, in any module.\
-e.g. <app-spinner>, <app-header->, <app-footer>\
+e.g. `<app-spinner>, <app-header->, <app-footer>`\
 Everything that's created in this module and is declared, is also exported so it can be used in other modules.\
 In other modules we just import this module, and we can use it's shared components, directives and pipes.
-3. 
+3. **Services**
+Have auth and data-storage service.
++ Auth service handles authentication of the user and its state.
++ Data storage service handles interaction with Ambrosus API, and its app state.
+4. **Interceptors**
+Handle interception of http requests. Useful for initiating and stopping youtube like loader indicator at the top, as an example.
+5. **Modules**
+This one is very important as this folder holds all other modules (features) of the entire app.
+### Modular strategy, lazy loading, preloading
+This app in the beginning has 2 main modules: Auth and Dashboard modules.
+1. Auth module handles all the routes and components that deal with initial login / signup in the app.
+2. Dashboard module handles all routes regarding usage of the dashboard.\
+`/assets, /assets/new, /assets/123/events/123, /assets/123/events/new`\
+Those are main get and post features of the dashboard.\
+#### Lazy loading, preloading
+Both modules are lazy loaded, with preloading strategy.\
+**Note**\
+As auth module is really the first thing user sees, it's loaded initially either way.\
+As preloading strategy is set, other lazy loaded modules, in initial case dashboard module, is loaded in the background after the app initially loads. So dashboard routes are opened quickly after user logs in and gets access to dashboard part of the app.
+
