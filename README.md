@@ -6,7 +6,7 @@ Dashboard's Angular app documentation overview.
 
 * [ angular.json, tsconfig.json ](#angularjson-tsconfigjson)
 * [src/sass](#srcsass)
-* src/assets
+* [src/assets](#srcassets)
 * src/app
 
 ## angular.json, tsconfig.json
@@ -38,4 +38,13 @@ Folders are:
 This folder holds all SCSS regarding all the variables + some useful mixins, functions and placeholders (scss syntax).\
 **Note:** only this folder is specifically imported to sass/var.scss file, so that we could use that file in angular components\
 e.g. `@import 'var';`
-2. 
+2. Animation-Base\
+All code for animations and additional reset necessary (additional to normalize.css), goes in this folder.
+3. Layout\
+Code that's used for features like buttons, forms, tabs, accordians, sidebar, what ever standalone feature, can be organized here in a specific file.
+4. State\
+Reusable classes for typography and other repeatable css code like: relative (class with css position: relative), overflow-h (overflow: hidden), etc.
+5. Themes\
+Code regarding the different themes for other features, e.g. .btn-solid-white, .btn-solid-orange
+
+## src/assets
