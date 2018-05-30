@@ -1,5 +1,7 @@
 # angular-dashboard
 
+[![Build Status](https://travis-ci.com/ambrosus/app-dashboard.svg?token=tMTWCoK9SU2CizZxjcNz&branch=dev)](https://travis-ci.com/ambrosus/app-dashboard)
+
 Dashboard's Angular app documentation overview.
 
 ## Overview:
