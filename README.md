@@ -82,10 +82,12 @@ This app in the beginning has 2 main modules: Auth and Dashboard modules.
 1. Auth module handles all the routes and components that deal with initial login / signup in the app.
 2. Dashboard module handles all routes regarding usage of the dashboard.\
 `/assets, /assets/new, /assets/123/events/123, /assets/123/events/new`\
-Those are main get and post features of the dashboard.\
+Those are main get and post features of the dashboard.
 #### Lazy loading, preloading
 Both modules are lazy loaded, with preloading strategy.\
 **Note**\
 As auth module is really the first thing user sees, it's loaded initially either way.\
 As preloading strategy is set, other lazy loaded modules, in initial case dashboard module, is loaded in the background after the app initially loads. So dashboard routes are opened quickly after user logs in and gets access to dashboard part of the app.
+
+As the app grows in complexity, dashboard module can be further broken down in multiple modules as well.
 
