@@ -26,6 +26,8 @@ Few things to note:
 `projects > dashboard > architect > build > options > styles`
 4. Tree shaking / build optimizations: **aot** is set to true and the **budgets** is added as well.\
 `projects > dashboard > architect > build > configurations > production`
+5. If favicons folder in assets (as custom favicons), remove src/favicon.ico from:\
+`projects > dashboard > architect > test > options > assets`
 
 ## src/sass
 
