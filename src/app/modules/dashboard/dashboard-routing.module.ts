@@ -12,7 +12,7 @@ const routes: Routes = [
       { path: '', component: AssetsComponent },
       { path: 'new', component: AssetAddComponent },
       { path: ':assetid', component: AssetComponent },
-      { path: ':assetid/events/new', component: EventAddComponent },
+      { path: 'events/new', component: EventAddComponent },
       { path: ':assetid/events/:eventid', component: EventComponent }
     ]}
 ];

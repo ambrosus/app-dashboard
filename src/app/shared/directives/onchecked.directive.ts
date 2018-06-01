@@ -10,9 +10,9 @@ export class OncheckedDirective {
 
   @HostListener('change') onChange() {
     if (this.el.nativeElement.checked) {
-      this.renderer.addClass(this.el.nativeElement.parentNode, 'checked');
+      this.renderer.addClass(this.el.nativeElement.parentNode, 'checkbox--checked');
     } else {
-      this.renderer.removeClass(this.el.nativeElement.parentNode, 'checked');
+      this.renderer.removeClass(this.el.nativeElement.parentNode, 'checkbox--checked');
     }
   }
 
