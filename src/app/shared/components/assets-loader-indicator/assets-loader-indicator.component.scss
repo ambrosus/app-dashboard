@@ -1,0 +1,20 @@
+@import 'var';
+
+.loading-assets-indicator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 40px;
+  align-items: center; }
+
+.loading-asset {
+  display: block;
+  height: 70px;
+  width: 100%;
+  max-width: 1150px;
+  background: #eee;
+  margin-bottom: 15px;
+  border-radius: 15px;
+
+  &:last-of-type {
+    margin-bottom: 0; }}
