@@ -26,6 +26,9 @@ Few things to note:
 `projects > dashboard > architect > build > options > styles`
 4. Tree shaking / build optimizations: **aot** is set to true and the **budgets** is added as well.\
 `projects > dashboard > architect > build > configurations > production`
+5. If favicons folder in assets (as custom favicons), remove src/favicon.ico from:\
+`projects > dashboard > architect > test > options > assets`
+6. Configure Karma to handle SCSS (https://stackoverflow.com/questions/44460733/how-to-configure-karma-to-include-global-scss-files-for-an-angular-cli-project)
 
 ## src/sass
 
