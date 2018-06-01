@@ -1,17 +1,22 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, Renderer2, ViewEncapsulation} from '@angular/core';
 import {DataStorageService} from '../../../services/data-storage.service';
+import {SelectedAssetsService} from '../../../services/selected-assets.service';
 
 @Component({
   selector: 'app-assets',
   templateUrl: './assets.component.html',
-  styleUrls: ['./assets.component.scss']
+  styleUrls: ['./assets.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
-export class AssetsComponent implements OnInit, OnDestroy {
+export class AssetsComponent implements OnInit {
   getAssetsError: boolean = false;
   assetsLoaded: boolean = false;
-  assets: {};
+  assets: any;
 
-  constructor(private dataStorage: DataStorageService) { }
+  constructor(private dataStorage: DataStorageService,
+              private selectedAssets: SelectedAssetsService,
+              private el: ElementRef,
+              private renderer: Renderer2) { }
 
   ngOnInit() {
     this.dataStorage.getAssets();
@@ -20,6 +25,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.assetsLoaded = true;
         this.getAssetsError = false;
         this.assets = resp;
+        console.log(this.assets);
       }
     );
     this.dataStorage.getAssetsError.subscribe(
@@ -29,9 +35,22 @@ export class AssetsComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
-    this.dataStorage.getAssetsSuccess.unsubscribe();
-    this.dataStorage.getAssetsError.unsubscribe();
+  onSelectAll(e) {
+    const assetsList = this.el.nativeElement.querySelector('.assets-list');
+    for (const asset of assetsList.children) {
+      const checkbox = asset.children[0].children[0];
+      checkbox.checked = true;
+    }
+    this.selectedAssets.toggleSelect.next('true');
+  }
+
+  onUnSelectAll(e) {
+    const assetsList = this.el.nativeElement.querySelector('.assets-list');
+    for (const asset of assetsList.children) {
+      const checkbox = asset.children[0].children[0];
+      checkbox.checked = false;
+    }
+    this.selectedAssets.toggleSelect.next('true');
   }
 
 }

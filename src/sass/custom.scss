@@ -102,12 +102,10 @@
     background: rgba(80,120,241,.1);
     margin-right: 8px; }
 
-  &__icon {
+  & .checkbox-icon {
     display: none;
-    font-size: inherit;
     height: 1em;
     position: absolute;
-    color: #5078f1;
     left: 4px; }
 
   & label {
@@ -117,11 +115,11 @@
     justify-content: flex-start;
     top: 0;
     left: 0;
-    padding: 0; }
+    padding: 0; }}
 
-  & .checkbox--checked {
-    & .form-checkbox__icon {
-      display: inline-block; }}}
+.checkbox--checked {
+  & .checkbox-icon {
+    display: inline-block; }}
 
 .wrapper {
   background-image: url('./assets/raster/bg.jpg');

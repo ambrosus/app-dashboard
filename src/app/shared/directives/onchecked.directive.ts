@@ -1,4 +1,5 @@
 import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
+import {SelectedAssetsService} from '../../services/selected-assets.service';
 
 @Directive({
   selector: '[appOnchecked]'
@@ -6,13 +7,31 @@ import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
 export class OncheckedDirective {
 
   constructor(private el: ElementRef,
-              private renderer: Renderer2) { }
+              private renderer: Renderer2,
+              private selectedAssets: SelectedAssetsService) {
+    this.selectedAssets.toggleSelect.subscribe(
+      resp => {
+        const secondParent = this.el.nativeElement.parentNode.parentNode;
+        const checkboxChecked = this.el.nativeElement.checked;
+
+        console.log('subscribe change ', checkboxChecked);
+        if (checkboxChecked) {
+          this.renderer.addClass(secondParent, 'checkbox--checked');
+        } else {
+          this.renderer.removeClass(secondParent, 'checkbox--checked');
+        }
+      }
+    );
+  }
 
   @HostListener('change') onChange() {
-    if (this.el.nativeElement.checked) {
-      this.renderer.addClass(this.el.nativeElement.parentNode, 'checkbox--checked');
+    const secondParent = this.el.nativeElement.parentNode.parentNode;
+    const checkboxChecked = this.el.nativeElement.checked;
+    console.log('first change ', checkboxChecked);
+    if (checkboxChecked) {
+      this.renderer.addClass(secondParent, 'checkbox--checked');
     } else {
-      this.renderer.removeClass(this.el.nativeElement.parentNode, 'checkbox--checked');
+      this.renderer.removeClass(secondParent, 'checkbox--checked');
     }
   }
 
