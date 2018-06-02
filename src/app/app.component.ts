@@ -15,7 +15,7 @@ export class AppComponent {
     if (!dropdownParent) {
       return null;
     }
-    if(dropdownParent.contains(e.target)) {
+    if (dropdownParent.contains(e.target)) {
       // inside the dropdown
     } else {
       // outside the dropdown

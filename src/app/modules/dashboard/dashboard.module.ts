@@ -11,7 +11,8 @@ import {RouterModule} from "@angular/router";
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
-import {SelectedAssetsService} from 'app/services/selected-assets.service';
+import {AssetsService} from 'app/services/assets.service';
+import {StorageService} from '../../services/storage.service';
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import {SelectedAssetsService} from 'app/services/selected-assets.service';
     EventAddComponent
   ],
   providers: [
-    SelectedAssetsService
+    AssetsService,
+    StorageService
   ]
 })
 export class DashboardModule { }

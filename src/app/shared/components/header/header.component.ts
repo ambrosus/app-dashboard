@@ -8,7 +8,7 @@ import {AuthService} from "app/services/auth.service";
   encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent implements OnInit {
-  loggedin: boolean = false;
+  loggedin = false;
 
   constructor(private auth: AuthService) { }
 
@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
       resp => {
         this.loggedin = resp;
       }
-    )
+    );
   }
 
   onLogout() {

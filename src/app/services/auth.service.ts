@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,6 @@ import {Subject} from "rxjs";
 export class AuthService {
   loggedin: Subject<boolean> = new Subject<boolean>();
   cleanForm: Subject<boolean> = new Subject<boolean>();
-
-  urls = {
-    'token': 'https://gateway-dev.ambrosus.com/token',
-    'address': 'https://gateway-dev.ambrosus.com/accounts/'
-  };
 
   constructor(
     private http: HttpClient,
@@ -30,7 +26,7 @@ export class AuthService {
       'validUntil': 1600000000
     };
 
-    return this.http.post(this.urls.token, params, {headers});
+    return this.http.post(environment.apiUrls.token, params, {headers});
   }
 
   address() {
@@ -43,7 +39,7 @@ export class AuthService {
       'Authorization': `AMB_TOKEN ${token}`
     };
 
-    const url = this.urls.address + address;
+    const url = environment.apiUrls.address + address;
 
     return this.http.get(url,{headers});
   }

@@ -1,8 +1,8 @@
 <main class="main">
   <h1 class="center m-v-25">Assets</h1>
-  <app-assets-loader-indicator *ngIf="!assetsLoaded"></app-assets-loader-indicator>
+  <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
 
-  <div class="assets-actions" *ngIf="assetsLoaded">
+  <div class="assets-actions" *ngIf="assets">
     <div>
       <label class="assets-list__label" for="selectAll" (click)="onSelectAll($event, input)">
         <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div class="assets-list" *ngIf="assetsLoaded">
+  <div class="assets-list" *ngIf="assets">
     <div class="assets-list__item" *ngFor="let asset of assets.results; let i = index">
       <label class="assets-list__label" for="{{ i }}">
         <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">

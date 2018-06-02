@@ -12,21 +12,21 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
   // Login form
   loginForm: FormGroup;
-  error: boolean = false;
-  spinner: boolean = false;
+  error = false;
+  spinner = false;
   // Sign up form
   signupForm: FormGroup;
-  serror: boolean = false;
-  sspinner: boolean = false;
-  weakPassword: boolean = false;
+  serror = false;
+  sspinner = false;
+  weakPassword = false;
 
-  login: boolean = true;
+  login = true;
 
   // Custom validator for strong password
   strongPassword(control: FormControl): {[s: string]: boolean} {
-    let hasNumber = /\d/.test(control.value);
-    let hasUpper = /[A-Z]/.test(control.value);
-    let hasLower = /[a-z]/.test(control.value);
+    const hasNumber = /\d/.test(control.value);
+    const hasUpper = /[A-Z]/.test(control.value);
+    const hasLower = /[a-z]/.test(control.value);
     // console.log('Num, Upp, Low', hasNumber, hasUpper, hasLower);
     const valid = hasNumber && hasUpper && hasLower;
     if (!valid && control.value && control.value.length > 5) {
