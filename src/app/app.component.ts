@@ -11,9 +11,9 @@ export class AppComponent {
               private renderer: Renderer2) {}
 
   @HostListener('click', ['$event']) onDocumentClick(e) {
-    const dropdownParent = this.el.nativeElement.querySelector('#header-dropdown');
+    const dropdownParent = this.el.nativeElement.querySelector('.dropdown');
     if (!dropdownParent) {
-      return null
+      return null;
     }
     if(dropdownParent.contains(e.target)) {
       // inside the dropdown

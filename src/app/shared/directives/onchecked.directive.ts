@@ -1,5 +1,5 @@
 import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
-import {SelectedAssetsService} from '../../services/selected-assets.service';
+import {SelectedAssetsService} from 'app/services/selected-assets.service';
 
 @Directive({
   selector: '[appOnchecked]'
@@ -13,8 +13,6 @@ export class OncheckedDirective {
       resp => {
         const secondParent = this.el.nativeElement.parentNode.parentNode;
         const checkboxChecked = this.el.nativeElement.checked;
-
-        console.log('subscribe change ', checkboxChecked);
         if (checkboxChecked) {
           this.renderer.addClass(secondParent, 'checkbox--checked');
         } else {
@@ -27,12 +25,18 @@ export class OncheckedDirective {
   @HostListener('change') onChange() {
     const secondParent = this.el.nativeElement.parentNode.parentNode;
     const checkboxChecked = this.el.nativeElement.checked;
-    console.log('first change ', checkboxChecked);
     if (checkboxChecked) {
       this.renderer.addClass(secondParent, 'checkbox--checked');
+      if (secondParent.classList.contains('assets-list__item')) {
+        this.selectedAssets.selectAsset(this.el.nativeElement.name);
+      }
     } else {
       this.renderer.removeClass(secondParent, 'checkbox--checked');
+      if (secondParent.classList.contains('assets-list__item')) {
+        this.selectedAssets.unselectAsset(this.el.nativeElement.name);
+      }
     }
+    console.log(this.selectedAssets.getAssets());
   }
 
 }

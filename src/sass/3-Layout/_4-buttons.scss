@@ -75,6 +75,16 @@
 
 // AMB buttons
 
+.carrot {
+  color: #fff;
+  font-size: 14px;
+  transform: rotate(90deg);
+  display: inline-block;
+  margin-left: 4px;
+  position: relative;
+  top: 1px;
+  transition: transform .2s $tr; }
+
 .abtn {
   font-family: $font-family--primary;
   border-radius: 5px;
@@ -85,6 +95,12 @@
   padding: 1px 6px;
   text-align: center;
   line-height: 40px;
+  position: relative;
+  user-select: none;
 
   &:hover {
-    opacity: .85; }}
+    opacity: .85; }
+
+  &.active {
+    & .carrot {
+      transform: rotate(-90deg); }}}

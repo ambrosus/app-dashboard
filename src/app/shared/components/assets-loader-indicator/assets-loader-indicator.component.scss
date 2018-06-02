@@ -4,17 +4,18 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 40px;
+  padding: 0 30px;
+  margin-top: 20px;
   align-items: center; }
 
 .loading-asset {
   display: block;
   height: 70px;
   width: 100%;
-  max-width: 1150px;
+  max-width: 1200px;
   background: #eee;
-  margin-bottom: 15px;
-  border-radius: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
 
   &:last-of-type {
     margin-bottom: 0; }}

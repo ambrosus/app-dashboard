@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, Renderer2, ViewEncapsulation} from '@angular/core';
 import {DataStorageService} from '../../../services/data-storage.service';
 import {SelectedAssetsService} from '../../../services/selected-assets.service';
 
@@ -25,7 +25,6 @@ export class AssetsComponent implements OnInit {
         this.assetsLoaded = true;
         this.getAssetsError = false;
         this.assets = resp;
-        console.log(this.assets);
       }
     );
     this.dataStorage.getAssetsError.subscribe(
@@ -35,22 +34,24 @@ export class AssetsComponent implements OnInit {
     );
   }
 
-  onSelectAll(e) {
+  onSelectAll(e, input) {
     const assetsList = this.el.nativeElement.querySelector('.assets-list');
-    for (const asset of assetsList.children) {
-      const checkbox = asset.children[0].children[0];
-      checkbox.checked = true;
+    if (input.checked) {
+      for (const asset of assetsList.children) {
+        const checkbox = asset.children[0].children[0];
+        checkbox.checked = true;
+        this.selectedAssets.selectAsset(checkbox.name);
+      }
+      this.selectedAssets.toggleSelect.next('true');
+    } else {
+      for (const asset of assetsList.children) {
+        const checkbox = asset.children[0].children[0];
+        checkbox.checked = false;
+      }
+      this.selectedAssets.unselectAssets();
+      this.selectedAssets.toggleSelect.next('true');
     }
-    this.selectedAssets.toggleSelect.next('true');
-  }
-
-  onUnSelectAll(e) {
-    const assetsList = this.el.nativeElement.querySelector('.assets-list');
-    for (const asset of assetsList.children) {
-      const checkbox = asset.children[0].children[0];
-      checkbox.checked = false;
-    }
-    this.selectedAssets.toggleSelect.next('true');
+    console.log(this.selectedAssets.getAssets());
   }
 
 }

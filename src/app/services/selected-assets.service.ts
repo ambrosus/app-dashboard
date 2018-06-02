@@ -5,16 +5,29 @@ import {Subject} from 'rxjs';
   providedIn: 'root'
 })
 export class SelectedAssetsService {
-  assets: any[];
+  assets: string[] = [];
   toggleSelect: Subject<any> = new Subject();
 
-  constructor() { }
+  constructor() {
+  }
 
-  selectAssets(assetsIds: any[]) {
-    this.assets = assetsIds;
+  selectAsset(assetId: string) {
+    this.assets.push(assetId);
+  }
+
+  unselectAsset(assetId: string) {
+    const index = this.assets.indexOf(assetId);
+    if (index > -1) {
+      this.assets.splice(index, 1);
+    }
   }
 
   unselectAssets() {
     this.assets = [];
+  }
+
+  getAssets() {
+    // return [...new Set(this.assets)];
+    return Array.from(new Set(this.assets));
   }
 }

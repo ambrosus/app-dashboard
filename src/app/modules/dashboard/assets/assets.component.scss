@@ -10,7 +10,6 @@
 
 .assets-list__label {
   position: relative;
-  margin-left: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -21,21 +20,23 @@
     height: 20px;
     border-radius: 5px;
     background: rgba(80,120,241,.1);
-    margin-right: 8px; }
+    margin-right: 8px;
+    cursor: pointer; }
 
   & .checkbox-icon {
     display: none;
     height: 1em;
     position: absolute;
     left: 4px;
-    top: 3px;}}
+    top: 3px;
+    cursor: pointer; }}
 
 .assets-list__item {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
+  align-items: space-between;
   min-height: 70px;
   background-color: #fff;
   box-shadow: 0 2px 20px 0 rgba(74,124,226,.09);
@@ -50,7 +51,16 @@
 
   &.checkbox--checked {
     background-color: #f5f8ff;
-    box-shadow: none; }}
+    box-shadow: none; }
+
+  & .assets-list__label {
+    margin: 15px 30px; }
+
+  @include min-640 {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center; }}
 
 .checkbox--checked {
   & .checkbox-icon {
@@ -58,6 +68,9 @@
 
 .assets-actions {
   @extend .assets-list;
+
+  & .assets-list__label {
+    margin-left: 30px; }
 
   & > div {
     display: flex;
@@ -67,9 +80,17 @@
     width: 100%;
     max-width: 1200px; }}
 
-.toggleSelect {
+.assets-list__column {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 30px;
+  width: 100%;
+
+  @include min-640 {
+    max-width: 40%; }}
+
+.assets-list__column-content {
+  color: $black;
   font-weight: 500;
-  color: $ablue;
-  text-transform: capitalize;
-  user-select: none; }
+  word-break: break-word; }
