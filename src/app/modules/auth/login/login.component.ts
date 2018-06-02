@@ -106,7 +106,7 @@ export class LoginComponent implements OnInit {
           this.error = false;
           // Check if the address is valid
           this.auth.address().subscribe(
-            (resp: any) => {
+            (_resp: any) => {
               this.error = false;
               this.spinner = false;
               this.auth.loggedin.next(true);

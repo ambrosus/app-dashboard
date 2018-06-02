@@ -1,0 +1,14 @@
+@import 'var';
+
+.removeControl {
+  display: inline-block;
+  font-size: 14px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  padding: 4px;
+  background: $grey;
+  line-height: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500; }
