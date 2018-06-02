@@ -1,3 +1,8 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrls: {
+    token: 'https://gateway-dev.ambrosus.com/token',
+    address: 'https://gateway-dev.ambrosus.com/accounts/',
+    assets: 'https://gateway-dev.ambrosus.com/assets'
+  }
 };
