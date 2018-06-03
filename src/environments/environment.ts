@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrls: {
+    token: 'https://gateway-dev.ambrosus.com/token',
+    address: 'https://gateway-dev.ambrosus.com/accounts/',
+    assets: 'https://gateway-dev.ambrosus.com/assets'
+  }
 };
 
 /*

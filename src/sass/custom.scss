@@ -6,10 +6,13 @@
   padding: 0 30px; }
 
 .form-control {
-  width: 100%;
   min-height: 40px;
   position: relative;
   margin-bottom: 25px;
+  text-align: left;
+
+  @include max-480 {
+    width: 100%; }
 
   &:after {
     content: '';
@@ -102,12 +105,10 @@
     background: rgba(80,120,241,.1);
     margin-right: 8px; }
 
-  &__icon {
+  & .checkbox-icon {
     display: none;
-    font-size: inherit;
     height: 1em;
     position: absolute;
-    color: #5078f1;
     left: 4px; }
 
   & label {
@@ -117,11 +118,25 @@
     justify-content: flex-start;
     top: 0;
     left: 0;
-    padding: 0; }
+    padding: 0; }}
 
-  & .checkbox--checked {
-    & .form-checkbox__icon {
-      display: inline-block; }}}
+.form-fields-coupled {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+
+  @include min-480 {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center; }}
+
+.checkbox--checked {
+  & .checkbox-icon {
+    display: inline-block; }}
 
 .wrapper {
   background-image: url('./assets/raster/bg.jpg');
@@ -147,3 +162,77 @@
   position: relative;
   z-index: 2; }
 
+// Header
+
+.header {
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px; }
+
+.header-container {
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; }
+
+.header-logo {
+  & img {
+    height: 20px; }}
+
+.header-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%; }
+
+.header-menu__item {
+  margin-right: 14px;
+  position: relative;
+
+  &:last-child {
+    margin-right: 0; }
+
+  & img {
+    width: 25px;
+    transition: transform .2s $tr; }}
+
+.dropdown-menu {
+  display: none;
+  animation: fadeIn .2s $tr;
+  position: absolute;
+  top: 100%;
+  background: #fff;
+  box-shadow: 0 2px 45px 0 rgba(74,124,226,.17);
+  padding: 0;
+  text-align: center;
+  right: 0;
+  width: 200px;
+  color: $black;
+
+  & li {
+    font-weight: 500;
+    padding: 17px;
+    cursor: pointer;
+    line-height: 1.2; }}
+
+.dropdown {
+  &.active {
+    & img {
+      transform: rotate(180deg); }
+
+    & .dropdown-menu {
+      display: block; }}}
+
+pre {
+  background: #f1f1f1;
+  display: block;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px dashed #aaa;
+  max-width: 600px; }

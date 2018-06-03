@@ -12,15 +12,12 @@ export class AuthGuardLogin implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
     return new Promise((resolve) => {
-      this.auth.address().subscribe(
-        (resp: any) => {
-          resolve(false);
-          this.router.navigate(['/assets']);
-        },
-        () => {
-          resolve(true);
-        }
-      );
+      if (this.auth.isLoggedIn()) {
+        resolve(false);
+        this.router.navigate(['/assets']);
+      } else {
+        resolve(true);
+      }
     });
   }
 }
