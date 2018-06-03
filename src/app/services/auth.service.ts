@@ -21,7 +21,6 @@ export class AuthService {
   isLoggedIn() {
     const token = this.storage.get('token');
     const address = this.storage.get('address');
-
     return token && address;
   }
 
@@ -31,11 +30,9 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Authorization': `AMB ${secret}`
     };
-
     const params = {
       'validUntil': 1600000000
     };
-
     return this.http.post(environment.apiUrls.token, params, {headers});
   }
 

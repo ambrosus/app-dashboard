@@ -28,7 +28,7 @@
               <label for="{{ i + 'imageName' }}">Image name</label>
               <input formControlName="imageName" type="text" id="{{ i + 'imageName' }}" spellcheck="false" appInput>
             </div>
-            <div class="form-text m-b-15 w-60" [ngClass]="{error: assetForm.get('productImage')['controls'][i].get('imageUrl').invalid}">
+            <div class="form-text m-b-15 w-60">
               <label for="{{ i + 'imageUrl' }}">Image url</label>
               <input formControlName="imageUrl" type="text" id="{{ i + 'imageUrl' }}" spellcheck="false" appInput>
             </div>
