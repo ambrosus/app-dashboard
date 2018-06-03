@@ -27,6 +27,11 @@ export class AssetAddComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.assets.inputChanged.subscribe(
+      (resp: any) => {
+        resp.control.get('identifier').setValue(resp.value);
+      }
+    );
   }
 
   private initForm() {
@@ -141,17 +146,75 @@ export class AssetAddComponent implements OnInit {
   }
 
   onSave() {
-    console.log(this.assetForm);
     if (!this.assetForm.valid) {
       this.error = true;
-      console.log(this.assetForm.errors);
+      return false;
     }
 
     if (this.assetForm.valid) {
       this.error = false;
 
-      console.log(this.assetForm.value);
-      console.log(JSON.stringify(this.assetForm.value));
+      // Generate JSON
+      this.generateJSON();
     }
+  }
+
+  private generateJSON() {
+    const asset = {};
+    asset['content'] = {};
+
+    // asset.content.idData
+    asset['content']['idData'] = {};
+    asset['content']['idData']['assetId'] = 'Asset id from the response';
+    asset['content']['idData']['createdBy'] = localStorage.getItem('address');
+    asset['content']['idData']['accessLevel'] = 0;
+    asset['content']['idData']['timestamp'] = new Date().getTime();
+
+    // asset.content.data
+    asset['content']['data'] = [];
+
+    const identifiers = {};
+    identifiers['type'] = 'ambrosus.asset.identifier';
+    identifiers['identifiers'] = {};
+    for (const item of this.assetForm.get('identifiers')['controls']) {
+      identifiers['identifiers'][item.value.identifier] = item.value.identifierValue;
+    }
+
+    asset['content']['data'].push(identifiers);
+
+    // Basic + custom data
+    const basicAndCustom = {};
+    // Basic data
+    basicAndCustom['type'] = 'ambrosus.asset.info';
+    basicAndCustom['name'] = this.assetForm.get('name').value;
+    basicAndCustom['description'] = this.assetForm.get('description').value;
+    basicAndCustom['assetType'] = this.assetForm.get('assetType').value;
+    // Images
+    basicAndCustom['images'] = {};
+    const productImages = this.assetForm.get('productImage')['controls'];
+    for (let i = 0; i < productImages.length; i++) {
+      if (i === 0) {
+        basicAndCustom['images']['default'] = productImages[i].value.imageUrl;
+        continue;
+      }
+      basicAndCustom['images'][productImages[i].value.imageName] = productImages[i].value.imageUrl;
+    }
+    // Custom data
+    for (const item of this.assetForm.get('customData')['controls']) {
+      basicAndCustom[item.value.customDataKey] = item.value.customDataValue;
+    }
+    // Custom data groups
+    const customGroups = this.assetForm.get('customDataGroups')['controls'];
+    for (const item of customGroups) {
+      basicAndCustom[item.value.groupName] = {};
+      for (const group of item.get('groupValue')['controls']) {
+        basicAndCustom[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue;
+      }
+    }
+
+    asset['content']['data'].push(basicAndCustom);
+    console.log(asset);
+
+    const json = JSON.stringify(asset);
   }
 }

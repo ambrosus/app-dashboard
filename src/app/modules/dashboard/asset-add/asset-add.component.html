@@ -44,11 +44,11 @@
         <div *ngFor="let identifierCtrl of assetForm.get('identifiers')['controls']; let i = index"
              [formGroupName]="i" class="right">
           <div class="form-fields-coupled">
-            <div class="form-text m-b-15 m-r-15 w-20">
+            <div class="form-text m-b-15 m-r-15 w-30">
               <label for="{{ i + 'identifier'}}">Identifier</label>
-              <input formControlName="identifier" [appAutocompleteinput]="identifiersAutocomplete" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+              <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
             </div>
-            <div class="form-text m-b-15 w-80">
+            <div class="form-text m-b-15 w-70">
               <label for="{{ i + 'identifierValue'}}">Value</label>
               <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
             </div>

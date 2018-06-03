@@ -12,6 +12,7 @@ export class AssetsService {
   getAssetsSuccess: Subject<any> = new Subject();
   getAssetsError: Subject<any> = new Subject();
   assets: {};
+  inputChanged = new Subject();
 
   constructor(private http: HttpClient) { }
 
