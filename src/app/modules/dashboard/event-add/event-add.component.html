@@ -1,27 +1,122 @@
-<main class="main">
-  <h1 class="center m-v-50">Event add</h1>
-  <div class="m-w-4 block-center">
-    <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group">
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
-        <label for="input1">Input1</label>
-        <input formControlName="input1" type="text" name="input1" id="input1" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
-        <label for="input2">Input2</label>
-        <input formControlName="input2" type="text" name="input2" id="input2" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
-        <label for="input3">Input3</label>
-        <input formControlName="input3" type="text" name="input3" id="input3" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
-        <label for="input4">Input4</label>
-        <input formControlName="input4" type="text" name="input4" id="input4" spellcheck="false" appInput>
-      </div>
-      <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50">
-        <app-spinner *ngIf="spinner"></app-spinner>
-        <button type="submit" class="abtn m-l-25 btn-solid-ablue">Save asset</button>
-      </div>
-    </form>
-  </div>
-</main>
+<!--<main class="main">-->
+  <!--<h1 class="center m-v-50">Event add</h1>-->
+  <!--<div class="m-w-6 block-center">-->
+
+    <!--<form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group">-->
+      <!--&lt;!&ndash;BASIC INFO&ndash;&gt;-->
+      <!--<h4 class="m-t-35 m-b-25">Basic information</h4>-->
+      <!--<div class="form-text m-b-15" [ngClass]="{error: error}">-->
+        <!--<label for="assetType">Asset type</label>-->
+        <!--<input formControlName="assetType" type="text" id="assetType" spellcheck="false" appInput>-->
+      <!--</div>-->
+      <!--<div class="form-text m-b-15" [ngClass]="{error: error}">-->
+        <!--<label for="name">Name</label>-->
+        <!--<input formControlName="name" type="text" id="name" spellcheck="false" appInput>-->
+      <!--</div>-->
+      <!--<div class="form-text m-b-15" [ngClass]="{error: error}">-->
+        <!--<label for="description">Description</label>-->
+        <!--<input formControlName="description" type="text" id="description" spellcheck="false" appInput>-->
+      <!--</div>-->
+
+      <!--&lt;!&ndash;IMAGES&ndash;&gt;-->
+      <!--<h6 class="m-t-35 m-b-25">Product images</h6>-->
+      <!--<div formArrayName="productImage">-->
+        <!--<div *ngFor="let productImageCtrl of eventForm.get('productImage').controls; let i = index"-->
+             <!--[formGroupName]="i" class="right">-->
+          <!--<div class="form-fields-coupled">-->
+            <!--<div class="form-text m-b-15 m-r-15 w-40" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'imageName' }}">Image name</label>-->
+              <!--<input formControlName="imageName" type="text" id="{{ i + 'imageName' }}" spellcheck="false" appInput>-->
+            <!--</div>-->
+            <!--<div class="form-text m-b-15 w-60" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'imageUrl' }}">Image url</label>-->
+              <!--<input formControlName="imageUrl" type="text" id="{{ i + 'imageUrl' }}" spellcheck="false" appInput>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<a class="color-greys&#45;&#45;base m-b-25 inline-block" (click)="onRemoveImageUrl(i)">Remove</a>-->
+        <!--</div>-->
+        <!--<a class="color-ablue&#45;&#45;base" (click)="onAddImageUrl()">Add image</a>-->
+      <!--</div>-->
+
+      <!--&lt;!&ndash;IDENTIFIERES&ndash;&gt;-->
+      <!--<h4 class="m-t-35 m-b-25">Identifiers</h4>-->
+      <!--<div formArrayName="identifiers">-->
+        <!--<div *ngFor="let identifierCtrl of eventForm.get('identifiers').controls; let i = index"-->
+              <!--[formGroupName]="i" class="right">-->
+          <!--<div class="form-fields-coupled">-->
+            <!--<div class="form-text m-b-15 m-r-15 w-20" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'identifier'}}">Identifier</label>-->
+              <!--<input formControlName="identifier" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>-->
+            <!--</div>-->
+            <!--<div class="form-text m-b-15 w-80" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'identifierValue'}}">Value</label>-->
+              <!--<input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<a class="color-greys&#45;&#45;base m-b-25 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>-->
+        <!--</div>-->
+        <!--<a class="color-ablue&#45;&#45;base" (click)="onAddIdentifier()">Add indentifier</a>-->
+      <!--</div>-->
+
+      <!--&lt;!&ndash;CUSTOM DATA&ndash;&gt;-->
+      <!--<h4 class="m-t-35 m-b-25">Custom data</h4>-->
+      <!--<div formArrayName="customData">-->
+        <!--<div *ngFor="let customDataCtrl of eventForm.get('customData').controls; let i = index"-->
+             <!--[formGroupName]="i" class="right">-->
+          <!--<div class="form-fields-coupled">-->
+            <!--<div class="form-text m-b-15 m-r-15 w-40" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'customDataKey'}}">Property name</label>-->
+              <!--<input formControlName="customDataKey" type="text" id="{{ i + 'customDataKey'}}" spellcheck="false" appInput>-->
+            <!--</div>-->
+            <!--<div class="form-text m-b-15 w-60" [ngClass]="{error: error}">-->
+              <!--<label for="{{ i + 'customDataValue'}}">Value</label>-->
+              <!--<input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>-->
+            <!--</div>-->
+          <!--</div>-->
+          <!--<a class="color-greys&#45;&#45;base m-b-25 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>-->
+        <!--</div>-->
+        <!--<a class="color-ablue&#45;&#45;base" (click)="onAddCustomKeyValue()">Add custom data pair</a>-->
+      <!--</div>-->
+
+      <!--&lt;!&ndash;CUSTOM DATA GROUPS&ndash;&gt;-->
+      <!--<h6 class="m-t-35 m-b-25">Custom data groups</h6>-->
+      <!--<div formArrayName="customDataGroups">-->
+        <!--<div *ngFor="let customDataGroupCtrl of eventForm.get('customDataGroups').controls; let i = index"-->
+             <!--[formGroupName]="i" class="right">-->
+          <!--<div class="form-text m-b-15" [ngClass]="{error: error}">-->
+            <!--<label for="{{ i + 'groupName'}}">Group name</label>-->
+            <!--<input formControlName="groupName" type="text" id="{{ i + 'groupName'}}" spellcheck="false" appInput>-->
+          <!--</div>-->
+          <!--<p class="m-t-35 m-b-25 left">Group data (key-value pairs)</p>-->
+          <!--&lt;!&ndash;start Array of key-value in a group&ndash;&gt;-->
+          <!--<div formArrayName="groupValue">-->
+            <!--<div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue').controls; let j = index"-->
+                 <!--[formGroupName]="i" class="right">-->
+              <!--<div class="form-fields-coupled">-->
+                <!--<div class="form-text m-b-15 m-r-15 w-40" [ngClass]="{error: error}">-->
+                  <!--<label for="{{ j + 'groupItemKey'}}">Property name</label>-->
+                  <!--<input formControlName="groupItemKey" type="text" id="{{ j + 'groupItemKey'}}" spellcheck="false" appInput>-->
+                <!--</div>-->
+                <!--<div class="form-text m-b-15 w-60" [ngClass]="{error: error}">-->
+                  <!--<label for="{{ j + 'groupItemValue'}}">Value</label>-->
+                  <!--<input formControlName="groupItemValue" type="text" id="{{ j + 'groupItemValue'}}" spellcheck="false" appInput>-->
+                <!--</div>-->
+              <!--</div>-->
+              <!--<a class="color-greys&#45;&#45;base m-b-25 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>-->
+            <!--</div>-->
+            <!--<a class="color-ablue&#45;&#45;base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>-->
+          <!--</div>-->
+          <!--&lt;!&ndash;end Array of key-value in a group&ndash;&gt;-->
+          <!--<a class="color-blacks&#45;&#45;base m-b-25 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>-->
+        <!--</div>-->
+        <!--<a class="color-ablue&#45;&#45;base" (click)="onAddCustomGroup()">Add new group</a>-->
+      <!--</div>-->
+
+      <!--<div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-25">-->
+        <!--<app-spinner *ngIf="spinner"></app-spinner>-->
+        <!--<button type="submit" class="abtn m-l-25 btn-solid-ablue">Create event</button>-->
+      <!--</div>-->
+    <!--</form>-->
+
+  <!--</div>-->
+<!--</main>-->

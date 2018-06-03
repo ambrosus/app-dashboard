@@ -8,6 +8,7 @@ import {ClickThisActiveDirective} from "./directives/click-this-active.directive
 import {RouterModule} from "@angular/router";
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
+import {AutocompleteinputDirective} from './directives/autocompleteinput.directive';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loa
     OncheckedDirective,
     ClickThisActiveDirective,
     SpinnerComponent,
-    AssetsLoaderIndicatorComponent
+    AssetsLoaderIndicatorComponent,
+    AutocompleteinputDirective
   ],
   declarations: [
     HeaderComponent,
@@ -31,7 +33,8 @@ import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loa
     OncheckedDirective,
     ClickThisActiveDirective,
     SpinnerComponent,
-    AssetsLoaderIndicatorComponent
+    AssetsLoaderIndicatorComponent,
+    AutocompleteinputDirective
     // For directives, components and pipes
     // that are to be used in any module/globally.
     // All of them need to be declared here + exported above
