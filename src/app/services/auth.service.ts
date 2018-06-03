@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Router} from "@angular/router";
-import {Subject} from "rxjs";
-import {environment} from '../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {environment} from 'environments/environment';
+import {StorageService} from './storage.service';
+import {Subject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,18 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router) { }
+    private router: Router,
+    private storage: StorageService) {
+  }
 
-  createToken(secret: string) {
+  isLoggedIn() {
+    const token = this.storage.get('token');
+    const address = this.storage.get('address');
+
+    return token && address;
+  }
+
+  getToken(secret: string) {
     const headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -29,24 +39,32 @@ export class AuthService {
     return this.http.post(environment.apiUrls.token, params, {headers});
   }
 
-  address() {
-    const token = localStorage.getItem('token');
-    const address = localStorage.getItem('address');
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `AMB_TOKEN ${token}`
-    };
-
-    const url = environment.apiUrls.address + address;
-
-    return this.http.get(url,{headers});
+  login(address: string, secret: string) {
+    return new Observable(observer => {
+      this.getToken(secret).subscribe(
+        (resp: any) => {
+          this.storage.set('token', resp.token);
+          // Address request
+          const url = `${environment.apiUrls.address}${address}`;
+          this.http.get(url).subscribe(
+            _resp => {
+              this.storage.set('address', address);
+              observer.next('success');
+            },
+            err => {
+              observer.error(err);
+            }
+          );
+        },
+        err => {
+          observer.error(err);
+        });
+    });
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('address');
+    this.storage.delete('token');
+    this.storage.delete('address');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
   }

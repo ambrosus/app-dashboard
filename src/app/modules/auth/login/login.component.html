@@ -5,7 +5,7 @@
   <p *ngIf="login" class="lead m-b-35 center">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
 
   <div *ngIf="login" class="m-w-4 block-center">
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="form-group">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group">
       <div class="form-text m-b-15" [ngClass]="{error: error}">
         <label for="address">Address</label>
         <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
@@ -26,7 +26,7 @@
   <p *ngIf="!login" class="lead m-b-35 center" style="font-size: 14px;">Fill in the form below<br>to send a request for access.</p>
 
   <div *ngIf="!login" class="m-w-4 block-center">
-    <form [formGroup]="signupForm" (ngSubmit)="onSignup()" class="form-group">
+    <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group">
       <div class="form-text m-b-15" [ngClass]="{error: serror}">
         <label for="fullname">Full name *</label>
         <input formControlName="fullname" type="text" name="fullname" id="fullname" spellcheck="false" appInput>

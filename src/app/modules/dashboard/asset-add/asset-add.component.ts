@@ -19,6 +19,7 @@ export class AssetAddComponent implements OnInit {
     'DATAMATRIX', 'RFID', 'NFC', 'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI',
     'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'
   ];
+  json: string;
 
   constructor(private auth: AuthService,
               private assets: AssetsService,
@@ -213,8 +214,9 @@ export class AssetAddComponent implements OnInit {
     }
 
     asset['content']['data'].push(basicAndCustom);
-    console.log(asset);
 
-    const json = JSON.stringify(asset);
+    const json = JSON.stringify(asset, null, 2);
+
+    this.json = json;
   }
 }

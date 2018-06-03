@@ -2,6 +2,7 @@ import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "app/services/auth.service";
 import {Router} from "@angular/router";
+import {StorageService} from 'app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -20,8 +21,6 @@ export class LoginComponent implements OnInit {
   sspinner = false;
   weakPassword = false;
 
-  login = true;
-
   // Custom validator for strong password
   strongPassword(control: FormControl): {[s: string]: boolean} {
     const hasNumber = /\d/.test(control.value);
@@ -37,7 +36,8 @@ export class LoginComponent implements OnInit {
   }
 
   constructor(private auth: AuthService,
-              private router: Router) {
+              private router: Router,
+              private storage: StorageService) {
     this.loginForm = new FormGroup({
       'address': new FormControl(null, [Validators.required]),
       'secret': new FormControl(null, [Validators.required])
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     this.signupForm = new FormGroup({
       'fullname': new FormControl(null, [Validators.required]),
       'email': new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, [Validators.required, this.strongPassword]),
+      'password': new FormControl(null, [this.strongPassword]),
       'country': new FormControl(null, [Validators.required]),
       'company': new FormControl(null, []),
       'reason': new FormControl(null, []),
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() { }
 
-  onSignup() {
+  signup() {
     const f = this.signupForm.get('fullname').value;
     const e = this.signupForm.get('email').value;
     const p = this.signupForm.get('password').value;
@@ -85,48 +85,29 @@ export class LoginComponent implements OnInit {
 
   }
 
-  onLogin() {
-    const a = this.loginForm.get('address').value;
-    const s = this.loginForm.get('secret').value;
+  login() {
+    const address = this.loginForm.get('address').value;
+    const secret = this.loginForm.get('secret').value;
 
-    localStorage.setItem('address', a);
-
-    if (!this.loginForm.valid) {
-      this.error = true;
-    } else {
-      this.error = false;
-    }
-
-    if (!this.error) {
+    if (this.loginForm.valid) {
       this.spinner = true;
-      // Get the token
-      this.auth.createToken(s).subscribe(
-        (resp: any) => {
-          localStorage.setItem('token', resp.token);
-          this.error = false;
-          // Check if the address is valid
-          this.auth.address().subscribe(
-            (_resp: any) => {
-              this.error = false;
-              this.spinner = false;
-              this.auth.loggedin.next(true);
-              this.router.navigate(['/assets']);
-            },
-            (err: any) => {
-              this.error = true;
-              this.spinner = false;
-              this.loginForm.reset();
-              this.auth.cleanForm.next(true);
-            }
-          );
+      this.error = false;
+
+      this.auth.login(address, secret).subscribe(
+        resp => {
+          this.spinner = false;
+          this.auth.loggedin.next(true);
+          this.router.navigate(['/assets']);
         },
-        (err: any) => {
+        err => {
+          console.log(err);
           this.error = true;
           this.spinner = false;
-          this.loginForm.reset();
           this.auth.cleanForm.next(true);
         }
       );
+    } else {
+      this.error = true;
     }
   }
 
