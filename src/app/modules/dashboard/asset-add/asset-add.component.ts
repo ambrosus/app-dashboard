@@ -14,7 +14,11 @@ export class AssetAddComponent implements OnInit {
   assetForm: FormGroup;
   error = false;
   spinner = false;
-  urlPattern = '/https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)/g';
+  identifiersAutocomplete = [
+    'UPCE', 'UPC12', 'EAN8', 'EAN13', 'CODE 39', 'CODE 128', 'ITF', 'QR',
+    'DATAMATRIX', 'RFID', 'NFC', 'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI',
+    'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'
+  ];
 
   constructor(private auth: AuthService,
               private assets: AssetsService,
@@ -137,6 +141,7 @@ export class AssetAddComponent implements OnInit {
   }
 
   onSave() {
+    console.log(this.assetForm);
     if (!this.assetForm.valid) {
       this.error = true;
       console.log(this.assetForm.errors);

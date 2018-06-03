@@ -2,7 +2,7 @@
   <h1 class="center m-v-50">Create asset</h1>
   <div class="m-w-6 block-center">
 
-    <form [formGroup]="assetForm" (ngSubmit)="onSave()" class="form-group">
+    <form [formGroup]="assetForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
       <!--BASIC INFO-->
       <h4 class="m-t-35 m-b-25">Basic information</h4>
       <div class="form-text m-b-15" [ngClass]="{error: error}">
@@ -46,7 +46,7 @@
           <div class="form-fields-coupled">
             <div class="form-text m-b-15 m-r-15 w-20">
               <label for="{{ i + 'identifier'}}">Identifier</label>
-              <input formControlName="identifier" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+              <input formControlName="identifier" [appAutocompleteinput]="identifiersAutocomplete" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
             </div>
             <div class="form-text m-b-15 w-80">
               <label for="{{ i + 'identifierValue'}}">Value</label>
