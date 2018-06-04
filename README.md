@@ -77,9 +77,16 @@ In other modules we just import this module, and we can use it's shared componen
 3. **Services**
 Have auth and data-storage service.
 + Auth service handles authentication of the user and its state.
-+ Data storage service handles interaction with Ambrosus API, and its app state.
+1. Main 2 methods are login() and logout(). login() takes in address and secret. First it creates token, if response is 200, then it checks the validity of the address, and only then is the user logged in, any errors in between, login fails. Also, this method returns an observable, that login component subscribes to on login form submit.
+2. logout() cleans the address and token from localStorage if they exist and redirects user to /login.
+3. isLoggedIn() method checks whether token and address exists in localStorage and returns a boolean. 
++ Data storage service handles interaction with Ambrosus API, and its app state. \
+Data storage is a wrap for any localStorage interaction + for POST requests to the API.
++ Authentication guards. \
+They resolve true or false, based on isLoggedIn() return in auth service.
 4. **Interceptors**
-Handle interception of http requests. Useful for initiating and stopping youtube like loader indicator at the top, as an example.
+Handle interception of http requests.\
+Current interceptor adds headers to any request other then one for createToken (method in auth service), and adds the amb_token from localStorage in the headers.
 5. **Modules**
 This one is very important as this folder holds all other modules (features) of the entire app.
 ### Modular strategy, lazy loading, preloading
