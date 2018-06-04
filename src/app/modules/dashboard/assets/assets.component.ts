@@ -17,7 +17,7 @@ export class AssetsComponent implements OnInit {
     private renderer: Renderer2) { }
 
   ngOnInit() {
-    this.assetsService.getEventsInfo();
+    this.assetsService.getAssetsAll();
     this.assetsService.getEventsInfoSuccess.subscribe(
       (resp: any) => {
         console.log(resp);

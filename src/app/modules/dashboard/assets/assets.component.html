@@ -36,13 +36,13 @@
       </label>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title">Bundle ID</p>
-        <p class="assets-list__column-content">{{ asset.metadata.bundleId }}</p>
+        <p class="assets-list__column-title">Asset ID</p>
+        <p class="assets-list__column-content">{{ asset.assetId }}</p>
       </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title">Timestamp</p>
-        <p class="assets-list__column-content">{{ asset.content.idData.timestamp | date:'short'}}</p>
+        <p class="assets-list__column-content">{{ asset.content.idData.timestamp * 1000 | date:'short'}}</p>
       </div>
     </div>
   </div>

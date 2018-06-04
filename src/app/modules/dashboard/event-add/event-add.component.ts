@@ -189,7 +189,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
     // asset.content.idData
     asset['content']['idData'] = {};
-    asset['content']['idData']['assetId'] = 'assetId';
+    asset['content']['idData']['assetId'] = assetId;
     asset['content']['idData']['createdBy'] = this.storage.get('address');
     asset['content']['idData']['accessLevel'] = 0;
     asset['content']['idData']['timestamp'] = new Date().getTime() / 1000;
