@@ -5,11 +5,11 @@
 export const environment = {
   production: false,
   apiUrls: {
-    token: 'https://gateway-test.ambrosus.com/token',
-    address: 'https://gateway-test.ambrosus.com/accounts/',
-    assets: 'https://gateway-test.ambrosus.com/assets',
-    createAsset: 'https://gateway-test.ambrosus.com/assets',
-    createEvent: 'https://gateway-test.ambrosus.com/assets/'
+    token: 'https://gateway-dev.ambrosus.com/token',
+    address: 'https://gateway-dev.ambrosus.com/accounts/',
+    assets: 'https://gateway-dev.ambrosus.com/assets',
+    createAsset: 'https://gateway-dev.ambrosus.com/assets',
+    createEvent: 'https://gateway-dev.ambrosus.com/assets/'
   }
 };
 
