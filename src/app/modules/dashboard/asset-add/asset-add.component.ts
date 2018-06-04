@@ -1,9 +1,9 @@
 import { StorageService } from 'app/services/storage.service';
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from 'app/services/auth.service';
-import {AssetsService} from 'app/services/assets.service';
-import {Router} from '@angular/router';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'app/services/auth.service';
+import { AssetsService } from 'app/services/assets.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-add',
@@ -23,9 +23,9 @@ export class AssetAddComponent implements OnInit {
   json: string;
 
   constructor(private auth: AuthService,
-              private assets: AssetsService,
-              private router: Router,
-              private storage: StorageService) {
+    private assets: AssetsService,
+    private router: Router,
+    private storage: StorageService) {
     this.initForm();
   }
 
@@ -161,7 +161,7 @@ export class AssetAddComponent implements OnInit {
       this.storage.createAsset().subscribe(
         (resp: any) => {
           console.log('resp ', resp);
-          const body = this.generateJSON();
+          const body = this.generateJSON(resp.assetId);
           this.storage.createEvent(body, resp.assetId).subscribe(
             _resp => {
               console.log('resp ', resp);
@@ -181,13 +181,13 @@ export class AssetAddComponent implements OnInit {
     }
   }
 
-  private generateJSON() {
+  private generateJSON(assetId: string) {
     const asset = {};
     asset['content'] = {};
 
     // asset.content.idData
     asset['content']['idData'] = {};
-    asset['content']['idData']['assetId'] = 'Asset id from the response';
+    asset['content']['idData']['assetId'] = assetId;
     asset['content']['idData']['createdBy'] = this.storage.get('address');
     asset['content']['idData']['accessLevel'] = 0;
     asset['content']['idData']['timestamp'] = new Date().getTime() / 1000;

@@ -1,8 +1,8 @@
-import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from 'app/services/auth.service';
-import {AssetsService} from 'app/services/assets.service';
-import {Router} from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'app/services/auth.service';
+import { AssetsService } from 'app/services/assets.service';
+import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 
 @Component({
@@ -23,9 +23,9 @@ export class EventAddComponent implements OnInit, OnDestroy {
   json: string;
 
   constructor(private auth: AuthService,
-              private assets: AssetsService,
-              private router: Router,
-              private storage: StorageService) {
+    private assets: AssetsService,
+    private router: Router,
+    private storage: StorageService) {
     this.initForm();
   }
 
@@ -167,8 +167,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
       // create event for each selected asset
       const selectedAssets = this.assets.getSelectedAssets();
-      const body = this.generateJSON();
       for (const assetId of selectedAssets) {
+        const body = this.generateJSON(assetId);
         this.storage.createEvent(body, assetId).subscribe(
           resp => {
             console.log('resp ', resp);
@@ -183,13 +183,13 @@ export class EventAddComponent implements OnInit, OnDestroy {
     }
   }
 
-  private generateJSON() {
+  private generateJSON(assetId: string) {
     const asset = {};
     asset['content'] = {};
 
     // asset.content.idData
     asset['content']['idData'] = {};
-    asset['content']['idData']['assetId'] = 'Asset id from the response';
+    asset['content']['idData']['assetId'] = 'assetId';
     asset['content']['idData']['createdBy'] = this.storage.get('address');
     asset['content']['idData']['accessLevel'] = 0;
     asset['content']['idData']['timestamp'] = new Date().getTime() / 1000;
