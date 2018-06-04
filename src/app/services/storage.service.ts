@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -27,9 +27,7 @@ export class StorageService {
 
   // API POST: create event
   createEvent(body, assetId: string) {
-    const params = {
-      body
-    };
+    const params = body;
     return this.http.post(`${environment.apiUrls.createEvent}${assetId}/events`, params);
   }
 
