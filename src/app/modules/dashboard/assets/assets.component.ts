@@ -1,5 +1,5 @@
-import {Component, ElementRef, OnInit, Renderer2, ViewEncapsulation} from '@angular/core';
-import {AssetsService} from 'app/services/assets.service';
+import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import { AssetsService } from 'app/services/assets.service';
 
 @Component({
   selector: 'app-assets',
@@ -8,17 +8,28 @@ import {AssetsService} from 'app/services/assets.service';
   encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit {
-  assets: any;
+  eventsInfo: any;
+  noEvents = false;
+  error = false;
 
   constructor(private assetsService: AssetsService,
-              private el: ElementRef,
-              private renderer: Renderer2) { }
+    private el: ElementRef,
+    private renderer: Renderer2) { }
 
   ngOnInit() {
-    this.assetsService.getAll();
-    this.assetsService.getAssetsSuccess.subscribe(
+    this.assetsService.getEventsInfo();
+    this.assetsService.getEventsInfoSuccess.subscribe(
       (resp: any) => {
-        this.assets = resp;
+        console.log(resp);
+        this.eventsInfo = resp;
+        if (resp.resultCount === 0) {
+          this.noEvents = true;
+        }
+      }
+    );
+    this.assetsService.getEventsInfoError.subscribe(
+      resp => {
+        this.error = true;
       }
     );
   }
