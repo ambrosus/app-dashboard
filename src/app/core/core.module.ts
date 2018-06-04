@@ -4,7 +4,7 @@ import {SharedModule} from "app/shared/shared.module";
 import {AppRoutingModule} from "app/app-routing.module";
 import {AuthService} from "app/services/auth.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {LoaderInterceptor} from "app/interceptors/loader-interceptor.service";
+import {InterceptorService} from "app/interceptors/interceptor.service";
 
 @NgModule({
   imports: [
@@ -19,11 +19,9 @@ import {LoaderInterceptor} from "app/interceptors/loader-interceptor.service";
   ],
   providers: [
     AuthService,
-    // Interceptor is set as a template
-    // doesn't do anything right now
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: LoaderInterceptor,
+      useClass: InterceptorService,
       multi: true
     }
   ]
