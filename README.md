@@ -81,7 +81,7 @@ Have auth and data-storage service.
 2. logout() cleans the address and token from localStorage if they exist and redirects user to /login.
 3. isLoggedIn() method checks whether token and address exists in localStorage and returns a boolean. 
 + **Data storage** \
-Data storage is a wrap for any localStorage interaction + for POST requests to the API.<br>
+Data storage is a wrap for any localStorage interaction + for POST requests to the API.
 + **Authentication guards** \
 They resolve true or false, based on isLoggedIn() return in auth service.
 4. **Interceptors**
