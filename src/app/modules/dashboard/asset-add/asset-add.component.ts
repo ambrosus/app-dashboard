@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from "app/services/auth.service";
+import {AuthService} from 'app/services/auth.service';
 import {AssetsService} from 'app/services/assets.service';
 import {Router} from '@angular/router';
 
@@ -82,6 +82,7 @@ export class AssetAddComponent implements OnInit {
       })
     );
   }
+
   onRemoveImageUrl(index: number) {
     (<FormArray>this.assetForm.get('productImage')).removeAt(index);
   }
@@ -95,6 +96,7 @@ export class AssetAddComponent implements OnInit {
       })
     );
   }
+
   onRemoveIdentifier(index: number) {
     (<FormArray>this.assetForm.get('identifiers')).removeAt(index);
   }
@@ -108,6 +110,7 @@ export class AssetAddComponent implements OnInit {
       })
     );
   }
+
   onRemoveCustomKeyValue(index: number) {
     (<FormArray>this.assetForm.get('customData')).removeAt(index);
   }
@@ -127,6 +130,7 @@ export class AssetAddComponent implements OnInit {
       })
     );
   }
+
   onRemoveCustomGroup(index: number) {
     (<FormArray>this.assetForm.get('customDataGroups')).removeAt(index);
   }
@@ -141,22 +145,20 @@ export class AssetAddComponent implements OnInit {
       })
     );
   }
+
   onRemoveCustomGroupKeyValue(i, j) {
     const groupsArray = this.assetForm.get('customDataGroups') as FormArray;
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
   onSave() {
-    if (!this.assetForm.valid) {
-      this.error = true;
-      return false;
-    }
-
     if (this.assetForm.valid) {
       this.error = false;
 
       // Generate JSON
       this.generateJSON();
+    } else {
+      this.error = true;
     }
   }
 
@@ -178,7 +180,8 @@ export class AssetAddComponent implements OnInit {
     identifiers['type'] = 'ambrosus.asset.identifier';
     identifiers['identifiers'] = {};
     for (const item of this.assetForm.get('identifiers')['controls']) {
-      identifiers['identifiers'][item.value.identifier] = item.value.identifierValue;
+      identifiers['identifiers'][item.value.identifier] = [];
+      identifiers['identifiers'][item.value.identifier].push(item.value.identifierValue);
     }
 
     asset['content']['data'].push(identifiers);

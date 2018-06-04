@@ -1,10 +1,10 @@
 
 <div class="wrapper">
   <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="block-center p-t-25" style="max-width: 200px;">
-  <h1 *ngIf="login" class="m-t-75 m-b-25 color-blacks--base center">Welcome</h1>
-  <p *ngIf="login" class="lead m-b-35 center">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
+  <h1 *ngIf="toggleLogin" class="m-t-75 m-b-25 color-blacks--base center">Welcome</h1>
+  <p *ngIf="toggleLogin" class="lead m-b-35 center">Please provide your address and secret<br>to enter your dashboard. Thank you!</p>
 
-  <div *ngIf="login" class="m-w-4 block-center">
+  <div *ngIf="toggleLogin" class="m-w-4 block-center">
     <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group">
       <div class="form-text m-b-15" [ngClass]="{error: error}">
         <label for="address">Address</label>
@@ -22,10 +22,10 @@
   </div>
 
   <!--Sign up form-->
-  <h2 *ngIf="!login" class="m-t-75 m-b-25 color-blacks--base center" style="font-size: 24px;">Sign up</h2>
-  <p *ngIf="!login" class="lead m-b-35 center" style="font-size: 14px;">Fill in the form below<br>to send a request for access.</p>
+  <h2 *ngIf="!toggleLogin" class="m-t-75 m-b-25 color-blacks--base center" style="font-size: 24px;">Sign up</h2>
+  <p *ngIf="!toggleLogin" class="lead m-b-35 center" style="font-size: 14px;">Fill in the form below<br>to send a request for access.</p>
 
-  <div *ngIf="!login" class="m-w-4 block-center">
+  <div *ngIf="!toggleLogin" class="m-w-4 block-center">
     <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group">
       <div class="form-text m-b-15" [ngClass]="{error: serror}">
         <label for="fullname">Full name *</label>
@@ -67,6 +67,6 @@
   </div>
 
   <p class="center m-b-35" style="cursor: pointer;">
-    <span class="lead" (click)="login=true">Login</span> / <span class="lead" (click)="login=false" >Sign up</span>
+    <span class="lead" (click)="toggleLogin=true">Login</span> / <span class="lead" (click)="toggleLogin=false" >Sign up</span>
   </p>
 </div>

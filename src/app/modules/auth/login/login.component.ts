@@ -20,6 +20,8 @@ export class LoginComponent implements OnInit {
   serror = false;
   sspinner = false;
   weakPassword = false;
+  // toggle login / signup
+  toggleLogin = true;
 
   // Custom validator for strong password
   strongPassword(control: FormControl): {[s: string]: boolean} {

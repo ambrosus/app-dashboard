@@ -10,13 +10,6 @@ export class EventComponent implements OnInit {
 
   constructor(private route: ActivatedRoute) { }
 
-  ngOnInit() {
-    this.route.params.subscribe(
-      params => {
-        console.log('Asset id:', params.assetid);
-        console.log('Event id:', params.eventid);
-      }
-    );
-  }
+  ngOnInit() {}
 
 }
