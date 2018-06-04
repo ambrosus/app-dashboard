@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import {HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import {StorageService} from '../services/storage.service';
-import {environment} from 'environments/environment';
+import { StorageService } from '../services/storage.service';
+import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,7 @@ export class InterceptorService implements HttpInterceptor {
       request = req.clone({
         headers: new HttpHeaders({
           'Accept': 'application/json',
-          'Content-Type':  'application/json',
+          'Content-Type': 'application/json',
           'Authorization': `AMB_TOKEN ${token}`
         })
       });
@@ -38,11 +38,13 @@ export class InterceptorService implements HttpInterceptor {
       request = req.clone({
         headers: new HttpHeaders({
           'Accept': 'application/json',
-          'Content-Type':  'application/json',
+          'Content-Type': 'application/json',
           'Authorization': `AMB ${secret}`
         })
       });
     }
+
+    console.log(request);
 
     return next.handle(request).pipe(
       tap(

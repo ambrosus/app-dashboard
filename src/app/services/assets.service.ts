@@ -38,6 +38,22 @@ export class AssetsService {
     return this.http.post(`${environment.apiUrls.createEvent}${assetId}/events`, params);
   }
 
+  getAssetsAll() {
+    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get('address')}`;
+    return this.http.get(url).
+      subscribe(
+        (resp: any) => {
+          this.assets = resp;
+          const assetsCopy = Object.assign({}, this.assets);
+          this.getEventsInfoSuccess.next(assetsCopy);
+        },
+        (err: any) => {
+          this.getEventsInfoError.next('error');
+          console.log('err ', err);
+        }
+      );
+  }
+
   getEventsInfo() {
     const url = `${environment.apiUrls.getEvents}?createdBy=${this.storage.get('address')}&data=data%5Btype%5D%3Dambrosus.asset.info`;
     return this.http.get(url).
