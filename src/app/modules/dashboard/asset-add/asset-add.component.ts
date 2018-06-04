@@ -1,3 +1,4 @@
+import { StorageService } from 'app/services/storage.service';
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from 'app/services/auth.service';
@@ -23,7 +24,8 @@ export class AssetAddComponent implements OnInit {
 
   constructor(private auth: AuthService,
               private assets: AssetsService,
-              private router: Router) {
+              private router: Router,
+              private storage: StorageService) {
     this.initForm();
   }
 
@@ -155,8 +157,25 @@ export class AssetAddComponent implements OnInit {
     if (this.assetForm.valid) {
       this.error = false;
 
-      // Generate JSON
-      this.generateJSON();
+      // create asset
+      this.storage.createAsset().subscribe(
+        (resp: any) => {
+          console.log('resp ', resp);
+          const body = this.generateJSON();
+          this.storage.createEvent(body, resp.assetId).subscribe(
+            _resp => {
+              console.log('resp ', resp);
+            },
+            err => {
+              console.log('err ', err);
+            }
+          );
+        },
+        err => {
+          console.log('err ', err);
+          this.error = true;
+        }
+      );
     } else {
       this.error = true;
     }
@@ -169,9 +188,9 @@ export class AssetAddComponent implements OnInit {
     // asset.content.idData
     asset['content']['idData'] = {};
     asset['content']['idData']['assetId'] = 'Asset id from the response';
-    asset['content']['idData']['createdBy'] = localStorage.getItem('address');
+    asset['content']['idData']['createdBy'] = this.storage.get('address');
     asset['content']['idData']['accessLevel'] = 0;
-    asset['content']['idData']['timestamp'] = new Date().getTime();
+    asset['content']['idData']['timestamp'] = new Date().getTime() / 1000;
 
     // asset.content.data
     asset['content']['data'] = [];
@@ -220,6 +239,7 @@ export class AssetAddComponent implements OnInit {
 
     const json = JSON.stringify(asset, null, 2);
 
-    this.json = json;
+    return json;
+    // this.json = json;
   }
 }

@@ -3,6 +3,7 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from 'app/services/auth.service';
 import {AssetsService} from 'app/services/assets.service';
 import {Router} from '@angular/router';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-event-add',
@@ -23,7 +24,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
   constructor(private auth: AuthService,
               private assets: AssetsService,
-              private router: Router) {
+              private router: Router,
+              private storage: StorageService) {
     this.initForm();
   }
 
@@ -163,8 +165,19 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (this.eventForm.valid) {
       this.error = false;
 
-      // Generate JSON
-      this.generateJSON();
+      // create event for each selected asset
+      const selectedAssets = this.assets.getSelectedAssets();
+      const body = this.generateJSON();
+      for (const assetId of selectedAssets) {
+        this.storage.createEvent(body, assetId).subscribe(
+          resp => {
+            console.log('resp ', resp);
+          },
+          err => {
+            console.log('err ', err);
+          }
+        );
+      }
     } else {
       this.error = true;
     }
@@ -177,9 +190,9 @@ export class EventAddComponent implements OnInit, OnDestroy {
     // asset.content.idData
     asset['content']['idData'] = {};
     asset['content']['idData']['assetId'] = 'Asset id from the response';
-    asset['content']['idData']['createdBy'] = localStorage.getItem('address');
+    asset['content']['idData']['createdBy'] = this.storage.get('address');
     asset['content']['idData']['accessLevel'] = 0;
-    asset['content']['idData']['timestamp'] = new Date().getTime();
+    asset['content']['idData']['timestamp'] = new Date().getTime() / 1000;
 
     // asset.content.data
     asset['content']['data'] = [];
@@ -224,6 +237,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
     const json = JSON.stringify(asset, null, 2);
 
-    this.json = json;
+    return json;
+    // this.json = json;
   }
 }

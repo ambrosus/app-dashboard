@@ -25,18 +25,15 @@ export class AuthService {
   }
 
   getToken(secret: string) {
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `AMB ${secret}`
-    };
     const params = {
       'validUntil': 1600000000
     };
-    return this.http.post(environment.apiUrls.token, params, {headers});
+    return this.http.post(environment.apiUrls.token, params);
   }
 
   login(address: string, secret: string) {
+    this.storage.set('secret', secret);
+    this.storage.set('address', address);
     return new Observable(observer => {
       this.getToken(secret).subscribe(
         (resp: any) => {
@@ -49,11 +46,13 @@ export class AuthService {
               observer.next('success');
             },
             err => {
+              this.storage.delete('address');
               observer.error(err);
             }
           );
         },
         err => {
+          this.storage.delete('secret');
           observer.error(err);
         });
     });
@@ -62,6 +61,7 @@ export class AuthService {
   logout() {
     this.storage.delete('token');
     this.storage.delete('address');
+    this.storage.delete('secret');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
   }
