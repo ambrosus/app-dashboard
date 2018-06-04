@@ -8,7 +8,7 @@ import {environment} from 'environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class LoaderInterceptor implements HttpInterceptor {
+export class InterceptorService implements HttpInterceptor {
 
   // HttpCall interceptor
   // to start and stop youtube like, top loader indicator
@@ -21,15 +21,25 @@ export class LoaderInterceptor implements HttpInterceptor {
     // start loader
     // this.loader.start();
     const token = this.storage.get('token');
+    const secret = this.storage.get('secret');
+    const address = this.storage.get('address');
 
     let request: HttpRequest<any> = req.clone();
 
-    if (req.url !== environment.apiUrls.token) {
+    if (req.url === `${environment.apiUrls.address}${address}`) {
       request = req.clone({
         headers: new HttpHeaders({
           'Accept': 'application/json',
           'Content-Type':  'application/json',
           'Authorization': `AMB_TOKEN ${token}`
+        })
+      });
+    } else {
+      request = req.clone({
+        headers: new HttpHeaders({
+          'Accept': 'application/json',
+          'Content-Type':  'application/json',
+          'Authorization': `AMB ${secret}`
         })
       });
     }
