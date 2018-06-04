@@ -169,7 +169,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
       const selectedAssets = this.assets.getSelectedAssets();
       for (const assetId of selectedAssets) {
         const body = this.generateJSON(assetId);
-        this.storage.createEvent(body, assetId).subscribe(
+        this.assets.createEvent(body, assetId).subscribe(
           resp => {
             console.log('resp ', resp);
           },

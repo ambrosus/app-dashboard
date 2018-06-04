@@ -1,7 +1,8 @@
+import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import {Subject} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
+import { Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,26 +10,48 @@ import {environment} from '../../environments/environment';
 export class AssetsService {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
-  getAssetsSuccess: Subject<any> = new Subject();
-  getAssetsError: Subject<any> = new Subject();
+  getEventsInfoSuccess: Subject<any> = new Subject();
+  getEventsInfoError: Subject<any> = new Subject();
   assets: {};
   inputChanged = new Subject();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private storage: StorageService) { }
 
-  getAll() {
-    return this.http.get(`${environment.apiUrls.assets}`).
-    subscribe(
-      (resp: any) => {
-        this.assets = resp;
-        const assetsCopy = Object.assign({}, this.assets);
-        this.getAssetsSuccess.next(assetsCopy);
-      },
-      (err: any) => {
-        this.getAssetsError.next('Error');
-        console.log('err ', err);
+  // API POST: create asset
+  createAsset() {
+    const params = {
+      'content': {
+        'idData': {
+          'createdBy': this.storage.get('address'),
+          'timestamp': new Date().getTime() / 1000,
+          'sequenceNumber': 3
+        }
       }
-    );
+    };
+    return this.http.post(environment.apiUrls.createAsset, params);
+  }
+
+  // API POST: create event
+  createEvent(body, assetId: string) {
+    const params = body;
+    return this.http.post(`${environment.apiUrls.createEvent}${assetId}/events`, params);
+  }
+
+  getEventsInfo() {
+    const url = `${environment.apiUrls.getEvents}?createdBy=${this.storage.get('address')}&data=data%5Btype%5D%3Dambrosus.asset.info`;
+    return this.http.get(url).
+      subscribe(
+        (resp: any) => {
+          this.assets = resp;
+          const assetsCopy = Object.assign({}, this.assets);
+          this.getEventsInfoSuccess.next(assetsCopy);
+        },
+        (err: any) => {
+          this.getEventsInfoError.next('error');
+          console.log('err ', err);
+        }
+      );
   }
 
   selectAsset(assetId: string) {
