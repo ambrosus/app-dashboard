@@ -158,11 +158,11 @@ export class AssetAddComponent implements OnInit {
       this.error = false;
 
       // create asset
-      this.storage.createAsset().subscribe(
+      this.assets.createAsset().subscribe(
         (resp: any) => {
           console.log('resp ', resp);
           const body = this.generateJSON(resp.assetId);
-          this.storage.createEvent(body, resp.assetId).subscribe(
+          this.assets.createEvent(body, resp.assetId).subscribe(
             _resp => {
               console.log('resp ', resp);
             },
