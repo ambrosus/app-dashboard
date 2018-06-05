@@ -96,7 +96,8 @@
   text-align: center;
   line-height: 40px;
   position: relative;
-  user-select: none;
+  user-select: none;    
+  display: inline-block;
 
   &:hover {
     opacity: .85; }
