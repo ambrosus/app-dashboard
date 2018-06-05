@@ -4,8 +4,7 @@
 
     <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
       <div formArrayName="form">
-        <div class="event-object" *ngFor="let objectCtrl of eventForm.get('form')['controls']; let objectIndex = index" [formGroupName]="objectIndex"
-          class="left">
+        <div class="event-object left" *ngFor="let objectCtrl of eventForm.get('form')['controls']; let objectIndex = index" [formGroupName]="objectIndex">
           <!--Data array object-->
           <h4 class="m-t-35 m-b-25">Event object</h4>
           <div class="form-text m-b-15" [ngClass]="{error: error}">
@@ -203,7 +202,7 @@
           <a class="color-blacks--base font-weight--bold m-v-25 inline-block" (click)="remove(eventForm.get('form'), objectIndex)">Remove event object</a>
         </div>
         <!--Data array object [END]-->
-        <a class="abtn btn-solid-agreen m-v-25" (click)="addEventObject(eventForm.get('form'))">Add event object</a>
+        <a class="abtn btn-solid-agreen m-v-25" (click)="addEventObject(eventForm.get('form')['controls'])">Add event object</a>
       </div>
 
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-25">

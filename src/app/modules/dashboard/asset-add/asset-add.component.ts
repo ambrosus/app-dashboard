@@ -216,26 +216,6 @@ export class AssetAddComponent implements OnInit {
     );
   }
 
-  // Location
-  /* addLocation(array: FormArray) {
-    array.push(
-      new FormGroup({
-        'location': new FormGroup({
-          'typeLocation': new FormControl(),
-          'geometry': new FormGroup({
-            'typeGeometry': new FormControl(),
-            'coordinates': new FormArray([
-              new FormGroup({
-                'latitude': new FormControl(),
-                'longitude': new FormControl()
-              })
-            ])
-          })
-        })
-      })
-    );
-  } */
-
   onSave() {
     if (this.assetForm.valid) {
       this.error = false;

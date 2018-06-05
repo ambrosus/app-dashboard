@@ -38,10 +38,10 @@ export class EventAddComponent implements OnInit, OnDestroy {
         resp.control.setValue(resp.value);
       }
     );
-    /* if (this.assets.getSelectedAssets().length === 0) {
+    if (this.assets.getSelectedAssets().length === 0) {
       alert(`You didn\'t select any assets. Please do so on ${location.hostname}/assets`);
       this.router.navigate(['/assets']);
-    } */
+    }
   }
 
   ngOnDestroy() {
@@ -50,79 +50,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
   private initForm() {
     this.eventForm = new FormGroup({
-      'form': new FormArray([
-        /* new FormGroup({
-          'eventObjectType': new FormControl('ambrosus.asset.info', [Validators.required]),
-          'data': new FormArray([
-            new FormGroup({
-              'keyValue': new FormArray([
-                new FormGroup({
-                  'keyValueKey': new FormControl(),
-                  'keyValueValue': new FormControl()
-                })
-              ]),
-            }),
-            new FormGroup({
-              'groupKeyValue': new FormArray([
-                new FormGroup({
-                  'groupKeyValueTitle': new FormControl(),
-                  'groupKeyValueObject': new FormArray([
-                    new FormGroup({
-                      'groupKeyValueItemKey': new FormControl(),
-                      'groupKeyValueItemValue': new FormControl()
-                    })
-                  ])
-                })
-              ])
-            }),
-            new FormGroup({
-              'groupKeyObjectKeyValue': new FormArray([
-                new FormGroup({
-                  'groupKeyObjectKeyValueTitle': new FormControl(),
-                  'groupKeyObjectKeyValueObject': new FormArray([
-                    new FormGroup({
-                      'groupKeyObjectKeyValueItemTitle': new FormControl(),
-                      'groupKeyObjectKeyValueItemObject': new FormArray([
-                        new FormGroup({
-                          'groupKeyObjectKeyValueItemKey': new FormControl(),
-                          'groupKeyObjectKeyValueItemValue': new FormControl()
-                        })
-                      ])
-                    })
-                  ])
-                })
-              ])
-            }),
-            new FormGroup({
-              'location': new FormGroup({
-                'typeLocation': new FormControl(),
-                'geometry': new FormGroup({
-                  'typeGeometry': new FormControl(),
-                  'coordinates': new FormArray([
-                    new FormGroup({
-                      'latitude': new FormControl(),
-                      'longitude': new FormControl()
-                    })
-                  ])
-                })
-              })
-            })
-          ])
-        }),
-        new FormGroup({
-          'eventObjectType': new FormControl('ambrosus.asset.identifier', [Validators.required]),
-          'data': new FormArray([
-            new FormGroup({
-              'identifiers': new FormArray([
-                new FormGroup({
-                  'identifierType': new FormControl(),
-                  'identifierValue': new FormControl()
-                })
-              ])
-            })
-          ])
-        }) */
-      ])
+      'form': new FormArray([])
     });
   }
 
@@ -314,18 +242,18 @@ export class EventAddComponent implements OnInit, OnDestroy {
       this.error = false;
 
       // create event for each selected asset
-      /*  const selectedAssets = this.assets.getSelectedAssets();
-       for (const assetId of selectedAssets) {
-         const body = this.generateJSON(assetId);
-         this.assets.createEvent(body, assetId).subscribe(
-           resp => {
-             console.log('resp ', resp);
-           },
-           err => {
-             console.log('err ', err);
-           }
-         );
-       } */
+      const selectedAssets = this.assets.getSelectedAssets();
+      for (const assetId of selectedAssets) {
+        const body = this.generateJSON(assetId);
+        this.assets.createEvent(body, assetId).subscribe(
+          resp => {
+            console.log('resp ', resp);
+          },
+          err => {
+            console.log('err ', err);
+          }
+        );
+      }
     } else {
       this.error = true;
     }
@@ -348,49 +276,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     // Loop through event objects
     for (const eventObject of this.eventForm.get('form')['controls']) {
       const eventObjectType = eventObject.get('eventObjectType').value;
-      if (eventObjectType && eventObjectType === 'ambrosus.asset.info') {
-
-        const info = {};
-        info['type'] = eventObjectType;
-
-        for (const section of eventObject.get('data')['controls']) {
-
-          const sectionType = Object.keys(section.value)[0];
-
-          // If FormGroup is keyValue
-          if (sectionType === 'keyValue') {
-            for (const item of section.get('keyValue')['controls']) {
-              info[item.get('keyValueKey').value] = item.get('keyValueValue').value;
-            }
-          }
-
-          // If FormGroup is groupKeyValue
-          if (sectionType === 'groupKeyValue') {
-            for (const group of section.get('groupKeyValue')['controls']) {
-              info[group.get('groupKeyValueTitle').value] = {};
-              for (const item of group.get('groupKeyValueObject')['controls']) {
-                info[group.get('groupKeyValueTitle').value][item.get('groupKeyValueItemKey').value] = item.get('groupKeyValueItemValue').value;
-              }
-            }
-          }
-
-          // If FormGroup is groupKeyObjectKeyValue
-          if (sectionType === 'groupKeyObjectKeyValue') {
-            for (const group of section.get('groupKeyObjectKeyValue')['controls']) {
-              info[group.get('groupKeyObjectKeyValueTitle').value] = {};
-              for (const item of group.get('groupKeyObjectKeyValueObject')['controls']) {
-                info[group.get('groupKeyObjectKeyValueTitle').value][item.get('groupKeyObjectKeyValueItemTitle').value] = {};
-                for (const itemLvl2 of item.get('groupKeyObjectKeyValueItemObject')['controls']) {
-                  info[group.get('groupKeyObjectKeyValueTitle').value][item.get('groupKeyObjectKeyValueItemTitle').value][itemLvl2.get('groupKeyObjectKeyValueItemKey').value] = itemLvl2.get('groupKeyObjectKeyValueItemValue').value;
-                }
-              }
-            }
-          }
-        }
-
-        asset['content']['data'].push(info);
-
-      } else if (eventObjectType === 'ambrosus.asset.identifier') {
+      if (eventObjectType && eventObjectType === 'ambrosus.asset.identifier') {
 
         const identifiers = {};
         identifiers['type'] = eventObjectType;
@@ -407,12 +293,70 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
       } else {
 
+        const eObject = {};
+        eObject['type'] = eventObjectType;
+
+        for (const section of eventObject.get('data')['controls']) {
+
+          const sectionType = Object.keys(section.value)[0];
+
+          // If FormGroup is keyValue
+          if (sectionType === 'keyValue') {
+            for (const item of section.get('keyValue')['controls']) {
+              eObject[item.get('keyValueKey').value] = item.get('keyValueValue').value;
+            }
+          }
+
+          // If FormGroup is groupKeyValue
+          if (sectionType === 'groupKeyValue') {
+            for (const group of section.get('groupKeyValue')['controls']) {
+              eObject[group.get('groupKeyValueTitle').value] = {};
+              for (const item of group.get('groupKeyValueObject')['controls']) {
+                eObject[group.get('groupKeyValueTitle').value][item.get('groupKeyValueItemKey').value] = item.get('groupKeyValueItemValue').value;
+              }
+            }
+          }
+
+          // If FormGroup is groupKeyObjectKeyValue
+          if (sectionType === 'groupKeyObjectKeyValue') {
+            for (const group of section.get('groupKeyObjectKeyValue')['controls']) {
+              eObject[group.get('groupKeyObjectKeyValueTitle').value] = {};
+              for (const item of group.get('groupKeyObjectKeyValueObject')['controls']) {
+                eObject[group.get('groupKeyObjectKeyValueTitle').value][item.get('groupKeyObjectKeyValueItemTitle').value] = {};
+                for (const itemLvl2 of item.get('groupKeyObjectKeyValueItemObject')['controls']) {
+                  eObject[group.get('groupKeyObjectKeyValueTitle').value][item.get('groupKeyObjectKeyValueItemTitle').value][itemLvl2.get('groupKeyObjectKeyValueItemKey').value] = itemLvl2.get('groupKeyObjectKeyValueItemValue').value;
+                }
+              }
+            }
+          }
+
+          // If FormGroup is location
+          // One location object per event
+          if (sectionType === 'location') {
+            const location = {};
+            location['type'] = 'ambrosus.event.location';
+            location['location'] = {};
+            location['location']['type'] = section.get('location').get('typeLocation').value;
+            location['location']['geometry'] = {};
+            location['location']['geometry']['type'] = section.get('location').get('geometry').get('typeGeometry').value;
+            location['location']['geometry']['coordinates'] = [];
+            for (const item of section.get('location').get('geometry').get('coordinates')['controls']) {
+              location['location']['geometry']['coordinates'].push(item.get('latitude').value);
+              location['location']['geometry']['coordinates'].push(item.get('longitude').value);
+            }
+
+            asset['content']['data'].push(location);
+          }
+        }
+
+        asset['content']['data'].push(eObject);
+
       }
     }
 
     const json = JSON.stringify(asset, null, 2);
 
-    /* return json; */
-    this.json = json;
+    return json;
+    /*  this.json = json; */
   }
 }
