@@ -241,6 +241,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (this.eventForm.valid) {
       this.error = false;
 
+      /* this.generateJSON('asd'); */
+
       // create event for each selected asset
       const selectedAssets = this.assets.getSelectedAssets();
       for (const assetId of selectedAssets) {
@@ -333,19 +335,15 @@ export class EventAddComponent implements OnInit, OnDestroy {
           // If FormGroup is location
           // One location object per event
           if (sectionType === 'location') {
-            const location = {};
-            location['type'] = 'ambrosus.event.location';
-            location['location'] = {};
-            location['location']['type'] = section.get('location').get('typeLocation').value;
-            location['location']['geometry'] = {};
-            location['location']['geometry']['type'] = section.get('location').get('geometry').get('typeGeometry').value;
-            location['location']['geometry']['coordinates'] = [];
+            eObject['location'] = {};
+            eObject['location']['type'] = section.get('location').get('typeLocation').value;
+            eObject['location']['geometry'] = {};
+            eObject['location']['geometry']['type'] = section.get('location').get('geometry').get('typeGeometry').value;
+            eObject['location']['geometry']['coordinates'] = [];
             for (const item of section.get('location').get('geometry').get('coordinates')['controls']) {
-              location['location']['geometry']['coordinates'].push(item.get('latitude').value);
-              location['location']['geometry']['coordinates'].push(item.get('longitude').value);
+              eObject['location']['geometry']['coordinates'].push(item.get('latitude').value);
+              eObject['location']['geometry']['coordinates'].push(item.get('longitude').value);
             }
-
-            asset['content']['data'].push(location);
           }
         }
 
@@ -357,6 +355,6 @@ export class EventAddComponent implements OnInit, OnDestroy {
     const json = JSON.stringify(asset, null, 2);
 
     return json;
-    /*  this.json = json; */
+    /* this.json = json; */
   }
 }

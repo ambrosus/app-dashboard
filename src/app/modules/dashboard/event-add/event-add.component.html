@@ -37,6 +37,7 @@
                   </div>
                   <a class="color-ablue--base" (click)="addKeyValue(sectionCtrl.get('keyValue'))">Add key: value</a>
                 </div>
+                <a class="color-blacks--base m-v-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove section</a>
               </div>
               <!-- TEMPLATE: groupKeyValue -->
               <div *ngIf="sectionCtrl.get('groupKeyValue')">
@@ -76,6 +77,7 @@
                   </div>
                   <a class="color-ablue--base" (click)="addGroupKeyValue(sectionCtrl.get('groupKeyValue'))">Add group</a>
                 </div>
+                <a class="color-blacks--base m-v-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove section</a>
               </div>
               <!-- TEMPLATE: groupKeyObjectKeyValue -->
               <div *ngIf="sectionCtrl.get('groupKeyObjectKeyValue')">
@@ -129,6 +131,7 @@
                   </div>
                   <a class="color-ablue--base" (click)="addGroupKeyObjectKeyValue(sectionCtrl.get('groupKeyObjectKeyValue'))">Add group</a>
                 </div>
+                <a class="color-blacks--base m-v-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove section</a>
               </div>
               <!-- TEMPLATE: location -->
               <div *ngIf="sectionCtrl.get('location')" class="right">
@@ -163,7 +166,7 @@
                     </div>
                   </div>
                 </div>
-                <a class="color-blacks--base m-b-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove location</a>
+                <a class="color-blacks--base m-v-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove location</a>
               </div>
 
               <!-- TEMPLATE: identifiers -->
@@ -187,6 +190,7 @@
                   </div>
                   <a class="color-ablue--base" (click)="addIdentifier(sectionCtrl.get('identifiers'))">Add identifier</a>
                 </div>
+                <a class="color-blacks--base m-v-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove section</a>
               </div>
             </div>
           </div>
