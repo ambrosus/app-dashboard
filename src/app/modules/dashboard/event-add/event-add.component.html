@@ -1,9 +1,210 @@
 <main class="main">
-  <h1 class="center m-v-50">Event asset</h1>
+  <h1 class="center m-v-50">Create event</h1>
   <div class="m-w-6 block-center">
 
     <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
+      <div formArrayName="form">
+        <div class="event-object" *ngFor="let objectCtrl of eventForm.get('form')['controls']; let objectIndex = index" [formGroupName]="objectIndex"
+          class="left">
+          <!--Data array object-->
+          <h4 class="m-t-35 m-b-25">Event object</h4>
+          <div class="form-text m-b-15" [ngClass]="{error: error}">
+            <label for="{{objectIndex + '-eventObjectType'}}">Event object type</label>
+            <input formControlName="eventObjectType" [appAutocompleteinput]="{control: objectCtrl.get('eventObjectType'), array: eventObjectTypes}"
+              type="text" id="{{objectIndex + 'eventObjectType'}}" spellcheck="false" appInput>
+          </div>
+          <h4 class="m-t-35 m-b-25">Event object data</h4>
+          <div formArrayName="data">
+            <!-- ALL SECTIONS (INPUT TYPES) -->
+            <div *ngFor="let sectionCtrl of objectCtrl.get('data')['controls']; let sectionIndex = index" [formGroupName]="sectionIndex">
+              <!-- TEMPLATE: keyValue -->
+              <div *ngIf="sectionCtrl.get('keyValue')">
+                <h5 class="m-t-35 m-b-25 color-greys--base">Section: key: value</h5>
+                <div formArrayName="keyValue">
+                  <!-- key: value array -->
+                  <div *ngFor="let keyValueCtrl of sectionCtrl.get('keyValue')['controls']; let keyValueIndex = index" [formGroupName]="keyValueIndex"
+                    class="right">
+                    <div class="form-fields-coupled">
+                      <div class="form-text m-b-15 m-r-15 w-40">
+                        <label for="{{ keyValueIndex + 'keyValueKey'}}">Key</label>
+                        <input formControlName="keyValueKey" type="text" id="{{ keyValueIndex + 'keyValueKey'}}" spellcheck="false" appInput>
+                      </div>
+                      <div class="form-text m-b-15 w-60">
+                        <label for="{{ keyValueIndex + 'keyValueValue'}}">Value</label>
+                        <input formControlName="keyValueValue" type="text" id="{{ keyValueIndex + 'keyValueValue'}}" spellcheck="false" appInput>
+                      </div>
+                    </div>
+                    <a class="color-greys--base m-b-25 inline-block" (click)="remove(sectionCtrl.get('keyValue'), keyValueIndex)">Remove</a>
+                  </div>
+                  <a class="color-ablue--base" (click)="addKeyValue(sectionCtrl.get('keyValue'))">Add key: value</a>
+                </div>
+              </div>
+              <!-- TEMPLATE: groupKeyValue -->
+              <div *ngIf="sectionCtrl.get('groupKeyValue')">
+                <h5 class="m-t-35 m-b-25 color-greys--base">Section: Groups with key: value</h5>
+                <div formArrayName="groupKeyValue">
+                  <div *ngFor="let groupCtrl of sectionCtrl.get('groupKeyValue')['controls']; let groupKeyValueIndex = index" [formGroupName]="groupKeyValueIndex"
+                    class="right">
+                    <!-- Group title -->
+                    <div class="form-text m-b-15">
+                      <label for="{{ groupKeyValueIndex + 'groupKeyValueTitle'}}">Group title</label>
+                      <input formControlName="groupKeyValueTitle" type="text" id="{{ groupKeyValueIndex + 'groupKeyValueTitle'}}" spellcheck="false"
+                        appInput>
+                    </div>
+                    <p class="m-t-35 m-b-25 left">Group data: key: value</p>
+                    <!-- Group key: value array-->
+                    <div formArrayName="groupKeyValueObject" class="left">
+                      <div *ngFor="let groupKeyValueItemCtrl of groupCtrl.get('groupKeyValueObject')['controls']; let groupKeyValueItemIndex = index"
+                        [formGroupName]="groupKeyValueItemIndex" class="right">
+                        <div class="form-fields-coupled">
+                          <div class="form-text m-b-15 m-r-15 w-40">
+                            <label for="{{ groupKeyValueItemIndex + 'groupKeyValueItemKey'}}">Key</label>
+                            <input formControlName="groupKeyValueItemKey" type="text" id="{{ groupKeyValueItemIndex + 'groupKeyValueItemKey'}}" spellcheck="false"
+                              appInput>
+                          </div>
+                          <div class="form-text m-b-15 w-60">
+                            <label for="{{ groupKeyValueItemIndex + 'groupKeyValueItemValue'}}">Value</label>
+                            <input formControlName="groupKeyValueItemValue" type="text" id="{{ groupKeyValueItemIndex + 'groupKeyValueItemValue'}}" spellcheck="false"
+                              appInput>
+                          </div>
+                        </div>
+                        <a class="color-greys--base m-b-25 inline-block" (click)="remove(groupCtrl.get('groupKeyValueObject'), groupKeyValueItemIndex)">Remove</a>
+                      </div>
+                      <a class="color-ablue--base" (click)="addGroupKeyValueItem(groupCtrl.get('groupKeyValueObject'))">Add key: value</a>
+                    </div>
+                    <!--Group key: value array [END]-->
+                    <a class="color-blacks--base m-b-25 inline-block" (click)="remove(sectionCtrl.get('groupKeyValue'), groupKeyValueIndex)">Remove group</a>
+                  </div>
+                  <a class="color-ablue--base" (click)="addGroupKeyValue(sectionCtrl.get('groupKeyValue'))">Add group</a>
+                </div>
+              </div>
+              <!-- TEMPLATE: groupKeyObjectKeyValue -->
+              <div *ngIf="sectionCtrl.get('groupKeyObjectKeyValue')">
+                <h5 class="m-t-35 m-b-25 color-greys--base">Section: Groups with key: object: key: value</h5>
+                <div formArrayName="groupKeyObjectKeyValue">
+                  <div *ngFor="let groupCtrl of sectionCtrl.get('groupKeyObjectKeyValue')['controls']; let groupKeyObjectKeyValueIndex = index"
+                    [formGroupName]="groupKeyObjectKeyValueIndex" class="right">
+                    <!-- Group title -->
+                    <div class="form-text m-b-15">
+                      <label for="{{ groupKeyObjectKeyValueIndex + 'groupKeyObjectKeyValueTitle'}}">Group title</label>
+                      <input formControlName="groupKeyObjectKeyValueTitle" type="text" id="{{ groupKeyObjectKeyValueIndex + 'groupKeyObjectKeyValueTitle'}}"
+                        spellcheck="false" appInput>
+                    </div>
+                    <p class="m-t-35 m-b-25 left">Group data: title: key: value</p>
+                    <!-- Group key: object array -->
+                    <div formArrayName="groupKeyObjectKeyValueObject" class="left">
+                      <div *ngFor="let groupKeyObjectKeyValueItemCtrl of groupCtrl.get('groupKeyObjectKeyValueObject')['controls']; let groupKeyObjectKeyValueItemIndex = index"
+                        [formGroupName]="groupKeyObjectKeyValueItemIndex" class="right">
+                        <div class="form-text m-b-15 m-r-15 w-100">
+                          <label for="{{ groupKeyObjectKeyValueItemIndex + 'groupKeyObjectKeyValueItemTitle'}}">Title</label>
+                          <input formControlName="groupKeyObjectKeyValueItemTitle" type="text" id="{{ groupKeyObjectKeyValueItemIndex + 'groupKeyObjectKeyValueItemTitle'}}"
+                            spellcheck="false" appInput>
+                        </div>
+                        <!-- Group key object: key value array -->
+                        <div formArrayName="groupKeyObjectKeyValueItemObject" class="left">
+                          <div *ngFor="let groupKeyObjectKeyValueItemKeyValueCtrl of groupKeyObjectKeyValueItemCtrl.get('groupKeyObjectKeyValueItemObject')['controls']; let groupKeyObjectKeyValueItemKeyValueIndex = index"
+                            [formGroupName]="groupKeyObjectKeyValueItemKeyValueIndex" class="right">
+                            <div class="form-fields-coupled">
+                              <div class="form-text m-b-15 m-r-15 w-40">
+                                <label for="{{ groupKeyObjectKeyValueItemKeyValueIndex + 'groupKeyObjectKeyValueItemKey'}}">Key</label>
+                                <input formControlName="groupKeyObjectKeyValueItemKey" type="text" id="{{ groupKeyObjectKeyValueItemKeyValueIndex + 'groupKeyObjectKeyValueItemKey'}}"
+                                  spellcheck="false" appInput>
+                              </div>
+                              <div class="form-text m-b-15 w-60">
+                                <label for="{{ groupKeyObjectKeyValueItemKeyValueIndex + 'groupKeyObjectKeyValueItemValue'}}">Value</label>
+                                <input formControlName="groupKeyObjectKeyValueItemValue" type="text" id="{{ groupKeyObjectKeyValueItemKeyValueIndex + 'groupKeyObjectKeyValueItemValue'}}"
+                                  spellcheck="false" appInput>
+                              </div>
+                            </div>
+                            <a class="color-greys--base m-b-25 inline-block" (click)="remove(groupKeyObjectKeyValueItemCtrl.get('groupKeyObjectKeyValueItemObject'), groupKeyObjectKeyValueItemKeyValueIndex)">Remove</a>
+                          </div>
+                          <a class="color-ablue--base" (click)="addGroupKeyObjectKeyValueItemKeyValue(groupKeyObjectKeyValueItemCtrl.get('groupKeyObjectKeyValueItemObject'))">Add key: value</a>
+                        </div>
+                        <!-- Group key object: key value array [END] -->
+                        <a class="color-greys--base m-b-25 inline-block" (click)="remove(groupCtrl.get('groupKeyObjectKeyValueObject'), groupKeyObjectKeyValueItemIndex)">Remove item</a>
+                      </div>
+                      <a class="color-ablue--base" (click)="addGroupKeyObjectKeyValueItem(groupCtrl.get('groupKeyObjectKeyValueObject'))">Add item</a>
+                    </div>
+                    <!--Group key: object array [END]-->
+                    <a class="color-blacks--base m-b-25 inline-block" (click)="remove(sectionCtrl.get('groupKeyObjectKeyValue'), groupKeyObjectKeyValueIndex)">Remove group</a>
+                  </div>
+                  <a class="color-ablue--base" (click)="addGroupKeyObjectKeyValue(sectionCtrl.get('groupKeyObjectKeyValue'))">Add group</a>
+                </div>
+              </div>
+              <!-- TEMPLATE: location -->
+              <div *ngIf="sectionCtrl.get('location')" class="right">
+                <h5 class="m-t-35 m-b-25 color-greys--base left">Section: location</h5>
+                <div formGroupName="location">
+                  <div class="form-text m-b-15">
+                    <label for="{{ sectionIndex + 'typeLocation'}}">Location type</label>
+                    <input formControlName="typeLocation" type="text" id="{{ sectionIndex + 'typeLocation'}}" spellcheck="false" appInput>
+                  </div>
+                  <!-- Geometry -->
+                  <p class="m-t-35 m-b-25 left">Geometry</p>
+                  <div formGroupName="geometry">
+                    <div class="form-text m-b-15">
+                      <label for="{{ sectionIndex + 'typeGeometry'}}">Geometry type</label>
+                      <input formControlName="typeGeometry" type="text" id="{{ sectionIndex + 'typeGeometry'}}" spellcheck="false" appInput>
+                    </div>
+                    <!-- Lat and lon -->
+                    <div formArrayName="coordinates">
+                      <div *ngFor="let coordinatesCtrl of sectionCtrl.get('location').get('geometry').get('coordinates')['controls']; let coordinatesIndex = index"
+                        [formGroupName]="coordinatesIndex">
+                        <div class="form-fields-coupled">
+                          <div class="form-text m-b-15 m-r-15 w-50">
+                            <label for="{{ coordinatesIndex + 'latitude'}}">Latitude</label>
+                            <input formControlName="latitude" type="text" id="{{ coordinatesIndex + 'latitude'}}" spellcheck="false" appInput>
+                          </div>
+                          <div class="form-text m-b-15 w-50">
+                            <label for="{{ coordinatesIndex + 'longitude'}}">Longitude</label>
+                            <input formControlName="longitude" type="text" id="{{ coordinatesIndex + 'longitude'}}" spellcheck="false" appInput>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <a class="color-blacks--base m-b-25 inline-block" (click)="remove(objectCtrl.get('data'), sectionIndex)">Remove location</a>
+              </div>
 
+              <!-- TEMPLATE: identifiers -->
+              <div *ngIf="sectionCtrl.get('identifiers')">
+                <h5 class="m-t-35 m-b-25 color-greys--base">Section: identifiers</h5>
+                <div formArrayName="identifiers">
+                  <div *ngFor="let identifierCtrl of sectionCtrl.get('identifiers')['controls']; let identifierIndex = index" [formGroupName]="identifierIndex"
+                    class="right">
+                    <div class="form-fields-coupled">
+                      <div class="form-text m-b-15 m-r-15 w-30">
+                        <label for="{{ identifierIndex + 'identifierType'}}">Identifier</label>
+                        <input formControlName="identifierType" [appAutocompleteinput]="{control: identifierCtrl.get('identifierType'), array: identifierTypes}"
+                          type="text" id="{{ identifierIndex + 'identifierType'}}" spellcheck="false" appInput>
+                      </div>
+                      <div class="form-text m-b-15 w-70">
+                        <label for="{{ identifierIndex + 'identifierValue'}}">Value</label>
+                        <input formControlName="identifierValue" type="text" id="{{ identifierIndex + 'identifierValue'}}" spellcheck="false" appInput>
+                      </div>
+                    </div>
+                    <a class="color-greys--base m-b-25 inline-block" (click)="remove(sectionCtrl.get('identifiers'), identifierIndex)">Remove</a>
+                  </div>
+                  <a class="color-ablue--base" (click)="addIdentifier(sectionCtrl.get('identifiers'))">Add identifier</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- INPUT OPTIONS FOR EVENT OBJECT -->
+          <div class="input-options">
+            <a class="color-ablue--base m-r-15" (click)="addInputKeyValue(objectCtrl.get('data'))">Add key: value</a>
+            <a class="color-ablue--base m-r-15" (click)="addInputGroupKeyValue(objectCtrl.get('data'))">Add group key: value</a>
+            <a class="color-ablue--base m-r-15" (click)="addInputGroupKeyObjectKeyValue(objectCtrl.get('data'))">Add group key: object: key: value</a>
+            <a class="color-ablue--base m-r-15" (click)="addInputIndentifiers(objectCtrl.get('data'))">Add identifiers</a>
+            <a class="color-ablue--base m-r-15" (click)="addInputLocation(objectCtrl.get('data'))">Add location</a>
+          </div>
+          <!-- REMOVE EVENT OBJECT-->
+          <a class="color-blacks--base font-weight--bold m-v-25 inline-block" (click)="remove(eventForm.get('form'), objectIndex)">Remove event object</a>
+        </div>
+        <!--Data array object [END]-->
+        <a class="abtn btn-solid-agreen m-v-25" (click)="addEventObject(eventForm.get('form'))">Add event object</a>
+      </div>
 
       <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-25">
         <app-spinner *ngIf="spinner"></app-spinner>
@@ -11,4 +212,8 @@
       </div>
     </form>
   </div>
+  <!--TEST ONLY-->
+  <pre *ngIf="json">
+      {{json}}
+    </pre>
 </main>
