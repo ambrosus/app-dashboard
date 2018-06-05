@@ -6,8 +6,8 @@
       <!--BASIC INFO-->
       <h4 class="m-t-35 m-b-25">Basic information</h4>
       <div class="form-text m-b-15" [ngClass]="{error: error}">
-        <label for="assetType">Asset type</label>
-        <input formControlName="assetType" type="text" id="assetType" spellcheck="false" appInput>
+        <label for="eventType">Event type</label>
+        <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
       </div>
       <div class="form-text m-b-15" [ngClass]="{error: error}">
         <label for="name">Name</label>
@@ -21,8 +21,7 @@
       <!--Documents-->
       <h6 class="m-t-35 m-b-25">Documents</h6>
       <div formArrayName="documents">
-        <div *ngFor="let documentCtrl of eventForm.get('documents')['controls']; let i = index"
-             [formGroupName]="i" class="right">
+        <div *ngFor="let documentCtrl of eventForm.get('documents')['controls']; let i = index" [formGroupName]="i" class="right">
           <div class="form-fields-coupled">
             <div class="form-text m-b-15 m-r-15 w-40">
               <label for="{{ i + 'documentTitle' }}">Document title</label>
@@ -41,12 +40,12 @@
       <!--IDENTIFIERES-->
       <h4 class="m-t-35 m-b-25">Identifiers</h4>
       <div formArrayName="identifiers">
-        <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index"
-             [formGroupName]="i" class="right">
+        <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index" [formGroupName]="i" class="right">
           <div class="form-fields-coupled">
             <div class="form-text m-b-15 m-r-15 w-30">
               <label for="{{ i + 'identifier'}}">Identifier</label>
-              <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+              <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
+                id="{{ i + 'identifier'}}" spellcheck="false" appInput>
             </div>
             <div class="form-text m-b-15 w-70">
               <label for="{{ i + 'identifierValue'}}">Value</label>
@@ -61,8 +60,7 @@
       <!--CUSTOM DATA-->
       <h4 class="m-t-35 m-b-25">Custom data</h4>
       <div formArrayName="customData">
-        <div *ngFor="let customDataCtrl of eventForm.get('customData')['controls']; let i = index"
-             [formGroupName]="i" class="right">
+        <div *ngFor="let customDataCtrl of eventForm.get('customData')['controls']; let i = index" [formGroupName]="i" class="right">
           <div class="form-fields-coupled">
             <div class="form-text m-b-15 m-r-15 w-40">
               <label for="{{ i + 'customDataKey'}}">Property name</label>
@@ -81,8 +79,8 @@
       <!--CUSTOM DATA GROUPS-->
       <h6 class="m-t-35 m-b-25">Custom data groups</h6>
       <div formArrayName="customDataGroups">
-        <div *ngFor="let customDataGroupCtrl of eventForm.get('customDataGroups')['controls']; let i = index"
-             [formGroupName]="i" class="right">
+        <div *ngFor="let customDataGroupCtrl of eventForm.get('customDataGroups')['controls']; let i = index" [formGroupName]="i"
+          class="right">
           <div class="form-text m-b-15">
             <label for="{{ i + 'groupName'}}">Group name</label>
             <input formControlName="groupName" type="text" id="{{ i + 'groupName'}}" spellcheck="false" appInput>
@@ -90,8 +88,8 @@
           <p class="m-t-35 m-b-25 left">Group data (key-value pairs)</p>
           <!--start Array of key-value in a group-->
           <div formArrayName="groupValue" class="left">
-            <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index"
-                 [formGroupName]="j" class="right">
+            <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index" [formGroupName]="j"
+              class="right">
               <div class="form-fields-coupled">
                 <div class="form-text m-b-15 m-r-15 w-40">
                   <label for="{{ j + 'groupItemKey'}}">Property name</label>

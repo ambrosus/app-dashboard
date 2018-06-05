@@ -47,7 +47,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
   private initForm() {
     this.eventForm = new FormGroup({
-      'assetType': new FormControl(null, [Validators.required]),
+      'eventType': new FormControl(null, [Validators.required]),
       'name': new FormControl(null, [Validators.required]),
       'description': new FormControl(null, []),
       'documents': new FormArray([
@@ -165,6 +165,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (this.eventForm.valid) {
       this.error = false;
 
+      /* this.generateJSON('asd'); */
+
       // create event for each selected asset
       const selectedAssets = this.assets.getSelectedAssets();
       for (const assetId of selectedAssets) {
@@ -210,15 +212,13 @@ export class EventAddComponent implements OnInit, OnDestroy {
     // Basic + custom data
     const basicAndCustom = {};
     // Basic data
-    basicAndCustom['type'] = 'ambrosus.asset.info';
+    basicAndCustom['type'] = this.eventForm.get('eventType').value;
     basicAndCustom['name'] = this.eventForm.get('name').value;
     basicAndCustom['description'] = this.eventForm.get('description').value;
-    basicAndCustom['assetType'] = this.eventForm.get('assetType').value;
     // Documents
     basicAndCustom['documents'] = {};
     for (const item of this.eventForm.get('documents')['controls']) {
-      basicAndCustom['documents'][item.value.documentTitle] = {};
-      basicAndCustom['documents'][item.value.documentTitle]['url'] = item.value.documentUrl;
+      basicAndCustom['documents'][item.value.documentTitle] = item.value.documentUrl;
     }
     // Custom data
     for (const item of this.eventForm.get('customData')['controls']) {
@@ -238,6 +238,6 @@ export class EventAddComponent implements OnInit, OnDestroy {
     const json = JSON.stringify(asset, null, 2);
 
     return json;
-    // this.json = json;
+    /* this.json = json; */
   }
 }
