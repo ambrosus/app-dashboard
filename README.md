@@ -1,3 +1,5 @@
+![alt text](https://cdn-images-1.medium.com/max/1600/1*hGJHnXJuOmfjIcEofbC0Ww.png "Ambrosus")
+
 # angular-dashboard
 
 [![Build Status](https://travis-ci.com/ambrosus/app-dashboard.svg?token=tMTWCoK9SU2CizZxjcNz&branch=dev)](https://travis-ci.com/ambrosus/app-dashboard)
