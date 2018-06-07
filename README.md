@@ -82,8 +82,10 @@ Have auth and data-storage service.
 1. Main 2 methods are login() and logout(). login() takes in address and secret. First it creates token, if response is 200, then it checks the validity of the address, and only then is the user logged in, any errors in between, login fails. Also, this method returns an observable, that login component subscribes to on login form submit.
 2. logout() cleans the address and token from localStorage if they exist and redirects user to /login.
 3. isLoggedIn() method checks whether token and address exists in localStorage and returns a boolean. 
-+ **Data storage** \
-Data storage is a wrap for any localStorage interaction + for POST requests to the API.
++ **Asset** \
+Asset service handles any asset related API requests (POST and GET), it also handles selecting assets task (store selected assets, or unselects them, for event new to loop through).
++ **Storage** \
+Data storage is a wrap for any localStorage interaction.
 + **Authentication guards** \
 They resolve true or false, based on isLoggedIn() return in auth service.
 4. **Interceptors**
