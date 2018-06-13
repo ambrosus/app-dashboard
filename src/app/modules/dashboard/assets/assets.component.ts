@@ -14,7 +14,7 @@ import { AssetsService } from 'app/services/assets.service';
   encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit {
-  eventsInfo: any;
+  assets: any;
   noEvents = false;
   error = false;
 
@@ -25,17 +25,19 @@ export class AssetsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.assetsService.getEventsInfo();
-    this.assetsService.getEventsInfoSuccess.subscribe((resp: any) => {
-      console.log(resp);
-      this.eventsInfo = resp;
-      if (resp.resultCount === 0) {
-        this.noEvents = true;
+    this.assetsService.getAssets().subscribe(
+      (resp: any) => {
+        console.log(resp);
+        this.assets = resp;
+        if (resp.resultCount === 0) {
+          this.noEvents = true;
+        }
+      },
+      error => {
+        console.log(error);
+        this.error = true;
       }
-    });
-    this.assetsService.getEventsInfoError.subscribe(resp => {
-      this.error = true;
-    });
+    );
   }
 
   onSelectAll(e, input) {

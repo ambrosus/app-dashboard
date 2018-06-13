@@ -12,8 +12,6 @@ declare let AmbrosusSDK: any;
 export class AssetsService {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
-  getEventsInfoSuccess: Subject<any> = new Subject();
-  getEventsInfoError: Subject<any> = new Subject();
   assets: {};
   inputChanged = new Subject();
   ambrosus;
@@ -33,81 +31,53 @@ export class AssetsService {
     });
   }
 
-  // API POST: create asset
-  createAsset() {
-    const params = {
-      content: {
-        idData: {
-          createdBy: this.storage.get('address'),
-          timestamp: new Date().getTime() / 1000,
-          sequenceNumber: 3
-        }
-      }
-    };
-    return this.http.post(environment.apiUrls.createAsset, params);
-  }
-
-  // API POST: create event
-  createEvent(body, assetId: string) {
-    const params = body;
-    return this.http.post(
-      `${environment.apiUrls.createEvent}${assetId}/events`,
-      params
-    );
-  }
-
-  getEventsInfo() {
+  // Only one without SDK for now
+  getAssets() {
+    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get(
+      'address'
+    )}`;
     return new Observable(observer => {
-      const params = {
-        createdBy: this.address,
-        'data[type]': 'ambrosus.event.location'
-      };
+      this.http.get(url).subscribe(
+        (resp: any) => {
+          this.assets = resp;
+          const assetsCopy = Object.assign({}, this.assets);
+          return observer.next(assetsCopy);
+        },
+        (err: any) => {
+          console.log('err ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
+  createAsset() {
+    return new Observable(observer => {
       this.ambrosus
-        .getEvents(params)
+        .createAsset([])
         .then(function(resp) {
-          console.log(resp);
+          return observer.next(resp);
         })
         .catch(function(error) {
-          // Error if error
-          console.log(error);
+          return observer.error(error);
         });
     });
   }
 
-  /* getAssets() {
-    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get(
-      'address'
-    )}`;
-    return this.http.get(url).subscribe(
-      (resp: any) => {
-        this.assets = resp;
-        const assetsCopy = Object.assign({}, this.assets);
-        this.getEventsInfoSuccess.next(assetsCopy);
-      },
-      (err: any) => {
-        this.getEventsInfoError.next('error');
-        console.log('err ', err);
-      }
-    );
-  } */
+  createEvent(assetId, event) {
+    return new Observable(observer => {
+      this.ambrosus
+        .createEvent(assetId, event)
+        .then(function(resp) {
+          return observer.next(resp);
+        })
+        .catch(function(error) {
+          return observer.error(error);
+        });
+    });
+  }
 
-  /* getEventsInfo() {
-    const url = `${environment.apiUrls.getEvents}?createdBy=${this.storage.get(
-      'address'
-    )}&data=data%5Btype%5D%3Dambrosus.asset.info`;
-    return this.http.get(url).subscribe(
-      (resp: any) => {
-        this.assets = resp;
-        const assetsCopy = Object.assign({}, this.assets);
-        this.getEventsInfoSuccess.next(assetsCopy);
-      },
-      (err: any) => {
-        this.getEventsInfoError.next('error');
-        console.log('err ', err);
-      }
-    );
-  } */
-
+  // assetId selection service
   selectAsset(assetId: string) {
     this.assetsSelected.push(assetId);
   }
