@@ -1,16 +1,23 @@
-import {Component, ElementRef, HostListener, Renderer2} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Renderer2,
+  OnInit
+} from '@angular/core';
+
+declare let AmbrosusSDK: any;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
 
-  constructor(private el: ElementRef,
-              private renderer: Renderer2) {}
-
-  @HostListener('click', ['$event']) onDocumentClick(e) {
+  @HostListener('click', ['$event'])
+  onDocumentClick(e) {
     const dropdownParent = this.el.nativeElement.querySelector('.dropdown');
     if (!dropdownParent) {
       return null;
@@ -23,5 +30,9 @@ export class AppComponent {
         this.renderer.removeClass(dropdownParent, 'active');
       }
     }
+  }
+
+  ngOnInit() {
+    console.log(AmbrosusSDK); // returns an instance
   }
 }
