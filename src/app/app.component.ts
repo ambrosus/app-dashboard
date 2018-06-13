@@ -6,8 +6,6 @@ import {
   OnInit
 } from '@angular/core';
 
-declare let AmbrosusSDK: any;
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -33,6 +31,5 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(AmbrosusSDK); // returns an instance
   }
 }

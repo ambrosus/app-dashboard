@@ -84,9 +84,17 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": ["src/styles.scss"],
-            "scripts": [],
-            "assets": ["src/favicon.ico", "src/assets"]
+            "assets": ["src/assets"],
+            "styles": [
+              "node_modules/normalize.css/normalize.css",
+              "src/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./src/sass"]
+            },
+            "scripts": [
+              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.min.js"
+            ]
           }
         },
         "lint": {
