@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-asset',
@@ -7,15 +7,13 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls: ['./asset.component.scss']
 })
 export class AssetComponent implements OnInit {
+  assetId: string;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.params.subscribe(
-      params => {
-        console.log('Asset id:', params.assetid);
-      }
-    );
+    this.route.params.subscribe(params => {
+      this.assetId = params.assetid;
+    });
   }
-
 }
