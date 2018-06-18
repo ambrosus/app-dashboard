@@ -1,8 +1,10 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+
+declare let AmbrosusSDK: any;
 
 @Injectable({
   providedIn: 'root'
@@ -10,66 +12,72 @@ import { environment } from '../../environments/environment';
 export class AssetsService {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
-  getEventsInfoSuccess: Subject<any> = new Subject();
-  getEventsInfoError: Subject<any> = new Subject();
   assets: {};
   inputChanged = new Subject();
+  ambrosus;
+  // credentials
+  secret;
+  address;
 
-  constructor(private http: HttpClient,
-    private storage: StorageService) { }
+  constructor(private http: HttpClient, private storage: StorageService) {
+    this.secret = this.storage.get('secret');
+    this.address = this.storage.get('address');
+    const apiEndpoint = 'https://gateway-dev.ambrosus.com';
 
-  // API POST: create asset
+    this.ambrosus = new AmbrosusSDK({
+      apiEndpoint: apiEndpoint,
+      secret: this.secret,
+      address: this.address
+    });
+  }
+
+  // Only one without SDK for now
+  getAssets() {
+    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get(
+      'address'
+    )}`;
+    return new Observable(observer => {
+      this.http.get(url).subscribe(
+        (resp: any) => {
+          this.assets = resp;
+          const assetsCopy = Object.assign({}, this.assets);
+          return observer.next(assetsCopy);
+        },
+        (err: any) => {
+          console.log('err ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
   createAsset() {
-    const params = {
-      'content': {
-        'idData': {
-          'createdBy': this.storage.get('address'),
-          'timestamp': new Date().getTime() / 1000,
-          'sequenceNumber': 3
-        }
-      }
-    };
-    return this.http.post(environment.apiUrls.createAsset, params);
+    return new Observable(observer => {
+      this.ambrosus
+        .createAsset([])
+        .then(function(resp) {
+          return observer.next(resp);
+        })
+        .catch(function(error) {
+          return observer.error(error);
+        });
+    });
   }
 
-  // API POST: create event
-  createEvent(body, assetId: string) {
-    const params = body;
-    return this.http.post(`${environment.apiUrls.createEvent}${assetId}/events`, params);
+  createEvent(assetId, event) {
+    return new Observable(observer => {
+      this.ambrosus
+        .createEvent(assetId, event)
+        .then(function(resp) {
+          return observer.next(resp);
+        })
+        .catch(function(error) {
+          return observer.error(error);
+        });
+    });
   }
 
-  getAssetsAll() {
-    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get('address')}`;
-    return this.http.get(url).
-      subscribe(
-        (resp: any) => {
-          this.assets = resp;
-          const assetsCopy = Object.assign({}, this.assets);
-          this.getEventsInfoSuccess.next(assetsCopy);
-        },
-        (err: any) => {
-          this.getEventsInfoError.next('error');
-          console.log('err ', err);
-        }
-      );
-  }
-
-  getEventsInfo() {
-    const url = `${environment.apiUrls.getEvents}?createdBy=${this.storage.get('address')}&data=data%5Btype%5D%3Dambrosus.asset.info`;
-    return this.http.get(url).
-      subscribe(
-        (resp: any) => {
-          this.assets = resp;
-          const assetsCopy = Object.assign({}, this.assets);
-          this.getEventsInfoSuccess.next(assetsCopy);
-        },
-        (err: any) => {
-          this.getEventsInfoError.next('error');
-          console.log('err ', err);
-        }
-      );
-  }
-
+  // assetId selection service
   selectAsset(assetId: string) {
     this.assetsSelected.push(assetId);
   }

@@ -1,9 +1,9 @@
 <main class="main">
   <h1 class="center m-v-25">Assets</h1>
-  <app-assets-loader-indicator *ngIf="!eventsInfo"></app-assets-loader-indicator>
+  <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
   <h4 class="color-greys--base center p-h-25" *ngIf="error">There was an error getting your assets. Try later, or reload.</h4>
 
-  <div class="assets-actions" *ngIf="eventsInfo">
+  <div class="assets-actions" *ngIf="assets">
     <div>
       <label class="assets-list__label" for="selectAll" (click)="onSelectAll($event, input)">
         <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
@@ -26,8 +26,8 @@
 
   <h5 class="color-greys--base p-h-25 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
-  <div class="assets-list" *ngIf="eventsInfo">
-    <div class="assets-list__item" *ngFor="let asset of eventsInfo.results; let i = index">
+  <div class="assets-list" *ngIf="assets">
+    <div class="assets-list__item" *ngFor="let asset of assets.results; let i = index">
       <label class="assets-list__label" for="{{ i }}">
         <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">
         <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
