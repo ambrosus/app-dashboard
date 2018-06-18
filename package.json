@@ -36,7 +36,7 @@
     "@types/jasmine": "~2.8.6",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
-    "ambrosus-javascript-sdk": "^0.4.0",
+    "ambrosus-javascript-sdk": "^0.4.3",
     "codelyzer": "~4.2.1",
     "express": "^4.16.3",
     "http": "0.0.0",
