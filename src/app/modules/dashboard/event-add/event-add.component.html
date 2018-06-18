@@ -1,15 +1,18 @@
 <main class="main">
-  <h1 class="center m-v-50">Event asset</h1>
-  <div class="m-w-6 block-center">
+  <h1 class="center m-v-50">Event creation</h1>
+  <h4 class="center p-h-40 m-b-35" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
+  <h4 class="center p-h-40 m-b-35" *ngIf="success" style="color: #5cb85c">Success!</h4>
+  <h4 class="center p-h-40 m-b-35" *ngIf="errorResponse" style="color: #ea7070">Error creating the event</h4>
 
+  <div class="m-w-6 block-center p-v-15" [ngClass]="{error: error, success: success}">
     <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
       <!--BASIC INFO-->
       <h4 class="m-t-35 m-b-25">Basic information</h4>
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
+      <div class="form-text m-b-15">
         <label for="eventType">Event type</label>
         <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
       </div>
-      <div class="form-text m-b-15" [ngClass]="{error: error}">
+      <div class="form-text m-b-15">
         <label for="name">Name</label>
         <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
       </div>

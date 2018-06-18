@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewEncapsulation
+} from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 
 @Component({
@@ -8,27 +14,27 @@ import { AssetsService } from 'app/services/assets.service';
   encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit {
-  eventsInfo: any;
+  assets: any;
   noEvents = false;
   error = false;
 
-  constructor(private assetsService: AssetsService,
+  constructor(
+    private assetsService: AssetsService,
     private el: ElementRef,
-    private renderer: Renderer2) { }
+    private renderer: Renderer2
+  ) {}
 
   ngOnInit() {
-    this.assetsService.getAssetsAll();
-    this.assetsService.getEventsInfoSuccess.subscribe(
+    this.assetsService.getAssets().subscribe(
       (resp: any) => {
         console.log(resp);
-        this.eventsInfo = resp;
+        this.assets = resp;
         if (resp.resultCount === 0) {
           this.noEvents = true;
         }
-      }
-    );
-    this.assetsService.getEventsInfoError.subscribe(
-      resp => {
+      },
+      error => {
+        console.log(error);
         this.error = true;
       }
     );
@@ -53,5 +59,4 @@ export class AssetsComponent implements OnInit {
     }
     console.log(this.assetsService.getSelectedAssets());
   }
-
 }
