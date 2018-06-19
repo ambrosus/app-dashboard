@@ -5,111 +5,144 @@
 
 <div class="m-w-6 block-center p-v-20" [ngClass]="{error: error, success: success}">
   <form [formGroup]="eventForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
-    <!--BASIC INFO-->
-    <h4 class="m-t-30 m-b-20">Basic information</h4>
-    <div class="form-text m-b-20">
-      <label for="eventType">Event type</label>
-      <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
-    </div>
-    <div class="form-text m-b-20">
-      <label for="name">Name</label>
-      <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
-    </div>
-    <div class="form-text m-b-20">
-      <label for="description">Description</label>
-      <input formControlName="description" type="text" id="description" spellcheck="false" appInput>
-    </div>
-
-    <!--Documents-->
-    <h6 class="m-t-30 m-b-20">Documents</h6>
-    <div formArrayName="documents">
-      <div *ngFor="let documentCtrl of eventForm.get('documents')['controls']; let i = index" [formGroupName]="i" class="right">
-        <div class="form-fields-coupled">
-          <div class="form-text m-b-20 m-r-20 w-40">
-            <label for="{{ i + 'documentTitle' }}">Document title</label>
-            <input formControlName="documentTitle" type="text" id="{{ i + 'documentTitle' }}" spellcheck="false" appInput>
-          </div>
-          <div class="form-text m-b-20 w-60">
-            <label for="{{ i + 'documentUrl' }}">Document url</label>
-            <input formControlName="documentUrl" type="text" id="{{ i + 'documentUrl' }}" spellcheck="false" appInput>
-          </div>
-        </div>
-        <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveDocument(i)">Remove</a>
+    <div class="tabs">
+      <div class="tabs__menu">
+        <p class="tabs__menu__item" (click)="tabBasicInfo = true;
+                                                tabKeyValue = false;
+                                                tabGroups = false;
+                                                tabIdentifiers = false;
+                                                tabImages = false;">Basic info</p>
+        <p class="tabs__menu__item" (click)="tabBasicInfo = false;
+                                                tabKeyValue = false;
+                                                tabGroups = false;
+                                                tabIdentifiers = true;
+                                                tabDocuments = false;">Identifiers</p>
+        <p class="tabs__menu__item" (click)="tabBasicInfo = false;
+                                                tabKeyValue = false;
+                                                tabGroups = false;
+                                                tabIdentifiers = false;
+                                                tabDocuments = true;">Documents</p>
+        <p class="tabs__menu__item" (click)="tabBasicInfo = false;
+                                                tabKeyValue = true;
+                                                tabGroups = false;
+                                                tabIdentifiers = false;
+                                                tabDocuments = false;">Key value</p>
+        <p class="tabs__menu__item" (click)="tabBasicInfo = false;
+                                                tabKeyValue = false;
+                                                tabGroups = true;
+                                                tabIdentifiers = false;
+                                                tabDocuments = false;">Groups</p>
       </div>
-      <a class="color-ablue--base" (click)="onAddDocument()">Add document</a>
-    </div>
+      <div class="tab">
 
-    <!--IDENTIFIERES-->
-    <h4 class="m-t-30 m-b-20">Identifiers</h4>
-    <div formArrayName="identifiers">
-      <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index" [formGroupName]="i" class="right">
-        <div class="form-fields-coupled">
-          <div class="form-text m-b-20 m-r-20 w-30">
-            <label for="{{ i + 'identifier'}}">Identifier</label>
-            <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
-              id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+        <div *ngIf="tabBasicInfo">
+          <div class="form-text m-b-20">
+            <label for="eventType">Event type</label>
+            <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
           </div>
-          <div class="form-text m-b-20 w-70">
-            <label for="{{ i + 'identifierValue'}}">Value</label>
-            <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
+          <div class="form-text m-b-20">
+            <label for="name">Name</label>
+            <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
+          </div>
+          <div class="form-text m-b-20">
+            <label for="description">Description</label>
+            <input formControlName="description" type="text" id="description" spellcheck="false" appInput>
           </div>
         </div>
-        <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
-      </div>
-      <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
-    </div>
 
-    <!--CUSTOM DATA-->
-    <h4 class="m-t-30 m-b-20">Custom data</h4>
-    <div formArrayName="customData">
-      <div *ngFor="let customDataCtrl of eventForm.get('customData')['controls']; let i = index" [formGroupName]="i" class="right">
-        <div class="form-fields-coupled">
-          <div class="form-text m-b-20 m-r-20 w-40">
-            <label for="{{ i + 'customDataKey'}}">Property name</label>
-            <input formControlName="customDataKey" type="text" id="{{ i + 'customDataKey'}}" spellcheck="false" appInput>
-          </div>
-          <div class="form-text m-b-20 w-60">
-            <label for="{{ i + 'customDataValue'}}">Value</label>
-            <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
-          </div>
-        </div>
-        <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
-      </div>
-      <a class="color-ablue--base" (click)="onAddCustomKeyValue()">Add key-value pair</a>
-    </div>
-
-    <!--CUSTOM DATA GROUPS-->
-    <h6 class="m-t-30 m-b-20">Custom data groups</h6>
-    <div formArrayName="customDataGroups">
-      <div *ngFor="let customDataGroupCtrl of eventForm.get('customDataGroups')['controls']; let i = index" [formGroupName]="i"
-        class="right">
-        <div class="form-text m-b-20">
-          <label for="{{ i + 'groupName'}}">Group name</label>
-          <input formControlName="groupName" type="text" id="{{ i + 'groupName'}}" spellcheck="false" appInput>
-        </div>
-        <p class="m-t-30 m-b-20 left">Group data (key-value pairs)</p>
-        <!--start Array of key-value in a group-->
-        <div formArrayName="groupValue" class="left">
-          <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index" [formGroupName]="j"
-            class="right">
-            <div class="form-fields-coupled">
-              <div class="form-text m-b-20 m-r-20 w-40">
-                <label for="{{ j + 'groupItemKey'}}">Property name</label>
-                <input formControlName="groupItemKey" type="text" id="{{ j + 'groupItemKey'}}" spellcheck="false" appInput>
+        <div *ngIf="tabIdentifiers">
+          <div formArrayName="identifiers">
+            <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index" [formGroupName]="i" class="right">
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 m-r-20 w-30">
+                  <label for="{{ i + 'identifier'}}">Identifier</label>
+                  <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
+                    id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-70">
+                  <label for="{{ i + 'identifierValue'}}">Value</label>
+                  <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
+                </div>
               </div>
-              <div class="form-text m-b-20 w-60">
-                <label for="{{ j + 'groupItemValue'}}">Value</label>
-                <input formControlName="groupItemValue" type="text" id="{{ j + 'groupItemValue'}}" spellcheck="false" appInput>
-              </div>
+              <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
             </div>
-            <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
+            <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
           </div>
-          <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
         </div>
-        <!--end Array of key-value in a group-->
-        <a class="color-blacks--base m-b-20 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>
+
+        <div *ngIf="tabDocuments">
+          <div formArrayName="documents">
+            <div *ngFor="let documentCtrl of eventForm.get('documents')['controls']; let i = index" [formGroupName]="i" class="right">
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 m-r-20 w-40">
+                  <label for="{{ i + 'documentTitle' }}">Document title</label>
+                  <input formControlName="documentTitle" type="text" id="{{ i + 'documentTitle' }}" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-60">
+                  <label for="{{ i + 'documentUrl' }}">Document url</label>
+                  <input formControlName="documentUrl" type="text" id="{{ i + 'documentUrl' }}" spellcheck="false" appInput>
+                </div>
+              </div>
+              <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveDocument(i)">Remove</a>
+            </div>
+            <a class="color-ablue--base" (click)="onAddDocument()">Add document</a>
+          </div>
+        </div>
+
+        <div *ngIf="tabKeyValue">
+          <div formArrayName="customData">
+            <div *ngFor="let customDataCtrl of eventForm.get('customData')['controls']; let i = index" [formGroupName]="i" class="right">
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 m-r-20 w-40">
+                  <label for="{{ i + 'customDataKey'}}">Property name</label>
+                  <input formControlName="customDataKey" type="text" id="{{ i + 'customDataKey'}}" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-60">
+                  <label for="{{ i + 'customDataValue'}}">Value</label>
+                  <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
+                </div>
+              </div>
+              <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
+            </div>
+            <a class="color-ablue--base" (click)="onAddCustomKeyValue()">Add key-value pair</a>
+          </div>
+        </div>
+
+        <div *ngIf="tabGroups">
+          <div formArrayName="customDataGroups">
+            <div *ngFor="let customDataGroupCtrl of eventForm.get('customDataGroups')['controls']; let i = index" [formGroupName]="i"
+              class="right">
+              <div class="form-text m-b-20">
+                <label for="{{ i + 'groupName'}}">Group name</label>
+                <input formControlName="groupName" type="text" id="{{ i + 'groupName'}}" spellcheck="false" appInput>
+              </div>
+              <p class="m-t-30 m-b-20 left">Group data (key-value pairs)</p>
+              <!--start Array of key-value in a group-->
+              <div formArrayName="groupValue" class="left">
+                <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index" [formGroupName]="j"
+                  class="right">
+                  <div class="form-fields-coupled">
+                    <div class="form-text m-b-20 m-r-20 w-40">
+                      <label for="{{ j + 'groupItemKey'}}">Property name</label>
+                      <input formControlName="groupItemKey" type="text" id="{{ j + 'groupItemKey'}}" spellcheck="false" appInput>
+                    </div>
+                    <div class="form-text m-b-20 w-60">
+                      <label for="{{ j + 'groupItemValue'}}">Value</label>
+                      <input formControlName="groupItemValue" type="text" id="{{ j + 'groupItemValue'}}" spellcheck="false" appInput>
+                    </div>
+                  </div>
+                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
+                </div>
+                <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
+              </div>
+              <!--end Array of key-value in a group-->
+              <a class="color-blacks--base m-b-20 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>
+            </div>
+            <a class="color-ablue--base" (click)="onAddCustomGroup()">Add new group</a>
+          </div>
+        </div>
+
       </div>
-      <a class="color-ablue--base" (click)="onAddCustomGroup()">Add new group</a>
     </div>
 
     <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
@@ -120,6 +153,6 @@
 
 </div>
 <!--TEST ONLY-->
-<pre *ngIf="json">
+<!-- <pre *ngIf="json">
     {{json}}
-  </pre>
+  </pre> -->

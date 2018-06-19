@@ -1,0 +1,29 @@
+.tabs__menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.tabs__menu__item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  color: #333;
+  border-bottom: none;
+  border-left: none;
+  cursor: pointer;
+  background-color: #fafafa;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+
+  &:first-child {
+    border-left: 1px solid #ddd;
+  }
+}
+
+.tab {
+  padding: 30px 20px;
+  border: 1px solid #ddd;
+}

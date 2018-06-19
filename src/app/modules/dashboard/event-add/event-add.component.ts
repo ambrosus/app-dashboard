@@ -43,6 +43,12 @@ export class EventAddComponent implements OnInit, OnDestroy {
     'GMN'
   ];
   json: string;
+  // Tabs
+  tabBasicInfo = true;
+  tabDocuments = false;
+  tabIdentifiers = false;
+  tabKeyValue = false;
+  tabGroups = false;
 
   constructor(
     private auth: AuthService,
