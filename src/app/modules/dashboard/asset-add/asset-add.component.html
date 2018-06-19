@@ -4,7 +4,32 @@
   <h4 class="center p-h-40 m-b-35" *ngIf="success" style="color: #5cb85c">Success!</h4>
   <h4 class="center p-h-40 m-b-35" *ngIf="errorResponse" style="color: #ea7070">Error creating the asset</h4>
 
-  <div class="m-w-6 block-center p-v-15" [ngClass]="{error: error, success: success}">
+  <div class="m-w-6 block-center p-a-25">
+    <div class="flex flex-direction-r justify-content-fe">
+      <button class="abtn btn-solid-aorange dropdown" appClickThisActive>
+        Choose a form
+        <span class="carrot">&#8227;</span>
+        <ul class="dropdown-menu">
+          <li (click)="json=false">
+            Form
+          </li>
+          <li (click)="json=true">
+            JSON
+          </li>
+        </ul>
+      </button>
+    </div>
+  </div>
+
+  <div class="m-w-6 block-center p-a-25" [ngClass]="{error: error, success: success}" *ngIf="json">
+    <textarea class="jsonInput" placeholder="Insert JSON" spellcheck="false" #jsonInput></textarea>
+    <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-25">
+      <app-spinner *ngIf="spinner"></app-spinner>
+      <a class="abtn m-l-25 btn-solid-ablue" (click)="onJSONSave(jsonInput)">Create asset</a>
+    </div>
+  </div>
+
+  <div class="m-w-6 block-center p-v-15" [ngClass]="{error: error, success: success}" *ngIf="!json">
     <form [formGroup]="assetForm" (ngSubmit)="onSave()" class="form-group" autocomplete="off">
       <!--BASIC INFO-->
       <h4 class="m-t-35 m-b-25">Basic information</h4>
@@ -121,7 +146,7 @@
 
   </div>
   <!--TEST ONLY-->
-  <pre *ngIf="json">
+  <!-- <pre *ngIf="json">
     {{json}}
-  </pre>
+  </pre> -->
 </main>

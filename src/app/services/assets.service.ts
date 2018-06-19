@@ -50,10 +50,10 @@ export class AssetsService {
     });
   }
 
-  createAsset() {
+  createAsset(data) {
     return new Observable(observer => {
       this.ambrosus
-        .createAsset([])
+        .createAsset(data)
         .then(function(resp) {
           return observer.next(resp);
         })
