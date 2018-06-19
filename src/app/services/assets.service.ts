@@ -22,7 +22,10 @@ export class AssetsService {
   constructor(private http: HttpClient, private storage: StorageService) {
     this.secret = this.storage.get('secret');
     this.address = this.storage.get('address');
-    const apiEndpoint = 'https://gateway-dev.ambrosus.com';
+    const apiEndpoint =
+      this.storage.environment === 'dev'
+        ? 'https://gateway-dev.ambrosus.com'
+        : 'https://gateway-test.ambrosus.com';
 
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,

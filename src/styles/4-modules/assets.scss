@@ -102,6 +102,19 @@
   @include min-640 {
     max-width: 40%;
   }
+
+  &.image {
+    @include min-640 {
+      padding: 10px 0;
+      width: 70px;
+      max-width: 70px !important;
+      align-items: center;
+    }
+
+    & img {
+      max-width: 20px;
+    }
+  }
 }
 
 .assets-list__column-content {

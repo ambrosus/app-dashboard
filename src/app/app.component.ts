@@ -5,6 +5,7 @@ import {
   Renderer2,
   OnInit
 } from '@angular/core';
+import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,11 @@ import {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private storage: StorageService
+  ) {}
 
   @HostListener('click', ['$event'])
   onDocumentClick(e) {
@@ -31,7 +36,17 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    const hostname = window.location.hostname;
+    if (
+      !(
+        hostname.startsWith('localhost') ||
+        hostname.startsWith('ambrosus-app-dashboard')
+      )
+    ) {
+      this.storage.environment = 'test';
+    }
     if ('scrollRestoration' in history) {
+      // Scroll restoration
       history.scrollRestoration = 'manual';
     }
   }
