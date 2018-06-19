@@ -1,0 +1,79 @@
+// Themes
+
+// btn themes
+.btn-solid-_1 {
+  background: $_1;
+  color: #fff;
+}
+
+.btn-solid-_2 {
+  background: $_2;
+  color: #fff;
+}
+
+.btn-solid-_3 {
+  background: $_3;
+  color: #fff;
+}
+
+.btn-solid-_4 {
+  background: $_4;
+  color: #fff;
+}
+
+.btn-solid-_5 {
+  background: $_5;
+  color: #fff;
+}
+
+.btn-solid-_6 {
+  background: $_6;
+  color: #fff;
+}
+
+.btn-solid-white {
+  background: #fff;
+  color: $_1;
+}
+
+// AMB button themes
+.btn-solid-ablue {
+  background: $ablue;
+  color: #fff;
+}
+
+.btn-solid-agreen {
+  background: $agreen;
+  color: #fff;
+}
+
+.btn-solid-aorange {
+  background: $aorange;
+  color: #fff;
+}
+
+.btn-solid-awhite {
+  background: #fff;
+  color: $ablue;
+}
+
+// Borders
+.border-bottom {
+  border-bottom: 1px solid #e4e4e4;
+}
+.border-top {
+  border-top: 1px solid #e4e4e4;
+}
+
+// Color classes generators
+
+// .color-whites--base { color: #fff; }
+// .bg-_1--base { background-color: #4155e7; }
+@include map-to-classes($palettes, background-color, '.bg');
+@include map-to-classes($palettes, color, '.color');
+
+// Other
+
+.mute {
+  opacity: 0.6;
+}

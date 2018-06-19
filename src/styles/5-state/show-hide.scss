@@ -1,0 +1,287 @@
+// Show - hide
+
+// Hide
+
+// Hides content hide-* and up, with display: none;
+// ie. hide-768, will hide the element from 768px viewport and up
+
+// It is important that media query breakpoint units, be in 'em'
+// px to em: 320px = 20em; 480px = 30em; 640px = 40em; 768px = 48em; 980px = 61.25em; 1024px = 64em;
+// 1100px = 68.75em; 1200px = 75em; 1440px = 90em; 1650px = 103.125em; 1920px = 120em;
+
+.hide-all {
+  display: none;
+}
+
+// hide-* and up
+.hide-320 {
+  @include min-320 {
+    display: none;
+  }
+}
+.hide-480 {
+  @include min-480 {
+    display: none;
+  }
+}
+.hide-640 {
+  @include min-640 {
+    display: none;
+  }
+}
+.hide-768 {
+  @include min-768 {
+    display: none;
+  }
+}
+.hide-980 {
+  @include min-980 {
+    display: none;
+  }
+}
+.hide-1024 {
+  @include min-1024 {
+    display: none;
+  }
+}
+.hide-1100 {
+  @include min-1100 {
+    display: none;
+  }
+}
+.hide-1200 {
+  @include min-1200 {
+    display: none;
+  }
+}
+.hide-1440 {
+  @include min-1440 {
+    display: none;
+  }
+}
+.hide-1650 {
+  @include min-1650 {
+    display: none;
+  }
+}
+.hide-1920 {
+  @include min-1920 {
+    display: none;
+  }
+}
+
+// Display
+// Block, inline-block and inline
+
+.inline {
+  display: inline;
+}
+.inline-block {
+  display: inline-block;
+}
+.block {
+  display: block;
+}
+
+// Displays the content with inline, inline-block or block value, from a breakpoint and up
+// ie. .display-768-inline-block or .display-1200-block, so .display-*(breakpoint)-*(value)
+// Breakpoints: 320, 480, 640, 768, 980, 1024, 1100, 1200, 1440, 1650 and 1920px
+// Values: inline, inline-block and block
+
+// inline
+
+.display-320-inline {
+  @include min-320 {
+    display: inline;
+  }
+}
+.display-480-inline {
+  @include min-480 {
+    display: inline;
+  }
+}
+.display-640-inline {
+  @include min-640 {
+    display: inline;
+  }
+}
+.display-768-inline {
+  @include min-768 {
+    display: inline;
+  }
+}
+.display-980-inline {
+  @include min-980 {
+    display: inline;
+  }
+}
+.display-1024-inline {
+  @include min-1024 {
+    display: inline;
+  }
+}
+.display-1100-inline {
+  @include min-1100 {
+    display: inline;
+  }
+}
+.display-1200-inline {
+  @include min-1200 {
+    display: inline;
+  }
+}
+.display-1440-inline {
+  @include min-1440 {
+    display: inline;
+  }
+}
+.display-1650-inline {
+  @include min-1650 {
+    display: inline;
+  }
+}
+.display-1920-inline {
+  @include min-1920 {
+    display: inline;
+  }
+}
+
+// inline-block
+
+.display-320-inline-block {
+  @include min-320 {
+    display: inline-block;
+  }
+}
+.display-480-inline-block {
+  @include min-480 {
+    display: inline-block;
+  }
+}
+.display-640-inline-block {
+  @include min-640 {
+    display: inline-block;
+  }
+}
+.display-768-inline-block {
+  @include min-768 {
+    display: inline-block;
+  }
+}
+.display-980-inline-block {
+  @include min-980 {
+    display: inline-block;
+  }
+}
+.display-1024-inline-block {
+  @include min-1024 {
+    display: inline-block;
+  }
+}
+.display-1100-inline-block {
+  @include min-1100 {
+    display: inline-block;
+  }
+}
+.display-1200-inline-block {
+  @include min-1200 {
+    display: inline-block;
+  }
+}
+.display-1440-inline-block {
+  @include min-1440 {
+    display: inline-block;
+  }
+}
+.display-1650-inline-block {
+  @include min-1650 {
+    display: inline-block;
+  }
+}
+.display-1920-inline-block {
+  @include min-1920 {
+    display: inline-block;
+  }
+}
+
+// block
+
+.display-320-block {
+  @include min-320 {
+    display: block;
+  }
+}
+.display-480-block {
+  @include min-480 {
+    display: block;
+  }
+}
+.display-640-block {
+  @include min-320 {
+    display: block;
+  }
+}
+.display-768-block {
+  @include min-768 {
+    display: block;
+  }
+}
+.display-980-block {
+  @include min-980 {
+    display: block;
+  }
+}
+.display-1024-block {
+  @include min-1024 {
+    display: block;
+  }
+}
+.display-1100-block {
+  @include min-1100 {
+    display: block;
+  }
+}
+.display-1200-block {
+  @include min-1200 {
+    display: block;
+  }
+}
+.display-1440-block {
+  @include min-1440 {
+    display: block;
+  }
+}
+.display-1650-block {
+  @include min-1650 {
+    display: block;
+  }
+}
+.display-1920-block {
+  @include min-1920 {
+    display: block;
+  }
+}
+
+// Print hide
+@media print {
+  .hide-print {
+    display: none !important;
+  }
+}
+
+// Print show
+@media print {
+  .display-print-block {
+    display: block;
+  }
+}
+@media print {
+  .display-print-inline-block {
+    display: inline-block;
+  }
+}
+@media print {
+  .display-print-inline {
+    display: inline;
+  }
+}

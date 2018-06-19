@@ -158,13 +158,14 @@ export class AssetAddComponent implements OnInit {
   }
 
   onJSONSave(input) {
-    const json = JSON.parse(input.value);
+    const json = input.value;
     if (json) {
+      const data = JSON.parse(json);
       this.error = false;
       this.errorResponse = false;
       this.spinner = true;
 
-      this.assetService.createAsset(json).subscribe(
+      this.assetService.createAsset(data).subscribe(
         (resp: any) => {
           console.log('Asset and events created: ', resp);
           this.success = true;
