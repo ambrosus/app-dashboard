@@ -6,15 +6,17 @@
 
     <ul class="header-menu">
       <li class="header-menu__item" routerLink="new">
-        <a>
-          <img src="/assets/raster/add.png" alt="Add asset" title="Add asset">
-        </a>
+        <button class="abtn btn-solid-aorange">Create asset</button>
       </li>
       <li id="header-dropdown" class="header-menu__item dropdown" appClickThisActive>
         <a>
           <img src="/assets/raster/arrow-down.png" alt="Menu">
         </a>
         <ul class="dropdown-menu">
+          <li>
+            <p class="m-b-10">Logged in as:</p>
+            {{ address }}
+          </li>
           <li>
             Settings
           </li>

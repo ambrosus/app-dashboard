@@ -1,5 +1,6 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {AuthService} from "app/services/auth.service";
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { AuthService } from 'app/services/auth.service';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-header',
@@ -9,19 +10,18 @@ import {AuthService} from "app/services/auth.service";
 })
 export class HeaderComponent implements OnInit {
   loggedin = false;
+  address: string;
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService, private storage: StorageService) {}
 
   ngOnInit() {
-    this.auth.loggedin.subscribe(
-      resp => {
-        this.loggedin = resp;
-      }
-    );
+    this.address = this.storage.get('address') || '';
+    this.auth.loggedin.subscribe(resp => {
+      this.loggedin = resp;
+    });
   }
 
   onLogout() {
     this.auth.logout();
   }
-
 }

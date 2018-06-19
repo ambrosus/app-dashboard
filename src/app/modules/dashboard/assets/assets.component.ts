@@ -17,12 +17,23 @@ export class AssetsComponent implements OnInit {
   assets: any;
   noEvents = false;
   error = false;
+  selectAllText = 'Select all';
+  // Create events toggle
+  createEvents = false;
 
   constructor(
     private assetsService: AssetsService,
     private el: ElementRef,
     private renderer: Renderer2
   ) {}
+
+  openCreateEvents() {
+    if (this.assetsService.getSelectedAssets().length === 0) {
+      alert(`You didn\'t select any assets. Please do so first.`);
+      return;
+    }
+    this.createEvents = true;
+  }
 
   ngOnInit() {
     this.assetsService.getAssets().subscribe(
@@ -43,6 +54,7 @@ export class AssetsComponent implements OnInit {
   onSelectAll(e, input) {
     const assetsList = this.el.nativeElement.querySelector('.assets-list');
     if (input.checked) {
+      this.selectAllText = 'Unselect all';
       for (const asset of assetsList.children) {
         const checkbox = asset.children[0].children[0];
         checkbox.checked = true;
@@ -50,6 +62,7 @@ export class AssetsComponent implements OnInit {
       }
       this.assetsService.toggleSelect.next('true');
     } else {
+      this.selectAllText = 'Select all';
       for (const asset of assetsList.children) {
         const checkbox = asset.children[0].children[0];
         checkbox.checked = false;

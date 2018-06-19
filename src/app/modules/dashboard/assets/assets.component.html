@@ -1,26 +1,29 @@
 <main class="main">
-  <h1 class="center m-v-20">Assets</h1>
+  <h1 class="center m-v-30">Assets</h1>
   <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
   <h4 class="color-greys--base center p-h-20" *ngIf="error">There was an error getting your assets. Try later, or reload.</h4>
+
+  <!-- overlay + createEvent modal -->
+  <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
+  <app-event-add class="createEvents" *ngIf="createEvents"></app-event-add>
 
   <div class="assets-actions" *ngIf="assets">
     <div>
       <label class="assets-list__label" for="selectAll" (click)="onSelectAll($event, input)">
         <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
-        <span class="capitalize color-ablue--base">Select all</span>
+        <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
         <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
         </svg>
       </label>
-      <button class="abtn btn-solid-aorange dropdown" appClickThisActive>
-        Actions
-        <span class="carrot">&#8227;</span>
+      <div class="dropdown relative p-v-10 capitalize color-ablue--base" style="border-bottom: 1px solid" appClickThisActive>
+        Bulk actions
         <ul class="dropdown-menu">
-          <li routerLink="events/new">
-            New event/s
+          <li (click)="openCreateEvents()">
+            New Events
           </li>
         </ul>
-      </button>
+      </div>
     </div>
   </div>
 

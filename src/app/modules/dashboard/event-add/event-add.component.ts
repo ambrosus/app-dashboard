@@ -57,18 +57,13 @@ export class EventAddComponent implements OnInit, OnDestroy {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
-    if (this.assetService.getSelectedAssets().length === 0) {
-      alert(
-        `You didn\'t select any assets. Please do so on ${
-          location.hostname
-        }/assets`
-      );
-      this.router.navigate(['/assets']);
-    }
+    /* if (this.assetService.getSelectedAssets().length === 0) {
+      alert(`You didn\'t select any assets. Please do so first.`);
+    } */
   }
 
   ngOnDestroy() {
-    this.assetService.unselectAssets();
+    /* this.assetService.unselectAssets(); */
   }
 
   private initForm() {
@@ -195,6 +190,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
             }
           );
       }
+      this.assetService.unselectAssets();
       this.spinner = false;
     } else {
       this.error = true;

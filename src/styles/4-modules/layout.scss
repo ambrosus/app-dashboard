@@ -10,101 +10,10 @@
   align-items: center;
 }
 
-.header {
-  position: relative;
-  z-index: 3;
-}
-
 .main {
   min-height: calc(100vh - 240px);
   position: relative;
   z-index: 1;
-}
-
-.footer {
-  position: relative;
-  z-index: 2;
-}
-
-// Header
-
-.header {
-  height: 60px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.header-container {
-  height: 100%;
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-logo {
-  & img {
-    height: 20px;
-  }
-}
-
-.header-menu {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 100%;
-}
-
-.header-menu__item {
-  margin-right: 14px;
-  position: relative;
-
-  &:last-child {
-    margin-right: 0;
-  }
-
-  & img {
-    width: 25px;
-    transition: transform 0.2s $t1;
-  }
-}
-
-.dropdown-menu {
-  display: none;
-  animation: fadeIn 0.2s $t1;
-  position: absolute;
-  top: 100%;
-  background: #fff;
-  box-shadow: 0 2px 45px 0 rgba(74, 124, 226, 0.17);
-  padding: 0;
-  text-align: center;
-  right: 0;
-  width: 200px;
-  color: $black;
-
-  & li {
-    font-weight: 500;
-    padding: 17px;
-    cursor: pointer;
-    line-height: 1.2;
-  }
-}
-
-.dropdown {
-  &.active {
-    & img {
-      transform: rotate(180deg);
-    }
-
-    & .dropdown-menu {
-      display: block;
-    }
-  }
 }
 
 pre {
@@ -114,4 +23,35 @@ pre {
   padding: 20px;
   border: 1px dashed #aaa;
   max-width: 600px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 90;
+  animation: fadeIn 0.2s;
+}
+
+.createEvents {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: calc(100% - 120px);
+  padding: 40px 0;
+  position: fixed;
+  overflow-y: auto;
+  top: 70px;
+  right: 0;
+  z-index: 999;
+  background-color: #fff;
+  border-radius: 10px;
+
+  @include min-768 {
+    right: 40px;
+  }
 }
