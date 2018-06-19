@@ -31,5 +31,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }
 }

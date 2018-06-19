@@ -1,6 +1,7 @@
 <main class="main">
   <h1 class="center m-v-50">Create asset</h1>
   <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
+  <h4 class="center p-h-40 m-b-30" *ngIf="invalidJSON" style="color: #ea7070">Your JSON is invalid, please fix it first.</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="errorResponse" style="color: #ea7070">Error creating the asset</h4>
 
@@ -20,7 +21,7 @@
     </div>
   </div>
 
-  <div class="m-w-6 block-center p-a-20" [ngClass]="{error: error, success: success}" *ngIf="json">
+  <div class="m-w-6 block-center p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json">
     <textarea class="jsonInput" placeholder="Insert JSON" spellcheck="false" #jsonInput></textarea>
     <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
       <app-spinner *ngIf="spinner"></app-spinner>

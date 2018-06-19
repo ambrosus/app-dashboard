@@ -55,3 +55,18 @@ pre {
     right: 40px;
   }
 }
+
+.breadcrumbs {
+  background: #f5f5f5;
+  padding: 13px 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+
+  & p {
+    cursor: pointer;
+    user-select: none;
+    color: #999;
+  }
+}

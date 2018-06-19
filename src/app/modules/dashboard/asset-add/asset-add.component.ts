@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 export class AssetAddComponent implements OnInit {
   assetForm: FormGroup;
   error = false;
+  invalidJSON = false;
   errorResponse = false;
   success = false;
   spinner = false;
@@ -160,9 +161,18 @@ export class AssetAddComponent implements OnInit {
   onJSONSave(input) {
     const json = input.value;
     if (json) {
-      const data = JSON.parse(json);
       this.error = false;
       this.errorResponse = false;
+      this.invalidJSON = false;
+      let data;
+
+      try {
+        data = JSON.parse(json);
+      } catch (e) {
+        this.invalidJSON = true;
+        return;
+      }
+
       this.spinner = true;
 
       this.assetService.createAsset(data).subscribe(
