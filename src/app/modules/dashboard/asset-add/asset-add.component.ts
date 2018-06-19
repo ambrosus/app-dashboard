@@ -1,5 +1,10 @@
 import { StorageService } from 'app/services/storage.service';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ElementRef
+} from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
 import { AssetsService } from 'app/services/assets.service';
@@ -42,7 +47,7 @@ export class AssetAddComponent implements OnInit {
     'CPID',
     'GMN'
   ];
-  json: string;
+  json = false;
 
   constructor(
     private auth: AuthService,
@@ -152,6 +157,33 @@ export class AssetAddComponent implements OnInit {
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
+  onJSONSave(input) {
+    const json = JSON.parse(input.value);
+    if (json) {
+      this.error = false;
+      this.errorResponse = false;
+      this.spinner = true;
+
+      this.assetService.createAsset(json).subscribe(
+        (resp: any) => {
+          console.log('Asset and events created: ', resp);
+          this.success = true;
+          setTimeout(() => {
+            this.success = false;
+          }, 3000);
+          this.spinner = false;
+        },
+        error => {
+          console.log('Asset and event creation failed: ', error);
+          this.errorResponse = true;
+          this.spinner = false;
+        }
+      );
+    } else {
+      this.error = true;
+    }
+  }
+
   onSave() {
     if (this.assetForm.valid) {
       this.error = false;
@@ -160,7 +192,7 @@ export class AssetAddComponent implements OnInit {
 
       console.log(this.generateJSON('someassetID'));
 
-      this.assetService.createAsset().subscribe(
+      this.assetService.createAsset([]).subscribe(
         (resp: any) => {
           console.log('Asset creation successful ', resp);
           const assetId = resp.data.assetId;

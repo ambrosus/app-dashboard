@@ -12,10 +12,10 @@ declare let AmbrosusSDK: any;
 export class AssetsService {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
-  assets: {};
   inputChanged = new Subject();
+  assets: {};
+  // SDK
   ambrosus;
-  // credentials
   secret;
   address;
 
@@ -33,28 +33,27 @@ export class AssetsService {
 
   // Only one without SDK for now
   getAssets() {
-    const url = `${environment.apiUrls.assets}?createdBy=${this.storage.get(
-      'address'
-    )}`;
+    const params = {
+      createdBy: this.address
+    };
+
     return new Observable(observer => {
-      this.http.get(url).subscribe(
-        (resp: any) => {
-          this.assets = resp;
-          const assetsCopy = Object.assign({}, this.assets);
-          return observer.next(assetsCopy);
-        },
-        (err: any) => {
-          console.log('err ', err);
-          return observer.error(err);
-        }
-      );
+      this.ambrosus
+        .getAssets(params)
+        .then(function(resp) {
+          return observer.next(resp.data);
+        })
+        .catch(function(error) {
+          console.log('Get assets error: ', error);
+          return observer.error(error);
+        });
     });
   }
 
-  createAsset() {
+  createAsset(data) {
     return new Observable(observer => {
       this.ambrosus
-        .createAsset([])
+        .createAsset(data)
         .then(function(resp) {
           return observer.next(resp);
         })
