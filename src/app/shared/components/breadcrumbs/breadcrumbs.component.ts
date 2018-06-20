@@ -58,6 +58,24 @@ export class BreadcrumbsComponent implements OnInit {
         url: '/settings'
       });
     }
+    if (url.startsWith('/about')) {
+      this.breadcrumbs.push({
+        label: 'About',
+        url: '/about'
+      });
+    }
+    if (url.startsWith('/help')) {
+      this.breadcrumbs.push({
+        label: 'Help',
+        url: '/help'
+      });
+    }
+    if (url.startsWith('/terms')) {
+      this.breadcrumbs.push({
+        label: 'Terms of use',
+        url: '/terms'
+      });
+    }
     const lastPart = url.substr(url.lastIndexOf('/') + 1);
     if (lastPart.length > 30) {
       this.breadcrumbs.push({
