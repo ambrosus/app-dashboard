@@ -75,6 +75,24 @@ export class AssetAddComponent implements OnInit {
     }
   }
 
+  insertTab(e, jsonInput) {
+    if (e.keyCode === 9) {
+      const start = jsonInput.selectionStart;
+      const end = jsonInput.selectionEnd;
+
+      const value = jsonInput.value;
+
+      // set textarea value to: text before caret + tab + text after caret
+      jsonInput.value = `${value.substring(0, start)}\t${value.substring(end)}`;
+
+      // put caret at right position again (add one for the tab)
+      jsonInput.selectionStart = jsonInput.selectionEnd = start + 1;
+
+      // prevent the focus lose
+      e.preventDefault();
+    }
+  }
+
   private initForm() {
     this.assetForm = new FormGroup({
       assetType: new FormControl('', [Validators.required]),

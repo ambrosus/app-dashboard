@@ -22,7 +22,8 @@
   </div>
 
   <div class="m-w-6 block-center p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json">
-    <textarea class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" #jsonInput [ngClass]="{ invalid: errorJSON }"></textarea>
+    <textarea class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)"
+      #jsonInput [ngClass]="{ invalid: errorJSON }"></textarea>
     <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
       <app-spinner *ngIf="spinner"></app-spinner>
       <a class="abtn m-l-20 btn-solid-ablue" (click)="onJSONSave(jsonInput)">Create asset</a>
