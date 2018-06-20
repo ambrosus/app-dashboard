@@ -13,13 +13,17 @@ import { AssetsService } from 'app/services/assets.service';
   styleUrls: ['./assets.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class AssetsComponent implements OnInit {
+export class AssetsComponent implements OnInit, OnDestroy {
   assets: any;
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
+  refreshText = 'Refresh';
   // Create events toggle
   createEvents = false;
+  // Subs
+  assetSub;
+  refreshSub;
 
   constructor(
     private assetsService: AssetsService,
@@ -36,19 +40,43 @@ export class AssetsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.assetsService.getAssets().subscribe(
+    this.assetSub = this.assetsService.getAssets().subscribe(
       (resp: any) => {
-        console.log(resp);
         this.assets = resp;
         if (resp.resultCount === 0) {
           this.noEvents = true;
         }
+        setTimeout(() => (this.refreshText = 'Refresh'), 500);
       },
       error => {
         console.log(error);
         this.error = true;
+        setTimeout(() => (this.refreshText = 'Refresh'), 500);
       }
     );
+  }
+
+  refresh() {
+    this.refreshText = 'Refreshing...';
+    this.refreshSub = this.assetsService.getAssets().subscribe(
+      (resp: any) => {
+        this.assets = resp;
+        if (resp.resultCount === 0) {
+          this.noEvents = true;
+        }
+        setTimeout(() => (this.refreshText = 'Refresh'), 500);
+      },
+      error => {
+        console.log(error);
+        this.error = true;
+        setTimeout(() => (this.refreshText = 'Refresh'), 500);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.assetSub.unsubscribe();
+    this.refreshSub.unsubscribe();
   }
 
   onSelectAll(e, input) {

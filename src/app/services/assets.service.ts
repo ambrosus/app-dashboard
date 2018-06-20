@@ -36,7 +36,12 @@ export class AssetsService {
 
   // Only one without SDK for now
   getAssets() {
-    const cachedAssets = this.storage.get('assets') || null;
+    let cachedAssets;
+    try {
+      cachedAssets = JSON.parse(this.storage.get('assets')) || null;
+    } catch (e) {
+      cachedAssets = null;
+    }
     const that = this;
     const params = {
       createdBy: this.address
