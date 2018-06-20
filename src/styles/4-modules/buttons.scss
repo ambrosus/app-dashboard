@@ -51,7 +51,10 @@ button,
   text-align: center;
   position: relative;
   user-select: none;
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
     opacity: 0.85;
