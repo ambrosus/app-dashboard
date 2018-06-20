@@ -3,7 +3,8 @@ import {
   ElementRef,
   OnInit,
   Renderer2,
-  ViewEncapsulation
+  ViewEncapsulation,
+  OnDestroy
 } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 
