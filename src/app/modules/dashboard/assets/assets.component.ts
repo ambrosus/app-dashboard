@@ -7,6 +7,7 @@ import {
   OnDestroy
 } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-assets',
@@ -23,8 +24,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   // Create events toggle
   createEvents = false;
   // Subs
-  assetSub;
-  refreshSub;
+  assetSub: Subscription;
+  refreshSub: Subscription;
 
   constructor(
     private assetsService: AssetsService,
@@ -77,7 +78,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.assetSub.unsubscribe();
-    this.refreshSub.unsubscribe();
+    // this.refreshSub.unsubscribe();
   }
 
   onSelectAll(e, input) {

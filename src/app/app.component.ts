@@ -21,16 +21,18 @@ export class AppComponent implements OnInit {
 
   @HostListener('click', ['$event'])
   onDocumentClick(e) {
-    const dropdownParent = this.el.nativeElement.querySelector('.dropdown');
-    if (!dropdownParent) {
-      return null;
-    }
-    if (dropdownParent.contains(e.target)) {
-      // inside the dropdown
-    } else {
-      // outside the dropdown
-      if (dropdownParent.classList.contains('active')) {
-        this.renderer.removeClass(dropdownParent, 'active');
+    const dropdownParent = this.el.nativeElement.querySelectorAll('.dropdown');
+    for (const element of dropdownParent) {
+      if (!element) {
+        return null;
+      }
+      if (element.contains(e.target)) {
+        // inside the dropdown
+      } else {
+        // outside the dropdown
+        if (element.classList.contains('active')) {
+          this.renderer.removeClass(element, 'active');
+        }
       }
     }
   }
