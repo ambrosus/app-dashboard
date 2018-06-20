@@ -4,6 +4,7 @@
 
 .header {
   position: relative;
+  z-index: 3;
   height: 60px;
   display: flex;
   flex-direction: row;
@@ -42,9 +43,19 @@
   &:last-child {
     margin-right: 0;
   }
+}
 
-  & img {
-    width: 25px;
-    transition: transform 0.2s $t1;
-  }
+.header__profile-icon {
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: $ablue;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: #fff;
 }
