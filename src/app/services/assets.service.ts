@@ -36,14 +36,24 @@ export class AssetsService {
 
   // Only one without SDK for now
   getAssets() {
+    const cachedAssets = this.storage.get('assets') || null;
+    const that = this;
     const params = {
       createdBy: this.address
     };
 
     return new Observable(observer => {
+      if (cachedAssets) {
+        observer.next(cachedAssets);
+      }
+
       this.ambrosus
         .getAssets(params)
         .then(function(resp) {
+          // Caching assets in the storage
+          const _assets = JSON.stringify(resp.data);
+          that.storage.set('assets', _assets);
+
           return observer.next(resp.data);
         })
         .catch(function(error) {
