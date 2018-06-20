@@ -50,21 +50,6 @@ pre {
   background-color: #fff;
 }
 
-.breadcrumbs {
-  background: #f5f5f5;
-  padding: 13px 20px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-
-  & p {
-    cursor: pointer;
-    user-select: none;
-    color: #999;
-  }
-}
-
 .dropdown-menu {
   display: none;
   animation: fadeIn 0.2s $t1;
