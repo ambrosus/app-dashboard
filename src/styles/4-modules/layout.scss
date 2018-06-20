@@ -41,19 +41,14 @@ pre {
   display: block;
   width: 100%;
   max-width: 600px;
-  height: calc(100% - 120px);
+  height: 100%;
   padding: 40px 0;
   position: fixed;
   overflow-y: auto;
-  top: 70px;
+  top: 0;
   right: 0;
   z-index: 999;
   background-color: #fff;
-  border-radius: 10px;
-
-  @include min-768 {
-    right: 40px;
-  }
 }
 
 .breadcrumbs {
@@ -68,5 +63,47 @@ pre {
     cursor: pointer;
     user-select: none;
     color: #999;
+  }
+}
+
+.dropdown-menu {
+  display: none;
+  animation: fadeIn 0.2s $t1;
+  position: absolute;
+  top: 100%;
+  background: #fff;
+  box-shadow: 0 2px 45px 0 rgba(74, 124, 226, 0.17);
+  padding: 0;
+  text-align: center;
+  right: 0;
+  width: 200px;
+  color: $black;
+
+  & li {
+    font-weight: 500;
+    padding: 17px;
+    cursor: pointer;
+    line-height: 1.2;
+    word-break: break-word;
+    border-bottom: 1px solid #f1f1f1;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.dropdown {
+  user-select: none;
+  cursor: pointer;
+
+  &.active {
+    & img {
+      transform: rotate(180deg);
+    }
+
+    & .dropdown-menu {
+      display: block;
+    }
   }
 }

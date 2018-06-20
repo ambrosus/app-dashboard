@@ -10,12 +10,12 @@ import { StorageService } from 'app/services/storage.service';
 })
 export class HeaderComponent implements OnInit {
   loggedin = false;
-  address: string;
+  address = 'test@gmail.com';
 
   constructor(private auth: AuthService, private storage: StorageService) {}
 
   ngOnInit() {
-    this.address = this.storage.get('address') || '';
+    // this.address = this.storage.get('address') || '';
     this.auth.loggedin.subscribe(resp => {
       this.loggedin = resp;
     });
