@@ -12,8 +12,22 @@
   position: relative;
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
   user-select: none;
+  width: 100px;
+  flex: 0 0 100px;
+
+  &__heading {
+    @include max-1024 {
+      width: 120px;
+      flex: 0 0 120px;
+
+      & input {
+        display: none;
+      }
+    }
+  }
 
   & input[type='checkbox'] {
     width: 20px;
@@ -28,16 +42,31 @@
     display: none;
     height: 1em;
     position: absolute;
-    left: 4px;
-    top: 3px;
+    left: 40px;
+    top: 17px;
     cursor: pointer;
+  }
+
+  & img {
+    height: 25px;
+  }
+
+  @include max-1024 {
+    max-height: 45px;
+  }
+
+  @include min-1024 {
+    flex-direction: column;
+    & .checkbox-icon {
+      top: 3px;
+    }
   }
 }
 
 .assets-list__item {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: space-between;
   min-height: 70px;
@@ -49,6 +78,19 @@
   border-radius: 5px;
   font-weight: 500;
 
+  &__header {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    box-shadow: none;
+    z-index: 2;
+
+    &.sticky {
+      position: fixed;
+      top: 0;
+    }
+  }
+
   &:last-of-type {
     margin-bottom: 0;
   }
@@ -59,13 +101,13 @@
   }
 
   & .assets-list__label {
-    margin: 15px 30px;
+    margin: 15px 0;
   }
 
-  @include min-640 {
+  @include min-1024 {
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
     align-items: center;
   }
 }
@@ -73,6 +115,14 @@
 .checkbox--checked {
   & .checkbox-icon {
     display: inline-block;
+  }
+
+  &.assets-list__item__header {
+    background: #fff;
+
+    & .checkbox-icon {
+      display: none;
+    }
   }
 }
 
@@ -97,24 +147,41 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  padding: 10px 30px;
+  padding: 10px 20px;
   width: 100%;
 
-  @include min-640 {
-    max-width: 40%;
+  &__header {
+    display: none;
+
+    @include min-1024 {
+      display: inline-block;
+    }
+  }
+}
+
+.header-control-text {
+  @include max-1024 {
+    margin-top: 0;
+    margin-left: 10px;
+  }
+}
+
+.assets-list__column__image {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  width: 100px;
+  flex: 0 0 100px;
+
+  & img {
+    max-width: 20px;
   }
 
-  &.image {
-    @include min-640 {
-      padding: 10px 0;
-      width: 70px;
-      max-width: 70px !important;
-      align-items: center;
-    }
-
-    & img {
-      max-width: 20px;
-    }
+  @include max-1024 {
+    max-height: 45px;
   }
 }
 
@@ -122,4 +189,16 @@
   color: $black;
   font-weight: 500;
   word-break: break-word;
+}
+
+.assets-header-wrapper {
+  display: none;
+  padding: 0 30px;
+  margin-top: 20px;
+
+  @include min-1024 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 }
