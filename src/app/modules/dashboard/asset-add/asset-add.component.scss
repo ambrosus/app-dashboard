@@ -14,9 +14,13 @@
   white-space: pre;
   line-height: 1.4;
   color: #333;
+  border: 2px solid $agreen;
 
   &::placeholder {
     font-size: 13px;
     color: #777;
+  }
+  &.invalid {
+    border: 2px solid red;
   }
 }

@@ -49,6 +49,7 @@ export class AssetAddComponent implements OnInit {
     'GMN'
   ];
   json = false;
+  errorJSON = false;
 
   constructor(
     private auth: AuthService,
@@ -63,6 +64,15 @@ export class AssetAddComponent implements OnInit {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
+  }
+
+  validJSON(input) {
+    try {
+      JSON.parse(input.value);
+      this.errorJSON = false;
+    } catch (error) {
+      this.errorJSON = true;
+    }
   }
 
   private initForm() {
