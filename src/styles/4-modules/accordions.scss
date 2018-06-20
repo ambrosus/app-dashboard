@@ -1,0 +1,33 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+  cursor: pointer;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.accordion__title {
+  padding: 0 10px 9px 10px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.accordion__content {
+  height: 0px;
+  transition: height 0.3s;
+  overflow: hidden;
+
+  &.active {
+    height: auto;
+    padding: 10px 0;
+  }
+}

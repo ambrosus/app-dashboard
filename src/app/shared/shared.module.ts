@@ -10,6 +10,7 @@ import { SpinnerComponent } from 'app/shared/components/spinner/spinner.componen
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { AccordionDirective } from './directives/accordion.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -23,7 +24,8 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent
+    BreadcrumbsComponent,
+    AccordionDirective
   ],
   declarations: [
     HeaderComponent,
@@ -34,7 +36,8 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent
+    BreadcrumbsComponent,
+    AccordionDirective
   ]
 })
 export class SharedModule {}

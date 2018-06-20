@@ -58,11 +58,8 @@ export class BreadcrumbsComponent implements OnInit {
         url: '/settings'
       });
     }
-    /* const exists = this.breadcrumbs.some(breadcrumb => {
-      return breadcrumb.url === url;
-    }); */
     const lastPart = url.substr(url.lastIndexOf('/') + 1);
-    if (lastPart.length > 10) {
+    if (lastPart.length > 30) {
       this.breadcrumbs.push({
         label: lastPart,
         url: lastPart

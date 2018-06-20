@@ -49,12 +49,6 @@ export class AssetAddComponent implements OnInit {
     'GMN'
   ];
   json = false;
-  // Tabs
-  tabBasicInfo = true;
-  tabImages = false;
-  tabIdentifiers = false;
-  tabKeyValue = false;
-  tabGroups = false;
 
   constructor(
     private auth: AuthService,
