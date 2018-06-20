@@ -5,14 +5,39 @@
     </a>
 
     <ul class="header-menu">
-      <li class="header-menu__item" routerLink="new">
+      <!-- Mobile menu -->
+      <li class="hide-640">
+        <div class="hamburger-icon" appClickThisActive>
+          <div></div>
+          <div></div>
+          <div></div>
+          <!-- Menu -->
+          <nav class="menu-mobile">
+            <p class="menu-mobile__item">
+              {{ address }}
+            </p>
+            <p class="menu-mobile__item">
+              Settings
+            </p>
+            <p class="menu-mobile__item" (click)="onLogout()">
+              Logout
+            </p>
+            <p class="menu-mobile__item menu-mobile__item__button" routerLink="/assets/new">
+              Create asset
+            </p>
+          </nav>
+        </div>
+      </li>
+      <!-- end Mobile menu -->
+
+      <!-- Desktop menu -->
+      <li class="header-menu__item hide-all display-640-inline-block" routerLink="new">
         <button class="abtn btn-solid-aorange">Create asset</button>
       </li>
-      <li id="header-dropdown" class="header-menu__item dropdown" appClickThisActive>
+      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block" appClickThisActive>
         <a class="header__profile-icon">L</a>
         <ul class="dropdown-menu">
           <li>
-            <p class="m-b-10">Logged in as:</p>
             {{ address }}
           </li>
           <li>
@@ -23,6 +48,7 @@
           </li>
         </ul>
       </li>
+      <!-- end Desktop menu -->
     </ul>
   </div>
 </header>
