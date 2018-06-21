@@ -3,6 +3,46 @@
 
 <div class="main">
   <h2 class="center m-v-30">Help</h2>
+  <div class="help-wrapper">
+    <div class="help">
+      <!-- Sidebar -->
+      <div class="help__sidebar-wrapper">
+        <div class="help__sidebar" appSticky [addClass]="'fixed'">
+          <a class="help__sidebar__item" (click)="scroll('item1')">Item 1</a>
+          <a class="help__sidebar__item" (click)="scroll('item2')">Item 2</a>
+          <a class="help__sidebar__item" (click)="scroll('item3')">Item 3</a>
+          <a class="help__sidebar__item" (click)="scroll('item4')">Item 4</a>
+        </div>
+      </div>
+      <!-- Main -->
+      <div class="help__main">
+        <h3 id="item1">Item 1</h3>
+        <p class="m-t-10 m-b-30">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+          dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+          specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
+          essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+          passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+        <h3 id="item2">Item 2</h3>
+        <p class="m-t-10 m-b-30">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+          dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+          specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
+          essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+          passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+        <h3 id="item3">Item 3</h3>
+        <p class="m-t-10 m-b-30">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+          dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+          specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
+          essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+          passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+        <h3 id="item4">Item 4</h3>
+        <p class="m-t-10 m-b-30">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+          dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+          specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
+          essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
+          passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <app-footer></app-footer>
