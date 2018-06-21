@@ -11,6 +11,7 @@ import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loa
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { AccordionDirective } from './directives/accordion.directive';
+import { StickyDirective } from './directives/sticky.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -25,7 +26,8 @@ import { AccordionDirective } from './directives/accordion.directive';
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     BreadcrumbsComponent,
-    AccordionDirective
+    AccordionDirective,
+    StickyDirective
   ],
   declarations: [
     HeaderComponent,
@@ -37,7 +39,8 @@ import { AccordionDirective } from './directives/accordion.directive';
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     BreadcrumbsComponent,
-    AccordionDirective
+    AccordionDirective,
+    StickyDirective
   ]
 })
 export class SharedModule {}

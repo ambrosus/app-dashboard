@@ -20,7 +20,7 @@
   <div class="assets-list" *ngIf="assets">
 
     <!-- Header -->
-    <div class="assets-list__item assets-list__item__header" ng-sticky [offSet]="0" [addClass]="'sticky'">
+    <div class="assets-list__item assets-list__item__header" appSticky [addClass]="'sticky'">
       <label class="assets-list__label assets-list__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
         <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
         <span class="capitalize color-ablue--base" style="margin-top: 6px;">{{ selectAllText }}</span>

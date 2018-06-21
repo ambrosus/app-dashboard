@@ -14,7 +14,6 @@ import { EventAddComponent } from './event-add/event-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from '../../services/storage.service';
 import { QRCodeModule } from 'angular2-qrcode';
-import { NgStickyModule } from 'ng-sticky';
 
 @NgModule({
   imports: [
@@ -23,8 +22,7 @@ import { NgStickyModule } from 'ng-sticky';
     SharedModule,
     ReactiveFormsModule,
     RouterModule,
-    QRCodeModule,
-    NgStickyModule
+    QRCodeModule
   ],
   declarations: [
     AssetComponent,

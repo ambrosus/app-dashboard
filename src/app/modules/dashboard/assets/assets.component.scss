@@ -120,8 +120,10 @@
   &.assets-list__item__header {
     background: #fff;
 
-    & .checkbox-icon {
-      display: none;
+    @include max-1024 {
+      & .checkbox-icon {
+        display: none;
+      }
     }
   }
 }
