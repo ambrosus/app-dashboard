@@ -65,4 +65,9 @@ button,
       transform: rotate(-90deg);
     }
   }
+
+  & img {
+    height: 15px;
+    margin-right: 6px;
+  }
 }

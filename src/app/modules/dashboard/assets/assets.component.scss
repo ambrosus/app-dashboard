@@ -82,6 +82,8 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    flex-wrap: wrap;
+    padding-bottom: 5px;
     box-shadow: none;
     z-index: 2;
 
@@ -109,6 +111,14 @@
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
+  }
+}
+
+.header--sticky {
+  display: none;
+
+  @include min-1024 {
+    display: flex;
   }
 }
 

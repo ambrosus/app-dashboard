@@ -7,20 +7,12 @@
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
   <app-event-add class="createEvents" *ngIf="createEvents"></app-event-add>
 
-  <div class="assets-actions" *ngIf="assets">
-    <div>
-      <div></div>
-      <button class="abtn btn-outline-ablue" (click)="refresh()">{{ refreshText }}</button>
-      <div></div>
-    </div>
-  </div>
-
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
-  <div class="assets-list" *ngIf="assets">
-
+  <div class="assets-list">
     <!-- Header -->
-    <div class="assets-list__item assets-list__item__header" appSticky [addClass]="'sticky'">
+    <!-- Select all -->
+    <div class="assets-list__item assets-list__item__header" style="border-bottom: 1px solid #f1f1f1; border-radius: 0; z-index: 3;">
       <label class="assets-list__label assets-list__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
         <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
         <span class="capitalize color-ablue--base" style="margin-top: 6px;">{{ selectAllText }}</span>
@@ -28,6 +20,7 @@
           <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
         </svg>
       </label>
+      <!-- Bulk actions -->
       <div class="assets-list__label assets-list__label__heading dropdown color-ablue--base" appClickThisActive>
         <img src="/assets/raster/bulk.png">
         <span class="header-control-text" style="margin-top: 1px">Bulk actions</span>
@@ -37,9 +30,21 @@
           </li>
         </ul>
       </div>
+      <!-- Refresh -->
+      <button class="abtn btn-outline-ablue m-l-auto" (click)="refresh()">
+        <img src="./assets/refresh.svg"> {{ refreshText }}</button>
+    </div>
+
+    <div class="assets-list__item assets-list__item__header header--sticky" appSticky [addClass]="'sticky'">
+      <div class="assets-list__label assets-list__label__heading"></div>
+      <div class="assets-list__label assets-list__label__heading"></div>
       <p class="assets-list__column assets-list__column__header">Asset ID</p>
+      <p class="assets-list__column assets-list__column__header">Created by</p>
       <p class="assets-list__column assets-list__column__header">Timestamp</p>
     </div>
+  </div>
+
+  <div class="assets-list" id="assets-list" *ngIf="assets">
 
     <!-- Items -->
     <div class="assets-list__item" *ngFor="let asset of assets.results; let i = index">
@@ -57,6 +62,11 @@
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title hide-1024">Asset ID</p>
         <p class="assets-list__column-content">{{ asset.assetId }}</p>
+      </div>
+
+      <div class="assets-list__column" routerLink="{{asset.assetId}}">
+        <p class="assets-list__column-title hide-1024">Created by</p>
+        <p class="assets-list__column-content">{{ asset.content.idData.createdBy }}</p>
       </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
