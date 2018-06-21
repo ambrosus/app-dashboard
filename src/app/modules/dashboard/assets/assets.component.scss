@@ -218,14 +218,19 @@
 }
 
 .assets-list__item__gapFill {
-  width: 100%;
-  height: 100px;
-  max-height: 0;
-  background: transparent;
-  position: relative;
-  transition: max-height 0.3s;
+  display: none;
 
-  &.gapFill {
-    max-height: 90px;
+  @include min-1024 {
+    display: block;
+    width: 100%;
+    height: 100px;
+    max-height: 0;
+    background: transparent;
+    position: relative;
+    transition: max-height 0.3s;
+
+    &.gapFill {
+      max-height: 90px;
+    }
   }
 }

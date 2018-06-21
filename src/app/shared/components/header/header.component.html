@@ -7,7 +7,7 @@
     <ul class="header-menu">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown" appClickThisActive>
+        <div class="hamburger-icon dropdown" appClickThisActive (click)="overlay = !overlay">
           <div></div>
           <div></div>
           <div></div>
@@ -52,3 +52,4 @@
     </ul>
   </div>
 </header>
+<div class="overlay" *ngIf="overlay" (click)="overlay = !overlay"></div>
