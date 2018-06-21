@@ -35,7 +35,7 @@
         <button class="abtn btn-solid-aorange">Create asset</button>
       </li>
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block" appClickThisActive>
-        <a class="header__profile-icon">L</a>
+        {{ address }}
         <ul class="dropdown-menu">
           <li routerLink="/settings">
             Settings
@@ -44,9 +44,6 @@
             Logout
           </li>
         </ul>
-      </li>
-      <li class="header-menu__item hide-all display-640-inline-block">
-        {{ address }}
       </li>
       <!-- end Desktop menu -->
     </ul>
