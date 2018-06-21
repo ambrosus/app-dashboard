@@ -25,10 +25,10 @@
             "assets": ["src/assets"],
             "styles": [
               "node_modules/normalize.css/normalize.css",
-              "src/styles.scss"
+              "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/sass"]
+              "includePaths": ["./src/styles"]
             },
             "scripts": [
               "node_modules/ambrosus-javascript-sdk/lib/ambrosus.min.js"
@@ -87,10 +87,10 @@
             "assets": ["src/assets"],
             "styles": [
               "node_modules/normalize.css/normalize.css",
-              "src/styles.scss"
+              "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/sass"]
+              "includePaths": ["./src/styles"]
             },
             "scripts": [
               "node_modules/ambrosus-javascript-sdk/lib/ambrosus.min.js"

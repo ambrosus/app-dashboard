@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 export class AssetAddComponent implements OnInit {
   assetForm: FormGroup;
   error = false;
+  invalidJSON = false;
   errorResponse = false;
   success = false;
   spinner = false;
@@ -48,6 +49,7 @@ export class AssetAddComponent implements OnInit {
     'GMN'
   ];
   json = false;
+  errorJSON = false;
 
   constructor(
     private auth: AuthService,
@@ -62,6 +64,33 @@ export class AssetAddComponent implements OnInit {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
+  }
+
+  validJSON(input) {
+    try {
+      JSON.parse(input.value);
+      this.errorJSON = false;
+    } catch (error) {
+      this.errorJSON = true;
+    }
+  }
+
+  insertTab(e, jsonInput) {
+    if (e.keyCode === 9) {
+      const start = jsonInput.selectionStart;
+      const end = jsonInput.selectionEnd;
+
+      const value = jsonInput.value;
+
+      // set textarea value to: text before caret + tab + text after caret
+      jsonInput.value = `${value.substring(0, start)}\t${value.substring(end)}`;
+
+      // put caret at right position again (add one for the tab)
+      jsonInput.selectionStart = jsonInput.selectionEnd = start + 1;
+
+      // prevent the focus lose
+      e.preventDefault();
+    }
   }
 
   private initForm() {
@@ -158,13 +187,23 @@ export class AssetAddComponent implements OnInit {
   }
 
   onJSONSave(input) {
-    const json = JSON.parse(input.value);
+    const json = input.value;
     if (json) {
       this.error = false;
       this.errorResponse = false;
+      this.invalidJSON = false;
+      let data;
+
+      try {
+        data = JSON.parse(json);
+      } catch (e) {
+        this.invalidJSON = true;
+        return;
+      }
+
       this.spinner = true;
 
-      this.assetService.createAsset(json).subscribe(
+      this.assetService.createAsset(data).subscribe(
         (resp: any) => {
           console.log('Asset and events created: ', resp);
           this.success = true;

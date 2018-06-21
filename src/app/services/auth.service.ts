@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Router} from '@angular/router';
-import {environment} from 'environments/environment';
-import {StorageService} from './storage.service';
-import {Subject, Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { environment } from 'environments/environment';
+import { StorageService } from './storage.service';
+import { Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +15,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService) {
-  }
+    private storage: StorageService
+  ) {}
 
   isLoggedIn() {
     const token = this.storage.get('token');
@@ -26,7 +26,7 @@ export class AuthService {
 
   getToken(secret: string) {
     const params = {
-      'validUntil': 1600000000
+      validUntil: 1600000000
     };
     return this.http.post(environment.apiUrls.token, params);
   }
@@ -54,7 +54,8 @@ export class AuthService {
         err => {
           this.storage.delete('secret');
           observer.error(err);
-        });
+        }
+      );
     });
   }
 

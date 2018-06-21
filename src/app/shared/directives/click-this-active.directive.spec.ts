@@ -1,4 +1,4 @@
-import { ClickThisActiveDirective } from './click-this-active.directive';
+/* import { ClickThisActiveDirective } from './click-this-active.directive';
 
 describe('ClickThisActiveDirective', () => {
   it('should create an instance', () => {
@@ -6,3 +6,4 @@ describe('ClickThisActiveDirective', () => {
     expect(directive).toBeTruthy();
   });
 });
+ */

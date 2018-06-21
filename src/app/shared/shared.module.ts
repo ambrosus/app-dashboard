@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {HeaderComponent} from "app/shared/components/header/header.component";
-import {FooterComponent} from "app/shared/components/footer/footer.component";
-import {InputDirective} from "app/shared/directives/input.directive";
-import {OncheckedDirective} from "./directives/onchecked.directive";
-import {ClickThisActiveDirective} from "./directives/click-this-active.directive";
-import {RouterModule} from "@angular/router";
+import { HeaderComponent } from 'app/shared/components/header/header.component';
+import { FooterComponent } from 'app/shared/components/footer/footer.component';
+import { InputDirective } from 'app/shared/directives/input.directive';
+import { OncheckedDirective } from './directives/onchecked.directive';
+import { ClickThisActiveDirective } from './directives/click-this-active.directive';
+import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
-import {AutocompleteinputDirective} from './directives/autocompleteinput.directive';
+import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
+import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { AccordionDirective } from './directives/accordion.directive';
+import { StickyDirective } from './directives/sticky.directive';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule
-  ],
+  imports: [CommonModule, RouterModule],
   exports: [
     CommonModule,
     HeaderComponent,
@@ -24,7 +24,10 @@ import {AutocompleteinputDirective} from './directives/autocompleteinput.directi
     ClickThisActiveDirective,
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
-    AutocompleteinputDirective
+    AutocompleteinputDirective,
+    BreadcrumbsComponent,
+    AccordionDirective,
+    StickyDirective
   ],
   declarations: [
     HeaderComponent,
@@ -34,10 +37,10 @@ import {AutocompleteinputDirective} from './directives/autocompleteinput.directi
     ClickThisActiveDirective,
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
-    AutocompleteinputDirective
-    // For directives, components and pipes
-    // that are to be used in any module/globally.
-    // All of them need to be declared here + exported above
+    AutocompleteinputDirective,
+    BreadcrumbsComponent,
+    AccordionDirective,
+    StickyDirective
   ]
 })
-export class SharedModule { }
+export class SharedModule {}
