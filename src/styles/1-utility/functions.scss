@@ -1,0 +1,32 @@
+// Functions
+
+// px to em
+// em(24px, 16px?) = 1.5em
+@function em($target, $context: 16px) {
+  @return ($target / $context) * 1em;
+}
+
+// px to rem
+// rem(16px) = 1rem
+@function rem($size) {
+  $rem: $size / 16px;
+  @return $rem * 1rem;
+}
+
+// px to pt
+// pt(16) = 12pt
+@function pt($target) {
+  @return ($target * 0.75) * 1pt;
+}
+
+// px to cm
+// cm(37.79) = 1cm
+@function cm($target) {
+  @return ($target * 0.02645833) * 1cm;
+}
+
+// Color palette
+// Calling a color from color palette
+@function palette($palette, $shade: 'base') {
+  @return map-get(map-get($palettes, $palette), $shade);
+}

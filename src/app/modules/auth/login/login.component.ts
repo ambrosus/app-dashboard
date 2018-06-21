@@ -1,8 +1,8 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "app/services/auth.service";
-import {Router} from "@angular/router";
-import {StorageService} from 'app/services/storage.service';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'app/services/auth.service';
+import { Router } from '@angular/router';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
   toggleLogin = true;
 
   // Custom validator for strong password
-  strongPassword(control: FormControl): {[s: string]: boolean} {
+  strongPassword(control: FormControl): { [s: string]: boolean } {
     const hasNumber = /\d/.test(control.value);
     const hasUpper = /[A-Z]/.test(control.value);
     const hasLower = /[a-z]/.test(control.value);
@@ -37,25 +37,27 @@ export class LoginComponent implements OnInit {
     return null;
   }
 
-  constructor(private auth: AuthService,
-              private router: Router,
-              private storage: StorageService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private storage: StorageService
+  ) {
     this.loginForm = new FormGroup({
-      'address': new FormControl(null, [Validators.required]),
-      'secret': new FormControl(null, [Validators.required])
+      address: new FormControl(null, [Validators.required]),
+      secret: new FormControl(null, [Validators.required])
     });
     this.signupForm = new FormGroup({
-      'fullname': new FormControl(null, [Validators.required]),
-      'email': new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, [this.strongPassword]),
-      'country': new FormControl(null, [Validators.required]),
-      'company': new FormControl(null, []),
-      'reason': new FormControl(null, []),
-      'terms': new FormControl(null, [Validators.required])
+      fullname: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      password: new FormControl(null, [this.strongPassword]),
+      country: new FormControl(null, [Validators.required]),
+      company: new FormControl(null, []),
+      reason: new FormControl(null, []),
+      terms: new FormControl(null, [Validators.required])
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   signup() {
     const f = this.signupForm.get('fullname').value;
@@ -84,7 +86,6 @@ export class LoginComponent implements OnInit {
       this.signupForm.reset();
       this.auth.cleanForm.next(true);
     }
-
   }
 
   login() {
@@ -112,5 +113,4 @@ export class LoginComponent implements OnInit {
       this.error = true;
     }
   }
-
 }

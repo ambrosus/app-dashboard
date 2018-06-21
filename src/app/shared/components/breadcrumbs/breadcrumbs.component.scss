@@ -1,0 +1,26 @@
+@import 'var';
+
+.breadcrumbs-wrapper {
+  background: #f5f5f5;
+  padding: 13px 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.breadcrumbs {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+
+  & p {
+    cursor: pointer;
+    user-select: none;
+    color: #999;
+    word-break: break-word;
+  }
+}

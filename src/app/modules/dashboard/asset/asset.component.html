@@ -1,6 +1,18 @@
 <main class="main">
   <h1 class="center m-t-50">Asset</h1>
-  <div class="m-v-50 flex flex-d-r justify-content-c">
+
+  <!-- overlay + createEvent modal -->
+  <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
+  <app-event-add class="createEvents" *ngIf="createEvents"></app-event-add>
+
+  <div class="block-center m-w-6">
+    <div class="m-v-50 flex flex-direction-r justify-content-fe p-h-30">
+      <button class="abtn btn-solid-aorange" (click)="openCreateEvent()">Add Event</button>
+    </div>
+  </div>
+
+  <div class="flex flex-direction-c align-items-c justify-content-c">
     <qr-code [value]="'amb.to/' + assetId" [size]="150"></qr-code>
+    <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">amb.to/{{ assetId }}</a>
   </div>
 </main>
