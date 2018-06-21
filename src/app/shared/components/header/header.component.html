@@ -16,7 +16,7 @@
             <p class="menu-mobile__item">
               {{ address }}
             </p>
-            <p class="menu-mobile__item">
+            <p class="menu-mobile__item" routerLink="/settings">
               Settings
             </p>
             <p class="menu-mobile__item" (click)="onLogout()">
@@ -37,16 +37,16 @@
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block" appClickThisActive>
         <a class="header__profile-icon">L</a>
         <ul class="dropdown-menu">
-          <li>
-            {{ address }}
-          </li>
-          <li>
+          <li routerLink="/settings">
             Settings
           </li>
           <li (click)="onLogout()">
             Logout
           </li>
         </ul>
+      </li>
+      <li class="header-menu__item hide-all display-640-inline-block">
+        {{ address }}
       </li>
       <!-- end Desktop menu -->
     </ul>

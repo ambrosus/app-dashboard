@@ -6,6 +6,7 @@ import { AuthGuardLogin } from 'app/modules/auth/auth-guard-login.service';
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
+import { SettingsComponent } from './core/components/settings/settings.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'help', component: HelpComponent },
   { path: 'terms', component: TermsComponent },
   { path: 'about', component: AboutComponent },
+  { path: 'settings', component: SettingsComponent },
   { path: '**', component: NotfoundComponent }
 ];
 
