@@ -20,12 +20,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
-  refreshText = 'Refresh';
   // Create events toggle
   createEvents = false;
   // Subs
   assetSub: Subscription;
-  refreshSub: Subscription;
 
   constructor(
     private assetsService: AssetsService,
@@ -57,27 +55,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     );
   }
 
-  refresh() {
-    this.refreshText = 'Refreshing...';
-    this.refreshSub = this.assetsService.getAssets().subscribe(
-      (resp: any) => {
-        this.assets = resp;
-        if (resp.resultCount === 0) {
-          this.noEvents = true;
-        }
-        setTimeout(() => (this.refreshText = 'Refresh'), 500);
-      },
-      error => {
-        console.log(error);
-        this.error = true;
-        setTimeout(() => (this.refreshText = 'Refresh'), 500);
-      }
-    );
-  }
-
   ngOnDestroy() {
     this.assetSub.unsubscribe();
-    // this.refreshSub.unsubscribe();
   }
 
   onSelectAll(e, input) {

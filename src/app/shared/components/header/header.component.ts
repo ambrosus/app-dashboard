@@ -16,7 +16,6 @@ export class HeaderComponent implements OnInit {
   constructor(private auth: AuthService, private storage: StorageService) {}
 
   ngOnInit() {
-    // this.address = this.storage.get('address') || '';
     this.auth.loggedin.subscribe(resp => {
       this.loggedin = resp;
     });
