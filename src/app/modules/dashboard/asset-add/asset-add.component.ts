@@ -115,7 +115,12 @@ export class AssetAddComponent implements OnInit {
       assetType: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
-      productImage: new FormArray([]),
+      productImage: new FormArray([
+        new FormGroup({
+          imageName: new FormControl('default', [Validators.required]),
+          imageUrl: new FormControl('', [Validators.required])
+        })
+      ]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
       customDataGroups: new FormArray([])
