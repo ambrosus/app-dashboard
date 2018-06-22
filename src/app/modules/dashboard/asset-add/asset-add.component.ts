@@ -3,7 +3,8 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  ElementRef
+  ElementRef,
+  Renderer2
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
@@ -50,12 +51,15 @@ export class AssetAddComponent implements OnInit {
   ];
   json = false;
   errorJSON = false;
+  textArea: any = '';
 
   constructor(
     private auth: AuthService,
     private assetService: AssetsService,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private el: ElementRef,
+    private renderer: Renderer2
   ) {
     this.initForm();
   }
@@ -73,6 +77,19 @@ export class AssetAddComponent implements OnInit {
     } catch (error) {
       this.errorJSON = true;
     }
+  }
+
+  uploadJSON(event) {
+    const file = event.target.files[0];
+    const that = this;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const text = reader.result;
+      that.textArea = text;
+    };
+    reader.readAsText(file);
   }
 
   insertTab(e, jsonInput) {

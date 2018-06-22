@@ -16,11 +16,13 @@ export class StickyDirective implements OnInit {
   offset = 0;
 
   @Input() addClass = 'fixed';
+  @Input() offsetTop = 0;
 
   constructor(private el: ElementRef, private render: Renderer2) {}
 
   ngOnInit() {
-    this.offset = this.el.nativeElement.offsetTop;
+    /* this.offset = this.el.nativeElement.offsetTop; */
+    this.offset = this.el.nativeElement.getBoundingClientRect().top;
   }
 
   private addSticky() {
@@ -41,7 +43,10 @@ export class StickyDirective implements OnInit {
       document.body.scrollTop ||
       0;
 
-    if (this.windowOffsetTop - this.offset > this.offset) {
+    /* console.log('windowOffsetTop: ', this.windowOffsetTop);
+    console.log('offsetTop: ', this.offset); */
+
+    if (this.windowOffsetTop + this.offsetTop > this.offset) {
       this.addSticky();
     } else {
       this.removeSticky();
