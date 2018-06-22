@@ -1,4 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewEncapsulation,
+  ElementRef,
+  Renderer2
+} from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
 import { AssetsService } from 'app/services/assets.service';
@@ -42,13 +49,15 @@ export class EventAddComponent implements OnInit, OnDestroy {
     'CPID',
     'GMN'
   ];
-  json: string;
+  json: any;
 
   constructor(
     private auth: AuthService,
     private assetService: AssetsService,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private el: ElementRef,
+    private renderer: Renderer2
   ) {
     this.initForm();
   }
@@ -60,6 +69,17 @@ export class EventAddComponent implements OnInit, OnDestroy {
     /* if (this.assetService.getSelectedAssets().length === 0) {
       alert(`You didn\'t select any assets. Please do so first.`);
     } */
+  }
+
+  tabOpen(open, element) {
+    this.json = open === 'form' ? false : true;
+    const tabHeaderItems = this.el.nativeElement.querySelectorAll(
+      '.tab_header_item'
+    );
+    for (const item of tabHeaderItems) {
+      this.renderer.removeClass(item, 'active');
+    }
+    this.renderer.addClass(element, 'active');
   }
 
   ngOnDestroy() {
