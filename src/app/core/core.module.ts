@@ -7,11 +7,12 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TermsComponent } from './components/terms/terms.component';
 import { AboutComponent } from './components/about/about.component';
 import { HelpComponent } from './components/help/help.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent],
+  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

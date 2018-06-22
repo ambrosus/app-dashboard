@@ -7,7 +7,7 @@
     <ul class="header-menu">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown" appClickThisActive>
+        <div class="hamburger-icon dropdown" appClickThisActive (click)="overlay = !overlay">
           <div></div>
           <div></div>
           <div></div>
@@ -16,7 +16,7 @@
             <p class="menu-mobile__item">
               {{ address }}
             </p>
-            <p class="menu-mobile__item">
+            <p class="menu-mobile__item" routerLink="/settings">
               Settings
             </p>
             <p class="menu-mobile__item" (click)="onLogout()">
@@ -34,13 +34,10 @@
       <li class="header-menu__item hide-all display-640-inline-block" routerLink="new">
         <button class="abtn btn-solid-aorange">Create asset</button>
       </li>
-      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block" appClickThisActive>
-        <a class="header__profile-icon">L</a>
+      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
+        {{ address }}
         <ul class="dropdown-menu">
-          <li>
-            {{ address }}
-          </li>
-          <li>
+          <li routerLink="/settings">
             Settings
           </li>
           <li (click)="onLogout()">
@@ -52,3 +49,4 @@
     </ul>
   </div>
 </header>
+<div class="overlay" *ngIf="overlay" (click)="overlay = !overlay"></div>

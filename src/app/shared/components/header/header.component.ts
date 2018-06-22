@@ -11,6 +11,7 @@ import { StorageService } from 'app/services/storage.service';
 export class HeaderComponent implements OnInit {
   loggedin = false;
   address = 'test@gmail.com';
+  overlay = false;
 
   constructor(private auth: AuthService, private storage: StorageService) {}
 

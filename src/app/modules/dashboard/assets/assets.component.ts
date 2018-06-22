@@ -48,12 +48,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
         if (resp.resultCount === 0) {
           this.noEvents = true;
         }
-        setTimeout(() => (this.refreshText = 'Refresh'), 500);
+        console.log(resp);
       },
       error => {
         console.log(error);
         this.error = true;
-        setTimeout(() => (this.refreshText = 'Refresh'), 500);
       }
     );
   }
@@ -82,7 +81,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   onSelectAll(e, input) {
-    const assetsList = this.el.nativeElement.querySelector('.assets-list');
+    const assetsList = this.el.nativeElement.querySelector('#assets-list');
     if (input.checked) {
       this.selectAllText = 'Unselect all';
       for (const asset of assetsList.children) {

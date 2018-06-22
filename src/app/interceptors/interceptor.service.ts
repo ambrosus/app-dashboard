@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpHeaders,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { StorageService } from '../services/storage.service';
@@ -9,7 +16,6 @@ import { environment } from 'environments/environment';
   providedIn: 'root'
 })
 export class InterceptorService implements HttpInterceptor {
-
   // HttpCall interceptor
   // to start and stop youtube like, top loader indicator
 
@@ -17,10 +23,13 @@ export class InterceptorService implements HttpInterceptor {
     // private loader: NgProgress
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     // start loader
     // this.loader.start();
-    const token = this.storage.get('token');
+    const token = this.storage.get('token') || null;
     const secret = this.storage.get('secret');
     const address = this.storage.get('address');
 
@@ -29,17 +38,17 @@ export class InterceptorService implements HttpInterceptor {
     if (req.url === `${environment.apiUrls.address}${address}`) {
       request = req.clone({
         headers: new HttpHeaders({
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `AMB_TOKEN ${token}`
+          Authorization: `AMB_TOKEN ${token}`
         })
       });
     } else {
       request = req.clone({
         headers: new HttpHeaders({
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `AMB ${secret}`
+          Authorization: `AMB ${secret}`
         })
       });
     }

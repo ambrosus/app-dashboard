@@ -1,3 +1,4 @@
+import { StorageService } from './../../../services/storage.service';
 import { AssetsService } from './../../../services/assets.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -10,10 +11,12 @@ import { ActivatedRoute } from '@angular/router';
 export class AssetComponent implements OnInit {
   assetId: string;
   createEvents = false;
+  hostLink = 'amb.to';
 
   constructor(
     private route: ActivatedRoute,
-    private assetService: AssetsService
+    private assetService: AssetsService,
+    private storage: StorageService
   ) {}
 
   openCreateEvent() {
@@ -23,6 +26,10 @@ export class AssetComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.storage.environment === 'dev') {
+      this.hostLink = 'angular-amb-to-stage.herokuapp.com';
+    }
+
     this.route.params.subscribe(params => {
       this.assetId = params.assetid;
     });
