@@ -66,9 +66,6 @@ export class EventAddComponent implements OnInit, OnDestroy {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
-    /* if (this.assetService.getSelectedAssets().length === 0) {
-      alert(`You didn\'t select any assets. Please do so first.`);
-    } */
   }
 
   tabOpen(open, element) {
@@ -94,7 +91,26 @@ export class EventAddComponent implements OnInit, OnDestroy {
       documents: new FormArray([]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
-      customDataGroups: new FormArray([])
+      customDataGroups: new FormArray([]),
+      location: new FormGroup({
+        location: new FormGroup({
+          type: new FormControl('', [Validators.required]),
+          geometry: new FormGroup({
+            type: new FormControl('', [Validators.required]),
+            coordinates: new FormArray([
+              new FormGroup({
+                lat: new FormControl('', [Validators.required]),
+                lng: new FormControl('', [Validators.required])
+              })
+            ])
+          })
+        }),
+        name: new FormControl('', [Validators.required]),
+        city: new FormControl('', [Validators.required]),
+        country: new FormControl('', [Validators.required]),
+        locationId: new FormControl('', [Validators.required]),
+        gln: new FormControl('', [Validators.required])
+      })
     });
   }
 
@@ -185,7 +201,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
       this.errorResponse = false;
       this.spinner = true;
 
-      console.log(this.generateJSON('someassetid'));
+      /* console.log(this.generateJSON('someassetid')); */
 
       // create event for each selected asset
       const selectedAssets = this.assetService.getSelectedAssets();
@@ -264,6 +280,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
     event['content']['data'].push(basicAndCustom);
 
+    // Identifiers
+
     const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
@@ -279,9 +297,42 @@ export class EventAddComponent implements OnInit, OnDestroy {
       event['content']['data'].push(identifiers);
     }
 
+    // Location
+
+    const _location = this.eventForm.get('location');
+    const location = {
+      type: 'ambrosus.event.location',
+      location: {
+        type: _location.get('location').get('type').value,
+        geometry: {
+          type: _location
+            .get('location')
+            .get('geometry')
+            .get('type').value,
+          coordinates: [
+            _location
+              .get('location')
+              .get('geometry')
+              .get('coordinates')
+              ['controls'][0].get('lat').value,
+            _location
+              .get('location')
+              .get('geometry')
+              .get('coordinates')
+              ['controls'][0].get('lng').value
+          ]
+        }
+      },
+      name: _location.get('name').value,
+      city: _location.get('city').value,
+      country: _location.get('country').value,
+      locationId: _location.get('locationId').value,
+      GLN: _location.get('gln').value
+    };
+    event['content']['data'].push(location);
+
     const json = JSON.stringify(event, null, 2);
 
     return event;
-    /* this.json = json; */
   }
 }

@@ -83,9 +83,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    box-shadow: 0 2px 20px 0 rgba(74, 124, 226, 0.09);
     padding: 0 15px;
-    background: #f5f5f5;
+    background: #fff;
+    border: 2px solid #f1f1f1;
   }
 }
 
@@ -102,9 +102,9 @@
     left: 0;
     font-size: 14px;
     font-family: $font-family--secondary;
-    box-shadow: 0 2px 20px 0 rgba(74, 124, 226, 0.09);
     padding: 15px;
-    background: #f5f5f5;
+    background: #fff;
+    border: 2px solid #f1f1f1;
   }
 }
 
@@ -117,8 +117,9 @@
     width: 20px;
     height: 20px;
     border-radius: 5px;
-    background: rgba(80, 120, 241, 0.1);
     margin-right: 8px;
+    background: #fff;
+    border: 2px solid #f1f1f1;
   }
 
   & .checkbox-icon {

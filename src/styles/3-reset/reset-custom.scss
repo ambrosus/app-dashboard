@@ -76,6 +76,11 @@ select::-ms-expand {
   display: none;
 }
 
+input[disabled] {
+  background: #fafafa !important;
+  cursor: not-allowed;
+}
+
 // --- Typography reset ---
 
 h1,

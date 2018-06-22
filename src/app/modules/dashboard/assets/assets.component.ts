@@ -42,6 +42,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.assetSub = this.assetsService.getAssets().subscribe(
       (resp: any) => {
+        this.assets = '';
         this.assets = resp;
         if (resp.resultCount === 0) {
           this.noEvents = true;
