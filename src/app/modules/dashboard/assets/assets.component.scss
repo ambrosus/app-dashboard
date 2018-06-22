@@ -90,6 +90,7 @@
     &.sticky {
       position: fixed;
       top: 0;
+      z-index: 999;
       border-bottom: 1px solid #ddd;
       box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.07);
     }

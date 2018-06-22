@@ -18,6 +18,9 @@ export class AssetsService {
   ambrosus;
   secret;
   address;
+  // Parsing get asset/event
+  currentAssetId: string;
+  asset;
 
   constructor(private http: HttpClient, private storage: StorageService) {
     this.secret = this.storage.get('secret');
@@ -31,7 +34,111 @@ export class AssetsService {
     });
   }
 
-  // Only one without SDK for now
+  isValidURL(str) {
+    const a = document.createElement('a');
+    a.href = str;
+    return a.host && a.host !== window.location.host;
+  }
+
+  sortEventsByTimestamp(a, b) {
+    if (a[1].timestamp > b[1].timestamp) {
+      return -1;
+    }
+    if (a[1].timestamp < b[1].timestamp) {
+      return 1;
+    }
+    return 0;
+  }
+
+  // GET asset and GET event
+
+  getAsset(assetId) {
+    return new Observable(observer => {
+      if (this.currentAssetId && this.currentAssetId === assetId) {
+        return observer.next(this.asset);
+      }
+
+      this.getAssetDetails(assetId).then(response => {
+        this.getEvents(assetId).then(eventsArray => {
+          this.parseEvents(eventsArray).then(parsedData => {
+            this.asset = parsedData;
+            return observer.next(this.handleRedirection(assetId));
+          });
+        });
+      });
+    });
+  }
+
+  getAssetDetails(assetId) {
+    return new Promise((resolve, reject) => {
+      this.ambrosus
+        .getAssetById(assetId)
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  }
+
+  getEvents(assetId) {
+    return new Promise((resolve, reject) => {
+      this.ambrosus
+        .getEvents({ assetId: assetId })
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  }
+
+  parseEvents(eventsArray) {
+    return new Promise((resolve, reject) => {
+      this.ambrosus
+        .parseEvents(eventsArray)
+        .then(response => {
+          resolve(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  }
+
+  handleRedirection(assetId) {
+    this.asset.events = Object.entries(this.asset.events)
+      .sort(this.sortEventsByTimestamp)
+      .reduce((array: any, event) => array.concat(event[1]), []);
+
+    if (
+      this.asset.redirection &&
+      this.isValidURL(this.asset.redirection.targetUrl)
+    ) {
+      // window.location.replace(this.asset.redirection.targetUrl);
+      // return false;
+    } else {
+      delete this.asset.redirection;
+    }
+
+    return this.asset;
+  }
+
+  getEventById(eventId) {
+    return new Observable(observer => {
+      this.asset.events.some(e => {
+        if (e.eventId === eventId) {
+          observer.next(e);
+          return true;
+        }
+      });
+    });
+  }
+
+  // GET assets
+
   getAssets() {
     let cachedAssets;
     try {
@@ -64,6 +171,8 @@ export class AssetsService {
         });
     });
   }
+
+  // CREATE asset and events
 
   createAsset(data) {
     return new Observable(observer => {

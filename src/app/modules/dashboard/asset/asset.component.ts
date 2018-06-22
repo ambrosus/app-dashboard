@@ -9,15 +9,23 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./asset.component.scss']
 })
 export class AssetComponent implements OnInit {
+  asset;
   assetId: string;
   createEvents = false;
   hostLink = 'amb.to';
+
+  objectKeys = Object.keys;
+  expandEvents = [];
 
   constructor(
     private route: ActivatedRoute,
     private assetService: AssetsService,
     private storage: StorageService
   ) {}
+
+  isObject(value) {
+    return typeof value === 'object';
+  }
 
   openCreateEvent() {
     this.assetService.unselectAssets();
@@ -32,6 +40,14 @@ export class AssetComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.assetId = params.assetid;
+      this.assetService.getAsset(this.assetId).subscribe(
+        asset => {
+          console.log(asset);
+        },
+        err => {
+          console.log('err ', err);
+        }
+      );
     });
   }
 }
