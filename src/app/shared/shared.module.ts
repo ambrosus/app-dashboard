@@ -12,6 +12,8 @@ import { AutocompleteinputDirective } from './directives/autocompleteinput.direc
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
+import { LoopIncludePipe } from './pipes/loop-include.pipe';
+import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -27,7 +29,9 @@ import { StickyDirective } from './directives/sticky.directive';
     AutocompleteinputDirective,
     BreadcrumbsComponent,
     AccordionDirective,
-    StickyDirective
+    StickyDirective,
+    LoopIncludePipe,
+    LoopExcludePipe
   ],
   declarations: [
     HeaderComponent,
@@ -40,7 +44,9 @@ import { StickyDirective } from './directives/sticky.directive';
     AutocompleteinputDirective,
     BreadcrumbsComponent,
     AccordionDirective,
-    StickyDirective
+    StickyDirective,
+    LoopIncludePipe,
+    LoopExcludePipe
   ]
 })
 export class SharedModule {}

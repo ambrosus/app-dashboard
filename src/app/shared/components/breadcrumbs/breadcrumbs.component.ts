@@ -76,11 +76,23 @@ export class BreadcrumbsComponent implements OnInit {
         url: '/terms'
       });
     }
-    const lastPart = url.substr(url.lastIndexOf('/') + 1);
-    if (lastPart.length > 30) {
+    if (!url.includes('/events')) {
+      const assetId = url.substr(url.lastIndexOf('/') + 1);
+      if (assetId.length > 30) {
+        this.breadcrumbs.push({
+          label: assetId,
+          url: assetId
+        });
+      }
+    } else {
+      const ids = url.split('/');
       this.breadcrumbs.push({
-        label: lastPart,
-        url: lastPart
+        label: ids[2],
+        url: ids[2]
+      });
+      this.breadcrumbs.push({
+        label: `event: ${ids[ids.length - 1]}`,
+        url: ids[ids.length - 1]
       });
     }
   }

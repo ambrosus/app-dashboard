@@ -17,7 +17,8 @@ const routes: Routes = [
       { path: 'new', component: AssetAddComponent },
       {
         path: ':assetid',
-        component: AssetComponent
+        component: AssetComponent,
+        resolve: { asset: AssetResolver }
       },
       { path: 'events/new', component: EventAddComponent },
       { path: ':assetid/events/:eventid', component: EventComponent }

@@ -9,9 +9,7 @@ import {
 } from '@angular/router';
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AssetResolver implements Resolve<any> {
   constructor(private asset: AssetsService) {}
 
@@ -19,8 +17,7 @@ export class AssetResolver implements Resolve<any> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any> | Promise<any> | any {
-    console.log(route.params.assetId);
-    return this.asset.getAsset(route.params.assetId).pipe(
+    return this.asset.getAsset(route.params.assetid).pipe(
       map(asset => asset),
       first()
     );
