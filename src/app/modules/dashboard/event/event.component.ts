@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-event',
@@ -7,9 +7,7 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls: ['./event.component.scss']
 })
 export class EventComponent implements OnInit {
-
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {}
-
 }

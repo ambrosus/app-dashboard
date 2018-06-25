@@ -1,77 +1,19 @@
-<div class="wrapper">
-  <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="block-center p-t-20" style="max-width: 200px;">
-  <h1 *ngIf="toggleLogin" class="m-t-75 m-b-20 color-blacks--base center">Welcome</h1>
-  <p *ngIf="toggleLogin" class="lead m-b-10 center">Please provide your address and secret
-    <br>to enter your dashboard. Thank you!</p>
+<div class="login">
+  <div class="login__forms">
+    <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="m-h-30 m-t-30" style="max-width: 120px;">
 
-  <div *ngIf="toggleLogin" class="m-w-4 block-center p-v-20 m-b-50" [ngClass]="{error: error}">
-    <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group">
-      <div class="form-text m-b-20">
-        <label for="address">Address</label>
-        <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="secret">Secret</label>
-        <input formControlName="secret" type="password" name="secret" id="secret" spellcheck="false" appInput>
-      </div>
-      <div class="flex flex-direction-r justify-content-fe align-items-c">
-        <app-spinner *ngIf="spinner"></app-spinner>
-        <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
-      </div>
-    </form>
+    <div class="login__forms__wrapper" style="margin-top: 90px">
+      <app-signin *ngIf="signin"></app-signin>
+      <app-signup *ngIf="!signin"></app-signup>
+    </div>
+
+    <p class="center m-b-30 w-100" style="cursor: pointer;">
+      <span class="color-blacks--base" (click)="signin=true">Sign in</span> /
+      <span class="color-blacks--base" (click)="signin=false">Sign up</span>
+    </p>
   </div>
-
-  <!--Sign up form-->
-  <h2 *ngIf="!toggleLogin" class="m-t-75 m-b-20 color-blacks--base center" style="font-size: 24px;">Sign up</h2>
-  <p *ngIf="!toggleLogin" class="lead m-b-10 center" style="font-size: 14px;">Fill in the form below
-    <br>to send a request for access.</p>
-
-  <div *ngIf="!toggleLogin" class="m-w-4 block-center p-v-20 m-b-50" [ngClass]="{error: serror}">
-    <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group">
-      <div class="form-text m-b-20">
-        <label for="fullname">Full name *</label>
-        <input formControlName="fullname" type="text" name="fullname" id="fullname" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="email">Email *</label>
-        <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="password">Password *
-          <span *ngIf="weakPassword">(Weak Password)</span>
-        </label>
-        <input formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="country">Country *</label>
-        <input formControlName="country" type="text" name="country" id="country" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="company">Company</label>
-        <input formControlName="company" type="text" name="company" id="company" spellcheck="false" appInput>
-      </div>
-      <div class="form-textarea m-b-20">
-        <label for="reason">How do you plan to use Ambrosus?</label>
-        <textarea formControlName="reason" name="reason" id="reason" spellcheck="false" appInput>
-        </textarea>
-      </div>
-      <div class="form-checkbox m-b-20">
-        <label for="terms">
-          <input formControlName="terms" type="checkbox" name="terms" id="terms" appOnchecked> I accept Terms & Conditions *
-          <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
-          </svg>
-        </label>
-      </div>
-      <div class="flex flex-direction-r justify-content-fe align-items-c">
-        <app-spinner *ngIf="sspinner"></app-spinner>
-        <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign up</button>
-      </div>
-    </form>
+  <div class="login__background">
+    <h1 class="d1 p-h-50 m-b-10" style="color: #fff; font-weight: 500;">Welcome to Ambrosus!</h1>
+    <h1 class="d5 p-h-50 m-b-75" style="color: #fff; font-weight: 400;">Log in to access your account.</h1>
   </div>
-
-  <p class="center m-b-30" style="cursor: pointer;">
-    <span class="lead" (click)="toggleLogin=true">Login</span> /
-    <span class="lead" (click)="toggleLogin=false">Sign up</span>
-  </p>
 </div>
