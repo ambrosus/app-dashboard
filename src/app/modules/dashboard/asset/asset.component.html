@@ -22,7 +22,7 @@
     <div class="view-header">
       <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300"></qr-code>
       <div>
-        <a href="https:/{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="https://{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
       </div>
       <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEvent()">Add Event</button>

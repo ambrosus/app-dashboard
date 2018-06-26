@@ -16,7 +16,7 @@
     <div class="view-header">
       <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"></qr-code>
       <div>
-        <a href="https:/{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
+        <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
           target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
       </div>
