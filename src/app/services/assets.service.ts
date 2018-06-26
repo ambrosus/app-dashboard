@@ -233,4 +233,12 @@ export class AssetsService {
     // return [...new Set(this.assets)];
     return Array.from(new Set(this.assetsSelected));
   }
+
+  // Map autocomplete
+  mapAutocomplete(input) {
+    const key = 'AIzaSyBnYKBpYeG947FuhlFs98Z6RymFFgJPasc';
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${key}`;
+
+    return this.http.get(url);
+  }
 }
