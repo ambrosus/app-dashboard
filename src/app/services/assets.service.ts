@@ -137,6 +137,19 @@ export class AssetsService {
     });
   }
 
+  SDKgetEventById(eventId) {
+    return new Observable(observer => {
+      this.ambrosus
+        .getEventById(eventId)
+        .then(resp => {
+          return observer.next(resp.data);
+        })
+        .catch(err => {
+          return observer.error(err);
+        });
+    });
+  }
+
   // GET assets
 
   getAssets() {

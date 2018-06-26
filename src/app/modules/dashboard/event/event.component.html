@@ -1,3 +1,87 @@
 <main class="main">
-  <h1 class="center m-t-50">Event</h1>
+
+  <!-- overlay -->
+  <div class="overlay" *ngIf="json" (click)="json = false"></div>
+
+  <!-- JSON view -->
+  <div class="modal-right p-a-10" *ngIf="json">
+    <div class="close" (click)="json = false">
+      <img src="/assets/raster/close.png">
+    </div>
+    <pre [innerHTML]="syntaxHighlight(stringify(event, null, 3))"></pre>
+  </div>
+
+  <!-- Asset header -->
+  <div class="block-center m-w-12">
+    <div class="view-header">
+      <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"></qr-code>
+      <div>
+        <a href="https:/{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
+          target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event details -->
+  <div class="block-center m-w-12 p-h-20">
+    <div class="layout-split">
+
+      <!-- Event objects -->
+      <div class="layout-split__col1">
+        <h3 class="m-t-10 m-b-30 p-h-10">Event data objects</h3>
+
+        <div class="event-object" *ngFor="let eventObject of event.content.data">
+          <!-- key - value -->
+          <div *ngFor="let key of objectKeys(eventObject)">
+            <div class="item" *ngIf="!isObject(eventObject[key])">
+              <p class="item__cell--title">{{ key }}: </p>
+              <p class="item__cell">{{ eventObject[key] }}</p>
+            </div>
+          </div>
+
+          <!-- Groups -->
+          <div *ngFor="let key of objectKeys(eventObject)">
+            <div *ngIf=" isObject(eventObject[key]) " class="group ">
+              <h5 class="m-t-20 m-b-10 p-h-10 capitalize">{{ key }}</h5>
+
+              <div class="item " *ngFor="let k of objectKeys(eventObject[key]) ">
+                <p class="item__cell--title ">{{ k }}:</p>
+
+                <!-- IF OR NOT OBJECT, DISPLAY STRING OR STRINGIFY -->
+                <p class="item__cell " *ngIf="!isObject(eventObject[key][k]) ">{{ eventObject[key][k] }}</p>
+                <p class="item__cell item__cell--json " *ngIf="isObject(eventObject[key][k]) ">{{ valueJSON(stringify(eventObject[key][k], null, 5)) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Basic info -->
+      <div class="layout-split__col1 ">
+        <h3 class="m-t-10 m-b-30 p-h-10 ">Basic info</h3>
+
+        <!-- timestamp -->
+        <div class="item ">
+          <p class="item__cell--title ">Timestamp: </p>
+          <p class="item__cell ">{{ event.content.idData.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.content.idData.timestamp }})</p>
+        </div>
+
+        <div class="item ">
+          <p class="item__cell--title ">EventId: </p>
+          <p class="item__cell ">{{ event.eventId }}</p>
+        </div>
+
+        <div *ngFor="let key of objectKeys(event.content.idData) | loopExclude:[ 'timestamp'] ">
+          <div class="item ">
+            <p class="item__cell--title ">{{ key }}: </p>
+            <p class="item__cell ">{{ event.content.idData[key] }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </main>

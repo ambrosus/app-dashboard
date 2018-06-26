@@ -18,7 +18,6 @@ export class AssetComponent implements OnInit {
   events;
 
   objectKeys = Object.keys;
-  expandEvents = [];
   stringify = JSON.stringify;
 
   constructor(

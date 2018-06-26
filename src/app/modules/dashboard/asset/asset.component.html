@@ -19,7 +19,7 @@
 
   <!-- Asset header -->
   <div class="block-center m-w-12">
-    <div class="asset-header">
+    <div class="view-header">
       <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300"></qr-code>
       <div>
         <a href="https:/{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
@@ -31,10 +31,10 @@
 
   <!-- Asset details -->
   <div class="block-center m-w-12 p-h-20">
-    <div class="asset">
+    <div class="layout-split">
 
       <!-- Details -->
-      <div class="asset-details">
+      <div class="layout-split__col1">
         <h3 class="m-t-10 m-b-30 p-h-10">Asset details</h3>
 
         <!-- image -->
@@ -87,7 +87,7 @@
       </div>
 
       <!-- Events -->
-      <div class="asset-events">
+      <div class="layout-split__col2">
         <h3 class="m-t-10 m-b-30 p-h-10">Events</h3>
 
         <div class="events">

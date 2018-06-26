@@ -7,6 +7,7 @@ import { AssetAddComponent } from './asset-add/asset-add.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
+import { EventResolver } from '../../services/event-resolver.service';
 
 const routes: Routes = [
   {
@@ -21,7 +22,11 @@ const routes: Routes = [
         resolve: { asset: AssetResolver }
       },
       { path: 'events/new', component: EventAddComponent },
-      { path: ':assetid/events/:eventid', component: EventComponent }
+      {
+        path: ':assetid/events/:eventid',
+        component: EventComponent,
+        resolve: { event: EventResolver }
+      }
     ]
   }
 ];
