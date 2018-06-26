@@ -48,7 +48,7 @@
         <!-- timestamp -->
         <div class="item">
           <p class="item__cell--title">Timestamp: </p>
-          <p class="item__cell">{{ asset.info.timestamp * 1000 | date:'d MMM yyyy' }}</p>
+          <p class="item__cell">{{ asset.info.timestamp * 1000 | date:'d MMM yyyy' }} ({{ asset.info.timestamp }})</p>
         </div>
 
         <!-- key - value -->
@@ -91,9 +91,12 @@
         <h3 class="m-t-10 m-b-30 p-h-10">Events</h3>
 
         <div class="events">
-          <div class="event" *ngFor="let event of asset.events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
-            <p>{{ event.name || event.type }}</p>
-            <p>{{ event.timestamp * 1000 | date:'d MMM yyyy' }}</p>
+          <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+            <p>
+              {{ event.name || event.type }}
+              <span class="event__location" *ngIf="event.location">{{ event.location.city || '' }}, {{ event.location.country || event.location.name }}</span>
+            </p>
+            <p>{{ event.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.timestamp }})</p>
           </div>
         </div>
       </div>

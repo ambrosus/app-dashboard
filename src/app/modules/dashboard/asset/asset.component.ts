@@ -15,6 +15,7 @@ export class AssetComponent implements OnInit {
   createEvents = false;
   hostLink = 'amb.to';
   json = false;
+  events;
 
   objectKeys = Object.keys;
   expandEvents = [];
@@ -78,10 +79,23 @@ export class AssetComponent implements OnInit {
       this.assetId = params.assetid;
     });
 
+    // Get asset data
     this.route.data.subscribe(
       data => {
         this.asset = data.asset;
+        this.events = this.asset.events;
         console.log(this.asset);
+
+        // Get unfiltered events
+        /* this.assetService
+          .getEvents(this.assetId)
+          .then((resp: any) => {
+            this.events = resp.results;
+            console.log(resp);
+          })
+          .catch(err => {
+            console.log('Events get error: ', err);
+          }); */
       },
       err => {
         console.log('err ', err);

@@ -147,4 +147,10 @@
       color: #333;
     }
   }
+
+  &__location {
+    font-weight: 400;
+    color: $grey;
+    margin-left: 4px;
+  }
 }

@@ -94,22 +94,20 @@ export class EventAddComponent implements OnInit, OnDestroy {
       customDataGroups: new FormArray([]),
       location: new FormGroup({
         location: new FormGroup({
-          type: new FormControl('', [Validators.required]),
           geometry: new FormGroup({
-            type: new FormControl('', [Validators.required]),
             coordinates: new FormArray([
               new FormGroup({
-                lat: new FormControl('', [Validators.required]),
-                lng: new FormControl('', [Validators.required])
+                lat: new FormControl(null, []),
+                lng: new FormControl(null, [])
               })
             ])
           })
         }),
-        name: new FormControl('', [Validators.required]),
-        city: new FormControl('', [Validators.required]),
-        country: new FormControl('', [Validators.required]),
-        locationId: new FormControl('', [Validators.required]),
-        gln: new FormControl('', [Validators.required])
+        name: new FormControl(null, []),
+        city: new FormControl(null, []),
+        country: new FormControl(null, []),
+        locationId: new FormControl(null, []),
+        gln: new FormControl(null, [])
       })
     });
   }
@@ -300,36 +298,40 @@ export class EventAddComponent implements OnInit, OnDestroy {
     // Location
 
     const _location = this.eventForm.get('location');
-    const location = {
-      type: 'ambrosus.event.location',
-      location: {
-        type: _location.get('location').get('type').value,
-        geometry: {
-          type: _location
-            .get('location')
-            .get('geometry')
-            .get('type').value,
-          coordinates: [
-            _location
-              .get('location')
-              .get('geometry')
-              .get('coordinates')
-              ['controls'][0].get('lat').value,
-            _location
-              .get('location')
-              .get('geometry')
-              .get('coordinates')
-              ['controls'][0].get('lng').value
-          ]
-        }
-      },
-      name: _location.get('name').value,
-      city: _location.get('city').value,
-      country: _location.get('country').value,
-      locationId: _location.get('locationId').value,
-      GLN: _location.get('gln').value
-    };
-    event['content']['data'].push(location);
+    const lat = _location
+      .get('location')
+      .get('geometry')
+      .get('coordinates')
+      ['controls'][0].get('lat').value;
+    const lng = _location
+      .get('location')
+      .get('geometry')
+      .get('coordinates')
+      ['controls'][0].get('lng').value;
+    const name = _location.get('name').value;
+    const city = _location.get('city').value;
+    const country = _location.get('country').value;
+    const locationId = _location.get('locationId').value;
+    const GLN = _location.get('gln').value;
+
+    if (lat && lng && name && city && country && locationId && GLN) {
+      const location = {
+        type: 'ambrosus.event.location',
+        location: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [lat, lng]
+          }
+        },
+        name: name,
+        city: city,
+        country: country,
+        locationId: locationId,
+        GLN: GLN
+      };
+      event['content']['data'].push(location);
+    }
 
     const json = JSON.stringify(event, null, 2);
 
