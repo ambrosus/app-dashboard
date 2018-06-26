@@ -79,6 +79,17 @@ export class AssetAddComponent implements OnInit {
     }
   }
 
+  tabOpen(open, element) {
+    this.json = open === 'form' ? false : true;
+    const tabHeaderItems = this.el.nativeElement.querySelectorAll(
+      '.tab_header_item'
+    );
+    for (const item of tabHeaderItems) {
+      this.renderer.removeClass(item, 'active');
+    }
+    this.renderer.addClass(element, 'active');
+  }
+
   uploadJSON(event) {
     const file = event.target.files[0];
     const that = this;
@@ -115,7 +126,12 @@ export class AssetAddComponent implements OnInit {
       assetType: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
-      productImage: new FormArray([]),
+      productImage: new FormArray([
+        new FormGroup({
+          imageName: new FormControl('default', [Validators.required]),
+          imageUrl: new FormControl('', [Validators.required])
+        })
+      ]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
       customDataGroups: new FormArray([])

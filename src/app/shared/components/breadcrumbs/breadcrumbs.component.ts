@@ -34,12 +34,12 @@ export class BreadcrumbsComponent implements OnInit {
   }
 
   buildCrumbs(url) {
-    if (url.startsWith('/')) {
+    /* if (url.startsWith('/')) {
       this.breadcrumbs.push({
         label: 'Home',
         url: '/'
       });
-    }
+    } */
     if (url.startsWith('/assets')) {
       this.breadcrumbs.push({
         label: 'Assets',
