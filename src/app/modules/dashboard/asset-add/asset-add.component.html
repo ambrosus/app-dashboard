@@ -16,7 +16,6 @@
       <div class="m-w-6 block-center right p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json">
         <label for="file" class="abtn btn-outline-ablue m-b-10" *ngIf="json">Upload JSON</label>
         <input type="file" id="file" class="srt" accept=".json" name="file" *ngIf="json" (change)="uploadJSON($event)" #file>
-
         <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)"
           #jsonInput [ngClass]="{ invalid: errorJSON }" [value]="textArea"></textarea>
         <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
@@ -158,6 +157,7 @@
                           </div>
                         </div>
                         <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
+                        
                       </div>
                       <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
                     </div>
@@ -168,7 +168,6 @@
                 </div>
               </div>
             </div>
-
           </div>
 
           <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">

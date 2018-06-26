@@ -157,6 +157,7 @@
                       <label for="{{ i + 'customDataValue'}}">Value</label>
                       <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
                     </div>
+                    <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
                   </div>
                   <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
                 </div>
