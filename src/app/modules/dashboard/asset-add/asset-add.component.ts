@@ -314,7 +314,6 @@ export class AssetAddComponent implements OnInit {
     asset['content']['data'] = [];
 
     // Identifiers
-
     const ide = this.assetForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
