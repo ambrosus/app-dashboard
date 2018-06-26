@@ -313,17 +313,22 @@ export class AssetAddComponent implements OnInit {
     // asset.content.data
     asset['content']['data'] = [];
 
-    const identifiers = {};
-    identifiers['type'] = 'ambrosus.asset.identifier';
-    identifiers['identifiers'] = {};
-    for (const item of this.assetForm.get('identifiers')['controls']) {
-      identifiers['identifiers'][item.value.identifier] = [];
-      identifiers['identifiers'][item.value.identifier].push(
-        item.value.identifierValue
-      );
-    }
+    // Identifiers
 
-    asset['content']['data'].push(identifiers);
+    const ide = this.assetForm.get('identifiers')['controls'];
+    if (ide.length > 0) {
+      const identifiers = {};
+      identifiers['type'] = 'ambrosus.asset.identifiers';
+      identifiers['identifiers'] = {};
+      for (const item of ide) {
+        identifiers['identifiers'][item.value.identifier] = [];
+        identifiers['identifiers'][item.value.identifier].push(
+          item.value.identifierValue
+        );
+      }
+
+      asset['content']['data'].push(identifiers);
+    }
 
     // Basic + custom data
     const basicAndCustom = {};

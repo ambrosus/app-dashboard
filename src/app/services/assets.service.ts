@@ -236,7 +236,7 @@ export class AssetsService {
 
   // Map autocomplete
   mapAutocomplete(input) {
-    const key = 'AIzaSyBnYKBpYeG947FuhlFs98Z6RymFFgJPasc';
+    const key = 'AIzaSyC3wYqhgA8ia6lF3_K6HYYqoHrJxTwYTZ4';
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${key}`;
 
     return this.http.get(url);

@@ -54,13 +54,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.error = true;
       }
     );
-
-    this.assetsService.mapAutocomplete('Cacak').subscribe(
-      resp => {
-        console.log('MAP ', resp);
-      },
-      err => console.log('MAP ', err)
-    );
   }
 
   ngOnDestroy() {

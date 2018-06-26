@@ -283,7 +283,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
-      identifiers['type'] = 'ambrosus.asset.identifier';
+      identifiers['type'] = 'ambrosus.asset.identifiers';
       identifiers['identifiers'] = {};
       for (const item of ide) {
         identifiers['identifiers'][item.value.identifier] = [];
