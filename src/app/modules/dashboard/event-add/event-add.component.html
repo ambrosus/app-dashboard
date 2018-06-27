@@ -1,4 +1,4 @@
-<h1 class="center m-b-40">Create events</h1>
+<h1 class="center m-v-40">Create events</h1>
 <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="errorResponse" style="color: #ea7070">Error creating the event</h4>
@@ -69,51 +69,42 @@
             </h5>
             <div class="accordion__content" formGroupName="location">
               <div class="form-text m-b-20">
-                <label for="name">Name *</label>
+                <label for="name">Name</label>
                 <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
               </div>
               <div class="form-fields-coupled">
                 <div class="form-text m-b-20 w-50 m-r-10">
-                  <label for="city">City *</label>
+                  <label for="city">City</label>
                   <input formControlName="city" type="text" id="city" spellcheck="false" appInput>
                 </div>
                 <div class="form-text m-b-20 w-50">
-                  <label for="country">Country *</label>
+                  <label for="country">Country</label>
                   <input formControlName="country" type="text" id="country" spellcheck="false" appInput>
                 </div>
               </div>
               <div class="form-fields-coupled">
                 <div class="form-text m-b-20 w-50 m-r-10">
-                  <label for="locationid">Location id *</label>
+                  <label for="locationid">Location id</label>
                   <input formControlName="locationId" type="text" id="locationid" spellcheck="false" appInput>
                 </div>
                 <div class="form-text m-b-20 w-50">
-                  <label for="gln">GLN *</label>
+                  <label for="gln">GLN</label>
                   <input formControlName="gln" type="text" id="gln" spellcheck="false" appInput>
                 </div>
               </div>
-              <p class="m-b-10">Location</p>
               <div formGroupName="location">
-                <div class="form-text m-b-20">
-                  <label for="type1">Location type *</label>
-                  <input formControlName="type" type="text" id="type1" spellcheck="false" appInput>
-                </div>
                 <p class="m-b-10">Geometry</p>
                 <div formGroupName="geometry">
-                  <div class="form-text m-b-20">
-                    <label for="type2">Geometry type *</label>
-                    <input formControlName="type" type="text" id="type2" spellcheck="false" appInput>
-                  </div>
                   <div formArrayName="coordinates">
                     <div *ngFor="let geometryGroup of eventForm.get('location').get('location').get('geometry').get('coordinates')['controls']; let i = index"
                       [formGroupName]="i">
                       <div class="form-fields-coupled">
                         <div class="form-text m-b-20 w-50 m-r-10">
-                          <label for="lat">Latitude *</label>
+                          <label for="lat">Latitude</label>
                           <input formControlName="lat" type="number" id="lat" spellcheck="false" appInput>
                         </div>
                         <div class="form-text m-b-20 w-50">
-                          <label for="lng">Longitude *</label>
+                          <label for="lng">Longitude</label>
                           <input formControlName="lng" type="number" id="lng" spellcheck="false" appInput>
                         </div>
                       </div>
@@ -166,6 +157,7 @@
                       <label for="{{ i + 'customDataValue'}}">Value</label>
                       <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
                     </div>
+                    <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
                   </div>
                   <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
                 </div>

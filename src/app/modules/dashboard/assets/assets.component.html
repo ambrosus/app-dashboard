@@ -5,8 +5,12 @@
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <app-event-add class="createEvents" *ngIf="createEvents"></app-event-add>
-
+  <div class="modal-right" *ngIf="createEvents">
+    <div class="close" (click)="createEvents = false">
+      <img src="/assets/raster/close.png">
+    </div>
+    <app-event-add></app-event-add>
+  </div>
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
   <div class="assets-list">

@@ -202,6 +202,30 @@ h6,
   }
 }
 
+.d5 {
+  font-size: em(20px);
+
+  @include min-768 {
+    font-size: em(24px);
+  }
+
+  @include min-1024 {
+    font-size: em(28px);
+  }
+
+  @include min-1200 {
+    font-size: em(32px);
+  }
+
+  @include min-1440 {
+    font-size: em(36px);
+  }
+
+  @include min-1650 {
+    font-size: em(40px);
+  }
+}
+
 // Other
 blockquote,
 .blockquote {
