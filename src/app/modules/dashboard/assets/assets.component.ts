@@ -39,6 +39,15 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.createEvents = true;
   }
 
+  sort(by, element: ElementRef) {
+    // use by to make an API call
+    // if success asc or des add class
+    this.renderer.removeClass(element, 'asc');
+    this.renderer.removeClass(element, 'des');
+    // Add sort appropirate class
+    this.renderer.addClass(element, 'asc');
+  }
+
   ngOnInit() {
     this.assetSub = this.assetsService.getAssets().subscribe(
       (resp: any) => {

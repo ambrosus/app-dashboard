@@ -41,9 +41,18 @@
     <div class="assets-list__item assets-list__item__header header--sticky" appSticky [addClass]="'sticky'">
       <div class="assets-list__label assets-list__label__heading"></div>
       <div class="assets-list__label assets-list__label__heading"></div>
-      <p class="assets-list__column assets-list__column__header">Asset ID</p>
-      <p class="assets-list__column assets-list__column__header">Created by</p>
-      <p class="assets-list__column assets-list__column__header">Timestamp</p>
+      <p class="assets-list__column assets-list__column__header" (click)="sort('title', title)" #title>Title
+        <span class="sort-icon">&#9662;</span>
+      </p>
+      <p class="assets-list__column assets-list__column__header" (click)="sort('title', createdby)" #createdby>Created by
+        <span class="sort-icon">&#9662;</span>
+      </p>
+      <p class="assets-list__column assets-list__column__header" (click)="sort('title', lastmodified)" #lastmodified>Last modified
+        <span class="sort-icon">&#9662;</span>
+      </p>
+      <p class="assets-list__column assets-list__column__header" (click)="sort('title', timestamp)" #timestamp>Timestamp
+        <span class="sort-icon">&#9662;</span>
+      </p>
     </div>
 
     <div class="assets-list__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div>
@@ -65,13 +74,19 @@
       </a>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title hide-1024">Asset ID</p>
-        <p class="assets-list__column-content">{{ asset.assetId }}</p>
+        <p class="assets-list__column-title hide-1024">Title</p>
+        <p class="assets-list__column-content">Some title here</p>
+        <p class="assets-list__column-meta">{{ asset.assetId }}</p>
       </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title hide-1024">Created by</p>
         <p class="assets-list__column-content">{{ asset.content.idData.createdBy }}</p>
+      </div>
+
+      <div class="assets-list__column" routerLink="{{asset.assetId}}">
+        <p class="assets-list__column-title hide-1024">Last modified</p>
+        <p class="assets-list__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
       </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">

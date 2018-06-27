@@ -171,6 +171,32 @@
     @include min-1024 {
       display: inline-block;
     }
+
+    &.asc {
+      & .sort-icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    &.des {
+      & .sort-icon {
+        transform: rotate(0deg);
+      }
+    }
+  }
+
+  &-content {
+    color: $black;
+    font-weight: 500;
+    word-break: break-word;
+  }
+
+  &-meta {
+    font-size: 11px;
+    word-break: break-word;
+    max-height: 1em;
+    overflow: hidden;
+    margin-top: 2px;
   }
 }
 
@@ -198,12 +224,6 @@
   @include max-1024 {
     max-height: 45px;
   }
-}
-
-.assets-list__column-content {
-  color: $black;
-  font-weight: 500;
-  word-break: break-word;
 }
 
 .assets-header-wrapper {
@@ -234,4 +254,12 @@
       max-height: 90px;
     }
   }
+}
+
+.sort-icon {
+  display: inline-block;
+  color: #777;
+  font-size: 12px;
+  margin-left: 5px;
+  transition: transform 0.2s $t1;
 }

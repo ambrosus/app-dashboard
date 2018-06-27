@@ -43,7 +43,7 @@
           <!-- Groups -->
           <div *ngFor="let key of objectKeys(eventObject)">
             <div *ngIf="isObject(eventObject[key])" class="">
-              <h5 class="m-t-20 m-b-10 p-h-10 capitalize">{{ key }}</h5>
+              <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
 
               <div class="item" *ngFor="let k of objectKeys(eventObject[key])">
                 <p class="item__cell__title ">{{ k }}:</p>
@@ -64,12 +64,12 @@
 
         <!-- timestamp -->
         <div class="item ">
-          <p class="item__cell__title ">Timestamp: </p>
+          <p class="item__cell__title ">timestamp: </p>
           <p class="item__cell ">{{ event.content.idData.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.content.idData.timestamp }})</p>
         </div>
 
         <div class="item ">
-          <p class="item__cell__title ">EventId: </p>
+          <p class="item__cell__title ">eventId: </p>
           <p class="item__cell ">{{ event.eventId }}</p>
         </div>
 
