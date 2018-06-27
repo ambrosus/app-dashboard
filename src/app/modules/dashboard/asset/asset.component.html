@@ -60,18 +60,18 @@
         </div>
 
         <!-- Identifiers -->
-        <div *ngIf="asset.identifiers && asset.identifiers.identifiers" class="group identifiers">
+        <div *ngIf="asset.identifiers && asset.identifiers.identifiers">
           <h5 class="m-t-20 m-b-10 p-h-10">Identifiers</h5>
 
           <div class="item" *ngFor="let key of objectKeys(asset.identifiers.identifiers)">
-            <p class="item__cell--title">{{key}}</p>
+            <p class="item__cell--title">{{key}}: </p>
             <p class="item__cell">{{asset.identifiers.identifiers[key][0]}}</p>
           </div>
         </div>
 
         <!-- Groups -->
         <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
-          <div *ngIf="isObject(asset.info[key])" class="group">
+          <div *ngIf="isObject(asset.info[key])">
             <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
 
             <div class="item" *ngFor="let k of objectKeys(asset.info[key])">

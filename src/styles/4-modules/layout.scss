@@ -176,6 +176,7 @@ pre {
     &--json {
       white-space: pre-wrap;
       width: 100%;
+      text-indent: 16px;
     }
   }
 
@@ -183,13 +184,6 @@ pre {
     width: 100%;
     max-width: 400px;
   }
-}
-
-.group {
-  padding: 3px 5px 10px 5px;
-  border: 2px solid #f1f1f1;
-  margin: 10px 0;
-  border-radius: 4px;
 }
 
 .layout-split {

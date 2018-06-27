@@ -57,10 +57,7 @@ export class AssetComponent implements OnInit {
   }
 
   valueJSON(value) {
-    return value
-      .replace(/"/g, '')
-      .replace(/{/g, '')
-      .replace(/}/g, '');
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   openCreateEvent() {
