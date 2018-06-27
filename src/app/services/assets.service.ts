@@ -2,7 +2,6 @@ import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 
 declare let AmbrosusSDK: any;
 
@@ -45,6 +44,16 @@ export class AssetsService {
       return -1;
     }
     if (a[1].timestamp < b[1].timestamp) {
+      return 1;
+    }
+    return 0;
+  }
+
+  sortEventsAllTimestamp(a, b) {
+    if (a.timestamp > b.timestamp) {
+      return -1;
+    }
+    if (a.timestamp < b.timestamp) {
       return 1;
     }
     return 0;
@@ -134,6 +143,52 @@ export class AssetsService {
           return true;
         }
       });
+    });
+  }
+
+  // All unfiltered events
+  getEventsAll(assetId) {
+    return new Observable(observer => {
+      this.getEvents(assetId)
+        .then((resp: any) => {
+          const events = resp.results.reduce(
+            (_events, { content, eventId }) => {
+              const timestamp = content.idData.timestamp;
+              const author = content.idData.createdBy;
+
+              if (content && content.data) {
+                content.data.filter(obj => {
+                  obj.timestamp = timestamp;
+                  obj.author = author;
+                  obj.name = obj.name || obj.type;
+                  obj.action = obj.type;
+                  obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
+                  obj.eventId = eventId;
+
+                  if (obj.type === 'location') {
+                    content.data.reduce((location, _event) => {
+                      if (_event.type !== 'location') {
+                        _event.location = location;
+                      }
+                    }, obj);
+                  } else {
+                    _events.push(obj);
+                    return obj;
+                  }
+                });
+              }
+              return _events;
+            },
+            []
+          );
+
+          events.sort(this.sortEventsAllTimestamp);
+
+          return observer.next(events);
+        })
+        .catch(err => {
+          return observer.error(err);
+        });
     });
   }
 

@@ -3,13 +3,13 @@
     <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="m-h-30 m-t-30" style="max-width: 120px;">
 
     <div class="login__forms__wrapper" style="margin-top: 90px">
-      <app-signin *ngIf="signin"></app-signin>
-      <app-signup *ngIf="!signin"></app-signup>
+      <app-signin *ngIf="activeTab === 'login'"></app-signin>
+      <app-signup *ngIf="activeTab === 'signup'"></app-signup>
     </div>
 
     <p class="center m-b-30 w-100" style="cursor: pointer;">
-      <span class="color-blacks--base" (click)="signin=true">Sign in</span> /
-      <span class="color-blacks--base" (click)="signin=false">Sign up</span>
+      <span class="color-blacks--base" (click)="activeTab = 'login'">Sign in</span> /
+      <span class="color-blacks--base" (click)="activeTab = 'signup'">Sign up</span>
     </p>
   </div>
   <div class="login__background">

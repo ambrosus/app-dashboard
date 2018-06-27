@@ -1,8 +1,6 @@
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ActivatedRoute, Event, NavigationStart } from '@angular/router';
+import { ActivatedRoute, Event } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UnhandledAlertError } from 'selenium-webdriver';
 
 export interface BreadCrumb {
   label: string;
@@ -39,7 +37,7 @@ export class BreadcrumbsComponent implements OnInit {
     let currentPath = '/';
 
     url.map((path, index) => {
-      currentPath += index = url.length + 1 ? `${path}/` : `${path}`;
+      currentPath += `${path}/`;
       if (!(path === 'events')) {
         this.breadcrumbs.push({
           label: path,

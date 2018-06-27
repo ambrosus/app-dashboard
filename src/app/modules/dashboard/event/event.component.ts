@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { StorageService } from '../../../services/storage.service';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-event',
@@ -43,7 +43,7 @@ export class EventComponent implements OnInit {
         } else if (/null/.test(match)) {
           cls = 'null';
         }
-        return '<span class="' + cls + '">' + match + '</span>';
+        return `<span class="${cls}">${match}</span>`;
       }
     );
   }

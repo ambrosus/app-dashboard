@@ -1,4 +1,4 @@
-import { AssetResolver } from './../../services/asset-resolver.service';
+import { AssetResolver } from 'app/services/asset-resolver.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AssetsComponent } from 'app/modules/dashboard/assets/assets.component';
@@ -7,7 +7,7 @@ import { AssetAddComponent } from './asset-add/asset-add.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
-import { EventResolver } from '../../services/event-resolver.service';
+import { EventResolver } from 'app/services/event-resolver.service';
 
 const routes: Routes = [
   {

@@ -1,5 +1,5 @@
-import { StorageService } from './../../../services/storage.service';
-import { AssetsService } from './../../../services/assets.service';
+import { StorageService } from 'app/services/storage.service';
+import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -51,7 +51,7 @@ export class AssetComponent implements OnInit {
         } else if (/null/.test(match)) {
           cls = 'null';
         }
-        return '<span class="' + cls + '">' + match + '</span>';
+        return `<span class="${cls}">${match}</span>`;
       }
     );
   }
@@ -73,25 +73,21 @@ export class AssetComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.assetId = params.assetid;
+
+      this.assetService.getEventsAll(params.assetid).subscribe(
+        resp => {
+          this.events = resp;
+        },
+        err => {
+          console.log('Events get error: ', err);
+        }
+      );
     });
 
     // Get asset data
     this.route.data.subscribe(
       data => {
         this.asset = data.asset;
-        this.events = this.asset.events;
-        console.log(this.asset);
-
-        // Get unfiltered events
-        /* this.assetService
-          .getEvents(this.assetId)
-          .then((resp: any) => {
-            this.events = resp.results;
-            console.log(resp);
-          })
-          .catch(err => {
-            console.log('Events get error: ', err);
-          }); */
       },
       err => {
         console.log('err ', err);

@@ -28,7 +28,8 @@ export class AuthService {
     const params = {
       validUntil: 1600000000
     };
-    return this.http.post(environment.apiUrls.token, params);
+    const url = `${environment.host}${environment.apiUrls.token}`;
+    return this.http.post(url, params);
   }
 
   login(address: string, secret: string) {
@@ -39,7 +40,9 @@ export class AuthService {
         (resp: any) => {
           this.storage.set('token', resp.token);
           // Address request
-          const url = `${environment.apiUrls.address}${address}`;
+          const url = `${environment.host}${
+            environment.apiUrls.address
+          }${address}`;
           this.http.get(url).subscribe(
             _resp => {
               this.storage.set('address', address);
