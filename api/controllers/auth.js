@@ -129,36 +129,27 @@ exports.signup = (req, res) => {
         }
 
         let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
-        console.log(rawdata);
         let accounts = JSON.parse(rawdata);
 
-        emailExists = accounts.table.some(account => account.email === email);
+        accounts.table.push(newAccount);
 
-        if (!emailExists) {
-          accounts.table.push(newAccount);
+        // Write to a file
+        try {
+          fs.writeFileSync(
+            `${__dirname}/../accounts.json`,
+            JSON.stringify(accounts)
+          );
+          console.log('Success in writing file');
 
-          // Write to a file
-          try {
-            fs.writeFileSync(
-              `${__dirname}/../accounts.json`,
-              JSON.stringify(accounts)
-            );
-            console.log('Success in writing file');
+          res.status(200).json({
+            message: 'Signup successful'
+          });
+        } catch (err) {
+          console.log('Error in writing file');
+          console.log(err);
 
-            res.status(200).json({
-              message: 'Signup successful'
-            });
-          } catch (err) {
-            console.log('Error in writing file');
-            console.log(err);
-
-            res.status(400).json({
-              message: 'Signup failed'
-            });
-          }
-        } else {
           res.status(400).json({
-            message: 'This email is already in use.'
+            message: 'Signup failed'
           });
         }
       }
