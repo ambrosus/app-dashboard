@@ -1,4 +1,5 @@
 <h3 class="p-h-30">Sign in</h3>
+<h4 class="p-h-40 m-v-30" *ngIf="loginFailed" style="color: #ea7070">Login failed</h4>
 <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group login-form" [ngClass]="{ error: error }">
   <div class="form-text m-b-20">
     <label for="email">Email</label>

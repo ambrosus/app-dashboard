@@ -17,6 +17,8 @@ export class SignupComponent implements OnInit {
   spinner = false;
   weakPassword = false;
   passwordsNotMatch = false;
+  signupError = false;
+  signupSuccess = false;
 
   // Custom validator for strong password
   strongPassword(control: FormControl): { [s: string]: boolean } {
@@ -91,9 +93,16 @@ export class SignupComponent implements OnInit {
 
       this.http.post(url, body).subscribe(
         resp => {
+          this.signupSuccess = true;
+          this.signupForm.reset();
+
           console.log('resp ', resp);
         },
         err => {
+          this.error = true;
+          this.signupError = true;
+          this.spinner = false;
+
           console.log('err ', err);
         }
       );

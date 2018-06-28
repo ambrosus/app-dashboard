@@ -1,5 +1,8 @@
 <h3 class="p-h-30">Sign up</h3>
 <h4 class="p-h-40 m-v-30" *ngIf="passwordsNotMatch" style="color: #ea7070">Passwords do not match</h4>
+<h4 class="p-h-40 m-v-30" *ngIf="signupError" style="color: #ea7070">Error signing up.</h4>
+<h4 class="p-h-40 m-v-30" *ngIf="signupSuccess" style="color: green">Signup was successful!
+  <br>You can login now.</h4>
 <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group login-form" [ngClass]="{ error: error }">
   <div class="form-text m-b-20">
     <label for="address">Address *</label>

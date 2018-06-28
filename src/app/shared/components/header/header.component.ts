@@ -10,7 +10,7 @@ import { StorageService } from 'app/services/storage.service';
 })
 export class HeaderComponent implements OnInit {
   loggedin = false;
-  address = 'test@gmail.com';
+  email = '';
   overlay = false;
 
   constructor(private auth: AuthService, private storage: StorageService) {}
@@ -19,6 +19,7 @@ export class HeaderComponent implements OnInit {
     this.auth.loggedin.subscribe(resp => {
       this.loggedin = resp;
     });
+    this.email = this.storage.get('email') || '';
   }
 
   onLogout() {

@@ -66,6 +66,7 @@ export class AuthService {
     this.storage.delete('token');
     this.storage.delete('address');
     this.storage.delete('secret');
+    this.storage.delete('email');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
   }

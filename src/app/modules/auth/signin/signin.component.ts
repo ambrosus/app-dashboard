@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-signin',
@@ -16,11 +17,13 @@ export class SigninComponent implements OnInit {
   loginForm: FormGroup;
   error = false;
   spinner = false;
+  loginFailed = false;
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private http: HttpClient
   ) {
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
@@ -37,25 +40,41 @@ export class SigninComponent implements OnInit {
     if (this.loginForm.valid) {
       this.spinner = true;
       this.error = false;
+      this.loginFailed = false;
+      let address, secret;
 
-      // Get and decode the address and secret
+      const body = {
+        email: email,
+        password: password
+      };
 
-      // Get the token with decoded address and secret
-      // test
-      const address = '0x4d52ffd268B9c5e8157D4b2E89342DdEa161F79F';
-      const secret = '0x2919292749ab4fdf34b1fbb114344f59af96eae79c22afc72c66234ef43c04e0';
-      // test
-      this.auth.login(address, secret).subscribe(
-        resp => {
-          this.spinner = false;
-          this.auth.loggedin.next(true);
-          this.router.navigate(['/assets']);
+      const url = `/api/auth/login`;
+
+      this.http.post(url, body).subscribe(
+        (_resp: any) => {
+          address = _resp.address;
+          secret = _resp.secret;
+          this.storage.set('email', email);
+
+          // Get the token
+          this.auth.login(address, secret).subscribe(
+            resp => {
+              this.spinner = false;
+              this.auth.loggedin.next(true);
+              this.router.navigate(['/assets']);
+            },
+            err => {
+              console.log(err);
+              this.error = true;
+              this.loginFailed = true;
+              this.spinner = false;
+              this.auth.cleanForm.next(true);
+            }
+          );
         },
         err => {
-          console.log(err);
           this.error = true;
-          this.spinner = false;
-          this.auth.cleanForm.next(true);
+          this.loginFailed = true;
         }
       );
     } else {
