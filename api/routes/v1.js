@@ -18,6 +18,6 @@ apiRoutes.use('/auth', authRoutes);
 
 // Auth routes
 authRoutes.post('/signup', SignupController.signup);
-authRoutes.get('/login', LoginController.login);
+authRoutes.post('/login', LoginController.login);
 
 module.exports = apiRoutes;
