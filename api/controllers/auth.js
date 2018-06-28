@@ -25,6 +25,12 @@ exports.login = (req, res) => {
     });
   }
 
+  if (!fs.existsSync(`${__dirname}/../accounts.json`)) {
+    res.status(400).json({
+      message: 'You have to signup first.'
+    });
+  }
+
   // Read the file
   let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
   let accounts = JSON.parse(rawdata);
@@ -34,8 +40,8 @@ exports.login = (req, res) => {
   emailExists = accounts.table.map(account => {
     if (account.email === email) {
       // Decrypt addressSecret
-      let decrypted = decrypt(account.addressSecret, password);
-      decrypted = decrypted.split('.');
+      let decrypted = decrypt(account.token, password);
+      decrypted = decrypted.split('|||');
 
       if (decrypted.length < 2) {
         return res.status(401).json({
@@ -71,43 +77,91 @@ exports.signup = (req, res) => {
   }
 
   const newAccount = {
-    addressSecret: encrypt(`${address}.${secret}`, password),
+    token: encrypt(`${address}|||${secret}`, password),
     full_name: full_name,
     company: company,
     email: email
   };
 
   // Read the file
-  let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
-  let accounts = JSON.parse(rawdata);
+  if (fs.existsSync(`${__dirname}/../accounts.json`)) {
+    let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
+    let accounts = JSON.parse(rawdata);
 
-  emailExists = accounts.table.some(account => account.email === email);
+    emailExists = accounts.table.some(account => account.email === email);
 
-  if (!emailExists) {
-    accounts.table.push(newAccount);
+    if (!emailExists) {
+      accounts.table.push(newAccount);
 
-    // Write to a file
-    try {
-      fs.writeFileSync(
-        `${__dirname}/../accounts.json`,
-        JSON.stringify(accounts)
-      );
-      console.log('Success in writing file');
+      // Write to a file
+      try {
+        fs.writeFileSync(
+          `${__dirname}/../accounts.json`,
+          JSON.stringify(accounts)
+        );
+        console.log('Success in writing file');
 
-      res.status(200).json({
-        message: 'Signup successful'
-      });
-    } catch (err) {
-      console.log('Error in writing file');
-      console.log(err);
+        res.status(200).json({
+          message: 'Signup successful'
+        });
+      } catch (err) {
+        console.log('Error in writing file');
+        console.log(err);
 
+        res.status(400).json({
+          message: 'Signup failed'
+        });
+      }
+    } else {
       res.status(400).json({
-        message: 'Signup failed'
+        message: 'This email is already in use.'
       });
     }
   } else {
-    res.status(400).json({
-      message: 'This email is already in use.'
-    });
+    fs.writeFile(
+      `${__dirname}/../accounts.json`,
+      JSON.stringify({ table: [] }),
+      function(error, data) {
+        if (error) {
+          return res.status(400).json({
+            message: 'Error occured.'
+          });
+        }
+
+        let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
+        console.log(rawdata);
+        let accounts = JSON.parse(rawdata);
+
+        emailExists = accounts.table.some(account => account.email === email);
+
+        if (!emailExists) {
+          accounts.table.push(newAccount);
+
+          // Write to a file
+          try {
+            fs.writeFileSync(
+              `${__dirname}/../accounts.json`,
+              JSON.stringify(accounts)
+            );
+            console.log('Success in writing file');
+
+            res.status(200).json({
+              message: 'Signup successful'
+            });
+          } catch (err) {
+            console.log('Error in writing file');
+            console.log(err);
+
+            res.status(400).json({
+              message: 'Signup failed'
+            });
+          }
+        } else {
+          res.status(400).json({
+            message: 'This email is already in use.'
+          });
+        }
+      }
+    );
   }
 };
