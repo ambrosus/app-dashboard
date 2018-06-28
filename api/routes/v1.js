@@ -1,8 +1,7 @@
 const express = require('express');
 
 // Controllers
-const LoginController = require('../controllers/login');
-const SignupController = require('../controllers/signup');
+const AuthController = require('../controllers/auth');
 
 // API routes
 const apiRoutes = express.Router();
@@ -17,7 +16,7 @@ const authRoutes = express.Router();
 apiRoutes.use('/auth', authRoutes);
 
 // Auth routes
-authRoutes.post('/signup', SignupController.signup);
-authRoutes.post('/login', LoginController.login);
+authRoutes.post('/signup', AuthController.signup);
+authRoutes.post('/login', AuthController.login);
 
 module.exports = apiRoutes;
