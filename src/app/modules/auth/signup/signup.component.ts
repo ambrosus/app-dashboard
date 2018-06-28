@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-signup',
@@ -32,7 +33,8 @@ export class SignupComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private http: HttpClient
   ) {
     this.signupForm = new FormGroup({
       address: new FormControl(null, [Validators.required]),
@@ -51,7 +53,7 @@ export class SignupComponent implements OnInit {
   signup() {
     const address = this.signupForm.get('address').value;
     const secret = this.signupForm.get('secret').value;
-    const fullname = this.signupForm.get('fullname').value;
+    const full_name = this.signupForm.get('fullname').value;
     const company = this.signupForm.get('company').value;
     const email = this.signupForm.get('email').value;
     const password = this.signupForm.get('password').value;
@@ -76,7 +78,25 @@ export class SignupComponent implements OnInit {
       this.weakPassword = false;
       this.passwordsNotMatch = false;
 
-      // Encrypt the private address.privatekey
+      const body = {
+        address: address,
+        secret: secret,
+        full_name: full_name,
+        company: company,
+        email: email,
+        password: password
+      };
+
+      const url = `/api/auth/signup`;
+
+      this.http.post(url, body).subscribe(
+        resp => {
+          console.log('resp ', resp);
+        },
+        err => {
+          console.log('err ', err);
+        }
+      );
     } else {
       this.error = true;
     }
