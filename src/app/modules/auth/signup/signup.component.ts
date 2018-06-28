@@ -12,19 +12,18 @@ import { StorageService } from 'app/services/storage.service';
 export class SignupComponent implements OnInit {
   // Sign up form
   signupForm: FormGroup;
-  serror = false;
-  sspinner = false;
+  error = false;
+  spinner = false;
   weakPassword = false;
+  passwordsNotMatch = false;
 
   // Custom validator for strong password
   strongPassword(control: FormControl): { [s: string]: boolean } {
     const hasNumber = /\d/.test(control.value);
     const hasUpper = /[A-Z]/.test(control.value);
     const hasLower = /[a-z]/.test(control.value);
-    // console.log('Num, Upp, Low', hasNumber, hasUpper, hasLower);
     const valid = hasNumber && hasUpper && hasLower;
-    if (!valid && control.value && control.value.length > 5) {
-      // return what´s not valid
+    if (!valid && control.value && control.value.length < 5) {
       return { strong: true };
     }
     return null;
@@ -36,12 +35,13 @@ export class SignupComponent implements OnInit {
     private storage: StorageService
   ) {
     this.signupForm = new FormGroup({
+      address: new FormControl(null, [Validators.required]),
+      secret: new FormControl(null, [Validators.required]),
       fullname: new FormControl(null, [Validators.required]),
+      company: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
       password: new FormControl(null, [this.strongPassword]),
-      country: new FormControl(null, [Validators.required]),
-      company: new FormControl(null, []),
-      reason: new FormControl(null, []),
+      passwordConfirm: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.required])
     });
   }
@@ -49,31 +49,36 @@ export class SignupComponent implements OnInit {
   ngOnInit() {}
 
   signup() {
-    const f = this.signupForm.get('fullname').value;
-    const e = this.signupForm.get('email').value;
-    const p = this.signupForm.get('password').value;
-    const cy = this.signupForm.get('country').value;
-    const co = this.signupForm.get('company').value;
-    const r = this.signupForm.get('reason').value;
-    const t = this.signupForm.get('terms').value;
+    const address = this.signupForm.get('address').value;
+    const secret = this.signupForm.get('secret').value;
+    const fullname = this.signupForm.get('fullname').value;
+    const company = this.signupForm.get('company').value;
+    const email = this.signupForm.get('email').value;
+    const password = this.signupForm.get('password').value;
+    const passwordConfirm = this.signupForm.get('passwordConfirm').value;
+    const terms = this.signupForm.get('terms').value;
 
     if (this.signupForm.get('password').hasError('strong')) {
       this.weakPassword = true;
-    } else {
-      this.weakPassword = false;
+      this.error = true;
+      return;
     }
 
-    if (!this.signupForm.valid || !t) {
-      this.serror = true;
-    } else {
-      this.serror = false;
-      this.weakPassword = false;
+    if (password !== passwordConfirm) {
+      this.passwordsNotMatch = true;
+      this.error = true;
+      return;
     }
 
-    if (!this.serror) {
-      // Do something with this info
-      this.signupForm.reset();
-      this.auth.cleanForm.next(true);
+    if (this.signupForm.valid && terms) {
+      this.spinner = true;
+      this.error = false;
+      this.weakPassword = false;
+      this.passwordsNotMatch = false;
+
+      // Encrypt the private address.privatekey
+    } else {
+      this.error = true;
     }
   }
 }

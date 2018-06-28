@@ -1,13 +1,12 @@
-<h3 class="p-h-30">
-  Sign in</h3>
-<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group login-form">
+<h3 class="p-h-30">Sign in</h3>
+<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-group login-form" [ngClass]="{ error: error }">
   <div class="form-text m-b-20">
-    <label for="address">Address</label>
-    <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
+    <label for="email">Email</label>
+    <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
   </div>
   <div class="form-text m-b-20">
-    <label for="secret">Secret</label>
-    <input formControlName="secret" type="password" name="secret" id="secret" spellcheck="false" appInput>
+    <label for="password">Password</label>
+    <input formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
   </div>
   <div class="flex flex-direction-r justify-content-fe align-items-c">
     <app-spinner *ngIf="spinner"></app-spinner>
