@@ -94,6 +94,7 @@ export class SignupComponent implements OnInit {
       this.http.post(url, body).subscribe(
         resp => {
           this.signupSuccess = true;
+          this.spinner = false;
           this.signupForm.reset();
 
           console.log('resp ', resp);
