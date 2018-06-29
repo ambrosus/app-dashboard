@@ -41,7 +41,7 @@
         <div class="item m-b-20 asset-image" *ngIf="asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
           <img src="{{ asset.info.images.default }}">
         </div>
-        <div class="item m-b-20" *ngIf="asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
+        <div class="item m-b-20 asset-image" *ngIf="asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
           <img src="{{ asset.info.images.default.url }}">
         </div>
 
