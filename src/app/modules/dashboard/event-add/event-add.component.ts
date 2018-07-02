@@ -231,6 +231,18 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
       // create event for each selected asset
       const selectedAssets = this.assetService.getSelectedAssets();
+      // Confirmation window
+      const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
+      if (
+        !confirm(
+          `You are about to create an event for ${
+            selectedAssets.length
+          } ${assetsString}, are you sure you want to proceed?`
+        )
+      ) {
+        this.spinner = false;
+        return;
+      }
       for (const assetId of selectedAssets) {
         // Creating events
         this.assetService

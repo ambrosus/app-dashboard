@@ -56,7 +56,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
         if (resp.resultCount === 0) {
           this.noEvents = true;
         }
-        console.log(resp);
       },
       error => {
         console.log(error);
@@ -88,6 +87,5 @@ export class AssetsComponent implements OnInit, OnDestroy {
       this.assetsService.unselectAssets();
       this.assetsService.toggleSelect.next('true');
     }
-    console.log(this.assetsService.getSelectedAssets());
   }
 }
