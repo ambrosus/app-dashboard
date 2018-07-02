@@ -24,6 +24,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
   errorResponse = false;
   success = false;
   spinner = false;
+  locationError = false;
   identifiersAutocomplete = [
     'UPCE',
     'UPC12',
@@ -197,9 +198,36 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (this.eventForm.valid) {
       this.error = false;
       this.errorResponse = false;
+      this.locationError = false;
+
+      // Check for location error
+      const location = this.eventForm.get('location');
+      const lat = location
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lat').value;
+      const lng = location
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lng').value;
+      const name = location.get('name').value;
+      const city = location.get('city').value;
+      const country = location.get('country').value;
+      const locationId = location.get('locationId').value;
+      const GLN = location.get('gln').value;
+      if (lat || lng || name || city || country || locationId || GLN) {
+        if (!(lat && lng && name && city && country && locationId && GLN)) {
+          this.error = true;
+          this.locationError = true;
+          return;
+        }
+      }
+
       this.spinner = true;
 
-      /* console.log(this.generateJSON('someassetid')); */
+      /* console.log(JSON.stringify(this.generateJSON('123'), null, 4)); */
 
       // create event for each selected asset
       const selectedAssets = this.assetService.getSelectedAssets();
@@ -279,11 +307,11 @@ export class EventAddComponent implements OnInit, OnDestroy {
     event['content']['data'].push(basicAndCustom);
 
     // Identifiers
-
-    const ide = this.eventForm.get('identifiers')['controls'];
+    // FIX AWAITING FROM API
+    /* const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
-      identifiers['type'] = 'ambrosus.asset.identifiers';
+      identifiers['type'] = 'ambrosus.event.identifiers';
       identifiers['identifiers'] = {};
       for (const item of ide) {
         identifiers['identifiers'][item.value.identifier] = [];
@@ -291,12 +319,10 @@ export class EventAddComponent implements OnInit, OnDestroy {
           item.value.identifierValue
         );
       }
-
       event['content']['data'].push(identifiers);
-    }
+    } */
 
     // Location
-
     const _location = this.eventForm.get('location');
     const lat = _location
       .get('location')

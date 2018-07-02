@@ -38,85 +38,6 @@
 
           <div class="accordion">
             <h5 class="accordion__title" appAccordion>
-              <span>Identifiers</span>
-              <img src="/assets/raster/arrow-down.png">
-            </h5>
-            <div class="accordion__content">
-              <div formArrayName="identifiers">
-                <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index" [formGroupName]="i" class="right">
-                  <div class="form-fields-coupled">
-                    <div class="form-text m-b-20 m-r-20 w-30">
-                      <label for="{{ i + 'identifier'}}">Identifier</label>
-                      <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
-                        id="{{ i + 'identifier'}}" spellcheck="false" appInput>
-                    </div>
-                    <div class="form-text m-b-20 w-70">
-                      <label for="{{ i + 'identifierValue'}}">Value</label>
-                      <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
-                    </div>
-                  </div>
-                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
-                </div>
-                <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="accordion">
-            <h5 class="accordion__title" appAccordion>
-              <span>Location</span>
-              <img src="/assets/raster/arrow-down.png">
-            </h5>
-            <div class="accordion__content" formGroupName="location">
-              <div class="form-text m-b-20">
-                <label for="name">Name</label>
-                <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
-              </div>
-              <div class="form-fields-coupled">
-                <div class="form-text m-b-20 w-50 m-r-10">
-                  <label for="city">City</label>
-                  <input formControlName="city" type="text" id="city" spellcheck="false" appInput>
-                </div>
-                <div class="form-text m-b-20 w-50">
-                  <label for="country">Country</label>
-                  <input formControlName="country" type="text" id="country" spellcheck="false" appInput>
-                </div>
-              </div>
-              <div class="form-fields-coupled">
-                <div class="form-text m-b-20 w-50 m-r-10">
-                  <label for="locationid">Location id</label>
-                  <input formControlName="locationId" type="text" id="locationid" spellcheck="false" appInput>
-                </div>
-                <div class="form-text m-b-20 w-50">
-                  <label for="gln">GLN</label>
-                  <input formControlName="gln" type="text" id="gln" spellcheck="false" appInput>
-                </div>
-              </div>
-              <div formGroupName="location">
-                <p class="m-b-10">Geometry</p>
-                <div formGroupName="geometry">
-                  <div formArrayName="coordinates">
-                    <div *ngFor="let geometryGroup of eventForm.get('location').get('location').get('geometry').get('coordinates')['controls']; let i = index"
-                      [formGroupName]="i">
-                      <div class="form-fields-coupled">
-                        <div class="form-text m-b-20 w-50 m-r-10">
-                          <label for="lat">Latitude</label>
-                          <input formControlName="lat" type="number" id="lat" spellcheck="false" appInput>
-                        </div>
-                        <div class="form-text m-b-20 w-50">
-                          <label for="lng">Longitude</label>
-                          <input formControlName="lng" type="number" id="lng" spellcheck="false" appInput>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="accordion">
-            <h5 class="accordion__title" appAccordion>
               <span>Documents</span>
               <img src="/assets/raster/arrow-down.png">
             </h5>
@@ -201,6 +122,86 @@
                   <a class="color-blacks--base m-b-20 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>
                 </div>
                 <a class="color-ablue--base" (click)="onAddCustomGroup()">Add new group</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion">
+            <h5 class="accordion__title" appAccordion>
+              <span>Identifiers</span>
+              <img src="/assets/raster/arrow-down.png">
+            </h5>
+            <div class="accordion__content">
+              <div formArrayName="identifiers">
+                <div *ngFor="let identifierCtrl of eventForm.get('identifiers')['controls']; let i = index" [formGroupName]="i" class="right">
+                  <div class="form-fields-coupled">
+                    <div class="form-text m-b-20 m-r-20 w-30">
+                      <label for="{{ i + 'identifier'}}">Identifier</label>
+                      <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
+                        id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+                    </div>
+                    <div class="form-text m-b-20 w-70">
+                      <label for="{{ i + 'identifierValue'}}">Value</label>
+                      <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
+                    </div>
+                  </div>
+                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
+                </div>
+                <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion">
+            <h5 class="accordion__title" appAccordion>
+              <span>Location</span>
+              <img src="/assets/raster/arrow-down.png">
+            </h5>
+            <h4 class="center m-v-20" *ngIf="locationError" style="color: #ea7070">Please fill all the fields.</h4>
+            <div class="accordion__content" formGroupName="location">
+              <div class="form-text m-b-20">
+                <label for="name">Name</label>
+                <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="city">City</label>
+                  <input formControlName="city" type="text" id="city" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="country">Country</label>
+                  <input formControlName="country" type="text" id="country" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="locationid">Location id</label>
+                  <input formControlName="locationId" type="text" id="locationid" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="gln">GLN</label>
+                  <input formControlName="gln" type="text" id="gln" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div formGroupName="location">
+                <p class="m-b-10">Geometry</p>
+                <div formGroupName="geometry">
+                  <div formArrayName="coordinates">
+                    <div *ngFor="let geometryGroup of eventForm.get('location').get('location').get('geometry').get('coordinates')['controls']; let i = index"
+                      [formGroupName]="i">
+                      <div class="form-fields-coupled">
+                        <div class="form-text m-b-20 w-50 m-r-10">
+                          <label for="lat">Latitude</label>
+                          <input formControlName="lat" type="number" id="lat" spellcheck="false" appInput>
+                        </div>
+                        <div class="form-text m-b-20 w-50">
+                          <label for="lng">Longitude</label>
+                          <input formControlName="lng" type="number" id="lng" spellcheck="false" appInput>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
