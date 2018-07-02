@@ -5,9 +5,9 @@
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <div class="modal-right" *ngIf="createEvents">
-    <div class="close" (click)="createEvents = false">
-      <img src="/assets/raster/close.png">
+  <div class="modal--right" *ngIf="createEvents">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="createEvents = false">
     </div>
     <app-event-add></app-event-add>
   </div>

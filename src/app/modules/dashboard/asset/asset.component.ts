@@ -14,6 +14,7 @@ export class AssetComponent implements OnInit {
   assetId: string;
   createEvents = false;
   hostLink = 'amb.to';
+  jsonEvents;
   json = false;
   events;
 
@@ -60,6 +61,34 @@ export class AssetComponent implements OnInit {
     return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
+  exportJSON() {
+    const filename = this.asset.info.name || this.asset.timestamp;
+    const copy = [];
+    this.jsonEvents.map(obj => {
+      copy.push(JSON.parse(JSON.stringify(obj)));
+    });
+    copy.map(obj => {
+      obj.content.idData.assetId = '{{assetId}}';
+      obj.content.idData.createdBy = '{{userAddress}}';
+      delete obj.eventId;
+      delete obj.metadata;
+      delete obj.content.idData.dataHash;
+      delete obj.content.signature;
+    });
+    const data = this.stringify(copy, null, 3);
+    const blob = new Blob([data], { type: 'application/json' });
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveBlob(blob, filename);
+    } else {
+      const elem = window.document.createElement('a');
+      elem.href = window.URL.createObjectURL(blob);
+      elem.download = filename;
+      document.body.appendChild(elem);
+      elem.click();
+      document.body.removeChild(elem);
+    }
+  }
+
   openCreateEvent() {
     this.assetService.unselectAssets();
     this.assetService.selectAsset(this.assetId);
@@ -70,6 +99,16 @@ export class AssetComponent implements OnInit {
     if (this.storage.environment === 'dev') {
       this.hostLink = 'angular-amb-to-stage.herokuapp.com';
     }
+
+    // Get asset data
+    this.route.data.subscribe(
+      data => {
+        this.asset = data.asset;
+      },
+      err => {
+        console.log('err ', err);
+      }
+    );
 
     this.route.params.subscribe(params => {
       this.assetId = params.assetid;
@@ -82,16 +121,16 @@ export class AssetComponent implements OnInit {
           console.log('Events get error: ', err);
         }
       );
-    });
 
-    // Get asset data
-    this.route.data.subscribe(
-      data => {
-        this.asset = data.asset;
-      },
-      err => {
-        console.log('err ', err);
-      }
-    );
+      // Events for export
+      this.assetService
+        .getEvents(params.assetid)
+        .then((resp: any) => {
+          this.jsonEvents = resp.results;
+        })
+        .catch(err => {
+          console.log('Events get error: ', err);
+        });
+    });
   }
 }

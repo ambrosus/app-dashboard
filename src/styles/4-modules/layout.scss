@@ -16,8 +16,9 @@
 }
 
 pre {
-  background: #fff;
-  padding: 20px;
+  background: #fafafa;
+  border: 1px solid #f1f1f1;
+  padding: 15px;
 }
 
 .overlay {
@@ -32,7 +33,7 @@ pre {
   animation: fadeIn 0.2s;
 }
 
-.modal-right {
+.modal--right {
   display: block;
   width: 100%;
   max-width: 600px;
@@ -47,16 +48,16 @@ pre {
   border: none;
 }
 
-.close {
+.modal__header {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
   padding: 10px 20px;
 
   & img {
     height: 20px;
     width: 20px;
-    align-self: flex-end;
     cursor: pointer;
   }
 }
