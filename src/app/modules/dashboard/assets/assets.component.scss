@@ -171,18 +171,6 @@
     @include min-1024 {
       display: inline-block;
     }
-
-    &.asc {
-      & .sort-icon {
-        transform: rotate(180deg);
-      }
-    }
-
-    &.des {
-      & .sort-icon {
-        transform: rotate(0deg);
-      }
-    }
   }
 
   &-content {
@@ -254,12 +242,4 @@
       max-height: 90px;
     }
   }
-}
-
-.sort-icon {
-  display: inline-block;
-  color: #777;
-  font-size: 12px;
-  margin-left: 5px;
-  transition: transform 0.2s $t1;
 }
