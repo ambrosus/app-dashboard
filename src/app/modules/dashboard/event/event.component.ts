@@ -15,6 +15,9 @@ export class EventComponent implements OnInit {
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
+  isArray(value) {
+    return value instanceof Array;
+  }
 
   constructor(private route: ActivatedRoute, private storage: StorageService) {}
 

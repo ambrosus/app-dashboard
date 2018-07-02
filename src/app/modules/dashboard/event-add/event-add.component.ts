@@ -319,20 +319,16 @@ export class EventAddComponent implements OnInit, OnDestroy {
     event['content']['data'].push(basicAndCustom);
 
     // Identifiers
-    // FIX AWAITING FROM API
-    /* const ide = this.eventForm.get('identifiers')['controls'];
+    const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
       identifiers['type'] = 'ambrosus.event.identifiers';
-      identifiers['identifiers'] = {};
       for (const item of ide) {
-        identifiers['identifiers'][item.value.identifier] = [];
-        identifiers['identifiers'][item.value.identifier].push(
-          item.value.identifierValue
-        );
+        identifiers[item.value.identifier] = [];
+        identifiers[item.value.identifier].push(item.value.identifierValue);
       }
       event['content']['data'].push(identifiers);
-    } */
+    }
 
     // Location
     const _location = this.eventForm.get('location');
