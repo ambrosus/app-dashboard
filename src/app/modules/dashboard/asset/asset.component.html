@@ -93,9 +93,11 @@
         <div class="events">
           <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
             <p>
+              <span style="color: #4f77f1;">{{ event.type || '' }}</span>
               {{ event.name || event.type }}
               <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
-                }}</span>
+                }}
+              </span>
             </p>
             <p>{{ event.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.timestamp }})</p>
           </div>
