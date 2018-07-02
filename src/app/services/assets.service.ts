@@ -171,10 +171,10 @@ export class AssetsService {
                         _event.location = location;
                       }
                     }, obj);
-                  } else {
-                    _events.push(obj);
-                    return obj;
                   }
+
+                  _events.push(obj);
+                  return obj;
                 });
               }
               return _events;
