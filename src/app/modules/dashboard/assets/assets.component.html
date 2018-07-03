@@ -71,8 +71,7 @@
           <p class="assets-list__column-meta">{{ asset.assetId }}</p>
         </div>
         <div *ngIf="!asset.info || findInfo(asset.info) === 'undefined'">
-          <p class="assets-list__column-content">No info event</p>
-          <p class="assets-list__column-meta">{{ asset.assetId }}</p>
+          <p class="assets-list__column-content">{{ asset.assetId }}</p>
         </div>
       </div>
 
