@@ -4,11 +4,12 @@
   <h2 class="center m-v-30">Search assets</h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
-      <input type="text" id="search" placeholder="{{ searchMessage }}">
+      <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
       <select id="select">
         <option value="name" selected>name</option>
         <option value="createdBy">createdBy</option>
-        <option value="identifiers">identifiers</option>
+        <option value="asset identifiers">asset identifiers</option>
+        <option value="event identifiers">event identifiers</option>
         <option value="type">type</option>
       </select>
       <a class="abtn btn-solid-ablue" (click)="search()">{{ searchButtonText }}</a>

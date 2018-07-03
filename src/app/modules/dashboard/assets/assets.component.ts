@@ -27,7 +27,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetSub: Subscription;
   // Search
   searchButtonText = 'Search';
-  searchMessage = 'ie. Green apple';
+  searchPlaceholder = 'ie. Green apple';
 
   constructor(
     private assetsService: AssetsService,
@@ -63,21 +63,70 @@ export class AssetsComponent implements OnInit, OnDestroy {
   search() {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
-    this.searchMessage = 'ie. Green apple';
+    this.searchPlaceholder = 'ie. Green apple';
     if (search.length < 1) {
-      this.searchMessage = 'Please type something first';
+      this.searchPlaceholder = 'Please type something first';
       return;
     }
 
     this.searchButtonText = 'Searching...';
     const searchValues = search.split(',');
-    const value = {
-      values: searchValues.map((entry) => entry.trim()),
-      searchBy: select
-    };
+    let queries = [];
+    switch (select) {
+      case 'name':
+        queries.push({
+          query: 'data[name]',
+          value: searchValues[0].trim()
+        });
+        break;
+      case 'createdBy':
+        queries.push({
+          query: 'createdBy',
+          value: searchValues[0].trim()
+        });
+        break;
+      case 'type':
+        queries.push({
+          query: 'data[type]',
+          value: `ambrosus.event.${searchValues[0].trim()}`
+        });
+        break;
+      case 'asset identifiers':
+        queries.push({
+          query: 'data[type]',
+          value: 'ambrosus.asset.identifiers'
+        });
+        queries = searchValues.reduce((_queries, query) => {
+          const ide = query.split(':');
+          const _query = {
+            query: `data[identifiers.${ide[0].trim()}]`,
+            value: ide[1].trim()
+          }
+          _queries.push(_query);
+
+          return _queries;
+        }, queries);
+        break;
+      case 'event identifiers':
+        queries.push({
+          query: 'data[type]',
+          value: 'ambrosus.event.identifiers'
+        });
+        queries = searchValues.reduce((_queries, query) => {
+          const ide = query.split(':');
+          const _query = {
+            query: `data[identifiers.${ide[0].trim()}]`,
+            value: ide[1].trim()
+          }
+          _queries.push(_query);
+
+          return _queries;
+        }, queries);
+        break;
+    }
 
     // Make a request here
-    console.log(value);
+    console.log(queries);
     setTimeout(() => {
       this.searchButtonText = 'Search';
     }, 500);
