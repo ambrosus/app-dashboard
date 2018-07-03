@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -28,7 +29,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   constructor(
     private assetsService: AssetsService,
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private route: ActivatedRoute
   ) {}
 
   openCreateEvents() {
@@ -39,33 +41,24 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.createEvents = true;
   }
 
-  sort(by, element: ElementRef) {
-    // use by to make an API call
-    // if success asc or des add class
-    this.renderer.removeClass(element, 'asc');
-    this.renderer.removeClass(element, 'des');
-    // Add sort appropirate class
-    this.renderer.addClass(element, 'asc');
-  }
-
   ngOnInit() {
-    this.assetSub = this.assetsService.getAssets().subscribe(
-      (resp: any) => {
-        this.assets = '';
-        this.assets = resp;
-        if (resp.resultCount === 0) {
-          this.noEvents = true;
-        }
+    this.assetSub = this.route.data.subscribe(
+      data => {
+        this.assets = data.assets;
+        console.log(this.assets);
       },
-      error => {
-        console.log(error);
-        this.error = true;
+      err => {
+        console.log('Error getting assets: ', err);
       }
     );
   }
 
   ngOnDestroy() {
     this.assetSub.unsubscribe();
+  }
+
+  findInfo(info) {
+    return info.content.data.find((obj) => obj.type === 'ambrosus.asset.info');
   }
 
   onSelectAll(e, input) {

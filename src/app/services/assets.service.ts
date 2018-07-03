@@ -207,7 +207,79 @@ export class AssetsService {
 
   // GET assets
 
-  getAssets() {
+  getAssetsInfo() {
+    let cachedAssetsInfo;
+    try {
+      cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;
+    } catch (e) {
+      cachedAssetsInfo = null;
+    }
+    const that = this;
+    const params = {
+      createdBy: this.address
+    };
+
+    return new Observable(observer => {
+      if (cachedAssetsInfo) {
+        observer.next(cachedAssetsInfo);
+      }
+
+      // 1. Get all the assets
+      this.ambrosus
+        .getAssets(params)
+        .then(function(assets) {
+          // 2. Get all info events
+          const _params = {
+            createdBy: that.address,
+            'data[type]': 'ambrosus.asset.info'
+          };
+          that.ambrosus.getEvents(_params).then(function(info) {
+            const _assets = that.parseAssetsInfo(assets.data.results, info.data.results);
+            that.storage.set('assets', _assets);
+            return observer.next(_assets);
+          }).catch(function(e) {
+            console.log('Get info events error: ', e);
+            return observer.error(e);
+          });
+        })
+        .catch(function(error) {
+          console.log('Get assets error: ', error);
+          return observer.error(error);
+        });
+    });
+  }
+
+  parseAssetsInfo(assets, info) {
+    // Latest info event
+    info = this.latestInfo(info);
+    assets.map((asset) => {
+      const _info = info.find((obj) => obj.content.idData.assetId === asset.assetId);
+      if (_info) {
+        asset.info = _info;
+      }
+    });
+    return assets;
+  }
+
+  latestInfo(info) {
+    const latestEvents = info.reduce((events, obj) => {
+      const exists = events.findIndex((_obj) => obj.content.idData.assetId === _obj.content.idData.assetId);
+      if (exists !== -1) {
+        if (obj.content.idData.timestamp > events[exists].content.idData.timestamp) {
+          events.splice(exists, 1);
+          events.push(obj);
+        }
+      } else {
+        events.push(obj);
+      }
+
+      return events;
+    }, []);
+
+    return latestEvents;
+  }
+
+  /* getAssets() {
     let cachedAssets;
     try {
       cachedAssets = JSON.parse(this.storage.get('assets')) || null;
@@ -238,7 +310,7 @@ export class AssetsService {
           return observer.error(error);
         });
     });
-  }
+  } */
 
   // CREATE asset and events
 

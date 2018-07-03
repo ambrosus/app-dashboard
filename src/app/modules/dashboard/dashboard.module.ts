@@ -1,3 +1,4 @@
+import { AssetsResolver } from 'app/services/assets-resolver.service';
 import { EventResolver } from 'app/services/event-resolver.service';
 import { AssetResolver } from 'app/services/asset-resolver.service';
 import { NgModule } from '@angular/core';
@@ -34,6 +35,6 @@ import { QRCodeModule } from 'angular2-qrcode';
     EventComponent,
     EventAddComponent
   ],
-  providers: [AssetsService, StorageService, AssetResolver, EventResolver]
+  providers: [AssetsService, StorageService, AssetResolver, EventResolver, AssetsResolver]
 })
 export class DashboardModule {}
