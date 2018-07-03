@@ -28,6 +28,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   // Search
   searchButtonText = 'Search';
   searchPlaceholder = 'ie. Green apple';
+  searchResults;
+  searchNoResults = false;
 
   constructor(
     private assetsService: AssetsService,
@@ -75,31 +77,31 @@ export class AssetsComponent implements OnInit, OnDestroy {
     switch (select) {
       case 'name':
         queries.push({
-          query: 'data[name]',
+          param: 'data[name]',
           value: searchValues[0].trim()
         });
         break;
       case 'createdBy':
         queries.push({
-          query: 'createdBy',
+          param: 'createdBy',
           value: searchValues[0].trim()
         });
         break;
       case 'type':
         queries.push({
-          query: 'data[type]',
-          value: `ambrosus.event.${searchValues[0].trim()}`
+          param: 'data[type]',
+          value: `ambrosus.asset.${searchValues[0].trim()}`
         });
         break;
       case 'asset identifiers':
         queries.push({
-          query: 'data[type]',
+          param: 'data[type]',
           value: 'ambrosus.asset.identifiers'
         });
         queries = searchValues.reduce((_queries, query) => {
           const ide = query.split(':');
           const _query = {
-            query: `data[identifiers.${ide[0].trim()}]`,
+            param: `data[identifiers.${ide[0].trim()}]`,
             value: ide[1].trim()
           }
           _queries.push(_query);
@@ -109,13 +111,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
         break;
       case 'event identifiers':
         queries.push({
-          query: 'data[type]',
+          param: 'data[type]',
           value: 'ambrosus.event.identifiers'
         });
         queries = searchValues.reduce((_queries, query) => {
           const ide = query.split(':');
           const _query = {
-            query: `data[identifiers.${ide[0].trim()}]`,
+            param: `data[identifiers.${ide[0].trim()}]`,
             value: ide[1].trim()
           }
           _queries.push(_query);
@@ -126,7 +128,20 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
 
     // Make a request here
-    console.log(queries);
+    this.searchResults = null;
+    this.assetsService.searchEvents(queries).then((resp: any) => {
+      if (resp.length > 1) {
+        this.searchResults = resp;
+        console.log(this.searchResults);
+      } else {
+        this.searchNoResults = true;
+        setTimeout(() => {
+          this.searchNoResults = false;
+        }, 2500);
+      }
+    }).catch(err => {
+      console.log(err);
+    });
     setTimeout(() => {
       this.searchButtonText = 'Search';
     }, 500);

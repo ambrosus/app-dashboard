@@ -205,6 +205,23 @@ export class AssetsService {
     });
   }
 
+  searchEvents(queries) {
+    const params = {};
+    queries.map((query) => {
+      params[query.param] = query.value;
+    });
+    if (!params['createdBy']) {
+      params['createdBy'] = this.address;
+    }
+    return new Promise((resolve, reject) => {
+      this.ambrosus.getEvents(params).then(resp => {
+        resolve(resp.data.results);
+      }).catch(error => {
+        reject('No event results.');
+      });
+    });
+  }
+
   // GET assets
 
   getAssetsInfo() {
