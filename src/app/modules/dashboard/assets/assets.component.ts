@@ -25,6 +25,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   createEvents = false;
   // Subs
   assetSub: Subscription;
+  // Search
+  searchButtonText = 'Search';
+  searchMessage = 'ie. Green apple';
 
   constructor(
     private assetsService: AssetsService,
@@ -55,6 +58,29 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.assetSub.unsubscribe();
+  }
+
+  search() {
+    const search = this.el.nativeElement.querySelector('#search').value;
+    const select = this.el.nativeElement.querySelector('#select').value;
+    this.searchMessage = 'ie. Green apple';
+    if (search.length < 1) {
+      this.searchMessage = 'Please type something first';
+      return;
+    }
+
+    this.searchButtonText = 'Searching...';
+    const searchValues = search.split(',');
+    const value = {
+      values: searchValues.map((entry) => entry.trim()),
+      searchBy: select
+    };
+
+    // Make a request here
+    console.log(value);
+    setTimeout(() => {
+      this.searchButtonText = 'Search';
+    }, 500);
   }
 
   findInfo(info) {
