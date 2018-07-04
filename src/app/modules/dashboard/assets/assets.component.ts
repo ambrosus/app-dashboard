@@ -29,8 +29,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
   searchButtonText = 'Search';
   searchPlaceholder = 'ie. Green apple';
   searchResults;
-  searchResultsFound;
-  searchNoResults = false;
+  searchTitle = 'Search assets';
+  // Pagination
+  currentAssetPage = 0;
+  currentSearchPage = 0;
+  assetsActive = true;
+  searchActive = false;
 
   constructor(
     private assetsService: AssetsService,
@@ -48,9 +52,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.assetSub = this.route.data.subscribe(
-      data => {
-        this.assets = data.assets;
+    this.loadAssets();
+  }
+
+  loadAssets(page = 0, perPage = 20) {
+    this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
+      resp => {
+        this.currentAssetPage = page;
+        this.assets = resp;
       },
       err => {
         console.log('Error getting assets: ', err);
@@ -62,7 +71,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assetSub.unsubscribe();
   }
 
-  search() {
+  search(page = 0, perPage = 3) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
@@ -102,7 +111,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           const ide = query.split(':');
           const _query = {
             param: `data[identifiers.${ide[0].trim()}]`,
-            value: ide[1].trim()
+            value: ide[1] ? ide[1].trim() : ''
           }
           _queries.push(_query);
 
@@ -118,7 +127,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           const ide = query.split(':');
           const _query = {
             param: `data[identifiers.${ide[0].trim()}]`,
-            value: ide[1].trim()
+            value: ide[1] ? ide[1].trim() : ''
           }
           _queries.push(_query);
 
@@ -128,16 +137,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
 
     this.searchResults = null;
-    this.searchNoResults = false;
 
     // Make a request here
-    this.assetsService.searchEvents(queries).then((resp: any) => {
-      if (resp.length > 1) {
+    this.assetsService.searchEvents(queries, page, perPage).then((resp: any) => {
+      if (resp.assets.length > 1) {
+        this.assetsActive = false;
+        this.searchActive = true;
+        this.currentSearchPage = page;
         this.assets = resp;
-        this.searchResultsFound = resp.length;
+        this.searchTitle = `Found ${resp.resultCount} results`;
       } else {
-        this.searchNoResults = true;
-        this.searchResultsFound = null;
+        this.searchTitle = 'No results found';
       }
     }).catch(err => {
       console.log(err);

@@ -205,7 +205,7 @@ export class AssetsService {
     });
   }
 
-  searchEvents(queries) {
+  searchEvents(queries, page = 0, perPage = 20) {
     const params = {};
     queries.map((query) => {
       params[query.param] = query.value;
@@ -213,10 +213,13 @@ export class AssetsService {
     if (!params['createdBy']) {
       params['createdBy'] = this.address;
     }
+    params['page'] = page;
+    params['perPage'] = perPage;
     return new Promise((resolve, reject) => {
       this.ambrosus.getEvents(params).then(resp => {
         // Unique events
         const events = this.latestEvents(resp.data.results);
+        /* const events = resp.data.results; */
         // Extract and build asset objects in []
         const assets = events.reduce((_assets, event) => {
           const asset = {
@@ -238,7 +241,10 @@ export class AssetsService {
           'data[type]': 'ambrosus.asset.info'
         };
         this.ambrosus.getEvents(_params).then(function(info) {
-          const _assets = that.parseAssetsInfo(assets, info.data.results);
+          const _assets = {
+            resultCount: resp.data.resultCount,
+            assets: that.parseAssetsInfo(assets, info.data.results)
+          };
           resolve(_assets);
         }).catch(function(e) {
           console.log('Get info events error: ', e);
@@ -252,7 +258,7 @@ export class AssetsService {
 
   // GET assets
 
-  getAssetsInfo() {
+  getAssetsInfo(page = 0, perPage = 20) {
     let cachedAssetsInfo;
     try {
       cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;
@@ -261,7 +267,9 @@ export class AssetsService {
     }
     const that = this;
     const params = {
-      createdBy: this.address
+      createdBy: this.address,
+      page: page,
+      perPage: perPage
     };
 
     return new Observable(observer => {
@@ -279,7 +287,10 @@ export class AssetsService {
             'data[type]': 'ambrosus.asset.info'
           };
           that.ambrosus.getEvents(_params).then(function(info) {
-            const _assets = that.parseAssetsInfo(assets.data.results, info.data.results);
+            const _assets = {
+              resultCount: assets.data.resultCount,
+              assets: that.parseAssetsInfo(assets.data.results, info.data.results)
+            };
             that.storage.set('assets', _assets);
             return observer.next(_assets);
           }).catch(function(e) {

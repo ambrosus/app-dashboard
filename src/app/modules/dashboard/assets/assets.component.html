@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- Search bar -->
-  <h2 class="center m-v-30">Search assets</h2>
+  <h2 class="center m-v-30">{{ searchTitle }}</h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
       <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
@@ -15,12 +15,8 @@
       <a class="abtn btn-solid-ablue" (click)="search()">{{ searchButtonText }}</a>
     </div>
     <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
-    <p class="center m-t-10" style="color: #ea7070" *ngIf="searchNoResults">No search results</p>
   </div>
 
-  <h3 class="p-h-30 m-v-40 center" *ngIf="searchResultsFound">Found {{ searchResultsFound }} results</h3>
-
-  <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
   <h4 class="color-greys--base center p-h-20" *ngIf="error">There was an error getting your assets. Try later, or reload.</h4>
 
   <!-- overlay + createEvent modal -->
@@ -64,15 +60,18 @@
       <p class="assets-list__column assets-list__column__header">Title</p>
       <p class="assets-list__column assets-list__column__header">Created by</p>
       <p class="assets-list__column assets-list__column__header">Timestamp</p>
+      <p class="assets-list__column assets-list__column__header">Status</p>
     </div>
 
-    <div class="assets-list__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div>
+    <!-- <div class="assets-list__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div> -->
   </div>
+
+  <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
 
   <div class="assets-list" id="assets-list" *ngIf="assets">
 
     <!-- Items -->
-    <div class="assets-list__item" *ngFor="let asset of assets; let i = index">
+    <div class="assets-list__item" *ngFor="let asset of assets.assets; let i = index">
       <label class="assets-list__label" for="{{ i }}">
         <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">
         <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -103,6 +102,11 @@
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title hide-1024">Timestamp</p>
         <p class="assets-list__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
+      </div>
+
+      <div class="assets-list__column" routerLink="{{asset.assetId}}">
+        <p class="assets-list__column-title hide-1024">Status</p>
+        <p class="assets-list__column-content">Event created</p>
       </div>
     </div>
   </div>
