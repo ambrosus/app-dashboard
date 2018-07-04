@@ -29,6 +29,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   searchButtonText = 'Search';
   searchPlaceholder = 'ie. Green apple';
   searchResults;
+  searchResultsFound;
   searchNoResults = false;
 
   constructor(
@@ -50,7 +51,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assetSub = this.route.data.subscribe(
       data => {
         this.assets = data.assets;
-        console.log(this.assets);
       },
       err => {
         console.log('Error getting assets: ', err);
@@ -127,17 +127,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
         break;
     }
 
-    // Make a request here
     this.searchResults = null;
+    this.searchNoResults = false;
+
+    // Make a request here
     this.assetsService.searchEvents(queries).then((resp: any) => {
       if (resp.length > 1) {
-        this.searchResults = resp;
-        console.log(this.searchResults);
+        this.assets = resp;
+        this.searchResultsFound = resp.length;
       } else {
         this.searchNoResults = true;
-        setTimeout(() => {
-          this.searchNoResults = false;
-        }, 2500);
+        this.searchResultsFound = null;
       }
     }).catch(err => {
       console.log(err);

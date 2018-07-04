@@ -215,7 +215,35 @@ export class AssetsService {
     }
     return new Promise((resolve, reject) => {
       this.ambrosus.getEvents(params).then(resp => {
-        resolve(resp.data.results);
+        // Unique events
+        const events = this.latestEvents(resp.data.results);
+        // Extract and build asset objects in []
+        const assets = events.reduce((_assets, event) => {
+          const asset = {
+            assetId: event.content.idData.assetId,
+            content: {
+              idData: {
+                createdBy: event.content.idData.createdBy,
+                timestamp: event.content.idData.timestamp
+              }
+            }
+          };
+          _assets.push(asset);
+          return _assets;
+        }, []);
+        // Get info events + connect them to assets
+        const that = this;
+        const _params = {
+          createdBy: this.address,
+          'data[type]': 'ambrosus.asset.info'
+        };
+        this.ambrosus.getEvents(_params).then(function(info) {
+          const _assets = that.parseAssetsInfo(assets, info.data.results);
+          resolve(_assets);
+        }).catch(function(e) {
+          console.log('Get info events error: ', e);
+          reject(e);
+        });
       }).catch(error => {
         reject('No event results.');
       });
@@ -268,7 +296,7 @@ export class AssetsService {
 
   parseAssetsInfo(assets, info) {
     // Latest info event
-    info = this.latestInfo(info);
+    info = this.latestEvents(info);
     assets.map((asset) => {
       const _info = info.find((obj) => obj.content.idData.assetId === asset.assetId);
       if (_info) {
@@ -278,7 +306,7 @@ export class AssetsService {
     return assets;
   }
 
-  latestInfo(info) {
+  latestEvents(info) {
     const latestEvents = info.reduce((events, obj) => {
       const exists = events.findIndex((_obj) => obj.content.idData.assetId === _obj.content.idData.assetId);
       if (exists !== -1) {
