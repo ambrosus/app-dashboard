@@ -20,6 +20,8 @@ export class AssetsService {
   // Parsing get asset/event
   currentAssetId: string;
   asset;
+  generatedJSON;
+  eventAdded = new Subject();
 
   constructor(private http: HttpClient, private storage: StorageService) {
     this.secret = this.storage.get('secret');
@@ -335,39 +337,6 @@ export class AssetsService {
     return latestEvents;
   }
 
-  /* getAssets() {
-    let cachedAssets;
-    try {
-      cachedAssets = JSON.parse(this.storage.get('assets')) || null;
-    } catch (e) {
-      cachedAssets = null;
-    }
-    const that = this;
-    const params = {
-      createdBy: this.address
-    };
-
-    return new Observable(observer => {
-      if (cachedAssets) {
-        observer.next(cachedAssets);
-      }
-
-      this.ambrosus
-        .getAssets(params)
-        .then(function(resp) {
-          // Caching assets in the storage
-          const _assets = JSON.stringify(resp.data);
-          that.storage.set('assets', _assets);
-
-          return observer.next(resp.data);
-        })
-        .catch(function(error) {
-          console.log('Get assets error: ', error);
-          return observer.error(error);
-        });
-    });
-  } */
-
   // CREATE asset and events
 
   createAsset(data) {
@@ -384,16 +353,31 @@ export class AssetsService {
   }
 
   createEvent(assetId, event) {
-    return new Observable(observer => {
+    return new Promise((resolve, reject) => {
       this.ambrosus
         .createEvent(assetId, event)
         .then(function(resp) {
-          return observer.next(resp);
+          resolve(resp);
         })
         .catch(function(error) {
-          return observer.error(error);
+          reject(error);
         });
     });
+  }
+
+  // Event add
+  addEvent() {
+    const selectedAssets = this.getSelectedAssets();
+    selectedAssets.map((assetId) => {
+      this.generatedJSON.content.idData.assetId = assetId;
+      this.createEvent(assetId, this.generatedJSON).then(resp => {
+        this.eventAdded.next(assetId);
+      }).catch(error => {
+        console.log('Event add failed for asset: ', assetId);
+      });
+    });
+    this.unselectAssets();
+    this.generatedJSON = {};
   }
 
   // assetId selection service

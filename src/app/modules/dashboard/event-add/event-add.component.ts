@@ -67,6 +67,13 @@ export class EventAddComponent implements OnInit, OnDestroy {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
+    this.assetService.eventAdded.subscribe(assetId => {
+      this.success = true;
+      setTimeout(() => {
+        this.success = false;
+      }, 3000);
+      console.log('Event added for asset: ', assetId);
+    });
   }
 
   tabOpen(open, element) {
@@ -243,41 +250,22 @@ export class EventAddComponent implements OnInit, OnDestroy {
         this.spinner = false;
         return;
       }
-      for (const assetId of selectedAssets) {
-        // Creating events
-        this.assetService
-          .createEvent(assetId, this.generateJSON(assetId))
-          .subscribe(
-            (response: any) => {
-              console.log(
-                'Assets event creation successful ',
-                assetId,
-                response
-              );
-              this.success = true;
-              setTimeout(() => {
-                this.success = false;
-              }, 3000);
-            },
-            error => {
-              console.log('Assets event creation failed ', assetId, error);
-            }
-          );
-      }
-      this.assetService.unselectAssets();
+      this.assetService.generatedJSON = this.generateJSON();
+      this.assetService.addEvent();
+
       this.spinner = false;
     } else {
       this.error = true;
     }
   }
 
-  private generateJSON(assetId: string) {
+  private generateJSON() {
     const event = {};
     event['content'] = {};
 
     // event.content.idData
     event['content']['idData'] = {};
-    event['content']['idData']['assetId'] = assetId;
+    event['content']['idData']['assetId'] = 'placeholder';
     event['content']['idData']['createdBy'] = this.storage.get('address');
     event['content']['idData']['accessLevel'] = 0;
     event['content']['idData']['timestamp'] = Math.floor(

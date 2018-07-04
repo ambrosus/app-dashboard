@@ -55,7 +55,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loadAssets();
   }
 
-  loadAssets(page = 0, perPage = 20) {
+  loadAssets(page = 0, perPage = 3) {
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
       resp => {
         this.currentAssetPage = page;

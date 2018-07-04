@@ -270,7 +270,7 @@ export class AssetAddComponent implements OnInit {
           const assetId = resp.data.assetId;
           this.assetService
             .createEvent(assetId, this.generateJSON(assetId))
-            .subscribe(
+            .then(
               (response: any) => {
                 console.log('Assets event creation successful ', response);
                 this.success = true;
@@ -278,13 +278,11 @@ export class AssetAddComponent implements OnInit {
                   this.success = false;
                 }, 3000);
                 this.spinner = false;
-              },
-              error => {
+              }).catch(error => {
                 console.log('Assets event creation failed ', error);
                 this.errorResponse = true;
                 this.spinner = false;
-              }
-            );
+              });
         },
         err => {
           console.log('Asset creation failed ', err);
