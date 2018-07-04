@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -17,19 +17,21 @@ import { ActivatedRoute } from '@angular/router';
   encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit, OnDestroy {
+  navigationSubscription;
   assets: any;
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
+  loader = false;
   // Create events toggle
   createEvents = false;
   // Subs
   assetSub: Subscription;
   // Search
-  searchButtonText = 'Search';
   searchPlaceholder = 'ie. Green apple';
+  searchResultsFound;
+  searchNoResultsFound;
   searchResults;
-  searchTitle = 'Search assets';
   // Pagination
   currentAssetPage = 1;
   totalAssetPages = 0;
@@ -43,8 +45,20 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private assetsService: AssetsService,
     private el: ElementRef,
     private renderer: Renderer2,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd) {
+        this.pageLoad();
+      }
+    });
+  }
+
+  pageLoad() {
+    this.loadAssets();
+    this.el.nativeElement.querySelector('#search').value = '';
+  }
 
   openCreateEvents() {
     if (this.assetsService.getSelectedAssets().length === 0) {
@@ -55,12 +69,19 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadAssets();
+  }
+
+  ngOnDestroy() {
+    this.assetSub.unsubscribe();
+    this.navigationSubscription.unsubscribe();
   }
 
   loadAssets(page = 0, perPage = 3) {
+    this.assetsActive = true;
+    this.searchActive = false;
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
       (resp: any) => {
+        this.loader = false;
         this.assets = resp;
         this.currentAssetPage = page + 1;
         this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
@@ -68,25 +89,34 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.pagination = this.paginationGenerate(this.currentAssetPage, this.totalAssetPages);
       },
       err => {
+        this.loader = false;
         console.log('Error getting assets: ', err);
       }
     );
   }
 
-  ngOnDestroy() {
-    this.assetSub.unsubscribe();
-  }
-
   search(page = 0, perPage = 3) {
+    this.searchActive = true;
+    this.assetsActive = false;
+
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
     if (search.length < 1) {
-      this.searchPlaceholder = 'Please type something first';
-      return;
+      if (this.searchActive) {
+        this.pageLoad();
+        this.assetsActive = true;
+        this.searchActive = false;
+      } else {
+        this.searchPlaceholder = 'Please type something first';
+        return;
+      }
     }
 
-    this.searchButtonText = 'Searching...';
+    // Show search preloader
+    this.loader = true;
+    this.assets = [];
+
     const searchValues = search.split(',');
     let queries = [];
     switch (select) {
@@ -143,27 +173,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
 
     this.searchResults = null;
+    this.searchNoResultsFound = null;
+    this.searchResultsFound = null;
 
     // Make a request here
     this.assetsService.searchEvents(queries, page, perPage).then((resp: any) => {
+      this.loader = false;
       if (resp.assets.length > 0) {
-        this.assetsActive = false;
-        this.searchActive = true;
         this.assets = resp;
         this.currentSearchPage = page + 1;
         this.totalSearchPages = Math.ceil(resp.resultCount / perPage);
         // generate pagination
         this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
-        this.searchTitle = `Found ${resp.resultCount} results`;
+        this.searchResultsFound = `Found ${resp.resultCount} results`;
       } else {
-        this.searchTitle = 'No results found';
+        this.searchNoResultsFound = 'No results found';
       }
     }).catch(err => {
+      this.loader = false;
       console.log(err);
     });
-    setTimeout(() => {
-      this.searchButtonText = 'Search';
-    }, 500);
   }
 
   findInfo(info) {

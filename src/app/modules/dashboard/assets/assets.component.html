@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- Search bar -->
-  <h2 class="center m-v-30">{{ searchTitle }}</h2>
+  <h2 class="center m-v-30">Search assets</h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
       <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
@@ -12,12 +12,10 @@
         <option value="event identifiers">event identifiers</option>
         <option value="type">type</option>
       </select>
-      <a class="abtn btn-solid-ablue" (click)="search()">{{ searchButtonText }}</a>
+      <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
     </div>
     <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
   </div>
-
-  <h4 class="color-greys--base center p-h-20" *ngIf="error">There was an error getting your assets. Try later, or reload.</h4>
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
@@ -66,9 +64,11 @@
     <!-- <div class="assets-list__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div> -->
   </div>
 
-  <app-assets-loader-indicator *ngIf="!assets"></app-assets-loader-indicator>
+  <app-assets-loader-indicator *ngIf="!assets || loader"></app-assets-loader-indicator>
 
-  <div class="assets-list" id="assets-list" *ngIf="assets">
+  <h4 class="color-greys--base center p-h-20 m-t-20" *ngIf="searchActive && searchNoResultsFound">No results found</h4>
+
+  <div class="assets-list" id="assets-list">
 
     <!-- Items -->
     <div class="assets-list__item" *ngFor="let asset of assets.assets; let i = index">
@@ -113,7 +113,7 @@
     <!-- Pagination -->
     <div class="block-center m-w-12 m-t-10 p-h-10">
       <!-- Asset pagination -->
-      <ul class="pagination" *ngIf="assetsActive">
+      <ul class="pagination" *ngIf="assetsActive && pagination.length !== 0">
         <li class="pagination__item" *ngIf="currentAssetPage !== 1">
           <span (click)="loadAssets(currentAssetPage - 2)">Previous</span>
         </li>
@@ -129,7 +129,7 @@
         </li>
       </ul>
       <!-- Search pagination -->
-      <ul class="pagination" *ngIf="searchActive">
+      <ul class="pagination" *ngIf="searchActive && pagination.length !== 0 && !searchNoResultsFound">
         <li class="pagination__item" *ngIf="currentSearchPage !== 1">
           <span (click)="search(currentSearchPage - 2)">Previous</span>
         </li>

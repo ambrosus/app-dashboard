@@ -12,12 +12,14 @@ const routes: Routes = [
   {
     path: 'login',
     canActivate: [AuthGuardLogin],
-    loadChildren: 'app/modules/auth/auth.module#AuthModule'
+    loadChildren: 'app/modules/auth/auth.module#AuthModule',
+    runGuardsAndResolvers: 'always'
   },
   {
     path: 'assets',
     canActivateChild: [AuthGuard],
-    loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule'
+    loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
+    runGuardsAndResolvers: 'always'
   },
   { path: '', pathMatch: 'full', redirectTo: '/login' },
   { path: 'help', component: HelpComponent },
@@ -29,7 +31,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
   providers: [AuthGuard, AuthGuardLogin]
