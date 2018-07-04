@@ -31,10 +31,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
   searchResults;
   searchTitle = 'Search assets';
   // Pagination
-  currentAssetPage = 0;
-  currentSearchPage = 0;
+  currentAssetPage = 1;
+  totalAssetPages = 0;
+  currentSearchPage = 1;
+  totalSearchPages = 0;
   assetsActive = true;
   searchActive = false;
+  pagination = [];
 
   constructor(
     private assetsService: AssetsService,
@@ -57,9 +60,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   loadAssets(page = 0, perPage = 3) {
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
-      resp => {
-        this.currentAssetPage = page;
+      (resp: any) => {
         this.assets = resp;
+        this.currentAssetPage = page + 1;
+        this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
+        // generate pagination
+        this.pagination = this.paginationGenerate(this.currentAssetPage, this.totalAssetPages);
       },
       err => {
         console.log('Error getting assets: ', err);
@@ -140,11 +146,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
     // Make a request here
     this.assetsService.searchEvents(queries, page, perPage).then((resp: any) => {
-      if (resp.assets.length > 1) {
+      if (resp.assets.length > 0) {
         this.assetsActive = false;
         this.searchActive = true;
-        this.currentSearchPage = page;
         this.assets = resp;
+        this.currentSearchPage = page + 1;
+        this.totalSearchPages = Math.ceil(resp.resultCount / perPage);
+        // generate pagination
+        this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
         this.searchTitle = `Found ${resp.resultCount} results`;
       } else {
         this.searchTitle = 'No results found';
@@ -159,6 +168,36 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   findInfo(info) {
     return info.content.data.find((obj) => obj.type === 'ambrosus.asset.info');
+  }
+
+  paginationGenerate(currentPage, pageCount) {
+    const delta = 2,
+        left = currentPage - delta,
+        right = currentPage + delta + 1;
+    let result = [];
+
+    result = Array.from({length: pageCount}, (v, k) => k + 1)
+        .filter(i => i && i >= left && i < right);
+
+    if (result.length > 1) {
+      // Add first page and dots
+      if (result[0] > 1) {
+        if (result[0] > 2) {
+          result.unshift('...')
+        }
+        result.unshift(1)
+      }
+
+      // Add dots and last page
+      if (result[result.length - 1] < pageCount) {
+        if (result[result.length - 1] !== pageCount - 1) {
+          result.push('...')
+        }
+        result.push(pageCount)
+      }
+    }
+
+    return result;
   }
 
   onSelectAll(e, input) {
