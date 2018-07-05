@@ -4,13 +4,12 @@
 <div class="container center">
   <h2 class="m-v-30">Settings</h2>
   <hr>
-  <h4>Reset Passwords</h4>
+  <h4>Reset Password</h4>
 </div>
 
 <div class="m-w-4"></div>
 <div class="block-center m-w-4" style="margin-top: 40px;">
   <form [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
-
 
     <div class="form-text m-b-20">
       <label for="email">Registered Email Address *</label>
@@ -42,6 +41,13 @@
     <div class="flex flex-direction-r justify-content-fe align-items-c">
       <app-spinner *ngIf="spinner"></app-spinner>
       <button type="submit" class="abtn m-l-20 btn-solid-ablue">Reset Password</button>
+    </div>
+
+    <div class="messages">
+      <h4 *ngIf="passwordsNotMatch" style="color: #ea7070;">New passwords do not match</h4>
+      <h4 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h4>
+      <h4 *ngIf="showWeakPasswordError" style="color: green;">Please set a strong password</h4>
+      <h4 *ngIf="serverMessage" style="color: #ea7070;">{{serverMessage}}</h4>
     </div>
 
   </form>

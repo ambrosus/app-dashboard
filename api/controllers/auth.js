@@ -99,7 +99,7 @@ exports.verifymail = (req, res) => {
   if (!emailExists) {
     return res.status(400).json({
       email: false,
-      message: 'Email does not exists'
+      message: 'Email Address is not registered'
     });
   } else {
     return res.status(200).json({

@@ -23,6 +23,9 @@ export class SettingsComponent implements OnInit {
   error = false;
   resetForm: FormGroup;
   passwordsNotMatch = false;
+  serverMessage = false;
+  resetSuccess: Boolean = false;
+  showWeakPasswordError: Boolean = false;
 
   ngOnInit() {
   }
@@ -52,6 +55,11 @@ export class SettingsComponent implements OnInit {
 
   initiateReset() {
     const email = this.resetForm.get('email').value;
+    this.resetSuccess = false;
+    this.passwordsNotMatch = false;
+    this.serverMessage = false;
+    this.showWeakPasswordError = false;
+    this.spinner = true;
 
     this.http.post('/api/auth/verifymail', {email: email}).subscribe(
       resp => {
@@ -61,18 +69,22 @@ export class SettingsComponent implements OnInit {
 
         if (this.resetForm.get('password').hasError('strong')) {
           this.weakPassword = true;
+          this.showWeakPasswordError = true;
           this.error = true;
+          this.spinner = false;
           return;
         }
 
         if (password !== passwordConfirm) {
           this.passwordsNotMatch = true;
           this.error = true;
+          this.spinner = false;
           return;
         }
 
         this.weakPassword = false;
         this.passwordsNotMatch = false;
+        this.error = false;
 
         const body = {
           email: email,
@@ -84,8 +96,9 @@ export class SettingsComponent implements OnInit {
 
       },
       err => {
-        console.log('Email does not exists');
         console.log(err);
+        this.serverMessage = err.error.message;
+        this.spinner = false;
       }
     );
   }
@@ -94,8 +107,11 @@ export class SettingsComponent implements OnInit {
     this.http.post('/api/auth/resetpassword', body).subscribe(
       resp => {
         console.log(resp);
-      }, error => {
-        console.log(error);
+        this.resetSuccess = true;
+        this.spinner = false;
+      }, err => {
+        this.serverMessage = err.error.message;
+        this.spinner = false;
     });
   }
 
