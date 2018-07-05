@@ -22,6 +22,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     assets: [],
     resultCount: 0
   }
+  perPage = 15;
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
@@ -38,8 +39,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   // Pagination
   currentAssetPage = 1;
   totalAssetPages = 0;
+  resultCountAsset = 0;
   currentSearchPage = 1;
   totalSearchPages = 0;
+  resultCountSearch = 0;
   assetsActive = true;
   searchActive = false;
   pagination = [];
@@ -79,14 +82,30 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.navigationSubscription.unsubscribe();
   }
 
-  loadAssets(page = 0, perPage = 3) {
+  rowsPerPage(select) {
+    this.perPage = select.value;
+    if (this.assetsActive) {
+      this.loadAssets(this.currentAssetPage - 1);
+    } else {
+      this.search(this.currentSearchPage - 1);
+    }
+  }
+
+  loadAssets(page = 0, perPage = this.perPage) {
     this.assetsActive = true;
     this.searchActive = false;
+    this.assets = {
+      assets: [],
+      resultCount: 0
+    }
+    this.searchNoResultsFound = null;
+    this.loader = true;
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
       (resp: any) => {
         this.loader = false;
         this.assets = resp;
         this.currentAssetPage = page + 1;
+        this.resultCountAsset = resp.resultCount;
         this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
         // generate pagination
         this.pagination = this.paginationGenerate(this.currentAssetPage, this.totalAssetPages);
@@ -98,7 +117,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     );
   }
 
-  search(page = 0, perPage = 3) {
+  search(page = 0, perPage = this.perPage) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
@@ -187,6 +206,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       if (resp.assets.length > 0) {
         this.assets = resp;
         this.currentSearchPage = page + 1;
+        this.resultCountSearch = resp.resultCount;
         this.totalSearchPages = Math.ceil(resp.resultCount / perPage);
         // generate pagination
         this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);

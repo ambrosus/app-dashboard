@@ -61,6 +61,22 @@
       top: 3px;
     }
   }
+
+  &__select {
+    width: auto;
+    flex: 0 0 auto;
+    margin: 15px 20px !important;
+
+    & select {
+      -moz-appearance: menulist;
+      appearance: menulist;
+      -webkit-appearance: menulist;
+      text-align: center;
+      background-color: #f6f8fe;
+      margin: 0 5px 0 6px;
+      color: $ablue;
+    }
+  }
 }
 
 .assets-list__item {
@@ -278,6 +294,7 @@
     -webkit-appearance: menulist;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    padding-right: 15px;
   }
 
   & .abtn {
