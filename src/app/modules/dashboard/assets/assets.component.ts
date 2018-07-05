@@ -18,7 +18,10 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSubscription;
-  assets: any;
+  assets = {
+    assets: [],
+    resultCount: 0
+  }
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
@@ -96,9 +99,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   search(page = 0, perPage = 3) {
-    this.searchActive = true;
-    this.assetsActive = false;
-
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
@@ -109,13 +109,18 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.searchActive = false;
       } else {
         this.searchPlaceholder = 'Please type something first';
-        return;
       }
+      return;
     }
+    this.searchActive = true;
+    this.assetsActive = false;
 
     // Show search preloader
     this.loader = true;
-    this.assets = [];
+    this.assets = {
+      assets: [],
+      resultCount: 0
+    };
 
     const searchValues = search.split(',');
     let queries = [];
