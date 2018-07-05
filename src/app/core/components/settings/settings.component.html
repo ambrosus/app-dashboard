@@ -4,12 +4,12 @@
 <div class="container center">
   <h2 class="m-v-30">Settings</h2>
   <hr>
-  <h4>Reset Password</h4>
+  <h4>Reset Passwords</h4>
 </div>
 
 <div class="m-w-4"></div>
 <div class="block-center m-w-4" style="margin-top: 40px;">
-  <form [formGroup]="resetForm" (ngSubmit)="resetPass()" [ngClass]="{ error: error }">
+  <form [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
 
 
     <div class="form-text m-b-20">

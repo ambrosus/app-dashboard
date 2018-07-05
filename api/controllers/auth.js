@@ -84,8 +84,8 @@ exports.resetpassword = (req, res) => {
 }
 
 exports.verifymail = (req, res) => {
-  console.log('abc');
-  if (!req.body.email) {
+  const email = req.body.email;
+  if (!email) {
     return res.status(400).json({
       message: 'Email address is required.'
     });
@@ -94,17 +94,18 @@ exports.verifymail = (req, res) => {
   let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
   let accounts = JSON.parse(rawdata);
 
-  emailExists = accounts.table.map(account => {
-    if (account.email === req.body.email) {
-      return res.status(200).json({
-        email: true
-      });
-    } else {
-      return res.status(400).json({
-        email: false
-      });
-    }
-  });
+  emailExists = accounts.table.some(account => account.email === email);
+
+  if (!emailExists) {
+    return res.status(400).json({
+      email: false,
+      message: 'Email does not exists'
+    });
+  } else {
+    return res.status(200).json({
+      email: true
+    }); 
+  }
 }
 
 exports.login = (req, res) => {

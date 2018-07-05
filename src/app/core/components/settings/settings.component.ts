@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-settings',
@@ -25,6 +26,9 @@ export class SettingsComponent implements OnInit {
   resetForm: FormGroup;
   passwordsNotMatch = false;
 
+  ngOnInit() {
+  }
+
   strongPassword(control: FormControl): { [s: string]: boolean } {
     const hasNumber = /\d/.test(control.value);
     const hasUpper = /[A-Z]/.test(control.value);
@@ -36,7 +40,7 @@ export class SettingsComponent implements OnInit {
     return null;
   }
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.resetForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),
       oldPassword: new FormControl(null, [Validators.required]),
@@ -45,38 +49,53 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  initiateReset() {
+    const email = this.resetForm.get('email').value;
+
+    this.http.post('/api/auth/verifymail', {email: email}).subscribe(
+      resp => {
+        const password = this.resetForm.get('password').value;
+        const oldPassword = this.resetForm.get('oldPassword').value;
+        const passwordConfirm = this.resetForm.get('passwordConfirm').value;
+
+        if (this.resetForm.get('password').hasError('strong')) {
+          this.weakPassword = true;
+          this.error = true;
+          return;
+        }
+
+        if (password !== passwordConfirm) {
+          this.passwordsNotMatch = true;
+          this.error = true;
+          return;
+        }
+
+        this.weakPassword = false;
+        this.passwordsNotMatch = false;
+
+        const body = {
+          email: email,
+          oldPassword: oldPassword,
+          password: password
+        };
+
+        this.resetPass(body);
+
+      },
+      err => {
+        console.log('Email does not exists');
+        console.log(err);
+      }
+    );
   }
 
-  resetPass() {
-    const email = this.resetForm.get('email').value;
-    const password = this.resetForm.get('password').value;
-    const oldPassword = this.resetForm.get('oldPassword').value;
-    const passwordConfirm = this.resetForm.get('passwordConfirm').value;
-
-    if (this.resetForm.get('password').hasError('strong')) {
-      this.weakPassword = true;
-      this.error = true;
-      return;
-    }
-
-    if (password !== passwordConfirm) {
-      this.passwordsNotMatch = true;
-      this.error = true;
-      return;
-    }
-
-    this.weakPassword = false;
-    this.passwordsNotMatch = false;
-
-    const body = {
-      email: email,
-      oldPassword: oldPassword,
-      password: password
-    };
-
-    console.log(body);
-
+  resetPass(body) {
+    this.http.post('/api/auth/resetpassword', body).subscribe(
+      resp => {
+        console.log(resp);
+      }, error => {
+        console.log(error);
+    });
   }
 
   checkPassword(event: any) {
