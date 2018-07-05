@@ -15,8 +15,11 @@
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
-      <div>
+      <div class="flex flex-direction-r align-items-fe">
+        <button class="abtn btn-outline-ablue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
+        <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
+      </div>
+      <div class="m-t-10">
         <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
           target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
