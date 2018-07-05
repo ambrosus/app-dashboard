@@ -1,6 +1,6 @@
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -61,7 +61,22 @@ export class AssetComponent implements OnInit {
     return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
-  exportJSON() {
+  downloadQR(el: any) {
+    const data = el.elementRef.nativeElement.children[0].src;
+    const filename = `QR_code_${this.assetId}.png`;
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveBlob(data, filename);
+    } else {
+      const elem = window.document.createElement('a');
+      elem.href = data;
+      elem.download = filename;
+      document.body.appendChild(elem);
+      elem.click();
+      document.body.removeChild(elem);
+    }
+  }
+
+  downloadJSON() {
     const filename = this.asset.info.name || this.asset.timestamp;
     const copy = [];
     this.jsonEvents.map(obj => {

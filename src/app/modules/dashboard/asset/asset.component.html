@@ -12,7 +12,7 @@
   <!-- JSON view -->
   <div class="modal--right p-a-10" *ngIf="json">
     <div class="modal__header" style="justify-content: space-between;">
-      <button class="abtn btn-outline-ablue" (click)="exportJSON()">Export JSON</button>
+      <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
       <img src="/assets/raster/close.png" (click)="json = false">
     </div>
     <pre [innerHTML]="syntaxHighlight(stringify(jsonEvents, null, 3))"></pre>
@@ -21,7 +21,7 @@
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300"></qr-code>
+      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
       <div>
         <a href="https://{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
