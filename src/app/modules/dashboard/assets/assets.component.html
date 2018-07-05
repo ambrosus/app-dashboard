@@ -64,8 +64,8 @@
     </div>
 
     <div class="assets-list__item assets-list__item__header header--sticky" appSticky [addClass]="'sticky'">
-      <div class="assets-list__label assets-list__label__heading"></div>
-      <div class="assets-list__label assets-list__label__heading"></div>
+      <div style="width: 100px; height: 10px; flex: 0 0 100px;"></div>
+      <div style="width: 100px; height: 10px; flex: 0 0 100px;"></div>
       <p class="assets-list__column assets-list__column__header">Title</p>
       <p class="assets-list__column assets-list__column__header">Created by</p>
       <p class="assets-list__column assets-list__column__header">Timestamp</p>
@@ -92,9 +92,11 @@
         </div>
       </label>
 
-      <a class="assets-list__column__image" href="https://amb.to/{{asset.assetId}}" target="_blank">
-        <img src="./assets/raster/link.png">
-      </a>
+      <div class="assets-list__column__image">
+        <a href="https://amb.to/{{asset.assetId}}" target="_blank">
+          <img src="./assets/raster/link.png">
+        </a>
+      </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title hide-1024">Title</p>
