@@ -17,10 +17,9 @@ export class SignupComponent implements OnInit {
   spinner = false;
   weakPassword = false;
   passwordsNotMatch = false;
-  passwordExists = false;
+  passwordExists: Boolean = false;
   signupError = false;
   signupSuccess = false;
-  myColor = 'green';
   private value: string;
   public width = 1;
   public colors: any = [
