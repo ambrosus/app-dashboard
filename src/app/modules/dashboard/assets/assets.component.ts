@@ -255,19 +255,19 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   onSelectAll(e, input) {
-    const assetsList = this.el.nativeElement.querySelector('#assets-list');
+    const assetsList = this.el.nativeElement.querySelectorAll('.assets-list__item.table');
     if (input.checked) {
       this.selectAllText = 'Unselect all';
-      for (const asset of assetsList.children) {
-        const checkbox = asset.children[0].children[0];
+      for (const asset of assetsList) {
+        const checkbox = asset.children[0].children[0].children[0];
         checkbox.checked = true;
         this.assetsService.selectAsset(checkbox.name);
       }
       this.assetsService.toggleSelect.next('true');
     } else {
       this.selectAllText = 'Select all';
-      for (const asset of assetsList.children) {
-        const checkbox = asset.children[0].children[0];
+      for (const asset of assetsList) {
+        const checkbox = asset.children[0].children[0].children[0];
         checkbox.checked = false;
       }
       this.assetsService.unselectAssets();

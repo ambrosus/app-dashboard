@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- Search bar -->
-  <h2 class="center m-v-30">Search assets</h2>
+  <h2 class="center m-v-30">All assets<br> <p>Total count: {{ resultCountAsset }}</p></h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
       <select id="select">
@@ -32,15 +32,16 @@
     <!-- Select all -->
     <div class="assets-list__item assets-list__item__header" style="border-bottom: 1px solid #f1f1f1; border-radius: 0; z-index: 3;">
       <label class="assets-list__label assets-list__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
-        <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
-        <span class="capitalize color-ablue--base" style="margin-top: 6px;">{{ selectAllText }}</span>
-        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
-        </svg>
+        <div class="relative">
+          <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
+          <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+          </svg>
+        </div>
+        <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
       <div class="assets-list__label assets-list__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
-        <div style="width: 20px; height: 20px; margin-bottom: 6px"></div>
         <span class="header-control-text dropdown">Bulk actions</span>
         <ul class="dropdown-menu">
           <li (click)="openCreateEvents()">
@@ -49,17 +50,14 @@
         </ul>
       </div>
       <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
-        <div style="width: 20px; height: 20px; margin-bottom: 6px"></div>
-        <div>
-          <span>Show</span>
-          <select id="selectPerPage" (change)="rowsPerPage(selectPerPage)" #selectPerPage>
-            <option value="15" selected>15</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-          <span>rows</span>
-        </div>
+        <span>Show</span>
+        <select id="selectPerPage" (change)="rowsPerPage(selectPerPage)" #selectPerPage>
+          <option value="15" selected>15</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span>rows</span>
       </div>
       <!-- Refresh -->
       <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create asset</button>
@@ -84,12 +82,14 @@
   <div class="assets-list" id="assets-list">
 
     <!-- Items -->
-    <div class="assets-list__item" *ngFor="let asset of assets.assets; let i = index">
+    <div class="assets-list__item table" *ngFor="let asset of assets.assets; let i = index">
       <label class="assets-list__label" for="{{ i }}">
-        <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">
-        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
-        </svg>
+        <div class="relative">
+          <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">
+          <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+          </svg>
+        </div>
       </label>
 
       <a class="assets-list__column__image" href="https://amb.to/{{asset.assetId}}" target="_blank">

@@ -221,7 +221,6 @@ export class AssetsService {
       this.ambrosus.getEvents(params).then(resp => {
         // Unique events
         const events = this.latestEvents(resp.data.results);
-        /* const events = resp.data.results; */
         // Extract and build asset objects in []
         const assets = events.reduce((_assets, event) => {
           const asset = {
