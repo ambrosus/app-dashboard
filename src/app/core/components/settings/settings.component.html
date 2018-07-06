@@ -9,11 +9,11 @@
 
 <div class="m-w-4"></div>
 <div class="block-center m-w-4" style="margin-top: 40px;">
-  <form [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
+  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
 
     <div class="form-text m-b-20">
       <label for="email">Registered Email Address *</label>
-      <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
+      <input formControlName="email" type="email" name="email" type="email" required id="email" spellcheck="false" appInput>
     </div>
 
     <div class="form-text m-b-20">
@@ -45,9 +45,10 @@
     </div>
 
     <div class="messages">
+      <h4 *ngIf="blankField" style="color: #ea7070;">Please enter the required field(s)</h4>
       <h4 *ngIf="passwordsNotMatch" style="color: #ea7070;">New passwords do not match</h4>
       <h4 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h4>
-      <h4 *ngIf="showWeakPasswordError" style="color: green;">Please set a strong password</h4>
+      <h4 *ngIf="showWeakPasswordError" style="color: #ea7070;">Please set a strong password</h4>
       <h4 *ngIf="serverMessage" style="color: #ea7070;">{{serverMessage}}</h4>
     </div>
 

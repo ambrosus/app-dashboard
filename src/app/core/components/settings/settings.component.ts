@@ -26,6 +26,7 @@ export class SettingsComponent implements OnInit {
   serverMessage = false;
   resetSuccess: Boolean = false;
   showWeakPasswordError: Boolean = false;
+  blankField: Boolean = false;
 
   ngOnInit() {
   }
@@ -53,19 +54,31 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  initiateReset() {
-    const email = this.resetForm.get('email').value;
+  resetErrors() {
     this.resetSuccess = false;
     this.passwordsNotMatch = false;
     this.serverMessage = false;
     this.showWeakPasswordError = false;
+    this.blankField = false;
+  }
+
+  initiateReset() {
+    const email = this.resetForm.get('email').value;
+    const password = this.resetForm.get('password').value;
+    const oldPassword = this.resetForm.get('oldPassword').value;
+    const passwordConfirm = this.resetForm.get('passwordConfirm').value;
+    this.resetErrors();
+
+    if (email === null || password === null || oldPassword === null || passwordConfirm === null) {
+      this.blankField = true;
+      console.log('');
+      return;
+    }
+
     this.spinner = true;
 
     this.http.post('/api/auth/verifymail', {email: email}).subscribe(
       resp => {
-        const password = this.resetForm.get('password').value;
-        const oldPassword = this.resetForm.get('oldPassword').value;
-        const passwordConfirm = this.resetForm.get('passwordConfirm').value;
 
         if (this.resetForm.get('password').hasError('strong')) {
           this.weakPassword = true;
