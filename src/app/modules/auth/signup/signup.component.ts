@@ -4,11 +4,13 @@ import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
+import { PasswordService } from '../../../services/password.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  styleUrls: ['./signup.component.scss'],
+  providers: [PasswordService]
 })
 export class SignupComponent implements OnInit {
   // Sign up form
@@ -17,26 +19,24 @@ export class SignupComponent implements OnInit {
   spinner = false;
   weakPassword = false;
   passwordsNotMatch = false;
+  passwordExists: Boolean = false;
   signupError = false;
   signupSuccess = false;
-
-  // Custom validator for strong password
-  strongPassword(control: FormControl): { [s: string]: boolean } {
-    const hasNumber = /\d/.test(control.value);
-    const hasUpper = /[A-Z]/.test(control.value);
-    const hasLower = /[a-z]/.test(control.value);
-    const valid = hasNumber && hasUpper && hasLower;
-    if (!valid && control.value && control.value.length < 5) {
-      return { strong: true };
-    }
-    return null;
-  }
+  private value: string;
+  public width = 1;
+  public colors: any = [
+    '#D9534F', '#DF6A4F', '#E5804F', '#EA974E', '#F0AD4E', '#D2AF51',
+    '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
+  public color = '#D9534F';
+  strengthObj: any;
+  flags = [];
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private storage: StorageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private passwordService: PasswordService
   ) {
     this.signupForm = new FormGroup({
       address: new FormControl(null, [Validators.required]),
@@ -44,13 +44,31 @@ export class SignupComponent implements OnInit {
       fullname: new FormControl(null, [Validators.required]),
       company: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, [this.strongPassword]),
+      password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.required])
     });
   }
 
   ngOnInit() {}
+
+  checkPassword(event: any) {
+    this.value = event.target.value;
+    if (this.value.length >= 1) {
+      this.passwordExists = true;
+    } else {
+      this.passwordExists = false;
+    }
+    this.strengthObj = this.passwordService.strengthCalculator(this.value);
+    this.width = this.strengthObj.width;
+    this.flags = this.strengthObj.flags;
+    this.updateBar();
+  }
+
+  updateBar() {
+    const i = Math.round(this.width / 10);
+    this.color = this.colors[i];
+  }
 
   signup() {
     const address = this.signupForm.get('address').value;
@@ -62,7 +80,10 @@ export class SignupComponent implements OnInit {
     const passwordConfirm = this.signupForm.get('passwordConfirm').value;
     const terms = this.signupForm.get('terms').value;
 
-    if (this.signupForm.get('password').hasError('strong')) {
+    let flagCounter = 0;
+    this.flags.forEach(v => v ? flagCounter++ : v);
+
+    if (flagCounter <= 2) {
       this.weakPassword = true;
       this.error = true;
       return;

@@ -8,9 +8,11 @@ import { TermsComponent } from './components/terms/terms.component';
 import { AboutComponent } from './components/about/about.component';
 import { HelpComponent } from './components/help/help.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
-  imports: [SharedModule, AppRoutingModule],
+  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
   declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent],
   providers: [

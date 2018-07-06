@@ -1,8 +1,58 @@
 <app-header></app-header>
 <app-breadcrumbs></app-breadcrumbs>
 
-<div class="main">
-  <h2 class="center m-v-30">Settings</h2>
+<div class="container center">
+  <h2 class="m-v-30">Settings</h2>
+  <hr>
+  <h4>Reset Password</h4>
 </div>
 
+<div class="m-w-4"></div>
+<div class="block-center m-w-4" style="margin-top: 40px;">
+  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
+
+    <div class="form-text m-b-20">
+      <label for="email">Registered Email Address *</label>
+      <input formControlName="email" type="email" name="email" type="email" required id="email" spellcheck="false" appInput>
+    </div>
+
+    <div class="form-text m-b-20">
+      <label for="passwordConfirm">Old Password *</label>
+      <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
+    </div>
+
+    <div class="form-text m-b-20">
+      <label for="password">Password *
+        <span [ngStyle]="{color: myColor}" *ngIf="weakPassword">(Weak Password)</span>
+      </label>
+      <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
+        appInput>
+    </div>
+
+    <div *ngIf="passwordExists" class="progress password-pad">
+      <small>Strong passwords contain combination of symbol, uppercase letter & a number</small>
+      <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
+      <br>
+    </div>
+    <div class="form-text m-b-20">
+      <label for="passwordConfirm">Password Confirm *</label>
+      <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
+    </div>
+
+    <div class="flex flex-direction-r justify-content-fe align-items-c">
+      <app-spinner *ngIf="spinner"></app-spinner>
+      <button type="submit" class="abtn m-l-20 btn-solid-ablue">Reset Password</button>
+    </div>
+
+    <div class="messages">
+      <h4 *ngIf="blankField" style="color: #ea7070;">Please enter the required field(s)</h4>
+      <h4 *ngIf="passwordsNotMatch" style="color: #ea7070;">New passwords do not match</h4>
+      <h4 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h4>
+      <h4 *ngIf="showWeakPasswordError" style="color: #ea7070;">Please set a strong password</h4>
+      <h4 *ngIf="serverMessage" style="color: #ea7070;">{{serverMessage}}</h4>
+    </div>
+
+  </form>
+</div>
+<div class="m-w-4"></div>
 <app-footer></app-footer>
