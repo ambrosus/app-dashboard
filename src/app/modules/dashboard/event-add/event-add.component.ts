@@ -286,7 +286,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (documents.length > 0) {
       basicAndCustom['documents'] = {};
       for (const item of documents) {
-        basicAndCustom['documents'][item.value.documentTitle] =
+        basicAndCustom['documents'][item.value.documentTitle] = {};
+        basicAndCustom['documents'][item.value.documentTitle]['url'] =
           item.value.documentUrl;
       }
     }
