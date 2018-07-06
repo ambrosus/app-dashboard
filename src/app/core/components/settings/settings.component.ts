@@ -71,42 +71,41 @@ export class SettingsComponent implements OnInit {
 
     if (email === null || password === null || oldPassword === null || passwordConfirm === null) {
       this.blankField = true;
-      console.log('');
+      return;
+    }
+
+    if (this.resetForm.get('password').hasError('strong')) {
+      this.weakPassword = true;
+      this.showWeakPasswordError = true;
+      this.error = true;
+      this.spinner = false;
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      this.passwordsNotMatch = true;
+      this.error = true;
+      this.spinner = false;
       return;
     }
 
     this.spinner = true;
+    this.weakPassword = false;
+    this.passwordsNotMatch = false;
+    this.showWeakPasswordError = false;
+    this.blankField = false;
+    this.error = false;
 
-    this.http.post('/api/auth/verifymail', {email: email}).subscribe(
+    const body = {
+      email: email,
+      oldPassword: oldPassword,
+      password: password
+    };
+
+    this.http.post('/api/auth/resetpassword', body).subscribe(
       resp => {
-
-        if (this.resetForm.get('password').hasError('strong')) {
-          this.weakPassword = true;
-          this.showWeakPasswordError = true;
-          this.error = true;
-          this.spinner = false;
-          return;
-        }
-
-        if (password !== passwordConfirm) {
-          this.passwordsNotMatch = true;
-          this.error = true;
-          this.spinner = false;
-          return;
-        }
-
-        this.weakPassword = false;
-        this.passwordsNotMatch = false;
-        this.error = false;
-
-        const body = {
-          email: email,
-          oldPassword: oldPassword,
-          password: password
-        };
-
-        this.resetPass(body);
-
+        this.resetSuccess = true;
+        this.spinner = false;
       },
       err => {
         console.log(err);
@@ -114,18 +113,6 @@ export class SettingsComponent implements OnInit {
         this.spinner = false;
       }
     );
-  }
-
-  resetPass(body) {
-    this.http.post('/api/auth/resetpassword', body).subscribe(
-      resp => {
-        console.log(resp);
-        this.resetSuccess = true;
-        this.spinner = false;
-      }, err => {
-        this.serverMessage = err.error.message;
-        this.spinner = false;
-    });
   }
 
   checkPassword(event: any) {

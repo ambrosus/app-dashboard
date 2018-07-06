@@ -24,87 +24,73 @@ exports.resetpassword = (req, res) => {
     return res.status(401).json({
       message: 'Required fields are not present'
     });
-  }
-
-  // Read the file
-  let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
-  let accounts = JSON.parse(rawdata);
-
-  let address, secret;
-  let newAccountData;
-
-  emailExists = accounts.table.map(account => {
-    if (account.email === email) {
-      // Decrypt addressSecret
-      let decrypted = decrypt(account.token, oldPassword);
-      decrypted = decrypted.split('|||');
-
-      if (decrypted.length < 2) {
-        return res.status(401).json({
-          message: 'Incorrect password'
-        });
-      } else {
-        // Reset the password here 
-        address = decrypted[0];
-        secret = decrypted[1];
-
-        // Resign with newPassword
-        const token = encrypt(`${address}|||${secret}`, newPassword);
-        account.token = token;
-        newAccountData = account;
-
-        let updatedAccounts = { table: [] };
-
-        // Remove the old token from the json
-        updatedAccounts.table = accounts.table.filter((account) => { return account.email !== req.body.email });
-        // Add the new token to the json
-        updatedAccounts.table.push(newAccountData);
-        
-        // Save the json to accounts.json file 
-        try {
-          fs.writeFileSync(
-            `${__dirname}/../accounts.json`,
-            JSON.stringify(updatedAccounts)
-          );
-          console.log('Success in writing file');
-          res.status(200).json({
-            message: 'Reset password succesfull'
-          });
-        } catch (err) {
-            console.log('Error in writing file');
-            console.log(err);
-            res.status(400).json({
-              message: 'Reset password failed',
-              error: err
-            });
-        }
-      }
-    }
-  });
-}
-
-exports.verifymail = (req, res) => {
-  const email = req.body.email;
-  if (!email) {
-    return res.status(400).json({
-      message: 'Email address is required.'
-    });
-  }
-
-  let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
-  let accounts = JSON.parse(rawdata);
-
-  emailExists = accounts.table.some(account => account.email === email);
-
-  if (!emailExists) {
-    return res.status(400).json({
-      email: false,
-      message: 'Email Address is not registered'
-    });
   } else {
-    return res.status(200).json({
-      email: true
-    }); 
+
+    // Read the file
+    let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
+    let accounts = JSON.parse(rawdata);
+
+    emailExists = accounts.table.some(account => account.email === email);
+
+    if (!emailExists) {
+      return res.status(400).json({
+        email: false,
+        message: 'Email Address is not registered'
+      });
+    } else {
+
+      let address, secret;
+      let newAccountData;
+
+      emailExists = accounts.table.map(account => {
+        if (account.email === email) {
+          // Decrypt addressSecret
+          let decrypted = decrypt(account.token, oldPassword);
+          decrypted = decrypted.split('|||');
+
+          if (decrypted.length < 2) {
+            return res.status(401).json({
+              message: 'Incorrect password'
+            });
+          } else {
+            // Reset the password here 
+            address = decrypted[0];
+            secret = decrypted[1];
+
+            // Resign with newPassword
+            const token = encrypt(`${address}|||${secret}`, newPassword);
+            account.token = token;
+            newAccountData = account;
+
+            let updatedAccounts = { table: [] };
+
+            // Remove the old token from the json
+            updatedAccounts.table = accounts.table.filter((account) => { return account.email !== req.body.email });
+            // Add the new token to the json
+            updatedAccounts.table.push(newAccountData);
+            
+            // Save the json to accounts.json file 
+            try {
+              fs.writeFileSync(
+                `${__dirname}/../accounts.json`,
+                JSON.stringify(updatedAccounts)
+              );
+              console.log('Success in writing file');
+              res.status(200).json({
+                message: 'Reset password succesfull'
+              });
+            } catch (err) {
+                console.log('Error in writing file');
+                console.log(err);
+                res.status(400).json({
+                  message: 'Reset password failed',
+                  error: err
+                });
+            }
+          }
+        }
+      });
+    }
   }
 }
 
@@ -130,7 +116,7 @@ exports.login = (req, res) => {
 
   let address, secret;
 
-  emailExists = accounts.table.map(account => {
+  accounts.table.map(account => {
     if (account.email === email) {
       // Decrypt addressSecret
       let decrypted = decrypt(account.token, password);
