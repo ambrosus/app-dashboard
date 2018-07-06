@@ -7,13 +7,13 @@
     <ul class="header-menu">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown" appClickThisActive (click)="overlay = !overlay">
+        <div class="hamburger-icon dropdown dropdown__no-arrow" appClickThisActive (click)="overlay = !overlay" style="position: static;">
           <div></div>
           <div></div>
           <div></div>
           <!-- Menu -->
           <nav class="menu-mobile">
-            <p class="menu-mobile__item">
+            <p class="menu-mobile__item" style="color: #9b9b9b;">
               {{ email }}
             </p>
             <p class="menu-mobile__item" routerLink="/settings">
