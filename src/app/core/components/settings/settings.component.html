@@ -29,7 +29,8 @@
         appInput>
     </div>
 
-    <div *ngIf="passwordExists" class="progress">
+    <div *ngIf="passwordExists" class="progress password-pad">
+      <small>Strong passwords contain combination of symbol, uppercase letter & a number</small>
       <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
       <br>
     </div>
