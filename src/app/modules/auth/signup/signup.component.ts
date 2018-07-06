@@ -31,18 +31,6 @@ export class SignupComponent implements OnInit {
   strengthObj: any;
   flags = [];
 
-  // Custom validator for strong password
-  strongPassword(control: FormControl): { [s: string]: boolean } {
-    const hasNumber = /\d/.test(control.value);
-    const hasUpper = /[A-Z]/.test(control.value);
-    const hasLower = /[a-z]/.test(control.value);
-    const valid = hasNumber && hasUpper && hasLower;
-    if (!valid && control.value && control.value.length < 5) {
-      return { strong: true };
-    }
-    return null;
-  }
-
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -56,7 +44,7 @@ export class SignupComponent implements OnInit {
       fullname: new FormControl(null, [Validators.required]),
       company: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, [this.strongPassword]),
+      password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.required])
     });

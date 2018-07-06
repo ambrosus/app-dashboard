@@ -33,17 +33,6 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
   }
 
-  strongPassword(control: FormControl): { [s: string]: boolean } {
-    const hasNumber = /\d/.test(control.value);
-    const hasUpper = /[A-Z]/.test(control.value);
-    const hasLower = /[a-z]/.test(control.value);
-    const valid = hasNumber && hasUpper && hasLower;
-    if (!valid && control.value && control.value.length < 5) {
-      return { strong: true };
-    }
-    return null;
-  }
-
   constructor(
     private http: HttpClient,
     private passwordService: PasswordService
@@ -51,7 +40,7 @@ export class SettingsComponent implements OnInit {
     this.resetForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),
       oldPassword: new FormControl(null, [Validators.required]),
-      password: new FormControl(null, [this.strongPassword]),
+      password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
     });
   }
