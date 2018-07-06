@@ -4,7 +4,7 @@
       <img src="/assets/svg/logo.svg" alt="Ambrosus">
     </a>
 
-    <ul class="header-menu">
+    <ul class="header-menu" *ngIf="loggedin">
       <!-- Mobile menu -->
       <li class="hide-640">
         <div class="hamburger-icon dropdown dropdown__no-arrow" appClickThisActive (click)="overlay = !overlay" style="position: static;">

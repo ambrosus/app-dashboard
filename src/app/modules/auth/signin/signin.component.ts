@@ -68,7 +68,6 @@ export class SigninComponent implements OnInit {
       this.auth.login(address, secret).subscribe(
         resp => {
           this.spinner = false;
-          this.auth.loggedin.next(true);
           this.router.navigate(['/assets']);
         },
         err => {
@@ -110,7 +109,6 @@ export class SigninComponent implements OnInit {
           this.auth.login(address, secret).subscribe(
             resp => {
               this.spinner = false;
-              this.auth.loggedin.next(true);
               this.router.navigate(['/assets']);
             },
             err => {

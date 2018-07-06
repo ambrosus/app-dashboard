@@ -18,6 +18,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.auth.loggedin.subscribe(resp => {
       this.loggedin = resp;
+      console.log(resp);
     });
     this.email = this.storage.get('email') || 'Hi, welcome!';
   }

@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  loggedin: Subject<boolean> = new Subject<boolean>();
+  loggedin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   cleanForm: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -45,6 +45,7 @@ export class AuthService {
           }${address}`;
           this.http.get(url).subscribe(
             _resp => {
+              this.loggedin.next(true);
               this.storage.set('address', address);
               observer.next('success');
             },
