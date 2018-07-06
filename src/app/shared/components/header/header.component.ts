@@ -9,7 +9,7 @@ import { StorageService } from 'app/services/storage.service';
   encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent implements OnInit {
-  loggedin = false;
+  isLoggedin = false;
   email = 'Hi, welcome!';
   overlay = false;
 
@@ -17,10 +17,11 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
     this.auth.loggedin.subscribe(resp => {
-      this.loggedin = resp;
+      this.isLoggedin = resp;
       console.log(resp);
     });
     this.email = this.storage.get('email') || 'Hi, welcome!';
+    this.isLoggedin = this.storage.get('isLoggedin') || null ? true : false;
   }
 
   onLogout() {

@@ -9,7 +9,7 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  loggedin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  loggedin: Subject<boolean> = new Subject<boolean>();
   cleanForm: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -47,6 +47,7 @@ export class AuthService {
             _resp => {
               this.loggedin.next(true);
               this.storage.set('address', address);
+              this.storage.set('isLoggedin', true);
               observer.next('success');
             },
             err => {
@@ -68,6 +69,7 @@ export class AuthService {
     this.storage.delete('address');
     this.storage.delete('secret');
     this.storage.delete('email');
+    this.storage.delete('isLoggedin');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
   }
