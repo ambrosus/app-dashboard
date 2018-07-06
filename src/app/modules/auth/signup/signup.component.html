@@ -26,7 +26,7 @@
   </div>
   <div class="form-text m-b-20">
     <label for="password">Password *
-      <span [ngStyle]="{color: myColor}" *ngIf="weakPassword">(Weak Password)</span>
+      <span class="false" *ngIf="weakPassword">(Weak Password)</span>
     </label>
     <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
   </div>

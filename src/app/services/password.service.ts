@@ -11,6 +11,7 @@ export class PasswordService {
   };
   width: Number;
   value: String;
+  strengthObj = {};
   constructor() {}
 
   strengthCalculator(p: string) {
@@ -39,7 +40,9 @@ export class PasswordService {
     _force = (_passedMatches === 2) ? Math.min(_force, 60) : _force;
     _force = (_passedMatches === 3) ? Math.min(_force, 100) : _force;
 
-    return _force;
+    this.strengthObj['flags'] = _flags;
+    this.strengthObj['width'] = _force;
+    return this.strengthObj;
   }
 
 }

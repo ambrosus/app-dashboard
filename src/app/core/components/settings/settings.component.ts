@@ -27,6 +27,8 @@ export class SettingsComponent implements OnInit {
   resetSuccess: Boolean = false;
   showWeakPasswordError: Boolean = false;
   blankField: Boolean = false;
+  strengthObj: any;
+  flags = [];
 
   ngOnInit() {
   }
@@ -74,7 +76,10 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
-    if (this.resetForm.get('password').hasError('strong')) {
+    let flagCounter = 0;
+    this.flags.forEach(v => v ? flagCounter++ : v);
+
+    if (flagCounter <= 2) {
       this.weakPassword = true;
       this.showWeakPasswordError = true;
       this.error = true;
@@ -122,7 +127,9 @@ export class SettingsComponent implements OnInit {
     } else {
       this.passwordExists = false;
     }
-    this.width = this.passwordService.strengthCalculator(this.value);
+    this.strengthObj = this.passwordService.strengthCalculator(this.value);
+    this.width = this.strengthObj.width;
+    this.flags = this.strengthObj.flags;
     this.updateBar();
   }
 

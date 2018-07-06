@@ -28,6 +28,8 @@ export class SignupComponent implements OnInit {
     '#D9534F', '#DF6A4F', '#E5804F', '#EA974E', '#F0AD4E', '#D2AF51',
     '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
   public color = '#D9534F';
+  strengthObj: any;
+  flags = [];
 
   // Custom validator for strong password
   strongPassword(control: FormControl): { [s: string]: boolean } {
@@ -69,7 +71,9 @@ export class SignupComponent implements OnInit {
     } else {
       this.passwordExists = false;
     }
-    this.width = this.passwordService.strengthCalculator(this.value);
+    this.strengthObj = this.passwordService.strengthCalculator(this.value);
+    this.width = this.strengthObj.width;
+    this.flags = this.strengthObj.flags;
     this.updateBar();
   }
 
@@ -88,7 +92,10 @@ export class SignupComponent implements OnInit {
     const passwordConfirm = this.signupForm.get('passwordConfirm').value;
     const terms = this.signupForm.get('terms').value;
 
-    if (this.signupForm.get('password').hasError('strong')) {
+    let flagCounter = 0;
+    this.flags.forEach(v => v ? flagCounter++ : v);
+
+    if (flagCounter <= 2) {
       this.weakPassword = true;
       this.error = true;
       return;
