@@ -68,7 +68,7 @@ export class SettingsComponent implements OnInit {
     let flagCounter = 0;
     this.flags.forEach(v => v ? flagCounter++ : v);
 
-    if (flagCounter <= 2) {
+    if (flagCounter <= 3) {
       this.weakPassword = true;
       this.showWeakPasswordError = true;
       this.error = true;
