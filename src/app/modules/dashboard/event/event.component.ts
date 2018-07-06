@@ -100,9 +100,9 @@ export class EventComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storage.environment === 'dev') {
+    /* if (this.storage.environment === 'dev') {
       this.hostLink = 'angular-amb-to-stage.herokuapp.com';
-    }
+    } */
 
     // Get event data
     this.route.data.subscribe(

@@ -111,9 +111,9 @@ export class AssetComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.storage.environment === 'dev') {
+    /* if (this.storage.environment === 'dev') {
       this.hostLink = 'angular-amb-to-stage.herokuapp.com';
-    }
+    } */
 
     // Get asset data
     this.route.data.subscribe(
