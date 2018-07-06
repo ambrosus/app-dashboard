@@ -1,7 +1,8 @@
+import { AuthGuardChild } from './modules/auth/auth-guard-child.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
-import { AuthGuard } from 'app/modules/auth/auth-guard.service';
+import { AuthGuard } from './modules/auth/auth-guard.service';
 import { AuthGuardLogin } from 'app/modules/auth/auth-guard-login.service';
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
@@ -17,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'assets',
-    canActivateChild: [AuthGuard],
+    canActivateChild: [AuthGuardChild],
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always'
   },
@@ -25,7 +26,7 @@ const routes: Routes = [
   { path: 'help', component: HelpComponent },
   { path: 'terms', component: TermsComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'settings', component: SettingsComponent },
+  { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
   { path: '**', component: NotfoundComponent }
 ];
 
@@ -34,6 +35,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthGuardLogin]
+  providers: [AuthGuard, AuthGuardChild, AuthGuardLogin]
 })
 export class AppRoutingModule {}
