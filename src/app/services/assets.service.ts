@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
@@ -26,7 +27,7 @@ export class AssetsService {
   constructor(private http: HttpClient, private storage: StorageService) {
     this.secret = this.storage.get('secret');
     this.address = this.storage.get('address');
-    const apiEndpoint = 'https://gateway-test.ambrosus.com';
+    const apiEndpoint = environment.host;
 
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,
