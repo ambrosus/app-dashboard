@@ -340,11 +340,12 @@ export class AssetAddComponent implements OnInit {
       basicAndCustom['images'] = {};
       for (let i = 0; i < productImages.length; i++) {
         if (i === 0) {
-          basicAndCustom['images']['default'] = productImages[i].value.imageUrl;
+          basicAndCustom['images']['default'] = {};
+          basicAndCustom['images']['default']['url'] = productImages[i].value.imageUrl;
           continue;
         }
-        basicAndCustom['images'][productImages[i].value.imageName] =
-          productImages[i].value.imageUrl;
+        basicAndCustom['images'][productImages[i].value.imageName]= {};
+        basicAndCustom['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
       }
     }
     // Custom data
