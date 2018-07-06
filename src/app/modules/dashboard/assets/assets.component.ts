@@ -94,6 +94,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loadAssets(page = 0, perPage = this.perPage) {
     this.assetsActive = true;
     this.searchActive = false;
+    // Resets
+    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
+    this.selectAllText = 'Select all';
+    this.assetsService.unselectAssets();
     this.assets = {
       assets: [],
       resultCount: 0
@@ -134,12 +138,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.searchActive = true;
     this.assetsActive = false;
 
-    // Show search preloader
-    this.loader = true;
+    // Resets
+    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
+    this.selectAllText = 'Select all';
+    this.assetsService.unselectAssets();
     this.assets = {
       assets: [],
       resultCount: 0
     };
+
+    // Show search preloader
+    this.loader = true;
 
     const searchValues = search.split(',');
     let queries = [];

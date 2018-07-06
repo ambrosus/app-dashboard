@@ -140,12 +140,6 @@
 
   &.assets-list__item__header {
     background: #fff;
-
-    @include max-1024 {
-      & .checkbox-icon {
-        display: none;
-      }
-    }
   }
 }
 
