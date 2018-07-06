@@ -28,7 +28,7 @@ export class PasswordService {
       _passedMatches += _flag === true ? 1 : 0;
     }
 
-    _force += 2 * p.length + ((p.length >= 10) ? 1 : 0);
+    _force += 4 * p.length + ((p.length >= 10) ? 1 : 0);
     _force += _passedMatches * 10;
 
     // penality (short password)
@@ -39,7 +39,6 @@ export class PasswordService {
     _force = (_passedMatches === 2) ? Math.min(_force, 60) : _force;
     _force = (_passedMatches === 3) ? Math.min(_force, 100) : _force;
 
-    console.log(_force);
     return _force;
   }
 
