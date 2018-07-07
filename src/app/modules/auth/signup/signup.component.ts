@@ -3,77 +3,133 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
+import { HttpClient } from '@angular/common/http';
+import { PasswordService } from '../../../services/password.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  styleUrls: ['./signup.component.scss'],
+  providers: [PasswordService]
 })
 export class SignupComponent implements OnInit {
   // Sign up form
   signupForm: FormGroup;
-  serror = false;
-  sspinner = false;
+  error = false;
+  spinner = false;
   weakPassword = false;
-
-  // Custom validator for strong password
-  strongPassword(control: FormControl): { [s: string]: boolean } {
-    const hasNumber = /\d/.test(control.value);
-    const hasUpper = /[A-Z]/.test(control.value);
-    const hasLower = /[a-z]/.test(control.value);
-    // console.log('Num, Upp, Low', hasNumber, hasUpper, hasLower);
-    const valid = hasNumber && hasUpper && hasLower;
-    if (!valid && control.value && control.value.length > 5) {
-      // return what´s not valid
-      return { strong: true };
-    }
-    return null;
-  }
+  passwordsNotMatch = false;
+  passwordExists: Boolean = false;
+  signupError = false;
+  signupSuccess = false;
+  private value: string;
+  public width = 1;
+  public colors: any = [
+    '#D9534F', '#DF6A4F', '#E5804F', '#EA974E', '#F0AD4E', '#D2AF51',
+    '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
+  public color = '#D9534F';
+  strengthObj: any;
+  flags = [];
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private http: HttpClient,
+    private passwordService: PasswordService
   ) {
     this.signupForm = new FormGroup({
+      address: new FormControl(null, [Validators.required]),
+      secret: new FormControl(null, [Validators.required]),
       fullname: new FormControl(null, [Validators.required]),
+      company: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, [this.strongPassword]),
-      country: new FormControl(null, [Validators.required]),
-      company: new FormControl(null, []),
-      reason: new FormControl(null, []),
+      password: new FormControl(null, [Validators.required]),
+      passwordConfirm: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.required])
     });
   }
 
   ngOnInit() {}
 
+  checkPassword(event: any) {
+    this.value = event.target.value;
+    if (this.value.length >= 1) {
+      this.passwordExists = true;
+    } else {
+      this.passwordExists = false;
+    }
+    this.strengthObj = this.passwordService.strengthCalculator(this.value);
+    this.width = this.strengthObj.width;
+    this.flags = this.strengthObj.flags;
+    this.updateBar();
+  }
+
+  updateBar() {
+    const i = Math.round(this.width / 10);
+    this.color = this.colors[i];
+  }
+
   signup() {
-    const f = this.signupForm.get('fullname').value;
-    const e = this.signupForm.get('email').value;
-    const p = this.signupForm.get('password').value;
-    const cy = this.signupForm.get('country').value;
-    const co = this.signupForm.get('company').value;
-    const r = this.signupForm.get('reason').value;
-    const t = this.signupForm.get('terms').value;
+    const address = this.signupForm.get('address').value;
+    const secret = this.signupForm.get('secret').value;
+    const full_name = this.signupForm.get('fullname').value;
+    const company = this.signupForm.get('company').value;
+    const email = this.signupForm.get('email').value;
+    const password = this.signupForm.get('password').value;
+    const passwordConfirm = this.signupForm.get('passwordConfirm').value;
+    const terms = this.signupForm.get('terms').value;
 
-    if (this.signupForm.get('password').hasError('strong')) {
+    let flagCounter = 0;
+    this.flags.forEach(v => v ? flagCounter++ : v);
+
+    if (flagCounter <= 3) {
       this.weakPassword = true;
-    } else {
-      this.weakPassword = false;
+      this.error = true;
+      return;
     }
 
-    if (!this.signupForm.valid || !t) {
-      this.serror = true;
-    } else {
-      this.serror = false;
-      this.weakPassword = false;
+    if (password !== passwordConfirm) {
+      this.passwordsNotMatch = true;
+      this.error = true;
+      return;
     }
 
-    if (!this.serror) {
-      // Do something with this info
-      this.signupForm.reset();
-      this.auth.cleanForm.next(true);
+    if (this.signupForm.valid && terms) {
+      this.spinner = true;
+      this.error = false;
+      this.weakPassword = false;
+      this.passwordsNotMatch = false;
+
+      const body = {
+        address: address,
+        secret: secret,
+        full_name: full_name,
+        company: company,
+        email: email,
+        password: password
+      };
+
+      const url = `/api/auth/signup`;
+
+      this.http.post(url, body).subscribe(
+        resp => {
+          this.signupSuccess = true;
+          this.spinner = false;
+          this.signupForm.reset();
+
+          console.log('resp ', resp);
+        },
+        err => {
+          this.error = true;
+          this.signupError = true;
+          this.spinner = false;
+
+          console.log('err ', err);
+        }
+      );
+    } else {
+      this.error = true;
     }
   }
 }

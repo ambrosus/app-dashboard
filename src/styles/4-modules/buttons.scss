@@ -70,4 +70,14 @@ button,
     height: 15px;
     margin-right: 6px;
   }
+
+  &.back {
+    &:before {
+      content: '\2039';
+      display: inline-block;
+      font-size: 19px;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+  }
 }

@@ -24,6 +24,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
   errorResponse = false;
   success = false;
   spinner = false;
+  locationError = false;
   identifiersAutocomplete = [
     'UPCE',
     'UPC12',
@@ -65,6 +66,13 @@ export class EventAddComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
+    });
+    this.assetService.eventAdded.subscribe(assetId => {
+      this.success = true;
+      setTimeout(() => {
+        this.success = false;
+      }, 3000);
+      console.log('Event added for asset: ', assetId);
     });
   }
 
@@ -197,47 +205,67 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (this.eventForm.valid) {
       this.error = false;
       this.errorResponse = false;
+      this.locationError = false;
+
+      // Check for location error
+      const location = this.eventForm.get('location');
+      const lat = location
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lat').value;
+      const lng = location
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lng').value;
+      const name = location.get('name').value;
+      const city = location.get('city').value;
+      const country = location.get('country').value;
+      const locationId = location.get('locationId').value;
+      const GLN = location.get('gln').value;
+      if (lat || lng || name || city || country || locationId || GLN) {
+        if (!(lat && lng && name && city && country && locationId && GLN)) {
+          this.error = true;
+          this.locationError = true;
+          return;
+        }
+      }
+
       this.spinner = true;
 
-      /* console.log(this.generateJSON('someassetid')); */
+      /* console.log(JSON.stringify(this.generateJSON('123'), null, 4)); */
 
       // create event for each selected asset
       const selectedAssets = this.assetService.getSelectedAssets();
-      for (const assetId of selectedAssets) {
-        // Creating events
-        this.assetService
-          .createEvent(assetId, this.generateJSON(assetId))
-          .subscribe(
-            (response: any) => {
-              console.log(
-                'Assets event creation successful ',
-                assetId,
-                response
-              );
-              this.success = true;
-              setTimeout(() => {
-                this.success = false;
-              }, 3000);
-            },
-            error => {
-              console.log('Assets event creation failed ', assetId, error);
-            }
-          );
+      // Confirmation window
+      const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
+      if (
+        !confirm(
+          `You are about to create an event for ${
+            selectedAssets.length
+          } ${assetsString}, are you sure you want to proceed?`
+        )
+      ) {
+        this.spinner = false;
+        return;
       }
-      this.assetService.unselectAssets();
+      this.assetService.generatedJSON = this.generateJSON();
+      this.assetService.addEvent();
+
       this.spinner = false;
     } else {
       this.error = true;
     }
   }
 
-  private generateJSON(assetId: string) {
+  private generateJSON() {
     const event = {};
     event['content'] = {};
 
     // event.content.idData
     event['content']['idData'] = {};
-    event['content']['idData']['assetId'] = assetId;
+    event['content']['idData']['assetId'] = 'placeholder';
     event['content']['idData']['createdBy'] = this.storage.get('address');
     event['content']['idData']['accessLevel'] = 0;
     event['content']['idData']['timestamp'] = Math.floor(
@@ -258,7 +286,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (documents.length > 0) {
       basicAndCustom['documents'] = {};
       for (const item of documents) {
-        basicAndCustom['documents'][item.value.documentTitle] =
+        basicAndCustom['documents'][item.value.documentTitle] = {};
+        basicAndCustom['documents'][item.value.documentTitle]['url'] =
           item.value.documentUrl;
       }
     }
@@ -279,24 +308,18 @@ export class EventAddComponent implements OnInit, OnDestroy {
     event['content']['data'].push(basicAndCustom);
 
     // Identifiers
-
     const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
-      identifiers['type'] = 'ambrosus.asset.identifiers';
-      identifiers['identifiers'] = {};
+      identifiers['type'] = 'ambrosus.event.identifiers';
       for (const item of ide) {
-        identifiers['identifiers'][item.value.identifier] = [];
-        identifiers['identifiers'][item.value.identifier].push(
-          item.value.identifierValue
-        );
+        identifiers[item.value.identifier] = [];
+        identifiers[item.value.identifier].push(item.value.identifierValue);
       }
-
       event['content']['data'].push(identifiers);
     }
 
     // Location
-
     const _location = this.eventForm.get('location');
     const lat = _location
       .get('location')

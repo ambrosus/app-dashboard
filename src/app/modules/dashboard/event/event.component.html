@@ -4,9 +4,10 @@
   <div class="overlay" *ngIf="json" (click)="json = false"></div>
 
   <!-- JSON view -->
-  <div class="modal-right p-a-10" *ngIf="json">
-    <div class="close" (click)="json = false">
-      <img src="/assets/raster/close.png">
+  <div class="modal--right p-a-10" *ngIf="json">
+    <div class="modal__header" style="justify-content: space-between;">
+      <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
+      <img src="/assets/raster/close.png" (click)="json = false">
     </div>
     <pre [innerHTML]="syntaxHighlight(stringify(event, null, 3))"></pre>
   </div>
@@ -14,8 +15,11 @@
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"></qr-code>
-      <div>
+      <div class="flex flex-direction-r align-items-fe">
+        <button class="abtn btn-outline-ablue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
+        <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
+      </div>
+      <div class="m-t-10">
         <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
           target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
@@ -40,9 +44,26 @@
             </div>
           </div>
 
+          <!-- Arrays -->
+          <div *ngFor="let key of objectKeys(eventObject)">
+            <div *ngIf="isObject(eventObject[key]) && isArray(eventObject[key])">
+              <div class="item">
+                <p class="item__cell__title">{{ key }}: </p>
+                <div class="item__cell">
+                  <div *ngFor="let value of eventObject[key]">
+                    <!-- if value of array are strings -->
+                    <span *ngIf="!isObject(value)">{{ value }} </span>
+                    <!-- if value of array are complex values -->
+                    <span class="item__cell--json" *ngIf="isObject(value)">{{ valueJSON(stringify(value, null, 5)) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Groups -->
           <div *ngFor="let key of objectKeys(eventObject)">
-            <div *ngIf="isObject(eventObject[key])" class="">
+            <div *ngIf="isObject(eventObject[key]) && !isArray(eventObject[key])">
               <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
 
               <div class="item" *ngFor="let k of objectKeys(eventObject[key])">

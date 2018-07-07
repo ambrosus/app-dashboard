@@ -106,9 +106,9 @@
 }
 
 .menu-mobile {
-  position: fixed;
+  position: absolute;
   left: 0;
-  top: 60px;
+  top: 100%;
   width: 100%;
   background: #fff;
   z-index: 99;

@@ -270,7 +270,7 @@ export class AssetAddComponent implements OnInit {
           const assetId = resp.data.assetId;
           this.assetService
             .createEvent(assetId, this.generateJSON(assetId))
-            .subscribe(
+            .then(
               (response: any) => {
                 console.log('Assets event creation successful ', response);
                 this.success = true;
@@ -278,13 +278,11 @@ export class AssetAddComponent implements OnInit {
                   this.success = false;
                 }, 3000);
                 this.spinner = false;
-              },
-              error => {
+              }).catch(error => {
                 console.log('Assets event creation failed ', error);
                 this.errorResponse = true;
                 this.spinner = false;
-              }
-            );
+              });
         },
         err => {
           console.log('Asset creation failed ', err);
@@ -342,11 +340,12 @@ export class AssetAddComponent implements OnInit {
       basicAndCustom['images'] = {};
       for (let i = 0; i < productImages.length; i++) {
         if (i === 0) {
-          basicAndCustom['images']['default'] = productImages[i].value.imageUrl;
+          basicAndCustom['images']['default'] = {};
+          basicAndCustom['images']['default']['url'] = productImages[i].value.imageUrl;
           continue;
         }
-        basicAndCustom['images'][productImages[i].value.imageName] =
-          productImages[i].value.imageUrl;
+        basicAndCustom['images'][productImages[i].value.imageName]= {};
+        basicAndCustom['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
       }
     }
     // Custom data

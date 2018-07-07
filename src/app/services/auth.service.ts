@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +45,9 @@ export class AuthService {
           }${address}`;
           this.http.get(url).subscribe(
             _resp => {
+              this.loggedin.next(true);
               this.storage.set('address', address);
+              this.storage.set('isLoggedin', true);
               observer.next('success');
             },
             err => {
@@ -66,6 +68,8 @@ export class AuthService {
     this.storage.delete('token');
     this.storage.delete('address');
     this.storage.delete('secret');
+    this.storage.delete('email');
+    this.storage.delete('isLoggedin');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
   }

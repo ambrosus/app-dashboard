@@ -2,25 +2,26 @@
 
   <!-- Overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false"></div>
-  <div class="modal-right" *ngIf="createEvents">
-    <div class="close" (click)="createEvents = false">
-      <img src="/assets/raster/close.png">
+  <div class="modal--right" *ngIf="createEvents">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="createEvents = false">
     </div>
     <app-event-add></app-event-add>
   </div>
 
   <!-- JSON view -->
-  <div class="modal-right p-a-10" *ngIf="json">
-    <div class="close" (click)="json = false">
-      <img src="/assets/raster/close.png">
+  <div class="modal--right p-a-10" *ngIf="json">
+    <div class="modal__header" style="justify-content: space-between;">
+      <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
+      <img src="/assets/raster/close.png" (click)="json = false">
     </div>
-    <pre [innerHTML]="syntaxHighlight(stringify(asset, null, 3))"></pre>
+    <pre [innerHTML]="syntaxHighlight(stringify(jsonEvents, null, 3))"></pre>
   </div>
 
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300"></qr-code>
+      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
       <div>
         <a href="https://{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
@@ -38,10 +39,10 @@
         <h3 class="m-t-10 m-b-30 p-h-10">Asset details</h3>
 
         <!-- image -->
-        <div class="item m-b-20" *ngIf="asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
+        <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
           <img src="{{ asset.info.images.default }}">
         </div>
-        <div class="item m-b-20" *ngIf="asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
+        <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
           <img src="{{ asset.info.images.default.url }}">
         </div>
 
@@ -93,8 +94,11 @@
         <div class="events">
           <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
             <p>
+              <span style="color: #4f77f1;">{{ event.type || '' }}</span>
               {{ event.name || event.type }}
-              <span class="event__location" *ngIf="event.location">{{ event.location.city || '' }}, {{ event.location.country || event.location.name }}</span>
+              <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
+                }}
+              </span>
             </p>
             <p>{{ event.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.timestamp }})</p>
           </div>
