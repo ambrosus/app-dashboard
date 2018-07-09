@@ -54,6 +54,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
   json: any;
 
   @Input() prefill;
+  @Input() assetId;
 
   isObject(value) {
     return typeof value === 'object';
@@ -82,9 +83,9 @@ export class EventAddComponent implements OnInit, OnDestroy {
       console.log('Event added for asset: ', assetId);
     });
     // prefill the form
-    if (this.prefill) {
+    if (this.prefill && this.assetId) {
+      this.assetService.selectAsset(this.assetId);
       this.prefillForm();
-      console.log(this.prefill);
     }
   }
 
@@ -443,7 +444,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     const city = _location.get('city').value;
     const country = _location.get('country').value;
     const locationId = _location.get('locationId').value;
-    const GLN = _location.get('gln').value;
+    const GLN = _location.get('GLN').value;
 
     if (lat && lng && name && city && country && locationId && GLN) {
       const location = {

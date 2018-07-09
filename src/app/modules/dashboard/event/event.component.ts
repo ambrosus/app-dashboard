@@ -14,6 +14,7 @@ export class EventComponent implements OnInit {
   event;
   jsonEvent = [];
   edit = false;
+  assetId;
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
@@ -112,6 +113,7 @@ export class EventComponent implements OnInit {
     this.route.data.subscribe(
       data => {
         this.event = data.event;
+        this.assetId = this.event.content.idData.assetId || '';
         this.jsonEvent.push(data.event);
       },
       err => {
