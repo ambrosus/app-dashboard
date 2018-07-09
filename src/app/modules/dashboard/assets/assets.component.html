@@ -1,7 +1,10 @@
 <main class="main">
 
   <!-- Search bar -->
-  <h2 class="center m-v-30">All assets<br> <p>Total count: {{ resultCountAsset }}</p></h2>
+  <h2 class="center m-v-30">All assets
+    <br>
+    <p>Total count: {{ resultCountAsset }}</p>
+  </h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
       <select id="select">
@@ -19,10 +22,11 @@
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <div class="modal--right" *ngIf="createEvents">
+  <div class="modal--right p-a-10" *ngIf="createEvents">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="createEvents = false">
     </div>
+    <h1 class="center m-v-40">Create events</h1>
     <app-event-add></app-event-add>
   </div>
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
@@ -125,7 +129,7 @@
       </div>
     </div>
 
-    <div class="block-center m-w-12 m-v-10 p-h-10" >
+    <div class="block-center m-w-12 m-v-10 p-h-10">
       <div *ngIf="assetsActive && pagination.length !== 0">
         Showing {{ (currentAssetPage - 1) * perPage + 1 }} to
         <span *ngIf="currentAssetPage * perPage > resultCountAsset">{{ resultCountAsset }}</span>
@@ -147,8 +151,7 @@
         <li class="pagination__item" *ngIf="currentAssetPage !== 1">
           <span (click)="loadAssets(currentAssetPage - 2)">Previous</span>
         </li>
-        <li class="pagination__item" *ngFor="let number of pagination; let i = index"
-        [ngClass]="{ active: currentAssetPage === number, dots: number === '...' }">
+        <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentAssetPage === number, dots: number === '...' }">
           <span *ngIf="currentAssetPage === number">{{ number }}</span>
           <span *ngIf="currentAssetPage !== number && number === '...' && i === 1" (click)="loadAssets(pagination[i+1] - 2)">{{ number }}</span>
           <span *ngIf="currentAssetPage !== number && number === '...' && i === pagination.length - 2" (click)="loadAssets(pagination[i-1])">{{ number }}</span>
@@ -163,8 +166,7 @@
         <li class="pagination__item" *ngIf="currentSearchPage !== 1">
           <span (click)="search(currentSearchPage - 2)">Previous</span>
         </li>
-        <li class="pagination__item" *ngFor="let number of pagination; let i = index"
-        [ngClass]="{ active: currentSearchPage === number, dots: number === '...' }">
+        <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentSearchPage === number, dots: number === '...' }">
           <span *ngIf="currentSearchPage === number">{{ number }}</span>
           <span *ngIf="currentSearchPage !== number && number === '...' && i === 1" (click)="search(pagination[i+1] - 2)">{{ number }}</span>
           <span *ngIf="currentSearchPage !== number && number === '...' && i === pagination.length - 2" (click)="search(pagination[i-1])">{{ number }}</span>

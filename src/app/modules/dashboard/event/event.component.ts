@@ -13,6 +13,7 @@ export class EventComponent implements OnInit {
   json = false;
   event;
   jsonEvent = [];
+  edit = false;
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
@@ -24,7 +25,9 @@ export class EventComponent implements OnInit {
 
   downloadQR(el: any) {
     const data = el.elementRef.nativeElement.children[0].src;
-    const filename = `QR_code_${this.event.content.idData.assetId}_${this.event.eventId}.png`;
+    const filename = `QR_code_${this.event.content.idData.assetId}_${
+      this.event.eventId
+    }.png`;
     if (window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveBlob(data, filename);
     } else {
@@ -38,7 +41,8 @@ export class EventComponent implements OnInit {
   }
 
   downloadJSON() {
-    const filename = this.event.content.data[0].name || this.event.content.idData.timestamp;
+    const filename =
+      this.event.content.data[0].name || this.event.content.idData.timestamp;
     const copy = [];
     this.jsonEvent.map(obj => {
       copy.push(JSON.parse(JSON.stringify(obj)));
@@ -109,7 +113,6 @@ export class EventComponent implements OnInit {
       data => {
         this.event = data.event;
         this.jsonEvent.push(data.event);
-        console.log(this.event);
       },
       err => {
         console.log('err ', err);

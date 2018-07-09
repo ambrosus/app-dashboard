@@ -1,4 +1,3 @@
-<h1 class="center m-v-40">Create events</h1>
 <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="errorResponse" style="color: #ea7070">Error creating the event</h4>
@@ -22,15 +21,15 @@
             </h5>
             <div class="accordion__content active">
               <div class="form-text m-b-20">
-                <label for="eventType">Event type *</label>
-                <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
+                <label for="type">Event type *</label>
+                <input formControlName="type" type="text" id="type" spellcheck="false" appInput>
               </div>
               <div class="form-text m-b-20">
                 <label for="name">Name *</label>
                 <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
               </div>
               <div class="form-text m-b-20">
-                <label for="description">Description *</label>
+                <label for="description">Description</label>
                 <input formControlName="description" type="text" id="description" spellcheck="false" appInput>
               </div>
             </div>
@@ -180,7 +179,7 @@
                 </div>
                 <div class="form-text m-b-20 w-50">
                   <label for="gln">GLN</label>
-                  <input formControlName="gln" type="text" id="gln" spellcheck="false" appInput>
+                  <input formControlName="GLN" type="text" id="gln" spellcheck="false" appInput>
                 </div>
               </div>
               <div formGroupName="location">
