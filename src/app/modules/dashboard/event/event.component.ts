@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AssetsService } from 'app/services/assets.service';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 
 @Component({
@@ -8,13 +9,14 @@ import { StorageService } from 'app/services/storage.service';
   styleUrls: ['./event.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class EventComponent implements OnInit {
+export class EventComponent implements OnInit, OnDestroy {
   hostLink = 'amb.to';
   json = false;
   event;
   jsonEvent = [];
   edit = false;
   assetId;
+  eventId;
   infoEvent = false;
 
   objectKeys = Object.keys;
@@ -23,7 +25,10 @@ export class EventComponent implements OnInit {
     return value instanceof Array;
   }
 
-  constructor(private route: ActivatedRoute, private storage: StorageService) {}
+  constructor(private route: ActivatedRoute,
+              private storage: StorageService,
+              private assetService: AssetsService,
+              private router: Router) {}
 
   downloadQR(el: any) {
     const data = el.elementRef.nativeElement.children[0].src;
@@ -116,6 +121,7 @@ export class EventComponent implements OnInit {
       data => {
         this.event = data.event;
         this.assetId = this.event.content.idData.assetId || '';
+        this.eventId = this.event.eventId || '';
         this.infoEvent = this.hasInfoEvent();
         this.jsonEvent.push(data.event);
       },
@@ -123,5 +129,23 @@ export class EventComponent implements OnInit {
         console.log('err ', err);
       }
     );
+    // New info event created from edit
+    this.assetService.infoEventCreated.subscribe(
+      (resp: any) => {
+        const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
+        this.router.navigate([url]);
+      }
+    );
+    // New other event created from edit
+    this.assetService.eventAdded.subscribe(
+      (resp: any) => {
+        const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
+        this.router.navigate([url]);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.assetService.unselectAssets();
   }
 }

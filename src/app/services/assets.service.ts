@@ -382,7 +382,6 @@ export class AssetsService {
         this.eventAddFailed.next(err);
       });
     });
-    this.unselectAssets();
     this.addEventsJSON = {};
   }
 
@@ -415,11 +414,9 @@ export class AssetsService {
     this.createEvent(assetId, this.editInfoEventJSON).then(resp => {
       console.log('Info event creation/edit successful ', resp);
       this.infoEventCreated.next(resp);
-      this.unselectAssets();
     }).catch(err => {
       console.log('Info event creation/edit failed ', err);
       this.infoEventFailed.next(err);
-      this.unselectAssets();
     });
   }
 

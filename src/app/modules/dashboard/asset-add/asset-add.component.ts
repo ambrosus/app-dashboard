@@ -241,7 +241,7 @@ export class AssetAddComponent implements OnInit {
     this.assetForm = new FormGroup({
       assetType: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
-      description: new FormControl('', [Validators.required]),
+      description: new FormControl('', []),
       productImage: new FormArray([
         new FormGroup({
           imageName: new FormControl('default', [Validators.required]),
@@ -433,8 +433,12 @@ export class AssetAddComponent implements OnInit {
     // Basic data
     basicAndCustom['type'] = 'ambrosus.asset.info';
     basicAndCustom['name'] = this.assetForm.get('name').value;
-    basicAndCustom['description'] = this.assetForm.get('description').value;
     basicAndCustom['assetType'] = this.assetForm.get('assetType').value;
+    const description = this.assetForm.get('description').value;
+    if (description) {
+      basicAndCustom['description'] = description;
+    }
+
     // Images
     const productImages = this.assetForm.get('productImage')['controls'];
     if (productImages.length > 0) {
