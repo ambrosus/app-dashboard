@@ -4,7 +4,8 @@ import {
   OnInit,
   ViewEncapsulation,
   ElementRef,
-  Renderer2
+  Renderer2,
+  Input
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
@@ -53,6 +54,9 @@ export class AssetAddComponent implements OnInit {
   errorJSON = false;
   textArea: any = '';
 
+  @Input() prefill;
+  @Input() assetId;
+
   constructor(
     private auth: AuthService,
     private assetService: AssetsService,
@@ -67,6 +71,19 @@ export class AssetAddComponent implements OnInit {
   ngOnInit() {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
+    });
+    // Info event success
+    this.assetService.infoEventCreated.subscribe(resp => {
+      this.success = true;
+      setTimeout(() => {
+        this.success = false;
+      }, 3000);
+      this.spinner = false;
+    });
+    // Asset or info event fail
+    this.assetService.infoEventFailed.subscribe(resp => {
+      this.errorResponse = true;
+      this.spinner = false;
     });
   }
 
@@ -219,12 +236,16 @@ export class AssetAddComponent implements OnInit {
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
+  errorsReset() {
+    this.error = false;
+    this.errorResponse = false;
+    this.invalidJSON = false;
+  }
+
   onJSONSave(input) {
     const json = input.value;
     if (json) {
-      this.error = false;
-      this.errorResponse = false;
-      this.invalidJSON = false;
+      this.errorsReset();
       let data;
 
       try {
@@ -258,38 +279,20 @@ export class AssetAddComponent implements OnInit {
 
   onSave() {
     if (this.assetForm.valid) {
-      this.error = false;
-      this.errorResponse = false;
+      this.errorsReset();
       this.spinner = true;
 
-      console.log(this.generateJSON('someassetID'));
+      if (this.prefill && this.assetId) {
+        // Edit info event
+        this.assetService.selectAsset(this.assetId);
+        this.assetService.editInfoEventJSON = this.generateJSON('assetId');
+        this.assetService.editInfoEvent();
+      } else {
+        // Create asset and info event
+        this.assetService.addAssetAndInfoEventJSON = this.generateJSON('assetId');
+        this.assetService.addAssetAndInfoEvent();
+      }
 
-      this.assetService.createAsset([]).subscribe(
-        (resp: any) => {
-          console.log('Asset creation successful ', resp);
-          const assetId = resp.data.assetId;
-          this.assetService
-            .createEvent(assetId, this.generateJSON(assetId))
-            .then(
-              (response: any) => {
-                console.log('Assets event creation successful ', response);
-                this.success = true;
-                setTimeout(() => {
-                  this.success = false;
-                }, 3000);
-                this.spinner = false;
-              }).catch(error => {
-                console.log('Assets event creation failed ', error);
-                this.errorResponse = true;
-                this.spinner = false;
-              });
-        },
-        err => {
-          console.log('Asset creation failed ', err);
-          this.errorResponse = true;
-          this.spinner = false;
-        }
-      );
     } else {
       this.error = true;
     }
@@ -357,8 +360,7 @@ export class AssetAddComponent implements OnInit {
     for (const item of customGroups) {
       basicAndCustom[item.value.groupName] = {};
       for (const group of item.get('groupValue')['controls']) {
-        basicAndCustom[item.value.groupName][group.value.groupItemKey] =
-          group.value.groupItemValue;
+        basicAndCustom[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue;
       }
     }
 

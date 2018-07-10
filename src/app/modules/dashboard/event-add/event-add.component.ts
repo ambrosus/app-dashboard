@@ -356,8 +356,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
         this.spinner = false;
         return;
       }
-      this.assetService.generatedJSON = this.generateJSON();
-      this.assetService.addEvent();
+      this.assetService.addEventsJSON = this.generateJSON();
+      this.assetService.addEvents();
 
       this.spinner = false;
     } else {
