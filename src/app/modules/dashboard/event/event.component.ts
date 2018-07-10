@@ -15,6 +15,7 @@ export class EventComponent implements OnInit {
   jsonEvent = [];
   edit = false;
   assetId;
+  infoEvent = false;
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
@@ -100,20 +101,22 @@ export class EventComponent implements OnInit {
     );
   }
 
+  hasInfoEvent() {
+    const event = this.event || null;
+    return event ? this.event.content.data.some(obj => obj.type === 'ambrosus.asset.info') : false;
+  }
+
   valueJSON(value) {
     return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   ngOnInit() {
-    /* if (this.storage.environment === 'dev') {
-      this.hostLink = 'angular-amb-to-stage.herokuapp.com';
-    } */
-
     // Get event data
     this.route.data.subscribe(
       data => {
         this.event = data.event;
         this.assetId = this.event.content.idData.assetId || '';
+        this.infoEvent = this.hasInfoEvent();
         this.jsonEvent.push(data.event);
       },
       err => {

@@ -22,6 +22,7 @@ export class AssetsService {
   currentAssetId: string;
   asset;
   eventAdded = new Subject();
+  eventAddFailed = new Subject();
   addEventsJSON;
   addAssetAndInfoEventJSON;
   editInfoEventJSON;
@@ -375,9 +376,10 @@ export class AssetsService {
     selectedAssets.map((assetId) => {
       this.addEventsJSON.content.idData.assetId = assetId;
       this.createEvent(assetId, this.addEventsJSON).then(resp => {
-        this.eventAdded.next(assetId);
-      }).catch(error => {
+        this.eventAdded.next(resp);
+      }).catch(err => {
         console.log('Event add failed for asset: ', assetId);
+        this.eventAddFailed.next(err);
       });
     });
     this.unselectAssets();

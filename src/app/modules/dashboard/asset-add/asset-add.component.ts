@@ -53,9 +53,14 @@ export class AssetAddComponent implements OnInit {
   json = false;
   errorJSON = false;
   textArea: any = '';
+  buttonText = 'Create asset';
 
   @Input() prefill;
   @Input() assetId;
+
+  isObject(value) {
+    return typeof value === 'object';
+  }
 
   constructor(
     private auth: AuthService,
@@ -85,6 +90,100 @@ export class AssetAddComponent implements OnInit {
       this.errorResponse = true;
       this.spinner = false;
     });
+    // prefill the form
+    if (this.prefill && this.assetId) {
+      this.assetService.selectAsset(this.assetId);
+      this.prefillForm();
+      this.buttonText = 'Edit info event';
+    }
+  }
+
+  prefillForm() {
+    const event = this.prefill;
+    if (event.content && event.content.data && event.content.data.length > 0) {
+      event.content.data.map(obj => {
+        switch (obj.type) {
+          case 'ambrosus.asset.identifiers':
+            // Identifiers
+            Object.keys(obj).map((key) => {
+              if (key === 'identifiers') {
+                Object.keys(obj[key]).map(_key => {
+                  (<FormArray>this.assetForm.get('identifiers')).push(
+                    new FormGroup({
+                      identifier: new FormControl(_key, [Validators.required]),
+                      identifierValue: new FormControl(this.isObject(obj[key][_key]) ? obj[key][_key][0] : obj[key][_key],
+                                                                                                     [Validators.required])
+                    })
+                  );
+                });
+              }
+            });
+            break;
+          default:
+            this.assetForm.get('assetType').setValue(obj.assetType || '');
+            this.assetForm.get('name').setValue(obj.name);
+            this.assetForm.get('description').setValue(obj.description || '');
+            let i = 0;
+
+            Object.keys(obj).map((key) => {
+              switch (this.isObject(obj[key])) {
+                case true:
+                  if (key === 'images') {
+                    Object.keys(obj[key]).map((doc) => {
+                      if (doc === 'default') {
+                        const productImages = this.assetForm.get('productImage')['controls'];
+                        productImages[0].get('imageUrl').setValue(this.isObject(obj[key][doc]) ? obj[key][doc]['url'] || ''
+                        : obj[key][doc] || '');
+                      } else {
+                        (<FormArray>this.assetForm.get('productImage')).push(
+                          new FormGroup({
+                            imageName: new FormControl(doc, [Validators.required]),
+                            imageUrl: new FormControl(this.isObject(obj[key][doc]) ? obj[key][doc]['url'] || ''
+                                                                      : obj[key][doc] || '', [Validators.required])
+                          })
+                        );
+                      }
+                    });
+                  } else {
+                    // Group (custom)
+                    // Add a group
+                    const customDataGroups = this.assetForm.get('customDataGroups') as FormArray;
+                    (<FormArray>customDataGroups).push(
+                      new FormGroup({
+                        groupName: new FormControl(key, [Validators.required]),
+                        groupValue: new FormArray([])
+                      })
+                    );
+                    // Add key-value to the group
+                    Object.keys(obj[key]).map((_key) => {
+                      (<FormArray>customDataGroups.at(i).get('groupValue')).push(
+                        new FormGroup({
+                          groupItemKey: new FormControl(_key, [Validators.required]),
+                          groupItemValue: new FormControl(this.isObject(obj[key][_key]) ? JSON.stringify(obj[key][_key])
+                                                        .replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
+                        })
+                      );
+                    });
+                    i++;
+                  }
+                  break;
+
+                default:
+                  if (key !== 'type' && key !== 'assetType' && key !== 'name'  && key !== 'description') {
+                    (<FormArray>this.assetForm.get('customData')).push(
+                      new FormGroup({
+                        customDataKey: new FormControl(key, [Validators.required]),
+                        customDataValue: new FormControl(obj[key], [Validators.required])
+                      })
+                    );
+                  }
+                  break;
+              }
+            });
+            break;
+        }
+      });
+    }
   }
 
   validJSON(input) {
@@ -284,7 +383,6 @@ export class AssetAddComponent implements OnInit {
 
       if (this.prefill && this.assetId) {
         // Edit info event
-        this.assetService.selectAsset(this.assetId);
         this.assetService.editInfoEventJSON = this.generateJSON('assetId');
         this.assetService.editInfoEvent();
       } else {

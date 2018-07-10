@@ -12,13 +12,22 @@
     <pre [innerHTML]="syntaxHighlight(stringify(event, null, 3))"></pre>
   </div>
 
-  <div class="modal--right p-a-10" *ngIf="edit">
+  <div class="modal--right p-a-10" *ngIf="edit && !infoEvent">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="edit = false">
     </div>
     <!-- Edit form + pass current JSON to prefill the form -->
     <h1 class="center m-v-40">Edit event</h1>
     <app-event-add [prefill]="event" [assetId]="assetId"></app-event-add>
+  </div>
+
+  <div class="modal--right p-a-10" *ngIf="edit && infoEvent">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="edit = false">
+    </div>
+    <!-- Edit form + pass current JSON to prefill the form -->
+    <h1 class="center m-v-40">Edit info event</h1>
+    <app-asset-add [prefill]="event" [assetId]="assetId"></app-asset-add>
   </div>
 
   <!-- Asset header -->

@@ -52,6 +52,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     'GMN'
   ];
   json: any;
+  buttonText = 'Create event';
 
   @Input() prefill;
   @Input() assetId;
@@ -75,17 +76,22 @@ export class EventAddComponent implements OnInit, OnDestroy {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
-    this.assetService.eventAdded.subscribe(assetId => {
+    this.assetService.eventAdded.subscribe(resp => {
       this.success = true;
       setTimeout(() => {
         this.success = false;
       }, 3000);
-      console.log('Event added for asset: ', assetId);
+      this.spinner = false;
+    });
+    this.assetService.eventAddFailed.subscribe(resp => {
+      this.errorResponse = true;
+      this.spinner = false;
     });
     // prefill the form
     if (this.prefill && this.assetId) {
       this.assetService.selectAsset(this.assetId);
       this.prefillForm();
+      this.buttonText = 'Edit event';
     }
   }
 
@@ -165,7 +171,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
                   }
                   break;
 
-                  default:
+                default:
                   if (key !== 'type' && key !== 'name'  && key !== 'description') {
                     (<FormArray>this.eventForm.get('customData')).push(
                       new FormGroup({
@@ -358,8 +364,6 @@ export class EventAddComponent implements OnInit, OnDestroy {
       }
       this.assetService.addEventsJSON = this.generateJSON();
       this.assetService.addEvents();
-
-      this.spinner = false;
     } else {
       this.error = true;
     }
