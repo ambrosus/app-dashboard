@@ -21,8 +21,13 @@ export class AssetsService {
   // Parsing get asset/event
   currentAssetId: string;
   asset;
-  generatedJSON;
   eventAdded = new Subject();
+  eventAddFailed = new Subject();
+  addEventsJSON;
+  addAssetAndInfoEventJSON;
+  editInfoEventJSON;
+  infoEventCreated = new Subject();
+  infoEventFailed = new Subject();
 
   constructor(private http: HttpClient, private storage: StorageService) {
     this.secret = this.storage.get('secret');
@@ -365,19 +370,54 @@ export class AssetsService {
     });
   }
 
-  // Event add
-  addEvent() {
+  // Events add
+  addEvents() {
     const selectedAssets = this.getSelectedAssets();
     selectedAssets.map((assetId) => {
-      this.generatedJSON.content.idData.assetId = assetId;
-      this.createEvent(assetId, this.generatedJSON).then(resp => {
-        this.eventAdded.next(assetId);
-      }).catch(error => {
+      this.addEventsJSON.content.idData.assetId = assetId;
+      this.createEvent(assetId, this.addEventsJSON).then(resp => {
+        this.eventAdded.next(resp);
+      }).catch(err => {
         console.log('Event add failed for asset: ', assetId);
+        this.eventAddFailed.next(err);
       });
     });
-    this.unselectAssets();
-    this.generatedJSON = {};
+    this.addEventsJSON = {};
+  }
+
+  // For asset creation
+  addAssetAndInfoEvent() {
+    this.createAsset([]).subscribe(
+      (resp: any) => {
+        console.log('Asset creation successful ', resp);
+        const assetId = resp.data.assetId;
+        this.addAssetAndInfoEventJSON.content.idData.assetId = assetId;
+        this.createEvent(assetId, this.addAssetAndInfoEventJSON).then(response => {
+          console.log('Assets event creation successful ', response);
+          this.infoEventCreated.next(response);
+        }).catch(error => {
+          console.log('Assets event creation failed ', error);
+          this.infoEventFailed.next(error);
+        });
+      },
+      err => {
+        console.log('Asset creation failed ', err);
+        this.infoEventFailed.next(err);
+      }
+    );
+  }
+
+  // Only info event editing
+  editInfoEvent() {
+    const assetId = this.getSelectedAssets()[0];
+    this.editInfoEventJSON.content.idData.assetId = assetId;
+    this.createEvent(assetId, this.editInfoEventJSON).then(resp => {
+      console.log('Info event creation/edit successful ', resp);
+      this.infoEventCreated.next(resp);
+    }).catch(err => {
+      console.log('Info event creation/edit failed ', err);
+      this.infoEventFailed.next(err);
+    });
   }
 
   // assetId selection service

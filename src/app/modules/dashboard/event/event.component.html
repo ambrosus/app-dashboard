@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- overlay -->
-  <div class="overlay" *ngIf="json" (click)="json = false"></div>
+  <div class="overlay" *ngIf="json || edit" (click)="json = false; edit = false"></div>
 
   <!-- JSON view -->
   <div class="modal--right p-a-10" *ngIf="json">
@@ -12,17 +12,37 @@
     <pre [innerHTML]="syntaxHighlight(stringify(event, null, 3))"></pre>
   </div>
 
+  <div class="modal--right p-a-10" *ngIf="edit && !infoEvent">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="edit = false">
+    </div>
+    <!-- Edit form + pass current JSON to prefill the form -->
+    <h1 class="center m-v-40">Edit event</h1>
+    <app-event-add [prefill]="event" [assetId]="assetId"></app-event-add>
+  </div>
+
+  <div class="modal--right p-a-10" *ngIf="edit && infoEvent">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="edit = false">
+    </div>
+    <!-- Edit form + pass current JSON to prefill the form -->
+    <h1 class="center m-v-40">Edit info event</h1>
+    <app-asset-add [prefill]="event" [assetId]="assetId"></app-asset-add>
+  </div>
+
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
       <div class="flex flex-direction-r align-items-fe">
         <button class="abtn btn-outline-ablue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
-        <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
+        <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"
+          #qrCode (click)="downloadQR(qrCode)"></qr-code>
       </div>
       <div class="m-t-10">
         <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
           target="_blank" style="word-break: break-word;">View on amb.to</a>
-        <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
+        <button class="abtn btn-outline-ablue m-r-10" (click)="json = true">View JSON</button>
+        <button class="abtn btn-outline-ablue" (click)="edit = true">Edit</button>
       </div>
     </div>
   </div>

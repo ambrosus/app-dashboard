@@ -178,12 +178,12 @@
   &-content {
     color: $black;
     font-weight: 500;
-    word-break: break-word;
+    word-break: break-all;
   }
 
   &-meta {
     font-size: 11px;
-    word-break: break-word;
+    word-break: break-all;
     max-height: 1em;
     overflow: hidden;
     margin-top: 2px;

@@ -1,4 +1,3 @@
-<h1 class="center m-v-40">Create events</h1>
 <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="errorResponse" style="color: #ea7070">Error creating the event</h4>
@@ -22,15 +21,15 @@
             </h5>
             <div class="accordion__content active">
               <div class="form-text m-b-20">
-                <label for="eventType">Event type *</label>
-                <input formControlName="eventType" type="text" id="eventType" spellcheck="false" appInput>
+                <label for="type">Event type *</label>
+                <input formControlName="type" type="text" id="type" spellcheck="false" appInput>
               </div>
               <div class="form-text m-b-20">
                 <label for="name">Name *</label>
                 <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
               </div>
               <div class="form-text m-b-20">
-                <label for="description">Description *</label>
+                <label for="description">Description</label>
                 <input formControlName="description" type="text" id="description" spellcheck="false" appInput>
               </div>
             </div>
@@ -128,7 +127,7 @@
 
           <div class="accordion">
             <h5 class="accordion__title" appAccordion>
-              <span>Identifiers</span>
+              <span>Event identifiers</span>
               <img src="/assets/raster/arrow-down.png">
             </h5>
             <div class="accordion__content">
@@ -154,11 +153,11 @@
 
           <div class="accordion">
             <h5 class="accordion__title" appAccordion>
-              <span>Location</span>
+              <span>Event location</span>
               <img src="/assets/raster/arrow-down.png">
             </h5>
-            <h4 class="center m-v-20" *ngIf="locationError" style="color: #ea7070">Please fill all the fields.</h4>
-            <div class="accordion__content" formGroupName="location">
+            <div class="accordion__content" formGroupName="locationEvent">
+              <h4 class="center m-v-20" *ngIf="locationEventError" style="color: #ea7070">Please fill all the fields.</h4>
               <div class="form-text m-b-20">
                 <label for="name">Name</label>
                 <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
@@ -180,14 +179,68 @@
                 </div>
                 <div class="form-text m-b-20 w-50">
                   <label for="gln">GLN</label>
-                  <input formControlName="gln" type="text" id="gln" spellcheck="false" appInput>
+                  <input formControlName="GLN" type="text" id="gln" spellcheck="false" appInput>
                 </div>
               </div>
               <div formGroupName="location">
                 <p class="m-b-10">Geometry</p>
                 <div formGroupName="geometry">
                   <div formArrayName="coordinates">
-                    <div *ngFor="let geometryGroup of eventForm.get('location').get('location').get('geometry').get('coordinates')['controls']; let i = index"
+                    <div *ngFor="let geometryGroup of eventForm.get('locationEvent').get('location').get('geometry').get('coordinates')['controls']; let i = index"
+                      [formGroupName]="i">
+                      <div class="form-fields-coupled">
+                        <div class="form-text m-b-20 w-50 m-r-10">
+                          <label for="lat">Latitude</label>
+                          <input formControlName="lat" type="number" id="lat" spellcheck="false" appInput>
+                        </div>
+                        <div class="form-text m-b-20 w-50">
+                          <label for="lng">Longitude</label>
+                          <input formControlName="lng" type="number" id="lng" spellcheck="false" appInput>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion">
+            <h5 class="accordion__title" appAccordion>
+              <span>Asset location</span>
+              <img src="/assets/raster/arrow-down.png">
+            </h5>
+            <div class="accordion__content" formGroupName="locationAsset">
+              <h4 class="center m-v-20" *ngIf="locationAssetError" style="color: #ea7070">Please fill all the fields.</h4>
+              <div class="form-text m-b-20">
+                <label for="name">Name</label>
+                <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="city">City</label>
+                  <input formControlName="city" type="text" id="city" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="country">Country</label>
+                  <input formControlName="country" type="text" id="country" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="locationid">Location id</label>
+                  <input formControlName="locationId" type="text" id="locationid" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="gln">GLN</label>
+                  <input formControlName="GLN" type="text" id="gln" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div formGroupName="location">
+                <p class="m-b-10">Geometry</p>
+                <div formGroupName="geometry">
+                  <div formArrayName="coordinates">
+                    <div *ngFor="let geometryGroup of eventForm.get('locationAsset').get('location').get('geometry').get('coordinates')['controls']; let i = index"
                       [formGroupName]="i">
                       <div class="form-fields-coupled">
                         <div class="form-text m-b-20 w-50 m-r-10">
@@ -210,7 +263,7 @@
 
         <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
           <app-spinner *ngIf="spinner"></app-spinner>
-          <button type="submit" class="abtn m-l-20 btn-solid-ablue">Create event</button>
+          <button type="submit" class="abtn m-l-20 btn-solid-ablue">{{ buttonText }}</button>
         </div>
       </form>
 

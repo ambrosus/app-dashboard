@@ -2,10 +2,11 @@
 
   <!-- Overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false"></div>
-  <div class="modal--right" *ngIf="createEvents">
+  <div class="modal--right p-a-10" *ngIf="createEvents">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="createEvents = false">
     </div>
+    <h1 class="center m-v-40">Create event</h1>
     <app-event-add></app-event-add>
   </div>
 
@@ -100,7 +101,7 @@
                 }}
               </span>
             </p>
-            <p>{{ event.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.timestamp }})</p>
+            <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
           </div>
         </div>
       </div>

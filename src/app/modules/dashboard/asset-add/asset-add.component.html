@@ -1,5 +1,4 @@
-<main class="main">
-  <h1 class="center m-v-50">Create asset</h1>
+<main class="main m-t-50">
   <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="invalidJSON" style="color: #ea7070">Your JSON is invalid, please fix it first.</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
@@ -8,12 +7,12 @@
   <div class="tabs">
     <div class="tab_header">
       <p class="tab_header_item active" (click)="tabOpen('form', tabForm)" #tabForm>Form</p>
-      <p class="tab_header_item" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
+      <p class="tab_header_item" *ngIf="!prefill" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
     </div>
     <div class="tab_content">
 
       <!-- JSON -->
-      <div class="m-w-6 block-center right p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json">
+      <div class="m-w-6 block-center right p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json && !prefill">
         <label for="file" class="abtn btn-outline-ablue m-b-10" *ngIf="json">Upload JSON</label>
         <input type="file" id="file" class="srt" accept=".json" name="file" *ngIf="json" (change)="uploadJSON($event)" #file>
         <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)"
@@ -45,7 +44,7 @@
                   <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
                 </div>
                 <div class="form-text m-b-20">
-                  <label for="description">Description *</label>
+                  <label for="description">Description</label>
                   <input formControlName="description" type="text" id="description" spellcheck="false" appInput>
                 </div>
               </div>
@@ -79,7 +78,7 @@
 
             <div class="accordion">
               <h5 class="accordion__title" appAccordion>
-                <span>Identifiers</span>
+                <span>Asset identifiers</span>
                 <img src="/assets/raster/arrow-down.png">
               </h5>
               <div class="accordion__content">
@@ -157,7 +156,7 @@
                           </div>
                         </div>
                         <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
-                        
+
                       </div>
                       <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
                     </div>
@@ -172,7 +171,7 @@
 
           <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
             <app-spinner *ngIf="spinner"></app-spinner>
-            <button type="submit" class="abtn m-l-20 btn-solid-ablue">Create asset</button>
+            <button type="submit" class="abtn m-l-20 btn-solid-ablue">{{ buttonText }}</button>
           </div>
         </form>
 
