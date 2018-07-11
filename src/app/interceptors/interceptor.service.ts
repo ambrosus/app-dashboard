@@ -22,6 +22,7 @@ export class InterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+
     // this.loader.start();
     const token = this.storage.get('token') || null;
     const secret = this.storage.get('secret');
