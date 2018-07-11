@@ -449,7 +449,7 @@ export class AssetAddComponent implements OnInit {
           basicAndCustom['images']['default']['url'] = productImages[i].value.imageUrl;
           continue;
         }
-        basicAndCustom['images'][productImages[i].value.imageName]= {};
+        basicAndCustom['images'][productImages[i].value.imageName] = {};
         basicAndCustom['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
       }
     }

@@ -119,6 +119,11 @@
       </div>
 
       <div class="assets-list__column" routerLink="{{asset.assetId}}">
+        <p class="assets-list__column-title hide-1024">Created by</p>
+        <p class="assets-list__column-content">{{ asset.content.idData.createdBy }}</p>
+      </div>
+
+      <div class="assets-list__column" routerLink="{{asset.assetId}}">
         <p class="assets-list__column-title hide-1024">Timestamp</p>
         <p class="assets-list__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
       </div>
