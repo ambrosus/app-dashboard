@@ -21,7 +21,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assets = {
     assets: [],
     resultCount: 0
-  }
+  };
   perPage = 15;
   noEvents = false;
   error = false;
@@ -101,7 +101,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assets = {
       assets: [],
       resultCount: 0
-    }
+    };
     this.searchNoResultsFound = null;
     this.loader = true;
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
@@ -181,7 +181,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           const _query = {
             param: `data[identifiers.${ide[0].trim()}]`,
             value: ide[1] ? ide[1].trim() : ''
-          }
+          };
           _queries.push(_query);
 
           return _queries;
@@ -197,7 +197,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           const _query = {
             param: `data[identifiers.${ide[0].trim()}]`,
             value: ide[1] ? ide[1].trim() : ''
-          }
+          };
           _queries.push(_query);
 
           return _queries;
@@ -246,17 +246,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
       // Add first page and dots
       if (result[0] > 1) {
         if (result[0] > 2) {
-          result.unshift('...')
+          result.unshift('...');
         }
-        result.unshift(1)
+        result.unshift(1);
       }
 
       // Add dots and last page
       if (result[result.length - 1] < pageCount) {
         if (result[result.length - 1] !== pageCount - 1) {
-          result.push('...')
+          result.push('...');
         }
-        result.push(pageCount)
+        result.push(pageCount);
       }
     }
 
