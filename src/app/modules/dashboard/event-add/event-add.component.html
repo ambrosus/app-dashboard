@@ -156,8 +156,8 @@
               <span>Event location</span>
               <img src="/assets/raster/arrow-down.png">
             </h5>
-            <h4 class="center m-v-20" *ngIf="locationError" style="color: #ea7070">Please fill all the fields.</h4>
-            <div class="accordion__content" formGroupName="location">
+            <div class="accordion__content" formGroupName="locationEvent">
+              <h4 class="center m-v-20" *ngIf="locationEventError" style="color: #ea7070">Please fill all the fields.</h4>
               <div class="form-text m-b-20">
                 <label for="name">Name</label>
                 <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
@@ -186,7 +186,61 @@
                 <p class="m-b-10">Geometry</p>
                 <div formGroupName="geometry">
                   <div formArrayName="coordinates">
-                    <div *ngFor="let geometryGroup of eventForm.get('location').get('location').get('geometry').get('coordinates')['controls']; let i = index"
+                    <div *ngFor="let geometryGroup of eventForm.get('locationEvent').get('location').get('geometry').get('coordinates')['controls']; let i = index"
+                      [formGroupName]="i">
+                      <div class="form-fields-coupled">
+                        <div class="form-text m-b-20 w-50 m-r-10">
+                          <label for="lat">Latitude</label>
+                          <input formControlName="lat" type="number" id="lat" spellcheck="false" appInput>
+                        </div>
+                        <div class="form-text m-b-20 w-50">
+                          <label for="lng">Longitude</label>
+                          <input formControlName="lng" type="number" id="lng" spellcheck="false" appInput>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion">
+            <h5 class="accordion__title" appAccordion>
+              <span>Asset location</span>
+              <img src="/assets/raster/arrow-down.png">
+            </h5>
+            <div class="accordion__content" formGroupName="locationAsset">
+              <h4 class="center m-v-20" *ngIf="locationAssetError" style="color: #ea7070">Please fill all the fields.</h4>
+              <div class="form-text m-b-20">
+                <label for="name">Name</label>
+                <input formControlName="name" type="text" id="name" spellcheck="false" appInput>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="city">City</label>
+                  <input formControlName="city" type="text" id="city" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="country">Country</label>
+                  <input formControlName="country" type="text" id="country" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div class="form-fields-coupled">
+                <div class="form-text m-b-20 w-50 m-r-10">
+                  <label for="locationid">Location id</label>
+                  <input formControlName="locationId" type="text" id="locationid" spellcheck="false" appInput>
+                </div>
+                <div class="form-text m-b-20 w-50">
+                  <label for="gln">GLN</label>
+                  <input formControlName="GLN" type="text" id="gln" spellcheck="false" appInput>
+                </div>
+              </div>
+              <div formGroupName="location">
+                <p class="m-b-10">Geometry</p>
+                <div formGroupName="geometry">
+                  <div formArrayName="coordinates">
+                    <div *ngFor="let geometryGroup of eventForm.get('locationAsset').get('location').get('geometry').get('coordinates')['controls']; let i = index"
                       [formGroupName]="i">
                       <div class="form-fields-coupled">
                         <div class="form-text m-b-20 w-50 m-r-10">

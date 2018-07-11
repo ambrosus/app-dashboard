@@ -25,7 +25,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
   errorResponse = false;
   success = false;
   spinner = false;
-  locationError = false;
+  locationEventError = false;
+  locationAssetError = false;
   identifiersAutocomplete = [
     'UPCE',
     'UPC12',
@@ -100,14 +101,28 @@ export class EventAddComponent implements OnInit, OnDestroy {
       event.content.data.map(obj => {
         switch (obj.type) {
           case 'ambrosus.event.location':
-            // Location
-            const location = this.eventForm.get('location');
-            location.get('location').get('geometry').get('coordinates')['controls'][0].get('lat')
+            // Location Event
+            const locationEvent = this.eventForm.get('locationEvent');
+            locationEvent.get('location').get('geometry').get('coordinates')['controls'][0].get('lat')
               .setValue(obj.location.geometry.coordinates[0]);
-            location.get('location').get('geometry').get('coordinates')['controls'][0].get('lng')
+            locationEvent.get('location').get('geometry').get('coordinates')['controls'][0].get('lng')
               .setValue(obj.location.geometry.coordinates[1]);
             Object.keys(obj).map((key) => {
-              const exists = location.get(key);
+              const exists = locationEvent.get(key);
+              if (exists && key !== 'location') {
+                exists.setValue(obj[key]);
+              }
+            });
+            break;
+          case 'ambrosus.asset.location':
+            // Location Asset
+            const locationAsset = this.eventForm.get('locationAsset');
+            locationAsset.get('location').get('geometry').get('coordinates')['controls'][0].get('lat')
+              .setValue(obj.location.geometry.coordinates[0]);
+            locationAsset.get('location').get('geometry').get('coordinates')['controls'][0].get('lng')
+              .setValue(obj.location.geometry.coordinates[1]);
+            Object.keys(obj).map((key) => {
+              const exists = locationAsset.get(key);
               if (exists && key !== 'location') {
                 exists.setValue(obj[key]);
               }
@@ -212,7 +227,24 @@ export class EventAddComponent implements OnInit, OnDestroy {
       identifiers: new FormArray([]),
       customData: new FormArray([]),
       customDataGroups: new FormArray([]),
-      location: new FormGroup({
+      locationEvent: new FormGroup({
+        location: new FormGroup({
+          geometry: new FormGroup({
+            coordinates: new FormArray([
+              new FormGroup({
+                lat: new FormControl(null, []),
+                lng: new FormControl(null, [])
+              })
+            ])
+          })
+        }),
+        name: new FormControl(null, []),
+        city: new FormControl(null, []),
+        country: new FormControl(null, []),
+        locationId: new FormControl(null, []),
+        GLN: new FormControl(null, [])
+      }),
+      locationAsset: new FormGroup({
         location: new FormGroup({
           geometry: new FormGroup({
             coordinates: new FormArray([
@@ -313,33 +345,63 @@ export class EventAddComponent implements OnInit, OnDestroy {
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
+  errorsReset() {
+    this.error = false;
+    this.errorResponse = false;
+    this.locationAssetError = false;
+    this.locationEventError = false;
+  }
+
   onSave() {
     if (this.eventForm.valid) {
-      this.error = false;
-      this.errorResponse = false;
-      this.locationError = false;
+      this.errorsReset();
 
-      // Check for location error
-      const location = this.eventForm.get('location');
-      const lat = location
+      // Location Event
+      const locationEvent = this.eventForm.get('locationEvent');
+      let lat = locationEvent
         .get('location')
         .get('geometry')
         .get('coordinates')
         ['controls'][0].get('lat').value;
-      const lng = location
+      let lng = locationEvent
         .get('location')
         .get('geometry')
         .get('coordinates')
         ['controls'][0].get('lng').value;
-      const name = location.get('name').value;
-      const city = location.get('city').value;
-      const country = location.get('country').value;
-      const locationId = location.get('locationId').value;
-      const GLN = location.get('GLN').value;
-      if (lat || lng || name || city || country || locationId || GLN) {
-        if (!(lat && lng && name && city && country && locationId && GLN)) {
+      let name = locationEvent.get('name').value;
+      let city = locationEvent.get('city').value;
+      let country = locationEvent.get('country').value;
+      let locationId = locationEvent.get('locationId').value;
+      let GLN = locationEvent.get('GLN').value;
+      if ((lat || lat === 0) || (lng || lng === 0) || name || city || country || locationId || GLN) {
+        if (!((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN)) {
           this.error = true;
-          this.locationError = true;
+          this.locationEventError = true;
+          return;
+        }
+      }
+
+      // Location Asset
+      const locationAsset = this.eventForm.get('locationAsset');
+      lat = locationAsset
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lat').value;
+      lng = locationAsset
+        .get('location')
+        .get('geometry')
+        .get('coordinates')
+        ['controls'][0].get('lng').value;
+      name = locationAsset.get('name').value;
+      city = locationAsset.get('city').value;
+      country = locationAsset.get('country').value;
+      locationId = locationAsset.get('locationId').value;
+      GLN = locationAsset.get('GLN').value;
+      if ((lat || lat === 0) || (lng || lng === 0) || name || city || country || locationId || GLN) {
+        if (!((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN)) {
+          this.error = true;
+          this.locationAssetError = true;
           return;
         }
       }
@@ -432,27 +494,64 @@ export class EventAddComponent implements OnInit, OnDestroy {
       event['content']['data'].push(identifiers);
     }
 
-    // Location
-    const _location = this.eventForm.get('location');
-    const lat = _location
+    // Location Event
+    const _locationEvent = this.eventForm.get('locationEvent');
+    let lat = _locationEvent
       .get('location')
       .get('geometry')
       .get('coordinates')
       ['controls'][0].get('lat').value;
-    const lng = _location
+    let lng = _locationEvent
       .get('location')
       .get('geometry')
       .get('coordinates')
       ['controls'][0].get('lng').value;
-    const name = _location.get('name').value;
-    const city = _location.get('city').value;
-    const country = _location.get('country').value;
-    const locationId = _location.get('locationId').value;
-    const GLN = _location.get('GLN').value;
+    let name = _locationEvent.get('name').value;
+    let city = _locationEvent.get('city').value;
+    let country = _locationEvent.get('country').value;
+    let locationId = _locationEvent.get('locationId').value;
+    let GLN = _locationEvent.get('GLN').value;
 
     if (lat && lng && name && city && country && locationId && GLN) {
       const location = {
         type: 'ambrosus.event.location',
+        location: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [lat, lng]
+          }
+        },
+        name: name,
+        city: city,
+        country: country,
+        locationId: locationId,
+        GLN: GLN
+      };
+      event['content']['data'].push(location);
+    }
+
+    // Location Asset
+    const _locationAsset = this.eventForm.get('locationAsset');
+    lat = _locationAsset
+      .get('location')
+      .get('geometry')
+      .get('coordinates')
+      ['controls'][0].get('lat').value;
+    lng = _locationAsset
+      .get('location')
+      .get('geometry')
+      .get('coordinates')
+      ['controls'][0].get('lng').value;
+    name = _locationAsset.get('name').value;
+    city = _locationAsset.get('city').value;
+    country = _locationAsset.get('country').value;
+    locationId = _locationAsset.get('locationId').value;
+    GLN = _locationAsset.get('GLN').value;
+
+    if (lat && lng && name && city && country && locationId && GLN) {
+      const location = {
+        type: 'ambrosus.asset.location',
         location: {
           type: 'Feature',
           geometry: {
