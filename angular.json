@@ -30,9 +30,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["./src/styles"]
             },
-            "scripts": [
-              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -92,9 +90,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["./src/styles"]
             },
-            "scripts": [
-              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.min.js"
-            ]
+            "scripts": []
           }
         },
         "lint": {

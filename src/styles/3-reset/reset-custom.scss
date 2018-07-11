@@ -76,6 +76,11 @@ select::-ms-expand {
   display: none;
 }
 
+input[disabled] {
+  background: #fafafa !important;
+  cursor: not-allowed;
+}
+
 // --- Typography reset ---
 
 h1,
@@ -136,7 +141,7 @@ blockquote {
 }
 
 a {
-  color: $_1;
+  color: $ablue;
   text-decoration: none;
   cursor: pointer;
   line-height: 1;

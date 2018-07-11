@@ -4,7 +4,8 @@ import {
   OnInit,
   ViewEncapsulation,
   ElementRef,
-  Renderer2
+  Renderer2,
+  Input
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'app/services/auth.service';
@@ -52,6 +53,14 @@ export class AssetAddComponent implements OnInit {
   json = false;
   errorJSON = false;
   textArea: any = '';
+  buttonText = 'Create asset';
+
+  @Input() prefill;
+  @Input() assetId;
+
+  isObject(value) {
+    return typeof value === 'object';
+  }
 
   constructor(
     private auth: AuthService,
@@ -68,6 +77,113 @@ export class AssetAddComponent implements OnInit {
     this.assetService.inputChanged.subscribe((resp: any) => {
       resp.control.get('identifier').setValue(resp.value);
     });
+    // Info event success
+    this.assetService.infoEventCreated.subscribe(resp => {
+      this.success = true;
+      setTimeout(() => {
+        this.success = false;
+      }, 3000);
+      this.spinner = false;
+    });
+    // Asset or info event fail
+    this.assetService.infoEventFailed.subscribe(resp => {
+      this.errorResponse = true;
+      this.spinner = false;
+    });
+    // prefill the form
+    if (this.prefill && this.assetId) {
+      this.assetService.selectAsset(this.assetId);
+      this.prefillForm();
+      this.buttonText = 'Edit info event';
+    }
+  }
+
+  prefillForm() {
+    const event = this.prefill;
+    if (event.content && event.content.data && event.content.data.length > 0) {
+      event.content.data.map(obj => {
+        switch (obj.type) {
+          case 'ambrosus.asset.identifiers':
+            // Identifiers
+            Object.keys(obj).map((key) => {
+              if (key === 'identifiers') {
+                Object.keys(obj[key]).map(_key => {
+                  (<FormArray>this.assetForm.get('identifiers')).push(
+                    new FormGroup({
+                      identifier: new FormControl(_key, [Validators.required]),
+                      identifierValue: new FormControl(this.isObject(obj[key][_key]) ? obj[key][_key][0] : obj[key][_key],
+                                                                                                     [Validators.required])
+                    })
+                  );
+                });
+              }
+            });
+            break;
+          default:
+            this.assetForm.get('assetType').setValue(obj.assetType || '');
+            this.assetForm.get('name').setValue(obj.name);
+            this.assetForm.get('description').setValue(obj.description || '');
+            let i = 0;
+
+            Object.keys(obj).map((key) => {
+              switch (this.isObject(obj[key])) {
+                case true:
+                  if (key === 'images') {
+                    Object.keys(obj[key]).map((doc) => {
+                      if (doc === 'default') {
+                        const productImages = this.assetForm.get('productImage')['controls'];
+                        productImages[0].get('imageUrl').setValue(this.isObject(obj[key][doc]) ? obj[key][doc]['url'] || ''
+                        : obj[key][doc] || '');
+                      } else {
+                        (<FormArray>this.assetForm.get('productImage')).push(
+                          new FormGroup({
+                            imageName: new FormControl(doc, [Validators.required]),
+                            imageUrl: new FormControl(this.isObject(obj[key][doc]) ? obj[key][doc]['url'] || ''
+                                                                      : obj[key][doc] || '', [Validators.required])
+                          })
+                        );
+                      }
+                    });
+                  } else {
+                    // Group (custom)
+                    // Add a group
+                    const customDataGroups = this.assetForm.get('customDataGroups') as FormArray;
+                    (<FormArray>customDataGroups).push(
+                      new FormGroup({
+                        groupName: new FormControl(key, [Validators.required]),
+                        groupValue: new FormArray([])
+                      })
+                    );
+                    // Add key-value to the group
+                    Object.keys(obj[key]).map((_key) => {
+                      (<FormArray>customDataGroups.at(i).get('groupValue')).push(
+                        new FormGroup({
+                          groupItemKey: new FormControl(_key, [Validators.required]),
+                          groupItemValue: new FormControl(this.isObject(obj[key][_key]) ? JSON.stringify(obj[key][_key])
+                                                        .replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
+                        })
+                      );
+                    });
+                    i++;
+                  }
+                  break;
+
+                default:
+                  if (key !== 'type' && key !== 'assetType' && key !== 'name'  && key !== 'description') {
+                    (<FormArray>this.assetForm.get('customData')).push(
+                      new FormGroup({
+                        customDataKey: new FormControl(key, [Validators.required]),
+                        customDataValue: new FormControl(obj[key], [Validators.required])
+                      })
+                    );
+                  }
+                  break;
+              }
+            });
+            break;
+        }
+      });
+    }
   }
 
   validJSON(input) {
@@ -77,6 +193,17 @@ export class AssetAddComponent implements OnInit {
     } catch (error) {
       this.errorJSON = true;
     }
+  }
+
+  tabOpen(open, element) {
+    this.json = open === 'form' ? false : true;
+    const tabHeaderItems = this.el.nativeElement.querySelectorAll(
+      '.tab_header_item'
+    );
+    for (const item of tabHeaderItems) {
+      this.renderer.removeClass(item, 'active');
+    }
+    this.renderer.addClass(element, 'active');
   }
 
   uploadJSON(event) {
@@ -114,8 +241,13 @@ export class AssetAddComponent implements OnInit {
     this.assetForm = new FormGroup({
       assetType: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
-      description: new FormControl('', [Validators.required]),
-      productImage: new FormArray([]),
+      description: new FormControl('', []),
+      productImage: new FormArray([
+        new FormGroup({
+          imageName: new FormControl('default', [Validators.required]),
+          imageUrl: new FormControl('', [Validators.required])
+        })
+      ]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
       customDataGroups: new FormArray([])
@@ -203,12 +335,16 @@ export class AssetAddComponent implements OnInit {
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
+  errorsReset() {
+    this.error = false;
+    this.errorResponse = false;
+    this.invalidJSON = false;
+  }
+
   onJSONSave(input) {
     const json = input.value;
     if (json) {
-      this.error = false;
-      this.errorResponse = false;
-      this.invalidJSON = false;
+      this.errorsReset();
       let data;
 
       try {
@@ -242,40 +378,19 @@ export class AssetAddComponent implements OnInit {
 
   onSave() {
     if (this.assetForm.valid) {
-      this.error = false;
-      this.errorResponse = false;
+      this.errorsReset();
       this.spinner = true;
 
-      console.log(this.generateJSON('someassetID'));
+      if (this.prefill && this.assetId) {
+        // Edit info event
+        this.assetService.editInfoEventJSON = this.generateJSON('assetId');
+        this.assetService.editInfoEvent();
+      } else {
+        // Create asset and info event
+        this.assetService.addAssetAndInfoEventJSON = this.generateJSON('assetId');
+        this.assetService.addAssetAndInfoEvent();
+      }
 
-      this.assetService.createAsset([]).subscribe(
-        (resp: any) => {
-          console.log('Asset creation successful ', resp);
-          const assetId = resp.data.assetId;
-          this.assetService
-            .createEvent(assetId, this.generateJSON(assetId))
-            .subscribe(
-              (response: any) => {
-                console.log('Assets event creation successful ', response);
-                this.success = true;
-                setTimeout(() => {
-                  this.success = false;
-                }, 3000);
-                this.spinner = false;
-              },
-              error => {
-                console.log('Assets event creation failed ', error);
-                this.errorResponse = true;
-                this.spinner = false;
-              }
-            );
-        },
-        err => {
-          console.log('Asset creation failed ', err);
-          this.errorResponse = true;
-          this.spinner = false;
-        }
-      );
     } else {
       this.error = true;
     }
@@ -297,36 +412,45 @@ export class AssetAddComponent implements OnInit {
     // asset.content.data
     asset['content']['data'] = [];
 
-    const identifiers = {};
-    identifiers['type'] = 'ambrosus.asset.identifier';
-    identifiers['identifiers'] = {};
-    for (const item of this.assetForm.get('identifiers')['controls']) {
-      identifiers['identifiers'][item.value.identifier] = [];
-      identifiers['identifiers'][item.value.identifier].push(
-        item.value.identifierValue
-      );
-    }
+    // Identifiers
+    const ide = this.assetForm.get('identifiers')['controls'];
+    if (ide.length > 0) {
+      const identifiers = {};
+      identifiers['type'] = 'ambrosus.asset.identifiers';
+      identifiers['identifiers'] = {};
+      for (const item of ide) {
+        identifiers['identifiers'][item.value.identifier] = [];
+        identifiers['identifiers'][item.value.identifier].push(
+          item.value.identifierValue
+        );
+      }
 
-    asset['content']['data'].push(identifiers);
+      asset['content']['data'].push(identifiers);
+    }
 
     // Basic + custom data
     const basicAndCustom = {};
     // Basic data
     basicAndCustom['type'] = 'ambrosus.asset.info';
     basicAndCustom['name'] = this.assetForm.get('name').value;
-    basicAndCustom['description'] = this.assetForm.get('description').value;
     basicAndCustom['assetType'] = this.assetForm.get('assetType').value;
+    const description = this.assetForm.get('description').value;
+    if (description) {
+      basicAndCustom['description'] = description;
+    }
+
     // Images
     const productImages = this.assetForm.get('productImage')['controls'];
     if (productImages.length > 0) {
       basicAndCustom['images'] = {};
       for (let i = 0; i < productImages.length; i++) {
         if (i === 0) {
-          basicAndCustom['images']['default'] = productImages[i].value.imageUrl;
+          basicAndCustom['images']['default'] = {};
+          basicAndCustom['images']['default']['url'] = productImages[i].value.imageUrl;
           continue;
         }
-        basicAndCustom['images'][productImages[i].value.imageName] =
-          productImages[i].value.imageUrl;
+        basicAndCustom['images'][productImages[i].value.imageName] = {};
+        basicAndCustom['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
       }
     }
     // Custom data
@@ -338,8 +462,7 @@ export class AssetAddComponent implements OnInit {
     for (const item of customGroups) {
       basicAndCustom[item.value.groupName] = {};
       for (const group of item.get('groupValue')['controls']) {
-        basicAndCustom[item.value.groupName][group.value.groupItemKey] =
-          group.value.groupItemValue;
+        basicAndCustom[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue;
       }
     }
 

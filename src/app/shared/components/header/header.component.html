@@ -1,20 +1,20 @@
 <header class="header">
   <div class="header-container">
     <a class="header-logo" routerLink="/">
-      <img src="/assets/raster/amb-logo.png" alt="Ambrosus">
+      <img src="/assets/svg/logo.svg" alt="Ambrosus">
     </a>
 
-    <ul class="header-menu">
+    <ul class="header-menu" *ngIf="isLoggedin">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown" appClickThisActive (click)="overlay = !overlay">
+        <div class="hamburger-icon dropdown dropdown__no-arrow" appClickThisActive (click)="overlay = !overlay" style="position: static;">
           <div></div>
           <div></div>
           <div></div>
           <!-- Menu -->
           <nav class="menu-mobile">
-            <p class="menu-mobile__item">
-              {{ address }}
+            <p class="menu-mobile__item" style="color: #9b9b9b;">
+              {{ email }}
             </p>
             <p class="menu-mobile__item" routerLink="/settings">
               Settings
@@ -22,20 +22,14 @@
             <p class="menu-mobile__item" (click)="onLogout()">
               Logout
             </p>
-            <p class="menu-mobile__item menu-mobile__item__button" routerLink="/assets/new">
-              Create asset
-            </p>
           </nav>
         </div>
       </li>
       <!-- end Mobile menu -->
 
       <!-- Desktop menu -->
-      <li class="header-menu__item hide-all display-640-inline-block" routerLink="new">
-        <button class="abtn btn-solid-aorange">Create asset</button>
-      </li>
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        {{ address }}
+        {{ email }}
         <ul class="dropdown-menu">
           <li routerLink="/settings">
             Settings

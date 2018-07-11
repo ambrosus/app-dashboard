@@ -16,18 +16,13 @@ import { environment } from 'environments/environment';
   providedIn: 'root'
 })
 export class InterceptorService implements HttpInterceptor {
-  // HttpCall interceptor
-  // to start and stop youtube like, top loader indicator
-
-  constructor(private storage: StorageService) {
-    // private loader: NgProgress
-  }
+  constructor(private storage: StorageService) {}
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    // start loader
+
     // this.loader.start();
     const token = this.storage.get('token') || null;
     const secret = this.storage.get('secret');
@@ -35,7 +30,9 @@ export class InterceptorService implements HttpInterceptor {
 
     let request: HttpRequest<any> = req.clone();
 
-    if (req.url === `${environment.apiUrls.address}${address}`) {
+    if (
+      req.url === `${environment.host}${environment.apiUrls.address}${address}`
+    ) {
       request = req.clone({
         headers: new HttpHeaders({
           Accept: 'application/json',
@@ -52,8 +49,6 @@ export class InterceptorService implements HttpInterceptor {
         })
       });
     }
-
-    console.log(request);
 
     return next.handle(request).pipe(
       tap(

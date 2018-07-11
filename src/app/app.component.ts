@@ -38,15 +38,15 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    const hostname = window.location.hostname;
-    if (
-      !(
-        hostname.startsWith('localhost') ||
-        hostname.startsWith('ambrosus-app-dashboard')
-      )
-    ) {
+    const subdomain = window.location.hostname.split('.')[0];
+    if (subdomain.indexOf('test') >= 0) {
       this.storage.environment = 'test';
+    } else if (subdomain.indexOf('dev') >= 0 || subdomain === 'localhost') {
+      this.storage.environment = 'dev';
+    } else {
+      this.storage.environment = 'prod';
     }
+
     if ('scrollRestoration' in history) {
       // Scroll restoration
       history.scrollRestoration = 'manual';

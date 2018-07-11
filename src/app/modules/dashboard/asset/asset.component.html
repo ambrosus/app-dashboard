@@ -1,19 +1,111 @@
 <main class="main">
-  <h1 class="center m-t-50">Asset</h1>
 
-  <!-- overlay + createEvent modal -->
-  <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <app-event-add class="createEvents" *ngIf="createEvents"></app-event-add>
+  <!-- Overlay + createEvent modal -->
+  <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false"></div>
+  <div class="modal--right p-a-10" *ngIf="createEvents">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="createEvents = false">
+    </div>
+    <h1 class="center m-v-40">Create event</h1>
+    <app-event-add></app-event-add>
+  </div>
 
-  <div class="block-center m-w-6">
-    <div class="m-v-50 flex flex-direction-r justify-content-fe p-h-30">
-      <button class="abtn btn-solid-aorange" (click)="openCreateEvent()">Add Event</button>
+  <!-- JSON view -->
+  <div class="modal--right p-a-10" *ngIf="json">
+    <div class="modal__header" style="justify-content: space-between;">
+      <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
+      <img src="/assets/raster/close.png" (click)="json = false">
+    </div>
+    <pre [innerHTML]="syntaxHighlight(stringify(jsonEvents, null, 3))"></pre>
+  </div>
+
+  <!-- Asset header -->
+  <div class="block-center m-w-12">
+    <div class="view-header">
+      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
+      <div>
+        <a href="https://{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
+      </div>
+      <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEvent()">Add Event</button>
     </div>
   </div>
 
-  <div class="flex flex-direction-c align-items-c justify-content-c">
-    <qr-code [value]="'amb.to/' + assetId" [size]="150"></qr-code>
-    <a href="https:/{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">
-      {{ hostLink }}/{{ assetId }}</a>
+  <!-- Asset details -->
+  <div class="block-center m-w-12 p-h-20">
+    <div class="layout-split">
+
+      <!-- Details -->
+      <div class="layout-split__col1">
+        <h3 class="m-t-10 m-b-30 p-h-10">Asset details</h3>
+
+        <!-- image -->
+        <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
+          <img src="{{ asset.info.images.default }}">
+        </div>
+        <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
+          <img src="{{ asset.info.images.default.url }}">
+        </div>
+
+        <!-- timestamp -->
+        <div class="item">
+          <p class="item__cell__title">timestamp: </p>
+          <p class="item__cell">{{ asset.info.timestamp * 1000 | date:'d MMM yyyy' }} ({{ asset.info.timestamp }})</p>
+        </div>
+
+        <!-- key - value -->
+        <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
+          <div class="item" *ngIf="!isObject(asset.info[key])">
+            <p class="item__cell__title">{{ key }}: </p>
+            <p class="item__cell">{{ asset.info[key] }}</p>
+          </div>
+        </div>
+
+        <!-- Identifiers -->
+        <div *ngIf="asset.identifiers && asset.identifiers.identifiers">
+          <h5 class="m-t-20 m-b-10 p-h-10">Identifiers</h5>
+
+          <div class="item" *ngFor="let key of objectKeys(asset.identifiers.identifiers)">
+            <p class="item__cell__title">{{key}}: </p>
+            <p class="item__cell">{{asset.identifiers.identifiers[key][0]}}</p>
+          </div>
+        </div>
+
+        <!-- Groups -->
+        <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
+          <div *ngIf="isObject(asset.info[key])">
+            <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
+
+            <div class="item" *ngFor="let k of objectKeys(asset.info[key])">
+              <p class="item__cell__title ">{{ k }}:</p>
+
+              <!-- IF OR NOT OBJECT, DISPLAY STRING OR STRINGIFY -->
+              <p class="item__cell" *ngIf="!isObject(asset.info[key][k])">{{ asset.info[key][k] }}</p>
+              <p class="item__cell item__cell--json" *ngIf="isObject(asset.info[key][k])">{{ valueJSON(stringify(asset.info[key][k], null, 5)) }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Events -->
+      <div class="layout-split__col2">
+        <h3 class="m-t-10 m-b-30 p-h-10">Events</h3>
+
+        <div class="events">
+          <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+            <p>
+              <span style="color: #4f77f1;">{{ event.type || '' }}</span>
+              {{ event.name || event.type }}
+              <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
+                }}
+              </span>
+            </p>
+            <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
 </main>
