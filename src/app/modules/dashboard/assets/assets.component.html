@@ -63,6 +63,12 @@
         </select>
         <span>rows</span>
       </div>
+      <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
+        <span>Account</span>
+        <select (change)="account(acc)" #acc>
+          <option *ngFor="let a of accounts" value="{{ a.address }}">{{ a.full_name }}</option>
+        </select>
+      </div>
       <!-- Refresh -->
       <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create asset</button>
     </div>

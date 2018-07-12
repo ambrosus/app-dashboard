@@ -9,6 +9,8 @@ import {
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { StorageService } from 'app/services/storage.service';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-assets',
@@ -22,6 +24,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     assets: [],
     resultCount: 0
   };
+  accounts = [];
+  accountSelected;
   perPage = 15;
   noEvents = false;
   error = false;
@@ -52,7 +56,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private el: ElementRef,
     private renderer: Renderer2,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private storage: StorageService,
+    private auth: AuthService
   ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
@@ -75,6 +81,43 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.auth.accounts().subscribe(
+      (resp: any) => {
+        resp.data.map((account) => {
+          this.accounts.push(account);
+        });
+        const _address = this.storage.get('address');
+        // Loggedin user always default
+        this.accounts.map((account, index) => {
+          if (account.address === _address) {
+            this.accounts.splice(index, 1);
+            this.accounts.unshift(account);
+            this.accountSelected = account.address;
+          }
+        });
+        console.log(this.accounts);
+      },
+      err => {
+        this.accounts = [
+          {
+            full_name: this.storage.get('email') || 'my account',
+            address: this.storage.get('address')
+          }
+        ];
+        this.accountSelected = this.accounts[0].address;
+      }
+    );
+  }
+
+  account(acc) {
+    this.currentAssetPage = 0;
+    this.currentSearchPage = 0;
+    this.accountSelected = acc.value;
+    if (this.assetsActive) {
+      this.loadAssets(this.currentAssetPage, this.perPage);
+    } else {
+      this.search(this.currentSearchPage, this.perPage);
+    }
   }
 
   ngOnDestroy() {
@@ -91,7 +134,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadAssets(page = 0, perPage = this.perPage) {
+  loadAssets(page = 0, perPage = this.perPage, address = this.accountSelected) {
     this.assetsActive = true;
     this.searchActive = false;
     // Resets
@@ -104,7 +147,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     };
     this.searchNoResultsFound = null;
     this.loader = true;
-    this.assetSub = this.assetsService.getAssetsInfo(page, perPage).subscribe(
+    this.assetSub = this.assetsService.getAssetsInfo(page, perPage, address).subscribe(
       (resp: any) => {
         this.loader = false;
         this.assets = resp;
@@ -121,7 +164,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     );
   }
 
-  search(page = 0, perPage = this.perPage) {
+  search(page = 0, perPage = this.perPage, address = this.accountSelected) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
@@ -160,9 +203,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
         });
         break;
       case 'createdBy':
+        address = searchValues[0].trim();
         queries.push({
           param: 'createdBy',
-          value: searchValues[0].trim()
+          value: address
         });
         break;
       case 'type':
@@ -205,12 +249,19 @@ export class AssetsComponent implements OnInit, OnDestroy {
         break;
     }
 
+    if (select !== 'createdBy') {
+      queries.push({
+        param: 'createdBy',
+        value: address
+      });
+    }
+
     this.searchResults = null;
     this.searchNoResultsFound = null;
     this.searchResultsFound = null;
 
     // Make a request here
-    this.assetsService.searchEvents(queries, page, perPage).then((resp: any) => {
+    this.assetsService.searchEvents(queries, page, perPage, address).then((resp: any) => {
       this.loader = false;
       if (resp.assets.length > 0) {
         this.assets = resp;

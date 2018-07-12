@@ -213,14 +213,11 @@ export class AssetsService {
     });
   }
 
-  searchEvents(queries, page = 0, perPage = 20) {
+  searchEvents(queries, page = 0, perPage = 20, address) {
     const params = {};
     queries.map((query) => {
       params[query.param] = query.value;
     });
-    if (!params['createdBy']) {
-      params['createdBy'] = this.address;
-    }
     params['page'] = page;
     params['perPage'] = perPage;
     return new Promise((resolve, reject) => {
@@ -244,7 +241,7 @@ export class AssetsService {
         // Get info events + connect them to assets
         const that = this;
         const _params = {
-          createdBy: this.address,
+          createdBy: address,
           'data[type]': 'ambrosus.asset.info'
         };
         this.ambrosus.getEvents(_params).then(function(info) {
@@ -265,7 +262,7 @@ export class AssetsService {
 
   // GET assets
 
-  getAssetsInfo(page = 0, perPage = 20) {
+  getAssetsInfo(page = 0, perPage = 20, address = this.storage.get('address')) {
     let cachedAssetsInfo;
     try {
       cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;
@@ -274,7 +271,7 @@ export class AssetsService {
     }
     const that = this;
     const params = {
-      createdBy: this.address,
+      createdBy: address,
       page: page,
       perPage: perPage
     };
@@ -290,7 +287,7 @@ export class AssetsService {
         .then(function(assets) {
           // 2. Get all info events
           const _params = {
-            createdBy: that.address,
+            createdBy: address,
             'data[type]': 'ambrosus.asset.info'
           };
           that.ambrosus.getEvents(_params).then(function(info) {
@@ -375,6 +372,7 @@ export class AssetsService {
     const selectedAssets = this.getSelectedAssets();
     selectedAssets.map((assetId) => {
       this.addEventsJSON.content.idData.assetId = assetId;
+      this.addEventsJSON.content.idData.createdBy = this.storage.get('address');
       this.createEvent(assetId, this.addEventsJSON).then(resp => {
         this.eventAdded.next(resp);
       }).catch(err => {
@@ -411,6 +409,7 @@ export class AssetsService {
   editInfoEvent() {
     const assetId = this.getSelectedAssets()[0];
     this.editInfoEventJSON.content.idData.assetId = assetId;
+    this.editInfoEventJSON.content.idData.createdBy = this.storage.get('address');
     this.createEvent(assetId, this.editInfoEventJSON).then(resp => {
       console.log('Info event creation/edit successful ', resp);
       this.infoEventCreated.next(resp);

@@ -24,6 +24,23 @@ export class AuthService {
     return token && address;
   }
 
+  accounts() {
+    return new Observable(observer => {
+      const url = `/api/auth/accounts`;
+
+      this.http.get(url).subscribe(
+        resp => {
+          console.log('GET accounts success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('GET accounts err: ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
   getToken(secret: string) {
     const params = {
       validUntil: 1600000000
