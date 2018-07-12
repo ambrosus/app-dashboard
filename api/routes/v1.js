@@ -19,5 +19,8 @@ apiRoutes.use('/auth', authRoutes);
 authRoutes.post('/signup', AuthController.signup);
 authRoutes.post('/login', AuthController.login);
 authRoutes.post('/resetpassword', AuthController.resetpassword);
+authRoutes.get('/accounts', AuthController.accounts);
+authRoutes.delete('/accounts', AuthController.clean);
+
 
 module.exports = apiRoutes;

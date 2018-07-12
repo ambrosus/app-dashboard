@@ -30,7 +30,7 @@ exports.resetpassword = (req, res) => {
     let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
     let accounts = JSON.parse(rawdata);
 
-    emailExists = accounts.table.some(account => account.email === email);
+    emailExists = accounts.some(account => account.email === email);
 
     if (!emailExists) {
       return res.status(400).json({
@@ -42,7 +42,7 @@ exports.resetpassword = (req, res) => {
       let address, secret;
       let newAccountData;
 
-      emailExists = accounts.table.map(account => {
+      emailExists = accounts.map(account => {
         if (account.email === email) {
           // Decrypt addressSecret
           let decrypted = decrypt(account.token, oldPassword);
@@ -53,7 +53,7 @@ exports.resetpassword = (req, res) => {
               message: 'Incorrect password'
             });
           } else {
-            // Reset the password here 
+            // Reset the password here
             address = decrypted[0];
             secret = decrypted[1];
 
@@ -62,14 +62,14 @@ exports.resetpassword = (req, res) => {
             account.token = token;
             newAccountData = account;
 
-            let updatedAccounts = { table: [] };
+            let updatedAccounts = [];
 
             // Remove the old token from the json
-            updatedAccounts.table = accounts.table.filter((account) => { return account.email !== req.body.email });
+            updatedAccounts = accounts.filter((account) => { return account.email !== req.body.email });
             // Add the new token to the json
-            updatedAccounts.table.push(newAccountData);
-            
-            // Save the json to accounts.json file 
+            updatedAccounts.push(newAccountData);
+
+            // Save the json to accounts.json file
             try {
               fs.writeFileSync(
                 `${__dirname}/../accounts.json`,
@@ -105,7 +105,7 @@ exports.login = (req, res) => {
   }
 
   if (!fs.existsSync(`${__dirname}/../accounts.json`)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'You have to signup first.'
     });
   }
@@ -116,7 +116,7 @@ exports.login = (req, res) => {
 
   let address, secret;
 
-  accounts.table.map(account => {
+  accounts.map(account => {
     if (account.email === email) {
       // Decrypt addressSecret
       let decrypted = decrypt(account.token, password);
@@ -159,7 +159,8 @@ exports.signup = (req, res) => {
     token: encrypt(`${address}|||${secret}`, password),
     full_name: full_name,
     company: company,
-    email: email
+    email: email,
+    address: address
   };
 
   // Read the file
@@ -167,10 +168,10 @@ exports.signup = (req, res) => {
     let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
     let accounts = JSON.parse(rawdata);
 
-    emailExists = accounts.table.some(account => account.email === email);
+    emailExists = accounts.some(account => account.email === email);
 
     if (!emailExists) {
-      accounts.table.push(newAccount);
+      accounts.push(newAccount);
 
       // Write to a file
       try {
@@ -199,7 +200,7 @@ exports.signup = (req, res) => {
   } else {
     fs.writeFile(
       `${__dirname}/../accounts.json`,
-      JSON.stringify({ table: [] }),
+      JSON.stringify([]),
       function(error, data) {
         if (error) {
           return res.status(400).json({
@@ -210,7 +211,7 @@ exports.signup = (req, res) => {
         let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
         let accounts = JSON.parse(rawdata);
 
-        accounts.table.push(newAccount);
+        accounts.push(newAccount);
 
         // Write to a file
         try {
@@ -235,3 +236,62 @@ exports.signup = (req, res) => {
     );
   }
 };
+
+exports.accounts = (req, res) => {
+  if (!fs.existsSync(`${__dirname}/../accounts.json`)) {
+    return res.status(404).json({
+      message: 'No accounts.'
+    });
+  }
+
+  // Read the file
+  let rawdata = fs.readFileSync(`${__dirname}/../accounts.json`);
+  let accounts = JSON.parse(rawdata);
+
+  if (accounts.length === 0) {
+    return res.status(404).json({
+      message: 'No accounts.'
+    });
+  }
+
+  const _accounts = [];
+
+  accounts.map(account => {
+    const acc = {
+      full_name: account.full_name,
+      address: account.address
+    }
+    _accounts.push(acc);
+  });
+
+  res.status(200).json({
+    resultCount: _accounts.length,
+    data: _accounts,
+    message: 'Success'
+  });
+}
+
+exports.clean = (req, res) => {
+  if (!fs.existsSync(`${__dirname}/../accounts.json`)) {
+    return res.status(404).json({
+      message: 'No file to clean.'
+    });
+  }
+
+  // Write to a file
+  try {
+    fs.writeFileSync(`${__dirname}/../accounts.json`, JSON.stringify([]));
+    console.log('Success in writing file');
+
+    res.status(200).json({
+      message: 'Cleanup successful'
+    });
+  } catch (err) {
+    console.log('Error in writing file');
+    console.log(err);
+
+    res.status(400).json({
+      message: 'Cleanup failed'
+    });
+  }
+}
