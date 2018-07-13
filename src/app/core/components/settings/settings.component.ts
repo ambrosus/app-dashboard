@@ -1,3 +1,4 @@
+import { StorageService } from './../../../services/storage.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -29,13 +30,16 @@ export class SettingsComponent implements OnInit {
   blankField: Boolean = false;
   strengthObj: any;
   flags = [];
+  has_account = false;
 
   ngOnInit() {
+    this.has_account = JSON.parse(this.storage.get('has_account'));
   }
 
   constructor(
     private http: HttpClient,
-    private passwordService: PasswordService
+    private passwordService: PasswordService,
+    private storage: StorageService
   ) {
     this.resetForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),

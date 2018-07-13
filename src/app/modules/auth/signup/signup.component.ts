@@ -39,8 +39,8 @@ export class SignupComponent implements OnInit {
     private passwordService: PasswordService
   ) {
     this.signupForm = new FormGroup({
-      address: new FormControl(null, [Validators.required]),
-      secret: new FormControl(null, [Validators.required]),
+      address: new FormControl(this.storage.get('address'), [Validators.required]),
+      secret: new FormControl(this.storage.get('secret'), [Validators.required]),
       fullname: new FormControl(null, [Validators.required]),
       company: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),

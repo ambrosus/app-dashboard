@@ -1,15 +1,12 @@
 <app-header></app-header>
 <app-breadcrumbs></app-breadcrumbs>
 
-<div class="container center">
-  <h2 class="m-v-30">Settings</h2>
-  <hr>
-  <h4>Reset Password</h4>
-</div>
-
-<div class="m-w-4"></div>
 <div class="block-center m-w-4" style="margin-top: 40px;">
-  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }">
+  <h2 class="m-v-30 center">Settings</h2>
+
+  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }" *ngIf="has_account">
+
+    <h2 class="m-v-30">Reset password</h2>
 
     <div class="form-text m-b-20">
       <label for="email">Registered Email Address *</label>
@@ -53,6 +50,9 @@
     </div>
 
   </form>
+
+  <!-- Signup form -->
+  <app-signup *ngIf="!has_account"></app-signup>
 </div>
-<div class="m-w-4"></div>
+
 <app-footer></app-footer>

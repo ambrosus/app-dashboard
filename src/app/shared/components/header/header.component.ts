@@ -10,7 +10,7 @@ import { StorageService } from 'app/services/storage.service';
 })
 export class HeaderComponent implements OnInit {
   isLoggedin = false;
-  email = 'Hi, welcome!';
+  greeting = 'Hi, welcome!';
   overlay = false;
 
   constructor(private auth: AuthService, private storage: StorageService) {}
@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
       this.isLoggedin = resp;
       console.log(resp);
     });
-    this.email = this.storage.get('email') || 'Hi, welcome!';
+    this.greeting = this.storage.get('full_name') || this.storage.get('email') || 'Hi, welcome!';
     this.isLoggedin = this.storage.get('isLoggedin') || null ? true : false;
   }
 

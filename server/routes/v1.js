@@ -20,6 +20,7 @@ authRoutes.post('/signup', AuthController.signup);
 authRoutes.post('/login', AuthController.login);
 authRoutes.post('/resetpassword', AuthController.resetpassword);
 authRoutes.get('/accounts', AuthController.accounts);
+authRoutes.get('/accounts/:address', AuthController.account);
 authRoutes.delete('/accounts', AuthController.clean);
 
 

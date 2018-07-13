@@ -43,6 +43,23 @@ export class AuthService {
     });
   }
 
+  account() {
+    return new Observable(observer => {
+      const url = `/api/auth/accounts/${this.storage.get('address')}`;
+
+      this.http.get(url).subscribe(
+        resp => {
+          console.log('GET account success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('GET account err: ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
   getToken(secret: string) {
     const params = {
       validUntil: 1600000000
@@ -66,6 +83,18 @@ export class AuthService {
               this.storage.set('address', address);
               this.storage.set('isLoggedin', true);
               this.assets.initSDK();
+
+              this.account().subscribe(
+                (r: any) => {
+                  this.storage.set('email', r.data.email);
+                  this.storage.set('full_name', r.data.full_name);
+                  this.storage.set('has_account', true);
+                },
+                err => {
+                  this.storage.set('has_account', false);
+                }
+              );
+
               observer.next('success');
             },
             err => {
@@ -87,6 +116,8 @@ export class AuthService {
     this.storage.delete('address');
     this.storage.delete('secret');
     this.storage.delete('email');
+    this.storage.delete('full_name');
+    this.storage.delete('has_account');
     this.storage.delete('isLoggedin');
     this.router.navigate(['/login']);
     this.loggedin.next(false);
