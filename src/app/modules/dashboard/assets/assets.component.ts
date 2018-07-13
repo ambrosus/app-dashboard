@@ -83,19 +83,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.auth.accounts().subscribe(
       (resp: any) => {
-        resp.data.map((account) => {
-          this.accounts.push(account);
-        });
         const _address = this.storage.get('address');
-        // Loggedin user always default
-        this.accounts.map((account, index) => {
-          if (account.address === _address) {
-            this.accounts.splice(index, 1);
-            this.accounts.unshift(account);
-            this.accountSelected = account.address;
-          }
-        });
-        console.log(this.accounts);
+        if (!resp.data.some((account) => account.address === _address)) {
+          this.accounts = [
+            {
+              full_name: this.storage.get('email') || 'my account',
+              address: _address
+            }
+          ];
+          this.accountSelected = this.accounts[0].address;
+        } else {
+          this.accounts = resp.data;
+          // Loggedin user always default
+          this.accounts.map((account, index) => {
+            if (account.address === _address) {
+              this.accounts.splice(index, 1);
+              this.accounts.unshift(account);
+              this.accountSelected = account.address;
+            }
+          });
+        }
       },
       err => {
         this.accounts = [
@@ -123,6 +130,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.assetSub.unsubscribe();
     this.navigationSubscription.unsubscribe();
+    this.accountSelected = null;
   }
 
   rowsPerPage(select) {
@@ -151,6 +159,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       (resp: any) => {
         this.loader = false;
         this.assets = resp;
+        console.log(this.assets);
         this.currentAssetPage = page + 1;
         this.resultCountAsset = resp.resultCount;
         this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
@@ -281,7 +290,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   findInfo(info) {
-    return info.content.data.find((obj) => obj.type === 'ambrosus.asset.info');
+    const infoEvent = info.content.data.find((obj) => obj.type === 'ambrosus.asset.info');
+    return infoEvent;
   }
 
   paginationGenerate(currentPage, pageCount) {

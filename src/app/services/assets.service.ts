@@ -30,6 +30,10 @@ export class AssetsService {
   infoEventFailed = new Subject();
 
   constructor(private http: HttpClient, private storage: StorageService) {
+    this.initSDK();
+  }
+
+  initSDK() {
     this.secret = this.storage.get('secret');
     this.address = this.storage.get('address');
     const apiEndpoint = environment.host;
@@ -39,6 +43,7 @@ export class AssetsService {
       secret: this.secret,
       address: this.address
     });
+    console.log(this.ambrosus);
   }
 
   isValidURL(str) {
@@ -390,6 +395,7 @@ export class AssetsService {
         console.log('Asset creation successful ', resp);
         const assetId = resp.data.assetId;
         this.addAssetAndInfoEventJSON.content.idData.assetId = assetId;
+        this.addAssetAndInfoEventJSON.content.idData.createdBy = this.storage.get('address');
         this.createEvent(assetId, this.addAssetAndInfoEventJSON).then(response => {
           console.log('Assets event creation successful ', response);
           this.infoEventCreated.next(response);

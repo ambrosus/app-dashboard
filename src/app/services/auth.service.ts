@@ -1,3 +1,4 @@
+import { AssetsService } from './assets.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -15,7 +16,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private assets: AssetsService
   ) {}
 
   isLoggedIn() {
@@ -57,14 +59,13 @@ export class AuthService {
         (resp: any) => {
           this.storage.set('token', resp.token);
           // Address request
-          const url = `${environment.host}${
-            environment.apiUrls.address
-          }${address}`;
+          const url = `${environment.host}${environment.apiUrls.address}${address}`;
           this.http.get(url).subscribe(
             _resp => {
               this.loggedin.next(true);
               this.storage.set('address', address);
               this.storage.set('isLoggedin', true);
+              this.assets.initSDK();
               observer.next('success');
             },
             err => {
