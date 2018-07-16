@@ -1,13 +1,1 @@
-[{
-  "token": "367d7d0cc17e95c5689c5c5fe3921e1b5df0d743004bdfc8ca36621addc8d55198b3b1dd7325b959923037f53536d497f4ace8b42fde0f9355e4f68032d44c39f1e4bedbeb3253955f67e558dedc26a720e074a30e74f41b65c9d7dd8b4f04cc71e046eda183578586745950249eba",
-  "full_name": "Lazar Eric",
-  "company": "Ambrosus",
-  "email": "lazar@test.com",
-  "address": "0x4d52ffd268B9c5e8157D4b2E89342DdEa161F79F"
-}, {
-  "token": "367d705ecc7b92943c9b5b54919f4a4a5bfea3130e39ddeece4a3867debfd722bab0b2dd7424cd5e924e37f53536d493f4adb0bf23d50d975bb6a28d6dd21239f7e0b98abd62009c5f61e90adadb2af470e827f75874a21a3f99dd8e8e1857cd25ee15eea086078184715e5076ceeb",
-  "full_name": "Meet Dave",
-  "company": "Ambrosus",
-  "email": "meet@test.com",
-  "address": "0x9687a70513047dc6Ee966D69bD0C07FFb1102098"
-}]
+[{"token":"367d7d0cc17e95c5689c5c5fe3921e1b5df0d743004bdfc8ca36621addc8d55198b3b1dd7325b959923037f53536d497f4ace8b42fde0f9355e4f68032d44c39f1e4bedbeb3253955f67e558dedc26a720e074a30e74f41b65c9d7dd8b4f04cc71e046eda183578586745950249eba","full_name":"Lazar Eric","company":"Ambrosus","email":"lazar@test.com","address":"0x4d52ffd268B9c5e8157D4b2E89342DdEa161F79F"},{"token":"367d705ecc7b92943c9b5b54919f4a4a5bfea3130e39ddeece4a3867debfd722bab0b2dd7424cd5e924e37f53536d493f4adb0bf23d50d975bb6a28d6dd21239f7e0b98abd62009c5f61e90adadb2af470e827f75874a21a3f99dd8e8e1857cd25ee15eea086078184715e5076ceeb","full_name":"Meet Dave","company":"Ambrosus","email":"meet@test.com","address":"0x9687a70513047dc6Ee966D69bD0C07FFb1102098"}]

@@ -53,9 +53,9 @@
                       <input formControlName="documentUrl" type="text" id="{{ i + 'documentUrl' }}" spellcheck="false" appInput>
                     </div>
                   </div>
-                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveDocument(i)">Remove</a>
+                  <a class="color-greys--base m-b-20 inline-block" (click)="remove('documents', i)">Remove</a>
                 </div>
-                <a class="color-ablue--base" (click)="onAddDocument()">Add document</a>
+                <a class="color-ablue--base" (click)="addDocument()">Add document</a>
               </div>
             </div>
           </div>
@@ -78,9 +78,9 @@
                       <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
                     </div>
                   </div>
-                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
+                  <a class="color-greys--base m-b-20 inline-block" (click)="remove('customData', i)">Remove</a>
                 </div>
-                <a class="color-ablue--base" (click)="onAddCustomKeyValue()">Add key-value pair</a>
+                <a class="color-ablue--base" (click)="addCustomKeyValue()">Add key-value pair</a>
               </div>
             </div>
           </div>
@@ -115,12 +115,12 @@
                       </div>
                       <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
                     </div>
-                    <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
+                    <a class="color-ablue--base" (click)="addCustomGroupKeyValue(i)">Add key-value pair</a>
                   </div>
                   <!--end Array of key-value in a group-->
-                  <a class="color-blacks--base m-b-20 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>
+                  <a class="color-blacks--base m-b-20 inline-block" (click)="remove('customDataGroups', i)">Remove group</a>
                 </div>
-                <a class="color-ablue--base" (click)="onAddCustomGroup()">Add new group</a>
+                <a class="color-ablue--base" (click)="addCustomGroup()">Add new group</a>
               </div>
             </div>
           </div>
@@ -144,9 +144,9 @@
                       <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
                     </div>
                   </div>
-                  <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
+                  <a class="color-greys--base m-b-20 inline-block" (click)="remove('identifiers', i)">Remove</a>
                 </div>
-                <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
+                <a class="color-ablue--base" (click)="addIdentifier()">Add indentifier</a>
               </div>
             </div>
           </div>

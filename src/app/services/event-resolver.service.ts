@@ -17,7 +17,7 @@ export class EventResolver implements Resolve<any> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any> | Promise<any> | any {
-    return this.asset.SDKgetEventById(route.params.eventid).pipe(
+    return this.asset.getEventById(route.params.eventid).pipe(
       map(asset => asset),
       first()
     );

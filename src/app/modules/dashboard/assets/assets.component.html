@@ -65,7 +65,7 @@
       </div>
       <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
         <span>Account</span>
-        <select (change)="account(acc)" #acc>
+        <select (change)="changeAccount(acc)" #acc>
           <option *ngFor="let a of accounts" value="{{ a.address }}">{{ a.full_name }}</option>
         </select>
       </div>

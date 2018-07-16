@@ -69,9 +69,9 @@
                         <input formControlName="imageUrl" type="text" id="{{ i + 'imageUrl' }}" spellcheck="false" appInput>
                       </div>
                     </div>
-                    <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveImageUrl(i)" *ngIf="i > 0">Remove</a>
+                    <a class="color-greys--base m-b-20 inline-block" (click)="remove('productImage', i)" *ngIf="i > 0">Remove</a>
                   </div>
-                  <a class="color-ablue--base" (click)="onAddImageUrl()">Add image</a>
+                  <a class="color-ablue--base" (click)="addImageUrl()">Add image</a>
                 </div>
               </div>
             </div>
@@ -95,9 +95,9 @@
                         <input formControlName="identifierValue" type="text" id="{{ i + 'identifierValue'}}" spellcheck="false" appInput>
                       </div>
                     </div>
-                    <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveIdentifier(i)">Remove</a>
+                    <a class="color-greys--base m-b-20 inline-block" (click)="remove('identifiers', i)">Remove</a>
                   </div>
-                  <a class="color-ablue--base" (click)="onAddIdentifier()">Add indentifier</a>
+                  <a class="color-ablue--base" (click)="addIdentifier()">Add indentifier</a>
                 </div>
               </div>
             </div>
@@ -120,9 +120,9 @@
                         <input formControlName="customDataValue" type="text" id="{{ i + 'customDataValue'}}" spellcheck="false" appInput>
                       </div>
                     </div>
-                    <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomKeyValue(i)">Remove</a>
+                    <a class="color-greys--base m-b-20 inline-block" (click)="remove('customData', i)">Remove</a>
                   </div>
-                  <a class="color-ablue--base" (click)="onAddCustomKeyValue()">Add key-value pair</a>
+                  <a class="color-ablue--base" (click)="addCustomKeyValue()">Add key-value pair</a>
                 </div>
               </div>
             </div>
@@ -158,12 +158,12 @@
                         <a class="color-greys--base m-b-20 inline-block" (click)="onRemoveCustomGroupKeyValue(i, j)">Remove</a>
 
                       </div>
-                      <a class="color-ablue--base" (click)="onAddCustomGroupKeyValue(i)">Add key-value pair</a>
+                      <a class="color-ablue--base" (click)="addCustomGroupKeyValue(i)">Add key-value pair</a>
                     </div>
                     <!--end Array of key-value in a group-->
-                    <a class="color-blacks--base m-b-20 inline-block" (click)="onRemoveCustomGroup(i)">Remove group</a>
+                    <a class="color-blacks--base m-b-20 inline-block" (click)="remove('customDataGroups', i)">Remove group</a>
                   </div>
-                  <a class="color-ablue--base" (click)="onAddCustomGroup()">Add new group</a>
+                  <a class="color-ablue--base" (click)="addCustomGroup()">Add new group</a>
                 </div>
               </div>
             </div>

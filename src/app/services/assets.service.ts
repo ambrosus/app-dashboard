@@ -2,7 +2,6 @@ import { environment } from 'environments/environment';
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
 declare let AmbrosusSDK: any;
 
@@ -14,9 +13,7 @@ export class AssetsService {
   toggleSelect: Subject<any> = new Subject();
   inputChanged = new Subject();
   assets: {};
-  // SDK
-  ambrosus: any = {};
-  // Parsing get asset/event
+  ambrosus;
   currentAssetId: string;
   asset;
   eventAdded = new Subject();
@@ -27,7 +24,7 @@ export class AssetsService {
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
 
-  constructor(private http: HttpClient, private storage: StorageService) {
+  constructor(private storage: StorageService) {
     this.initSDK();
   }
 
@@ -41,32 +38,6 @@ export class AssetsService {
     });
   }
 
-  isValidURL(str) {
-    const a = document.createElement('a');
-    a.href = str;
-    return a.host && a.host !== window.location.host;
-  }
-
-  sortEventsByTimestamp(a, b) {
-    if (a[1].timestamp > b[1].timestamp) {
-      return -1;
-    }
-    if (a[1].timestamp < b[1].timestamp) {
-      return 1;
-    }
-    return 0;
-  }
-
-  sortEventsAllTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) {
-      return -1;
-    }
-    if (a.timestamp < b.timestamp) {
-      return 1;
-    }
-    return 0;
-  }
-
   // GET asset and GET event
 
   getAsset(assetId) {
@@ -75,18 +46,20 @@ export class AssetsService {
         return observer.next(this.asset);
       }
 
-      this.getAssetDetails(assetId).then(response => {
-        this.getEvents(assetId).then(eventsArray => {
-          this.parseEvents(eventsArray).then(parsedData => {
+      this.getAssetById(assetId).then(response => {
+        this.getEvents(assetId).then(events => {
+          this.parseEvents(events).then(parsedData => {
             this.asset = parsedData;
-            return observer.next(this.handleRedirection(assetId));
+            this.asset.eventsAll = this.parseAllEvents(events);
+            this.asset.eventsJSON = events;
+            return observer.next(this.asset);
           });
         });
       });
     });
   }
 
-  getAssetDetails(assetId) {
+  getAssetById(assetId) {
     return new Promise((resolve, reject) => {
       this.ambrosus
         .getAssetById(assetId)
@@ -112,6 +85,30 @@ export class AssetsService {
     });
   }
 
+  getEventById(eventId) {
+    return new Observable(observer => {
+      this.ambrosus
+        .getEventById(eventId)
+        .then(resp => {
+          return observer.next(resp.data);
+        })
+        .catch(err => {
+          return observer.error(err);
+        });
+    });
+  }
+
+  sortEventsByTimestamp(a, b) {
+    if (a.timestamp > b.timestamp) {
+      return -1;
+    }
+    if (a.timestamp < b.timestamp) {
+      return 1;
+    }
+    return 0;
+  }
+
+  // Latest events
   parseEvents(eventsArray) {
     return new Promise((resolve, reject) => {
       this.ambrosus
@@ -125,92 +122,42 @@ export class AssetsService {
     });
   }
 
-  handleRedirection(assetId) {
-    this.asset.events = Object.entries(this.asset.events)
-      .sort(this.sortEventsByTimestamp)
-      .reduce((array: any, event) => array.concat(event[1]), []);
+  // All, unfiltered events
+  parseAllEvents(e) {
+    const events = e.results.reduce(
+      (_events, { content, eventId }) => {
+        const timestamp = content.idData.timestamp;
+        const author = content.idData.createdBy;
 
-    if (
-      this.asset.redirection &&
-      this.isValidURL(this.asset.redirection.targetUrl)
-    ) {
-      // window.location.replace(this.asset.redirection.targetUrl);
-      // return false;
-    } else {
-      delete this.asset.redirection;
-    }
+        if (content && content.data) {
+          content.data.filter(obj => {
+            obj.timestamp = timestamp;
+            obj.author = author;
+            obj.name = obj.name || obj.type;
+            obj.action = obj.type;
+            obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
+            obj.eventId = eventId;
 
-    return this.asset;
-  }
+            if (obj.type === 'location') {
+              content.data.reduce((location, _event) => {
+                if (_event.type !== 'location') {
+                  _event.location = location;
+                }
+              }, obj);
+            }
 
-  getEventById(eventId) {
-    return new Observable(observer => {
-      this.asset.events.some(e => {
-        if (e.eventId === eventId) {
-          observer.next(e);
-          return true;
+            _events.push(obj);
+            return obj;
+          });
         }
-      });
-    });
-  }
+        return _events;
+      },
+      []
+    );
 
-  // All unfiltered events
-  getEventsAll(assetId) {
-    return new Observable(observer => {
-      this.getEvents(assetId)
-        .then((resp: any) => {
-          const events = resp.results.reduce(
-            (_events, { content, eventId }) => {
-              const timestamp = content.idData.timestamp;
-              const author = content.idData.createdBy;
+    events.sort(this.sortEventsByTimestamp);
 
-              if (content && content.data) {
-                content.data.filter(obj => {
-                  obj.timestamp = timestamp;
-                  obj.author = author;
-                  obj.name = obj.name || obj.type;
-                  obj.action = obj.type;
-                  obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
-                  obj.eventId = eventId;
-
-                  if (obj.type === 'location') {
-                    content.data.reduce((location, _event) => {
-                      if (_event.type !== 'location') {
-                        _event.location = location;
-                      }
-                    }, obj);
-                  }
-
-                  _events.push(obj);
-                  return obj;
-                });
-              }
-              return _events;
-            },
-            []
-          );
-
-          events.sort(this.sortEventsAllTimestamp);
-
-          return observer.next(events);
-        })
-        .catch(err => {
-          return observer.error(err);
-        });
-    });
-  }
-
-  SDKgetEventById(eventId) {
-    return new Observable(observer => {
-      this.ambrosus
-        .getEventById(eventId)
-        .then(resp => {
-          return observer.next(resp.data);
-        })
-        .catch(err => {
-          return observer.error(err);
-        });
-    });
+    return events;
   }
 
   searchEvents(queries, page = 0, perPage = 20, address) {
@@ -343,7 +290,6 @@ export class AssetsService {
 
   createAsset(data) {
     return new Observable(observer => {
-      console.log('CREATE ASSET AMB: ', this.ambrosus);
       this.ambrosus
         .createAsset(data)
         .then(function(resp) {
@@ -357,7 +303,6 @@ export class AssetsService {
 
   createEvent(assetId, event) {
     return new Promise((resolve, reject) => {
-      console.log('CREATE EVENT AMB: ', this);
       this.ambrosus
         .createEvent(assetId, event)
         .then(function(resp) {

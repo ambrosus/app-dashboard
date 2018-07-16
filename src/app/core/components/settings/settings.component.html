@@ -4,7 +4,7 @@
 <div class="block-center m-w-4" style="margin-top: 40px;">
   <h2 class="m-v-30 center">Settings</h2>
 
-  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="initiateReset()" [ngClass]="{ error: error }" *ngIf="has_account">
+  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="resetPassword()" [ngClass]="{ error: error }" *ngIf="has_account">
 
     <h2 class="m-v-30">Reset password</h2>
 

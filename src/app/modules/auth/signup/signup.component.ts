@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'app/services/auth.service';
-import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
-import { PasswordService } from '../../../services/password.service';
+import { PasswordService } from 'app/services/password.service';
 
 @Component({
   selector: 'app-signup',
@@ -12,8 +10,7 @@ import { PasswordService } from '../../../services/password.service';
   styleUrls: ['./signup.component.scss'],
   providers: [PasswordService]
 })
-export class SignupComponent implements OnInit {
-  // Sign up form
+export class SignupComponent {
   signupForm: FormGroup;
   error = false;
   spinner = false;
@@ -32,8 +29,6 @@ export class SignupComponent implements OnInit {
   flags = [];
 
   constructor(
-    private auth: AuthService,
-    private router: Router,
     private storage: StorageService,
     private http: HttpClient,
     private passwordService: PasswordService
@@ -49,8 +44,6 @@ export class SignupComponent implements OnInit {
       terms: new FormControl(null, [Validators.required])
     });
   }
-
-  ngOnInit() {}
 
   checkPassword(event: any) {
     this.value = event.target.value;
@@ -68,6 +61,12 @@ export class SignupComponent implements OnInit {
   updateBar() {
     const i = Math.round(this.width / 10);
     this.color = this.colors[i];
+  }
+
+  resetErrors() {
+    this.error = false;
+    this.weakPassword = false;
+    this.passwordsNotMatch = false;
   }
 
   signup() {
@@ -96,36 +95,34 @@ export class SignupComponent implements OnInit {
     }
 
     if (this.signupForm.valid && terms) {
+      this.resetErrors();
       this.spinner = true;
-      this.error = false;
-      this.weakPassword = false;
-      this.passwordsNotMatch = false;
 
       const body = {
-        address: address,
-        secret: secret,
-        full_name: full_name,
-        company: company,
-        email: email,
-        password: password
+        address,
+        secret,
+        full_name,
+        company,
+        email,
+        password
       };
 
       const url = `/api/auth/signup`;
 
       this.http.post(url, body).subscribe(
         resp => {
-          this.signupSuccess = true;
           this.spinner = false;
+          this.signupSuccess = true;
           this.signupForm.reset();
 
-          console.log('resp ', resp);
+          console.log('Signup success: ', resp);
         },
         err => {
+          this.spinner = false;
           this.error = true;
           this.signupError = true;
-          this.spinner = false;
 
-          console.log('err ', err);
+          console.log('Signup failed: ', err);
         }
       );
     } else {

@@ -4,14 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  loggedin: Subject<boolean> = new Subject<boolean>();
-  cleanForm: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private http: HttpClient,
@@ -26,7 +24,7 @@ export class AuthService {
     return token && address;
   }
 
-  accounts() {
+  getAccounts() {
     return new Observable(observer => {
       const url = `/api/auth/accounts`;
 
@@ -43,9 +41,9 @@ export class AuthService {
     });
   }
 
-  account() {
+  getAccountByAddress(address) {
     return new Observable(observer => {
-      const url = `/api/auth/accounts/${this.storage.get('address')}`;
+      const url = `/api/auth/accounts/${address}`;
 
       this.http.get(url).subscribe(
         resp => {
@@ -60,7 +58,7 @@ export class AuthService {
     });
   }
 
-  getToken(secret: string) {
+  getToken() {
     const params = {
       validUntil: 1600000000
     };
@@ -69,22 +67,22 @@ export class AuthService {
   }
 
   login(address: string, secret: string) {
+    // Used by interceptor, to set headers
     this.storage.set('secret', secret);
     this.storage.set('address', address);
     return new Observable(observer => {
-      this.getToken(secret).subscribe(
+      this.getToken().subscribe(
         (resp: any) => {
           this.storage.set('token', resp.token);
           // Address request
           const url = `${environment.host}${environment.apiUrls.address}${address}`;
           this.http.get(url).subscribe(
             _resp => {
-              this.loggedin.next(true);
               this.storage.set('address', address);
               this.storage.set('isLoggedin', true);
               this.assets.initSDK();
 
-              this.account().subscribe(
+              this.getAccountByAddress(address).subscribe(
                 (r: any) => {
                   this.storage.set('email', r.data.email);
                   this.storage.set('full_name', r.data.full_name);
@@ -98,7 +96,6 @@ export class AuthService {
               observer.next('success');
             },
             err => {
-              this.storage.delete('address');
               observer.error(err);
             }
           );
@@ -112,14 +109,7 @@ export class AuthService {
   }
 
   logout() {
-    this.storage.delete('token');
-    this.storage.delete('address');
-    this.storage.delete('secret');
-    this.storage.delete('email');
-    this.storage.delete('full_name');
-    this.storage.delete('has_account');
-    this.storage.delete('isLoggedin');
+    this.storage.clear();
     this.router.navigate(['/login']);
-    this.loggedin.next(false);
   }
 }

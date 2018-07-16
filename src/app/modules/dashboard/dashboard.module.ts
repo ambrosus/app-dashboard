@@ -1,4 +1,3 @@
-import { AuthModule } from './../auth/auth.module';
 import { AssetsResolver } from 'app/services/assets-resolver.service';
 import { EventResolver } from 'app/services/event-resolver.service';
 import { AssetResolver } from 'app/services/asset-resolver.service';

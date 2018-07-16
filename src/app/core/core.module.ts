@@ -1,5 +1,5 @@
-import { AuthModule } from './../modules/auth/auth.module';
-import { InterceptorService } from './../interceptors/interceptor.service';
+import { AuthModule } from 'app/modules/auth/auth.module';
+import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
 import { SharedModule } from 'app/shared/shared.module';

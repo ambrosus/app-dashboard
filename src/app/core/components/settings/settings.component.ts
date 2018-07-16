@@ -1,8 +1,8 @@
-import { StorageService } from './../../../services/storage.service';
+import { StorageService } from 'app/services/storage.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { PasswordService } from './../../../services/password.service';
+import { PasswordService } from 'app/services/password.service';
 
 @Component({
   selector: 'app-settings',
@@ -11,7 +11,6 @@ import { PasswordService } from './../../../services/password.service';
   providers: [PasswordService]
 })
 export class SettingsComponent implements OnInit {
-
   private value: string;
   public width = 1;
   public colors: any = [
@@ -50,21 +49,23 @@ export class SettingsComponent implements OnInit {
   }
 
   resetErrors() {
+    this.error = false;
     this.resetSuccess = false;
     this.passwordsNotMatch = false;
     this.serverMessage = false;
     this.showWeakPasswordError = false;
     this.blankField = false;
+    this.weakPassword = false;
   }
 
-  initiateReset() {
+  resetPassword() {
+    this.resetErrors();
     const email = this.resetForm.get('email').value;
     const password = this.resetForm.get('password').value;
     const oldPassword = this.resetForm.get('oldPassword').value;
     const passwordConfirm = this.resetForm.get('passwordConfirm').value;
-    this.resetErrors();
 
-    if (email === null || password === null || oldPassword === null || passwordConfirm === null) {
+    if (!email || !password || !oldPassword || !passwordConfirm) {
       this.blankField = true;
       return;
     }
@@ -88,27 +89,22 @@ export class SettingsComponent implements OnInit {
     }
 
     this.spinner = true;
-    this.weakPassword = false;
-    this.passwordsNotMatch = false;
-    this.showWeakPasswordError = false;
-    this.blankField = false;
-    this.error = false;
 
     const body = {
-      email: email,
-      oldPassword: oldPassword,
-      password: password
+      email,
+      oldPassword,
+      password
     };
 
     this.http.post('/api/auth/resetpassword', body).subscribe(
       resp => {
-        this.resetSuccess = true;
         this.spinner = false;
+        this.resetSuccess = true;
       },
       err => {
-        console.log(err);
-        this.serverMessage = err.error.message;
         this.spinner = false;
+        this.serverMessage = err.error.message;
+        console.log('Signup failed: ', err);
       }
     );
   }

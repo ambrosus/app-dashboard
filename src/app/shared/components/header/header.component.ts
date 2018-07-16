@@ -16,15 +16,11 @@ export class HeaderComponent implements OnInit {
   constructor(private auth: AuthService, private storage: StorageService) {}
 
   ngOnInit() {
-    this.auth.loggedin.subscribe(resp => {
-      this.isLoggedin = resp;
-      console.log(resp);
-    });
-    this.greeting = this.storage.get('full_name') || this.storage.get('email') || 'Hi, welcome!';
-    this.isLoggedin = this.storage.get('isLoggedin') || null ? true : false;
+    this.greeting = this.storage.get('full_name') || 'Hi, welcome!';
+    this.isLoggedin = JSON.parse(this.storage.get('isLoggedin'));
   }
 
-  onLogout() {
+  logout() {
     this.auth.logout();
   }
 }

@@ -1,15 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpHeaders,
-  HttpInterceptor,
-  HttpRequest,
-  HttpResponse
-} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { StorageService } from '../services/storage.service';
+import { StorageService } from 'app/services/storage.service';
 import { environment } from 'environments/environment';
 
 @Injectable({
@@ -18,21 +10,14 @@ import { environment } from 'environments/environment';
 export class InterceptorService implements HttpInterceptor {
   constructor(private storage: StorageService) {}
 
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-
-    // this.loader.start();
-    const token = this.storage.get('token') || null;
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const token = this.storage.get('token');
     const secret = this.storage.get('secret');
     const address = this.storage.get('address');
 
     let request: HttpRequest<any> = req.clone();
 
-    if (
-      req.url === `${environment.host}${environment.apiUrls.address}${address}`
-    ) {
+    if (req.url === `${environment.host}${environment.apiUrls.address}${address}`) {
       request = req.clone({
         headers: new HttpHeaders({
           Accept: 'application/json',
@@ -50,17 +35,6 @@ export class InterceptorService implements HttpInterceptor {
       });
     }
 
-    return next.handle(request).pipe(
-      tap(
-        (event: HttpEvent<any>) => {
-          if (event instanceof HttpResponse) {
-            // this.loader.complete();
-          }
-        },
-        (err: any) => {
-          // this.loader.complete();
-        }
-      )
-    );
+    return next.handle(request);
   }
 }

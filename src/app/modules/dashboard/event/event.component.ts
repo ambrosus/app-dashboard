@@ -1,7 +1,6 @@
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-event',
@@ -19,6 +18,7 @@ export class EventComponent implements OnInit, OnDestroy {
   eventId;
   infoEvent = false;
 
+
   objectKeys = Object.keys;
   stringify = JSON.stringify;
   isArray(value) {
@@ -26,7 +26,6 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   constructor(private route: ActivatedRoute,
-              private storage: StorageService,
               private assetService: AssetsService,
               private router: Router) {}
 
@@ -133,14 +132,18 @@ export class EventComponent implements OnInit, OnDestroy {
     this.assetService.infoEventCreated.subscribe(
       (resp: any) => {
         const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
-        this.router.navigate([url]);
+        if (location.pathname.indexOf('/events/') > -1) {
+          this.router.navigate([url]);
+        }
       }
     );
     // New other event created from edit
     this.assetService.eventAdded.subscribe(
       (resp: any) => {
         const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
-        this.router.navigate([url]);
+        if (location.pathname.indexOf('/events/') > -1) {
+          this.router.navigate([url]);
+        }
       }
     );
   }
