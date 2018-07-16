@@ -16,8 +16,6 @@ export class AssetsService {
   assets: {};
   // SDK
   ambrosus;
-  secret;
-  address;
   // Parsing get asset/event
   currentAssetId: string;
   asset;
@@ -34,14 +32,12 @@ export class AssetsService {
   }
 
   initSDK() {
-    this.secret = this.storage.get('secret');
-    this.address = this.storage.get('address');
     const apiEndpoint = environment.host;
 
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,
-      secret: this.secret,
-      address: this.address
+      secret: this.storage.get('secret'),
+      address: this.storage.get('address')
     });
     console.log(this.ambrosus);
   }
@@ -348,6 +344,7 @@ export class AssetsService {
 
   createAsset(data) {
     return new Observable(observer => {
+      console.log('CREATE ASSET AMB: ', this.ambrosus);
       this.ambrosus
         .createAsset(data)
         .then(function(resp) {
@@ -361,6 +358,7 @@ export class AssetsService {
 
   createEvent(assetId, event) {
     return new Promise((resolve, reject) => {
+      console.log('CREATE EVENT AMB: ', this.ambrosus);
       this.ambrosus
         .createEvent(assetId, event)
         .then(function(resp) {
