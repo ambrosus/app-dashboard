@@ -15,7 +15,7 @@ export class AssetsService {
   inputChanged = new Subject();
   assets: {};
   // SDK
-  ambrosus;
+  ambrosus: any = {};
   // Parsing get asset/event
   currentAssetId: string;
   asset;
@@ -39,7 +39,6 @@ export class AssetsService {
       secret: this.storage.get('secret'),
       address: this.storage.get('address')
     });
-    console.log(this.ambrosus);
   }
 
   isValidURL(str) {
@@ -358,7 +357,7 @@ export class AssetsService {
 
   createEvent(assetId, event) {
     return new Promise((resolve, reject) => {
-      console.log('CREATE EVENT AMB: ', this.ambrosus);
+      console.log('CREATE EVENT AMB: ', this);
       this.ambrosus
         .createEvent(assetId, event)
         .then(function(resp) {
@@ -442,13 +441,5 @@ export class AssetsService {
   getSelectedAssets() {
     // return [...new Set(this.assets)];
     return Array.from(new Set(this.assetsSelected));
-  }
-
-  // Map autocomplete
-  mapAutocomplete(input) {
-    const key = 'AIzaSyC3wYqhgA8ia6lF3_K6HYYqoHrJxTwYTZ4';
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${key}`;
-
-    return this.http.get(url);
   }
 }
