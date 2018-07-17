@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- Overlay + createEvent modal -->
-  <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false"></div>
+  <div class="overlay" *ngIf="createEvents || json || viewChartTimeline" (click)="createEvents = false; json = false; viewChartTimeline = false"></div>
   <div class="modal--right p-a-10" *ngIf="createEvents">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="createEvents = false">
@@ -17,6 +17,15 @@
       <img src="/assets/raster/close.png" (click)="json = false">
     </div>
     <pre [innerHTML]="syntaxHighlight(stringify(jsonEvents, null, 3))"></pre>
+  </div>
+
+  <!-- Sensor chart -->
+  <div class="modal--right p-a-10" *ngIf="viewChartTimeline">
+    <div class="modal__header">
+      <!-- <button class="abtn btn-outline-ablue" (click)="sensorTimeline = !sensorTimeline;">chart / timeline</button> -->
+      <img src="/assets/raster/close.png" (click)="openChart = false">
+    </div>
+    <app-timeline [events]="sensor" [assetId]="assetId"></app-timeline>
   </div>
 
   <!-- Asset header -->
@@ -86,24 +95,29 @@
           </div>
         </div>
 
+        <!-- Sensor data -->
+        <div *ngIf="sensor">
+          <h5 class="m-t-20 m-b-10 p-h-10">Sensor data</h5>
+
+          <div class="item">
+            <p class="item__cell__title" (click)="toggleChart()" style="cursor: pointer;">Temperature: </p>
+            <p class="item__cell" (click)="toggleChart()" style="cursor: pointer;">{{ sensor[0].value }}</p>
+          </div>
+          <div class="item">
+            <p class="item__cell__title" (click)="toggleChart()" style="cursor: pointer;">Humidity: </p>
+            <p class="item__cell" (click)="toggleChart()" style="cursor: pointer;">{{ sensor[1].value }}</p>
+          </div>
+          <a class="block" style="padding: 7px 10px;" (click)="viewChartTimeline = true">view in timeline</a>
+        </div>
+
+        <div id="chart" class="chart" *ngIf="sensor"></div>
       </div>
 
       <!-- Events -->
       <div class="layout-split__col2">
         <h3 class="m-t-10 m-b-30 p-h-10">Events</h3>
 
-        <div class="events">
-          <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
-            <p>
-              <span style="color: #4f77f1;">{{ event.type || '' }}</span>
-              {{ event.name || event.type }}
-              <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
-                }}
-              </span>
-            </p>
-            <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
-          </div>
-        </div>
+        <app-timeline [events]="events" [assetId]="assetId"></app-timeline>
       </div>
     </div>
   </div>

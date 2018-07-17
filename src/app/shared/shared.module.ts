@@ -14,6 +14,7 @@ import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
+import { TimelineComponent } from 'app/shared/components/timeline/timeline.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -31,7 +32,8 @@ import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,
-    LoopExcludePipe
+    LoopExcludePipe,
+    TimelineComponent
   ],
   declarations: [
     HeaderComponent,
@@ -46,7 +48,8 @@ import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,
-    LoopExcludePipe
+    LoopExcludePipe,
+    TimelineComponent
   ]
 })
 export class SharedModule {}
