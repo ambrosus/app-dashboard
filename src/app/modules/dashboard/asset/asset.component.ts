@@ -1,6 +1,5 @@
-import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Component, OnInit, ViewEncapsulation, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -23,8 +22,7 @@ export class AssetComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private assetService: AssetsService,
-    private storage: StorageService
+    private assetService: AssetsService
   ) {}
 
   isObject(value) {
@@ -111,41 +109,19 @@ export class AssetComponent implements OnInit {
   }
 
   ngOnInit() {
-    /* if (this.storage.environment === 'dev') {
-      this.hostLink = 'angular-amb-to-stage.herokuapp.com';
-    } */
-
-    // Get asset data
     this.route.data.subscribe(
       data => {
         this.asset = data.asset;
-      },
-      err => {
-        console.log('err ', err);
+        this.events = data.asset.eventsAll;
+        this.jsonEvents = data.asset.eventsJSON.results;
+        console.log(this.asset);
       }
     );
 
-    this.route.params.subscribe(params => {
-      this.assetId = params.assetid;
-
-      this.assetService.getEventsAll(params.assetid).subscribe(
-        resp => {
-          this.events = resp;
-        },
-        err => {
-          console.log('Events get error: ', err);
-        }
-      );
-
-      // Events for export
-      this.assetService
-        .getEvents(params.assetid)
-        .then((resp: any) => {
-          this.jsonEvents = resp.results;
-        })
-        .catch(err => {
-          console.log('Events get error: ', err);
-        });
-    });
+    this.route.params.subscribe(
+      params => {
+        this.assetId = params.assetid;
+      }
+    );
   }
 }

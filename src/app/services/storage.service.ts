@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -6,9 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
   namespace = 'amb_';
-  environment = 'dev';
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   // localStorage wrapper
   set(key, value) {

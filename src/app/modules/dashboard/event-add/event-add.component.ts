@@ -1,16 +1,6 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewEncapsulation,
-  ElementRef,
-  Renderer2,
-  Input
-} from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'app/services/auth.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 
 @Component({
@@ -19,7 +9,7 @@ import { StorageService } from 'app/services/storage.service';
   styleUrls: ['./event-add.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class EventAddComponent implements OnInit, OnDestroy {
+export class EventAddComponent implements OnInit {
   eventForm: FormGroup;
   error = false;
   errorResponse = false;
@@ -63,9 +53,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private auth: AuthService,
     private assetService: AssetsService,
-    private router: Router,
     private storage: StorageService,
     private el: ElementRef,
     private renderer: Renderer2
@@ -98,124 +86,134 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
   prefillForm() {
     const event = this.prefill;
-      event.content.data.map(obj => {
-        switch (obj.type) {
-          case 'ambrosus.event.location':
-            // Location Event
-            const locationEvent = this.eventForm.get('locationEvent');
-            locationEvent.get('location').get('geometry').get('coordinates')['controls'][0].get('lat')
-              .setValue(obj.location.geometry.coordinates[0]);
-            locationEvent.get('location').get('geometry').get('coordinates')['controls'][0].get('lng')
-              .setValue(obj.location.geometry.coordinates[1]);
-            Object.keys(obj).map((key) => {
-              const exists = locationEvent.get(key);
-              if (exists && key !== 'location') {
-                exists.setValue(obj[key]);
-              }
-            });
-            break;
-          case 'ambrosus.asset.location':
-            // Location Asset
-            const locationAsset = this.eventForm.get('locationAsset');
-            locationAsset.get('location').get('geometry').get('coordinates')['controls'][0].get('lat')
-              .setValue(obj.location.geometry.coordinates[0]);
-            locationAsset.get('location').get('geometry').get('coordinates')['controls'][0].get('lng')
-              .setValue(obj.location.geometry.coordinates[1]);
-            Object.keys(obj).map((key) => {
-              const exists = locationAsset.get(key);
-              if (exists && key !== 'location') {
-                exists.setValue(obj[key]);
-              }
-            });
-            break;
-          case 'ambrosus.event.identifiers':
-            // Identifiers
-            Object.keys(obj).map((key) => {
-              if (key !== 'type') {
-                (<FormArray>this.eventForm.get('identifiers')).push(
-                  new FormGroup({
-                    identifier: new FormControl(key, [Validators.required]),
-                    identifierValue: new FormControl(obj[key][0], [Validators.required])
-                  })
-                );
-              }
-            });
-            break;
-          case 'ambrosus.asset.identifiers':
-            break;
-          default:
-            this.eventForm.get('type').setValue(obj.type);
-            this.eventForm.get('name').setValue(obj.name);
-            this.eventForm.get('description').setValue(obj.description || '');
-            let i = 0;
+    event.content.data.map(obj => {
+      switch (obj.type) {
+        case 'ambrosus.event.location':
+          // Location Event
+          const locationEvent = this.eventForm.get('locationEvent');
+          locationEvent
+            .get('location')
+            .get('geometry')
+            .get('coordinates')
+            ['controls'][0].get('lat')
+            .setValue(obj.location.geometry.coordinates[0]);
+          locationEvent
+            .get('location')
+            .get('geometry')
+            .get('coordinates')
+            ['controls'][0].get('lng')
+            .setValue(obj.location.geometry.coordinates[1]);
+          Object.keys(obj).map(key => {
+            const exists = locationEvent.get(key);
+            if (exists && key !== 'location') {
+              exists.setValue(obj[key]);
+            }
+          });
+          break;
+        case 'ambrosus.asset.location':
+          // Location Asset
+          const locationAsset = this.eventForm.get('locationAsset');
+          locationAsset
+            .get('location')
+            .get('geometry')
+            .get('coordinates')
+            ['controls'][0].get('lat')
+            .setValue(obj.location.geometry.coordinates[0]);
+          locationAsset
+            .get('location')
+            .get('geometry')
+            .get('coordinates')
+            ['controls'][0].get('lng')
+            .setValue(obj.location.geometry.coordinates[1]);
+          Object.keys(obj).map(key => {
+            const exists = locationAsset.get(key);
+            if (exists && key !== 'location') {
+              exists.setValue(obj[key]);
+            }
+          });
+          break;
+        case 'ambrosus.event.identifiers':
+          // Identifiers
+          Object.keys(obj).map(key => {
+            if (key !== 'type') {
+              (<FormArray>this.eventForm.get('identifiers')).push(
+                new FormGroup({
+                  identifier: new FormControl(key, [Validators.required]),
+                  identifierValue: new FormControl(obj[key][0], [Validators.required])
+                })
+              );
+            }
+          });
+          break;
+        case 'ambrosus.asset.identifiers':
+          break;
+        default:
+          this.eventForm.get('type').setValue(obj.type);
+          this.eventForm.get('name').setValue(obj.name);
+          this.eventForm.get('description').setValue(obj.description || '');
+          let i = 0;
 
-            Object.keys(obj).map((key) => {
-              switch (this.isObject(obj[key])) {
-                case true:
-                  if (key === 'documents') {
-                    Object.keys(obj[key]).map((doc) => {
-                      (<FormArray>this.eventForm.get('documents')).push(
-                        new FormGroup({
-                          documentTitle: new FormControl(doc, [Validators.required]),
-                          documentUrl: new FormControl(this.isObject(obj[key][doc]) ? obj[key][doc]['url'] || ''
-                                                                    : obj[key][doc] || '', [Validators.required])
-                        })
-                      );
-                    });
-                  } else {
-                    // Group (custom)
-                    // Add a group
-                    const customDataGroups = this.eventForm.get('customDataGroups') as FormArray;
-                    (<FormArray>customDataGroups).push(
+          Object.keys(obj).map(key => {
+            switch (this.isObject(obj[key])) {
+              case true:
+                if (key === 'documents') {
+                  Object.keys(obj[key]).map(doc => {
+                    (<FormArray>this.eventForm.get('documents')).push(
                       new FormGroup({
-                        groupName: new FormControl(key, [Validators.required]),
-                        groupValue: new FormArray([])
+                        documentTitle: new FormControl(doc, [Validators.required]),
+                        documentUrl: new FormControl(this.isObject(obj[key][doc]) ?
+                          obj[key][doc]['url'] || '' : obj[key][doc] || '', [Validators.required])
                       })
                     );
-                    // Add key-value to the group
-                    Object.keys(obj[key]).map((_key) => {
-                      (<FormArray>customDataGroups.at(i).get('groupValue')).push(
-                        new FormGroup({
-                          groupItemKey: new FormControl(_key, [Validators.required]),
-                          groupItemValue: new FormControl(this.isObject(obj[key][_key]) ? JSON.stringify(obj[key][_key])
-                                                        .replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
-                        })
-                      );
-                    });
-                    i++;
-                  }
-                  break;
-
-                default:
-                  if (key !== 'type' && key !== 'name'  && key !== 'description') {
-                    (<FormArray>this.eventForm.get('customData')).push(
+                  });
+                } else {
+                  // Group (custom)
+                  // Add a group
+                  const customDataGroups = this.eventForm.get('customDataGroups') as FormArray;
+                  (<FormArray>customDataGroups).push(
+                    new FormGroup({
+                      groupName: new FormControl(key, [Validators.required]),
+                      groupValue: new FormArray([])
+                    })
+                  );
+                  // Add key-value to the group
+                  Object.keys(obj[key]).map(_key => {
+                    (<FormArray>customDataGroups.at(i).get('groupValue')).push(
                       new FormGroup({
-                        customDataKey: new FormControl(key, [Validators.required]),
-                        customDataValue: new FormControl(obj[key], [Validators.required])
+                        groupItemKey: new FormControl(_key, [Validators.required]),
+                        groupItemValue: new FormControl(this.isObject(obj[key][_key]) ?
+                          JSON.stringify(obj[key][_key]).replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
                       })
                     );
-                  }
-                  break;
-              }
-            });
-            break;
-        }
-      });
+                  });
+                  i++;
+                }
+                break;
+
+              default:
+                if (key !== 'type' && key !== 'name' && key !== 'description') {
+                  (<FormArray>this.eventForm.get('customData')).push(
+                    new FormGroup({
+                      customDataKey: new FormControl(key, [Validators.required]),
+                      customDataValue: new FormControl(obj[key], [Validators.required])
+                    })
+                  );
+                }
+                break;
+            }
+          });
+          break;
+      }
+    });
   }
 
   tabOpen(open, element) {
     this.json = open === 'form' ? false : true;
-    const tabHeaderItems = this.el.nativeElement.querySelectorAll(
-      '.tab_header_item'
-    );
+    const tabHeaderItems = this.el.nativeElement.querySelectorAll('.tab_header_item');
     for (const item of tabHeaderItems) {
       this.renderer.removeClass(item, 'active');
     }
     this.renderer.addClass(element, 'active');
-  }
-
-  ngOnDestroy() {
-    /* this.assetService.unselectAssets(); */
   }
 
   private initForm() {
@@ -265,8 +263,12 @@ export class EventAddComponent implements OnInit, OnDestroy {
   }
 
   // Methods for adding new fields to the form
-  // Product images
-  onAddDocument() {
+
+  remove(array, index: number) {
+    (<FormArray>this.eventForm.get(array)).removeAt(index);
+  }
+
+  addDocument() {
     (<FormArray>this.eventForm.get('documents')).push(
       new FormGroup({
         documentTitle: new FormControl('', [Validators.required]),
@@ -275,12 +277,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     );
   }
 
-  onRemoveDocument(index: number) {
-    (<FormArray>this.eventForm.get('documents')).removeAt(index);
-  }
-
-  // Identifiers
-  onAddIdentifier() {
+  addIdentifier() {
     (<FormArray>this.eventForm.get('identifiers')).push(
       new FormGroup({
         identifier: new FormControl('', [Validators.required]),
@@ -289,12 +286,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     );
   }
 
-  onRemoveIdentifier(index: number) {
-    (<FormArray>this.eventForm.get('identifiers')).removeAt(index);
-  }
-
-  // Custom data (key-value)
-  onAddCustomKeyValue() {
+  addCustomKeyValue() {
     (<FormArray>this.eventForm.get('customData')).push(
       new FormGroup({
         customDataKey: new FormControl('', [Validators.required]),
@@ -303,15 +295,8 @@ export class EventAddComponent implements OnInit, OnDestroy {
     );
   }
 
-  onRemoveCustomKeyValue(index: number) {
-    (<FormArray>this.eventForm.get('customData')).removeAt(index);
-  }
-
-  // Custom data groups (group name: key-value)
-  onAddCustomGroup() {
-    const customDataGroups = this.eventForm.get(
-      'customDataGroups'
-    ) as FormArray;
+  addCustomGroup() {
+    const customDataGroups = this.eventForm.get('customDataGroups') as FormArray;
     (<FormArray>customDataGroups).push(
       new FormGroup({
         groupName: new FormControl('', [Validators.required]),
@@ -325,12 +310,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     );
   }
 
-  onRemoveCustomGroup(index: number) {
-    (<FormArray>this.eventForm.get('customDataGroups')).removeAt(index);
-  }
-
-  // Custom group data key-value pairs
-  onAddCustomGroupKeyValue(i) {
+  addCustomGroupKeyValue(i) {
     const groupsArray = this.eventForm.get('customDataGroups') as FormArray;
     (<FormArray>groupsArray.at(i).get('groupValue')).push(
       new FormGroup({
@@ -408,19 +388,11 @@ export class EventAddComponent implements OnInit, OnDestroy {
 
       this.spinner = true;
 
-      /* console.log(JSON.stringify(this.generateJSON('123'), null, 4)); */
-
-      // create event for each selected asset
+      // Create event for each selected asset
       const selectedAssets = this.assetService.getSelectedAssets();
       // Confirmation window
       const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
-      if (
-        !confirm(
-          `You are about to create an event for ${
-            selectedAssets.length
-          } ${assetsString}, are you sure you want to proceed?`
-        )
-      ) {
+      if (!confirm(`You are about to create an event for ${selectedAssets.length} ${assetsString}, are you sure you want to proceed?`)) {
         this.spinner = false;
         return;
       }
@@ -440,9 +412,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     event['content']['idData']['assetId'] = 'placeholder';
     event['content']['idData']['createdBy'] = this.storage.get('address');
     event['content']['idData']['accessLevel'] = 0;
-    event['content']['idData']['timestamp'] = Math.floor(
-      new Date().getTime() / 1000
-    );
+    event['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 
     // event.content.data
     event['content']['data'] = [];
@@ -456,29 +426,30 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (description) {
       basicAndCustom['description'] = description;
     }
+
     // Documents
     const documents = this.eventForm.get('documents')['controls'];
     if (documents.length > 0) {
       basicAndCustom['documents'] = {};
-      for (const item of documents) {
-        basicAndCustom['documents'][item.value.documentTitle] = {};
-        basicAndCustom['documents'][item.value.documentTitle]['url'] =
-          item.value.documentUrl;
-      }
+      documents.map((document) => {
+        basicAndCustom['documents'][document.value.documentTitle] = {};
+        basicAndCustom['documents'][document.value.documentTitle]['url'] = document.value.documentUrl;
+      });
     }
+
     // Custom data
-    for (const item of this.eventForm.get('customData')['controls']) {
+    this.eventForm.get('customData')['controls'].map((item) => {
       basicAndCustom[item.value.customDataKey] = item.value.customDataValue;
-    }
+    });
+
     // Custom data groups
     const customGroups = this.eventForm.get('customDataGroups')['controls'];
-    for (const item of customGroups) {
+    customGroups.map((item) => {
       basicAndCustom[item.value.groupName] = {};
       for (const group of item.get('groupValue')['controls']) {
-        basicAndCustom[item.value.groupName][group.value.groupItemKey] =
-          group.value.groupItemValue;
+        basicAndCustom[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue;
       }
-    }
+    });
 
     event['content']['data'].push(basicAndCustom);
 
@@ -487,10 +458,10 @@ export class EventAddComponent implements OnInit, OnDestroy {
     if (ide.length > 0) {
       const identifiers = {};
       identifiers['type'] = 'ambrosus.event.identifiers';
-      for (const item of ide) {
+      ide.map((item) => {
         identifiers[item.value.identifier] = [];
         identifiers[item.value.identifier].push(item.value.identifierValue);
-      }
+      });
       event['content']['data'].push(identifiers);
     }
 
@@ -512,7 +483,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     let locationId = _locationEvent.get('locationId').value;
     let GLN = _locationEvent.get('GLN').value;
 
-    if (lat && lng && name && city && country && locationId && GLN) {
+    if ((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN) {
       const location = {
         type: 'ambrosus.event.location',
         location: {
@@ -549,7 +520,7 @@ export class EventAddComponent implements OnInit, OnDestroy {
     locationId = _locationAsset.get('locationId').value;
     GLN = _locationAsset.get('GLN').value;
 
-    if (lat && lng && name && city && country && locationId && GLN) {
+    if ((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN) {
       const location = {
         type: 'ambrosus.asset.location',
         location: {
@@ -567,8 +538,6 @@ export class EventAddComponent implements OnInit, OnDestroy {
       };
       event['content']['data'].push(location);
     }
-
-    const json = JSON.stringify(event, null, 2);
 
     return event;
   }

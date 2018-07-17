@@ -1,11 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  Input,
-  HostListener,
-  Renderer2,
-  OnInit
-} from '@angular/core';
+import { Directive, ElementRef, Input, HostListener, Renderer2, OnInit } from '@angular/core';
 
 @Directive({
   selector: '[appSticky]'
@@ -21,7 +14,6 @@ export class StickyDirective implements OnInit {
   constructor(private el: ElementRef, private render: Renderer2) {}
 
   ngOnInit() {
-    /* this.offset = this.el.nativeElement.offsetTop; */
     this.offset = this.el.nativeElement.getBoundingClientRect().top;
   }
 
@@ -37,14 +29,7 @@ export class StickyDirective implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.windowOffsetTop =
-      window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0;
-
-    /* console.log('windowOffsetTop: ', this.windowOffsetTop);
-    console.log('offsetTop: ', this.offset); */
+    this.windowOffsetTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     if (this.windowOffsetTop + this.offsetTop > this.offset) {
       this.addSticky();

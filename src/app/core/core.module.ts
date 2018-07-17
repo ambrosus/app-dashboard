@@ -1,4 +1,5 @@
-import { InterceptorService } from './../interceptors/interceptor.service';
+import { AuthModule } from 'app/modules/auth/auth.module';
+import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
 import { SharedModule } from 'app/shared/shared.module';
@@ -12,7 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
-  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
+  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule, AuthModule],
   exports: [AppRoutingModule],
   declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent],
   providers: [

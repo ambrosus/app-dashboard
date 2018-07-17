@@ -1,21 +1,21 @@
+import { AssetsService } from './assets.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  loggedin: Subject<boolean> = new Subject<boolean>();
-  cleanForm: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private assets: AssetsService
   ) {}
 
   isLoggedIn() {
@@ -24,7 +24,41 @@ export class AuthService {
     return token && address;
   }
 
-  getToken(secret: string) {
+  getAccounts() {
+    return new Observable(observer => {
+      const url = `/api/auth/accounts`;
+
+      this.http.get(url).subscribe(
+        resp => {
+          console.log('GET accounts success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('GET accounts err: ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
+  getAccountByAddress(address) {
+    return new Observable(observer => {
+      const url = `/api/auth/accounts/${address}`;
+
+      this.http.get(url).subscribe(
+        resp => {
+          console.log('GET account success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('GET account err: ', err);
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
+  getToken() {
     const params = {
       validUntil: 1600000000
     };
@@ -33,25 +67,35 @@ export class AuthService {
   }
 
   login(address: string, secret: string) {
+    // Used by interceptor, to set headers
     this.storage.set('secret', secret);
     this.storage.set('address', address);
     return new Observable(observer => {
-      this.getToken(secret).subscribe(
+      this.getToken().subscribe(
         (resp: any) => {
           this.storage.set('token', resp.token);
           // Address request
-          const url = `${environment.host}${
-            environment.apiUrls.address
-          }${address}`;
+          const url = `${environment.host}${environment.apiUrls.address}${address}`;
           this.http.get(url).subscribe(
             _resp => {
-              this.loggedin.next(true);
               this.storage.set('address', address);
               this.storage.set('isLoggedin', true);
+              this.assets.initSDK();
+
+              this.getAccountByAddress(address).subscribe(
+                (r: any) => {
+                  this.storage.set('email', r.data.email);
+                  this.storage.set('full_name', r.data.full_name);
+                  this.storage.set('has_account', true);
+                },
+                err => {
+                  this.storage.set('has_account', false);
+                }
+              );
+
               observer.next('success');
             },
             err => {
-              this.storage.delete('address');
               observer.error(err);
             }
           );
@@ -65,12 +109,7 @@ export class AuthService {
   }
 
   logout() {
-    this.storage.delete('token');
-    this.storage.delete('address');
-    this.storage.delete('secret');
-    this.storage.delete('email');
-    this.storage.delete('isLoggedin');
+    this.storage.clear();
     this.router.navigate(['/login']);
-    this.loggedin.next(false);
   }
 }

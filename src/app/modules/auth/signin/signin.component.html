@@ -7,6 +7,7 @@
     <p class="tab_header_item" (click)="tabOpen('address', formAddress)" #formAddress>Address</p>
   </div>
   <div class="tab_content">
+
     <!-- Email form -->
     <form [formGroup]="loginForm" (ngSubmit)="loginEmail()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="email"
       style="margin: 0;">
@@ -23,6 +24,7 @@
         <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
       </div>
     </form>
+
     <!-- Address form -->
     <form [formGroup]="addressForm" (ngSubmit)="loginAddress()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="address"
       style="margin: 0;">
