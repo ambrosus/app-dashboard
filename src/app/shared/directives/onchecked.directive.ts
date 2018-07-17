@@ -5,24 +5,19 @@ import { AssetsService } from 'app/services/assets.service';
   selector: '[appOnchecked]'
 })
 export class OncheckedDirective {
-  constructor(
-    private el: ElementRef,
-    private renderer: Renderer2,
-    private assets: AssetsService
-  ) {
+
+  constructor(private el: ElementRef, private renderer: Renderer2, private assets: AssetsService) {
     this.assets.toggleSelect.subscribe(resp => {
-      const secondParent = this.el.nativeElement.parentNode.parentNode.parentNode;
-      const checkboxChecked = this.el.nativeElement.checked;
-      if (checkboxChecked) {
-        this.renderer.addClass(secondParent, 'checkbox--checked');
-      } else {
-        this.renderer.removeClass(secondParent, 'checkbox--checked');
-      }
+      this.checkboxClicked();
     });
   }
 
   @HostListener('change')
   onChange() {
+    this.checkboxClicked();
+  }
+
+  checkboxClicked() {
     const secondParent = this.el.nativeElement.parentNode.parentNode.parentNode;
     const checkboxChecked = this.el.nativeElement.checked;
     if (checkboxChecked) {

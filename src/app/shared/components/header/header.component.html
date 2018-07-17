@@ -14,12 +14,12 @@
           <!-- Menu -->
           <nav class="menu-mobile">
             <p class="menu-mobile__item" style="color: #9b9b9b;">
-              {{ email }}
+              {{ greeting }}
             </p>
             <p class="menu-mobile__item" routerLink="/settings">
               Settings
             </p>
-            <p class="menu-mobile__item" (click)="onLogout()">
+            <p class="menu-mobile__item" (click)="logout()">
               Logout
             </p>
           </nav>
@@ -29,12 +29,12 @@
 
       <!-- Desktop menu -->
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        {{ email }}
+        {{ greeting }}
         <ul class="dropdown-menu">
           <li routerLink="/settings">
             Settings
           </li>
-          <li (click)="onLogout()">
+          <li (click)="logout()">
             Logout
           </li>
         </ul>

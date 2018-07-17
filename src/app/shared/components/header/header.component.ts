@@ -10,21 +10,17 @@ import { StorageService } from 'app/services/storage.service';
 })
 export class HeaderComponent implements OnInit {
   isLoggedin = false;
-  email = 'Hi, welcome!';
+  greeting = 'Hi, welcome!';
   overlay = false;
 
   constructor(private auth: AuthService, private storage: StorageService) {}
 
   ngOnInit() {
-    this.auth.loggedin.subscribe(resp => {
-      this.isLoggedin = resp;
-      console.log(resp);
-    });
-    this.email = this.storage.get('email') || 'Hi, welcome!';
-    this.isLoggedin = this.storage.get('isLoggedin') || null ? true : false;
+    this.greeting = this.storage.get('full_name') || 'Hi, welcome!';
+    this.isLoggedin = JSON.parse(this.storage.get('isLoggedin'));
   }
 
-  onLogout() {
+  logout() {
     this.auth.logout();
   }
 }

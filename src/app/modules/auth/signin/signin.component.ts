@@ -1,5 +1,5 @@
 import { AuthService } from 'app/services/auth.service';
-import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
+import { Component, ElementRef, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -12,14 +12,14 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./signin.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class SigninComponent implements OnInit {
-  // Login form
+export class SigninComponent {
   loginForm: FormGroup;
+  addressForm: FormGroup;
+
   error = false;
   spinner = false;
   loginFailed = false;
-  // Address form
-  addressForm: FormGroup;
+
   // email or address
   email = true;
   address = false;
@@ -42,8 +42,6 @@ export class SigninComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
-
   tabOpen(open, element) {
     this.email = open === 'email' ? true : false;
     this.address = open === 'address' ? true : false;
@@ -56,14 +54,18 @@ export class SigninComponent implements OnInit {
     this.renderer.addClass(element, 'active');
   }
 
+  resetErrors() {
+    this.error = false;
+    this.loginFailed = false;
+  }
+
   loginAddress() {
     const address = this.addressForm.get('address').value;
     const secret = this.addressForm.get('secret').value;
 
     if (this.addressForm.valid) {
+      this.resetErrors();
       this.spinner = true;
-      this.error = false;
-      this.loginFailed = false;
 
       this.auth.login(address, secret).subscribe(
         resp => {
@@ -71,10 +73,10 @@ export class SigninComponent implements OnInit {
           this.router.navigate(['/assets']);
         },
         err => {
-          console.log(err);
+          this.spinner = false;
           this.error = true;
           this.loginFailed = true;
-          this.spinner = false;
+          console.log('Login error: ', err);
         }
       );
     } else {
@@ -87,44 +89,39 @@ export class SigninComponent implements OnInit {
     const password = this.loginForm.get('password').value;
 
     if (this.loginForm.valid) {
+      this.resetErrors();
       this.spinner = true;
-      this.error = false;
-      this.loginFailed = false;
-      let address, secret;
 
       const body = {
-        email: email,
-        password: password
+        email,
+        password
       };
 
       const url = `/api/auth/login`;
 
       this.http.post(url, body).subscribe(
-        (_resp: any) => {
-          address = _resp.address;
-          secret = _resp.secret;
-          this.storage.set('email', email);
+        (resp: any) => {
+          const address = resp.address;
+          const secret = resp.secret;
 
-          // Get the token
           this.auth.login(address, secret).subscribe(
-            resp => {
+            r => {
               this.spinner = false;
               this.router.navigate(['/assets']);
             },
-            err => {
-              console.log(err);
+            e => {
+              this.spinner = false;
               this.error = true;
               this.loginFailed = true;
-              this.spinner = false;
-              this.auth.cleanForm.next(true);
+              console.log('Login failed: ', e);
             }
           );
         },
         err => {
-          console.log(err);
           this.spinner = false;
           this.error = true;
           this.loginFailed = true;
+          console.log('Email check failed: ', err);
         }
       );
     } else {

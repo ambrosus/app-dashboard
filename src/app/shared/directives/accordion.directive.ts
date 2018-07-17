@@ -8,14 +8,9 @@ export class AccordionDirective {
 
   @HostListener('click')
   onClick() {
-    const element = this.el.nativeElement;
-    const nextSibling = this.el.nativeElement.nextElementSibling;
-    if (!nextSibling.classList.contains('active')) {
-      this.renderer.addClass(nextSibling, 'active');
-      this.renderer.addClass(element, 'active');
-    } else {
-      this.renderer.removeClass(nextSibling, 'active');
-      this.renderer.removeClass(element, 'active');
-    }
+    const title = this.el.nativeElement;
+    const content = title.nextElementSibling;
+    title.classList.toggle('active');
+    content.classList.toggle('active');
   }
 }

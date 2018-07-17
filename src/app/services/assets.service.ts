@@ -2,7 +2,6 @@ import { environment } from 'environments/environment';
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
 declare let AmbrosusSDK: any;
 
@@ -14,11 +13,7 @@ export class AssetsService {
   toggleSelect: Subject<any> = new Subject();
   inputChanged = new Subject();
   assets: {};
-  // SDK
   ambrosus;
-  secret;
-  address;
-  // Parsing get asset/event
   currentAssetId: string;
   asset;
   eventAdded = new Subject();
@@ -29,42 +24,18 @@ export class AssetsService {
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
 
-  constructor(private http: HttpClient, private storage: StorageService) {
-    this.secret = this.storage.get('secret');
-    this.address = this.storage.get('address');
+  constructor(private storage: StorageService) {
+    this.initSDK();
+  }
+
+  initSDK() {
     const apiEndpoint = environment.host;
 
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,
-      secret: this.secret,
-      address: this.address
+      secret: this.storage.get('secret'),
+      address: this.storage.get('address')
     });
-  }
-
-  isValidURL(str) {
-    const a = document.createElement('a');
-    a.href = str;
-    return a.host && a.host !== window.location.host;
-  }
-
-  sortEventsByTimestamp(a, b) {
-    if (a[1].timestamp > b[1].timestamp) {
-      return -1;
-    }
-    if (a[1].timestamp < b[1].timestamp) {
-      return 1;
-    }
-    return 0;
-  }
-
-  sortEventsAllTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) {
-      return -1;
-    }
-    if (a.timestamp < b.timestamp) {
-      return 1;
-    }
-    return 0;
   }
 
   // GET asset and GET event
@@ -75,18 +46,20 @@ export class AssetsService {
         return observer.next(this.asset);
       }
 
-      this.getAssetDetails(assetId).then(response => {
-        this.getEvents(assetId).then(eventsArray => {
-          this.parseEvents(eventsArray).then(parsedData => {
+      this.getAssetById(assetId).then(response => {
+        this.getEvents(assetId).then(events => {
+          this.parseEvents(events).then(parsedData => {
             this.asset = parsedData;
-            return observer.next(this.handleRedirection(assetId));
+            this.asset.eventsAll = this.parseAllEvents(events);
+            this.asset.eventsJSON = events;
+            return observer.next(this.asset);
           });
         });
       });
     });
   }
 
-  getAssetDetails(assetId) {
+  getAssetById(assetId) {
     return new Promise((resolve, reject) => {
       this.ambrosus
         .getAssetById(assetId)
@@ -112,6 +85,30 @@ export class AssetsService {
     });
   }
 
+  getEventById(eventId) {
+    return new Observable(observer => {
+      this.ambrosus
+        .getEventById(eventId)
+        .then(resp => {
+          return observer.next(resp.data);
+        })
+        .catch(err => {
+          return observer.error(err);
+        });
+    });
+  }
+
+  sortEventsByTimestamp(a, b) {
+    if (a.timestamp > b.timestamp) {
+      return -1;
+    }
+    if (a.timestamp < b.timestamp) {
+      return 1;
+    }
+    return 0;
+  }
+
+  // Latest events
   parseEvents(eventsArray) {
     return new Promise((resolve, reject) => {
       this.ambrosus
@@ -125,102 +122,49 @@ export class AssetsService {
     });
   }
 
-  handleRedirection(assetId) {
-    this.asset.events = Object.entries(this.asset.events)
-      .sort(this.sortEventsByTimestamp)
-      .reduce((array: any, event) => array.concat(event[1]), []);
+  // All, unfiltered events
+  parseAllEvents(e) {
+    const events = e.results.reduce(
+      (_events, { content, eventId }) => {
+        const timestamp = content.idData.timestamp;
+        const author = content.idData.createdBy;
 
-    if (
-      this.asset.redirection &&
-      this.isValidURL(this.asset.redirection.targetUrl)
-    ) {
-      // window.location.replace(this.asset.redirection.targetUrl);
-      // return false;
-    } else {
-      delete this.asset.redirection;
-    }
+        if (content && content.data) {
+          content.data.filter(obj => {
+            obj.timestamp = timestamp;
+            obj.author = author;
+            obj.name = obj.name || obj.type;
+            obj.action = obj.type;
+            obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
+            obj.eventId = eventId;
 
-    return this.asset;
-  }
+            if (obj.type === 'location') {
+              content.data.reduce((location, _event) => {
+                if (_event.type !== 'location') {
+                  _event.location = location;
+                }
+              }, obj);
+            }
 
-  getEventById(eventId) {
-    return new Observable(observer => {
-      this.asset.events.some(e => {
-        if (e.eventId === eventId) {
-          observer.next(e);
-          return true;
+            _events.push(obj);
+            return obj;
+          });
         }
-      });
-    });
+        return _events;
+      },
+      []
+    );
+
+    events.sort(this.sortEventsByTimestamp);
+
+    return events;
   }
 
-  // All unfiltered events
-  getEventsAll(assetId) {
-    return new Observable(observer => {
-      this.getEvents(assetId)
-        .then((resp: any) => {
-          const events = resp.results.reduce(
-            (_events, { content, eventId }) => {
-              const timestamp = content.idData.timestamp;
-              const author = content.idData.createdBy;
-
-              if (content && content.data) {
-                content.data.filter(obj => {
-                  obj.timestamp = timestamp;
-                  obj.author = author;
-                  obj.name = obj.name || obj.type;
-                  obj.action = obj.type;
-                  obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
-                  obj.eventId = eventId;
-
-                  if (obj.type === 'location') {
-                    content.data.reduce((location, _event) => {
-                      if (_event.type !== 'location') {
-                        _event.location = location;
-                      }
-                    }, obj);
-                  }
-
-                  _events.push(obj);
-                  return obj;
-                });
-              }
-              return _events;
-            },
-            []
-          );
-
-          events.sort(this.sortEventsAllTimestamp);
-
-          return observer.next(events);
-        })
-        .catch(err => {
-          return observer.error(err);
-        });
-    });
-  }
-
-  SDKgetEventById(eventId) {
-    return new Observable(observer => {
-      this.ambrosus
-        .getEventById(eventId)
-        .then(resp => {
-          return observer.next(resp.data);
-        })
-        .catch(err => {
-          return observer.error(err);
-        });
-    });
-  }
-
-  searchEvents(queries, page = 0, perPage = 20) {
+  searchEvents(queries, page = 0, perPage = 20, address) {
     const params = {};
     queries.map((query) => {
       params[query.param] = query.value;
     });
-    if (!params['createdBy']) {
-      params['createdBy'] = this.address;
-    }
     params['page'] = page;
     params['perPage'] = perPage;
     return new Promise((resolve, reject) => {
@@ -244,7 +188,7 @@ export class AssetsService {
         // Get info events + connect them to assets
         const that = this;
         const _params = {
-          createdBy: this.address,
+          createdBy: address,
           'data[type]': 'ambrosus.asset.info'
         };
         this.ambrosus.getEvents(_params).then(function(info) {
@@ -265,7 +209,7 @@ export class AssetsService {
 
   // GET assets
 
-  getAssetsInfo(page = 0, perPage = 20) {
+  getAssetsInfo(page = 0, perPage = 20, address = this.storage.get('address')) {
     let cachedAssetsInfo;
     try {
       cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;
@@ -274,7 +218,7 @@ export class AssetsService {
     }
     const that = this;
     const params = {
-      createdBy: this.address,
+      createdBy: address,
       page: page,
       perPage: perPage
     };
@@ -290,7 +234,7 @@ export class AssetsService {
         .then(function(assets) {
           // 2. Get all info events
           const _params = {
-            createdBy: that.address,
+            createdBy: address,
             'data[type]': 'ambrosus.asset.info'
           };
           that.ambrosus.getEvents(_params).then(function(info) {
@@ -375,6 +319,7 @@ export class AssetsService {
     const selectedAssets = this.getSelectedAssets();
     selectedAssets.map((assetId) => {
       this.addEventsJSON.content.idData.assetId = assetId;
+      this.addEventsJSON.content.idData.createdBy = this.storage.get('address');
       this.createEvent(assetId, this.addEventsJSON).then(resp => {
         this.eventAdded.next(resp);
       }).catch(err => {
@@ -392,6 +337,7 @@ export class AssetsService {
         console.log('Asset creation successful ', resp);
         const assetId = resp.data.assetId;
         this.addAssetAndInfoEventJSON.content.idData.assetId = assetId;
+        this.addAssetAndInfoEventJSON.content.idData.createdBy = this.storage.get('address');
         this.createEvent(assetId, this.addAssetAndInfoEventJSON).then(response => {
           console.log('Assets event creation successful ', response);
           this.infoEventCreated.next(response);
@@ -411,6 +357,7 @@ export class AssetsService {
   editInfoEvent() {
     const assetId = this.getSelectedAssets()[0];
     this.editInfoEventJSON.content.idData.assetId = assetId;
+    this.editInfoEventJSON.content.idData.createdBy = this.storage.get('address');
     this.createEvent(assetId, this.editInfoEventJSON).then(resp => {
       console.log('Info event creation/edit successful ', resp);
       this.infoEventCreated.next(resp);
@@ -439,13 +386,5 @@ export class AssetsService {
   getSelectedAssets() {
     // return [...new Set(this.assets)];
     return Array.from(new Set(this.assetsSelected));
-  }
-
-  // Map autocomplete
-  mapAutocomplete(input) {
-    const key = 'AIzaSyC3wYqhgA8ia6lF3_K6HYYqoHrJxTwYTZ4';
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${key}`;
-
-    return this.http.get(url);
   }
 }

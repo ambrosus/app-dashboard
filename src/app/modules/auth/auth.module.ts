@@ -15,6 +15,7 @@ import { SignupComponent } from './signup/signup.component';
     SharedModule,
     ReactiveFormsModule
   ],
-  declarations: [LoginComponent, SigninComponent, SignupComponent]
+  declarations: [LoginComponent, SigninComponent, SignupComponent],
+  exports: [SignupComponent]
 })
 export class AuthModule {}

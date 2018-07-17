@@ -1,4 +1,3 @@
-import { StorageService } from 'app/services/storage.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -8,11 +7,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class FooterComponent implements OnInit {
-  env = 'dev';
 
-  constructor(private storage: StorageService) {}
+  constructor() {}
 
-  ngOnInit() {
-    this.env = this.storage.environment;
-  }
+  ngOnInit() {}
 }

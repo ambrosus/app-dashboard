@@ -1,4 +1,4 @@
-import { ActivatedRoute, Event } from '@angular/router';
+import { Event } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
@@ -16,7 +16,7 @@ export interface BreadCrumb {
 export class BreadcrumbsComponent implements OnInit {
   breadcrumbs: BreadCrumb[] = [];
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     const reloadUrl = window.location.pathname;
@@ -36,7 +36,7 @@ export class BreadcrumbsComponent implements OnInit {
     url.shift();
     let currentPath = '/';
 
-    url.map((path, index) => {
+    url.map((path) => {
       currentPath += `${path}/`;
       if (!(path === 'events')) {
         this.breadcrumbs.push({
