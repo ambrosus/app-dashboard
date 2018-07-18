@@ -290,7 +290,6 @@ export class AssetsService {
 
   createAsset(data) {
     return new Observable(observer => {
-      console.log(this.ambrosus);
       this.ambrosus
         .createAsset(data)
         .then(function(resp) {
