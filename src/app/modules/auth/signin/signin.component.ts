@@ -19,6 +19,7 @@ export class SigninComponent {
   error = false;
   spinner = false;
   loginFailed = false;
+  alreadyLoggedIn = false;
 
   // email or address
   email = true;
@@ -57,11 +58,20 @@ export class SigninComponent {
   resetErrors() {
     this.error = false;
     this.loginFailed = false;
+    this.alreadyLoggedIn = false;
   }
 
   loginAddress() {
     const address = this.addressForm.get('address').value;
     const secret = this.addressForm.get('secret').value;
+
+    let accounts: any = this.storage.get('accounts');
+    accounts = accounts ? JSON.parse(accounts) : [];
+
+    if (accounts.some((account) => account.address === address)) {
+      this.alreadyLoggedIn = true;
+      return;
+    }
 
     if (this.addressForm.valid) {
       this.resetErrors();
@@ -87,6 +97,14 @@ export class SigninComponent {
   loginEmail() {
     const email = this.loginForm.get('email').value;
     const password = this.loginForm.get('password').value;
+
+    let accounts: any = this.storage.get('accounts');
+    accounts = accounts ? JSON.parse(accounts) : [];
+
+    if (accounts.some((account) => account.email === email)) {
+      this.alreadyLoggedIn = true;
+      return;
+    }
 
     if (this.loginForm.valid) {
       this.resetErrors();

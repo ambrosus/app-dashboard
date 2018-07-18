@@ -1,58 +1,85 @@
 <app-header></app-header>
 <app-breadcrumbs></app-breadcrumbs>
 
-<div class="block-center m-w-4" style="margin-top: 40px;">
+<div class="overlay" *ngIf="addAccount" (click)="addAccount = false"></div>
+  <div class="modal--right p-a-10" *ngIf="addAccount">
+    <div class="modal__header">
+      <img src="/assets/raster/close.png" (click)="addAccount = false">
+    </div>
+    <!-- <h1 class="center m-v-40">Create events</h1> -->
+    <app-signin></app-signin>
+  </div>
+
+<div class="block-center m-w-4 p-h-20" style="margin-top: 40px;">
   <h2 class="m-v-30 center">Settings</h2>
 
-  <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="resetPassword()" [ngClass]="{ error: error }" *ngIf="has_account">
-
-    <h2 class="m-v-30">Reset password</h2>
-
-    <div class="form-text m-b-20">
-      <label for="email">Registered Email Address *</label>
-      <input formControlName="email" type="email" name="email" type="email" required id="email" spellcheck="false" appInput>
-    </div>
-
-    <div class="form-text m-b-20">
-      <label for="passwordConfirm">Old Password *</label>
-      <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
-    </div>
-
-    <div class="form-text m-b-20">
-      <label for="password">Password *
-        <span [ngStyle]="{color: myColor}" *ngIf="weakPassword">(Weak Password)</span>
-      </label>
-      <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
-        appInput>
-    </div>
-
-    <div *ngIf="passwordExists" class="progress password-pad">
-      <small>Strong passwords contain combination of symbol, uppercase letter & a number</small>
-      <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
-      <br>
-    </div>
-    <div class="form-text m-b-20">
-      <label for="passwordConfirm">Password Confirm *</label>
-      <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
-    </div>
-
-    <div class="flex flex-direction-r justify-content-fe align-items-c">
-      <app-spinner *ngIf="spinner"></app-spinner>
-      <button type="submit" class="abtn m-l-20 btn-solid-ablue">Reset Password</button>
-    </div>
-
-    <div class="messages">
-      <h4 *ngIf="blankField" style="color: #ea7070;">Please enter the required field(s)</h4>
-      <h4 *ngIf="passwordsNotMatch" style="color: #ea7070;">New passwords do not match</h4>
-      <h4 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h4>
-      <h4 *ngIf="showWeakPasswordError" style="color: #ea7070;">Please set a strong password</h4>
-      <h4 *ngIf="serverMessage" style="color: #ea7070;">{{serverMessage}}</h4>
-    </div>
-
-  </form>
+  <!-- Password reset -->
+  <div *ngIf="has_account">
+    <h4 class="m-b-30">Reset password</h4>
+    <form class="form-pad" [formGroup]="resetForm" (ngSubmit)="resetPassword()" [ngClass]="{ error: error }" style="padding: 0;">
+      <div class="form-text m-b-20">
+        <label for="email">Registered Email Address *</label>
+        <input formControlName="email" type="email" name="email" type="email" required id="email" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="passwordConfirm">Old Password *</label>
+        <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="password">Password *
+          <span [ngStyle]="{color: myColor}" *ngIf="weakPassword">(Weak Password)</span>
+        </label>
+        <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
+          appInput>
+      </div>
+      <div *ngIf="passwordExists" class="progress password-pad">
+        <small>Strong passwords contain combination of symbol, uppercase letter & a number</small>
+        <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
+        <br>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="passwordConfirm">Password Confirm *</label>
+        <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
+      </div>
+      <div class="flex flex-direction-r justify-content-fe align-items-c">
+        <app-spinner *ngIf="spinner"></app-spinner>
+        <button type="submit" class="abtn m-l-20 btn-solid-ablue">
+          Reset password for {{ currentAccount ? currentAccount.full_name ? currentAccount.full_name : currentAccount.email ? currentAccount.email : 'current' : 'current account' }}
+        </button>
+      </div>
+      <div class="messages">
+        <h5 *ngIf="blankField" style="color: #ea7070;">Please enter the required field(s)</h5>
+        <h5 *ngIf="passwordsNotMatch" style="color: #ea7070;">New passwords do not match</h5>
+        <h5 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h5>
+        <h5 *ngIf="showWeakPasswordError" style="color: #ea7070;">Please set a strong password</h5>
+        <h5 *ngIf="serverMessage" style="color: #ea7070;">{{serverMessage}}</h5>
+      </div>
+    </form>
+  </div>
 
   <!-- Signup form -->
   <app-signup *ngIf="!has_account"></app-signup>
+
+  <hr>
+
+  <!-- Account management -->
+  <h4 class="m-b-30">Accounts switch</h4>
+  <div class="m-b-20" *ngIf="accounts.length > 0">
+    <p class="account" *ngFor="let account of accounts; let i = index" (click)="switchAccount(account.address)">
+      {{ account.full_name || account.email || account.address }} {{ i === 0 ? '(current)' : '' }}
+    </p>
+  </div>
+
+  <a class="abtn btn-solid-ablue" (click)="addAccount = true">Add account</a>
+
+  <hr>
+
+  <h4 class="m-b-30">Logout</h4>
+  <div class="flex flex-direction-c align-items-fs">
+    <a class="abtn btn-outline-ablue m-b-20" (click)="logout()">Log out of {{ currentAccount ? currentAccount.full_name ? currentAccount.full_name : currentAccount.email ? currentAccount.email : 'current' : 'current' }} account</a>
+    <a class="abtn btn-outline-ared" (click)="logoutAll()">Log out of all accounts</a>
+  </div>
+
 </div>
 
 <app-footer></app-footer>

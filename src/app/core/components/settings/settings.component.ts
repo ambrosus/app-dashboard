@@ -1,5 +1,6 @@
+import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
@@ -8,16 +9,17 @@ import { PasswordService } from 'app/services/password.service';
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  providers: [PasswordService]
+  providers: [PasswordService],
+  encapsulation: ViewEncapsulation.None
 })
 export class SettingsComponent implements OnInit {
   private value: string;
-  public width = 1;
-  public colors: any = [
+  width = 1;
+  colors: any = [
     '#D9534F', '#DF6A4F', '#E5804F', '#EA974E', '#F0AD4E', '#D2AF51',
     '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
-  public color = '#D9534F';
-  public passwordExists: Boolean = false;
+  color = '#D9534F';
+  passwordExists: Boolean = false;
   weakPassword = false;
   spinner = false;
   error = false;
@@ -30,15 +32,26 @@ export class SettingsComponent implements OnInit {
   strengthObj: any;
   flags = [];
   has_account = false;
+  accounts: any;
+  currentAccount;
+  addAccount;
 
   ngOnInit() {
+    this.settingsInit();
+  }
+
+  settingsInit() {
     this.has_account = JSON.parse(this.storage.get('has_account'));
+    const accounts = this.storage.get('accounts');
+    this.accounts = accounts ? JSON.parse(accounts) : [];
+    this.currentAccount = this.accounts[0];
   }
 
   constructor(
     private http: HttpClient,
     private passwordService: PasswordService,
-    private storage: StorageService
+    private storage: StorageService,
+    private auth: AuthService
   ) {
     this.resetForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),
@@ -127,4 +140,15 @@ export class SettingsComponent implements OnInit {
     this.color = this.colors[i];
   }
 
+  switchAccount(address) {
+    this.auth.switchAccount(address);
+  }
+
+  logout() {
+    this.auth.logout();
+  }
+
+  logoutAll() {
+    this.auth.logoutAll();
+  }
 }

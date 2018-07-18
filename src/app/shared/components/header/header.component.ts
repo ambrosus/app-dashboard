@@ -19,8 +19,4 @@ export class HeaderComponent implements OnInit {
     this.greeting = this.storage.get('full_name') || 'Hi, welcome!';
     this.isLoggedin = JSON.parse(this.storage.get('isLoggedin'));
   }
-
-  logout() {
-    this.auth.logout();
-  }
 }

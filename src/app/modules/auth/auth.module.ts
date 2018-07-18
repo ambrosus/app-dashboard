@@ -16,6 +16,6 @@ import { SignupComponent } from './signup/signup.component';
     ReactiveFormsModule
   ],
   declarations: [LoginComponent, SigninComponent, SignupComponent],
-  exports: [SignupComponent]
+  exports: [SigninComponent, SignupComponent]
 })
 export class AuthModule {}

@@ -66,6 +66,40 @@ export class AuthService {
     return this.http.post(url, params);
   }
 
+  addAccount(address, secret, token, has_account = false, email = false, full_name = false) {
+    let accounts: any = this.storage.get('accounts');
+    accounts = accounts ? JSON.parse(accounts) : [];
+
+    if (!accounts.some((account) => account.address === address || account.email === email)) {
+      accounts.unshift({
+        address,
+        secret,
+        token,
+        has_account,
+        email,
+        full_name
+      });
+      this.storage.set('accounts', JSON.stringify(accounts));
+    }
+  }
+
+  switchAccount(address) {
+    let accounts: any = this.storage.get('accounts');
+    accounts = accounts ? JSON.parse(accounts) : [];
+
+    accounts.map((account, index) => {
+      if (account.address === address) {
+        accounts.splice(index, 1);
+        accounts.unshift(account);
+        this.setDetails(account.address, account.secret, account.token, account.has_account || false,
+          account.email || '', account.full_name || '');
+        this.storage.set('accounts', JSON.stringify(accounts));
+        this.assets.initSDK();
+        this.router.navigate(['/assets']);
+      }
+    });
+  }
+
   login(address: string, secret: string) {
     // Used by interceptor, to set headers
     this.storage.set('secret', secret);
@@ -87,9 +121,11 @@ export class AuthService {
                   this.storage.set('email', r.data.email);
                   this.storage.set('full_name', r.data.full_name);
                   this.storage.set('has_account', true);
+                  this.addAccount(address, secret, resp.token, true, r.data.email, r.data.full_name);
                 },
                 err => {
                   this.storage.set('has_account', false);
+                  this.addAccount(address, secret, resp.token);
                 }
               );
 
@@ -108,7 +144,31 @@ export class AuthService {
     });
   }
 
+  setDetails (address, secret, token, has_account, email, full_name) {
+    this.storage.set('address', address);
+    this.storage.set('secret', secret);
+    this.storage.set('token', token);
+    this.storage.set('has_account', has_account);
+    this.storage.set('email', email);
+    this.storage.set('full_name', full_name);
+  }
+
   logout() {
+    let accounts: any = this.storage.get('accounts');
+    accounts = accounts ? JSON.parse(accounts) : [];
+    accounts.shift();
+    this.storage.set('accounts', JSON.stringify(accounts));
+
+    if (accounts.length === 0) {
+      this.logoutAll();
+    } else {
+      this.setDetails(accounts[0].address, accounts[0].secret, accounts[0].token, accounts[0].has_account ||
+        false, accounts[0].email || '', accounts[0].full_name || '');
+      this.router.navigate(['/assets']);
+    }
+  }
+
+  logoutAll() {
     this.storage.clear();
     this.router.navigate(['/login']);
   }
