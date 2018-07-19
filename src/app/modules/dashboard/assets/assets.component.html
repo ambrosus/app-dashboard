@@ -3,7 +3,8 @@
   <!-- Search bar -->
   <h2 class="center m-v-30">All assets
     <br>
-    <p>Total count: {{ resultCountAsset }}</p>
+    <p *ngIf="assetsActive">Total count: {{ resultCountAsset }}</p>
+    <p *ngIf="searchActive">Total count: {{ resultCountSearch }}</p>
   </h2>
   <div class="block-center m-w-6 p-h-10">
     <div class="search">
@@ -52,16 +53,6 @@
             New Events
           </li>
         </ul>
-      </div>
-      <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
-        <span>Show</span>
-        <select id="selectPerPage" (change)="rowsPerPage(selectPerPage)" #selectPerPage>
-          <option value="15" selected>15</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        <span>rows</span>
       </div>
       <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
         <select (change)="changeAccount(acc)" #acc>

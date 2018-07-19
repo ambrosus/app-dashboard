@@ -34,10 +34,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   // Pagination
   currentAssetPage = 1;
   totalAssetPages = 0;
-  resultCountAsset = 0;
+  resultCountAsset;
   currentSearchPage = 1;
   totalSearchPages = 0;
-  resultCountSearch = 0;
+  resultCountSearch;
   assetsActive = true;
   searchActive = false;
   pagination = [];
