@@ -17,7 +17,11 @@ export class HeaderComponent implements OnInit {
   addAccount;
 
   constructor(private auth: AuthService,
-              private storage: StorageService) {}
+              private storage: StorageService) {
+    this.auth.accountsAction.subscribe(resp => {
+      this.headerInit();
+    });
+  }
 
   ngOnInit() {
     this.headerInit();

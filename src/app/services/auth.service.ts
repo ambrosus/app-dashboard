@@ -4,12 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  accountsAction = new Subject();
 
   constructor(
     private http: HttpClient,
@@ -79,6 +80,7 @@ export class AuthService {
         email,
         full_name
       });
+      this.accountsAction.next(true);
       this.storage.set('accounts', JSON.stringify(accounts));
     }
   }
@@ -95,6 +97,7 @@ export class AuthService {
           account.email || '', account.full_name || '');
         this.storage.set('accounts', JSON.stringify(accounts));
         this.assets.initSDK();
+        this.accountsAction.next(true);
         this.router.navigate(['/assets']);
       }
     });
@@ -164,6 +167,7 @@ export class AuthService {
     } else {
       this.setDetails(accounts[0].address, accounts[0].secret, accounts[0].token, accounts[0].has_account ||
         false, accounts[0].email || '', accounts[0].full_name || '');
+      this.accountsAction.next(true);
       this.router.navigate(['/assets']);
     }
   }
@@ -171,5 +175,6 @@ export class AuthService {
   logoutAll() {
     this.storage.clear();
     this.router.navigate(['/login']);
+    this.accountsAction.next(true);
   }
 }
