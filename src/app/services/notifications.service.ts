@@ -8,7 +8,7 @@ export class NotificationsService {
 
   constructor(private storage: StorageService) { }
 
-  create(message, address) {
+  createNotification(message, address) {
     let notifications: any = this.storage.get('notifications');
     notifications = notifications ? JSON.parse(notifications) : [];
 
@@ -34,7 +34,7 @@ export class NotificationsService {
     this.storage.set('notifications', JSON.stringify(notifications));
   }
 
-  getAll(address) {
+  getUserNotifications(address) {
     let notifications: any = this.storage.get('notifications');
     notifications = notifications ? JSON.parse(notifications) : [];
 
