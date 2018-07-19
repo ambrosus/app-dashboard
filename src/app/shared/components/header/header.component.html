@@ -13,10 +13,21 @@
           <div></div>
           <!-- Menu -->
           <nav class="menu-mobile">
-            <p class="menu-mobile__item" style="color: #9b9b9b;">
-              {{ greeting }}
+            <p class="menu-mobile__item" *ngFor="let account of accounts; let i = index"
+              (click)="switchAccount(account.address)"
+              [ngClass]="{ current:  i === 0 }">
+              {{ account.full_name || account.email || account.address }}
             </p>
-            <p class="menu-mobile__item" routerLink="/settings">
+            <p class="menu-mobile__item color-ablue--base" (click)="addAccount = true">
+              Add account
+            </p>
+            <p class="menu-mobile__item separator color-ablue--base" (click)="logout()">
+              Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}
+            </p>
+            <p class="menu-mobile__item color-ared--base" (click)="logoutAll()">
+              Log out of all accounts
+            </p>
+            <p class="menu-mobile__item separator" routerLink="/settings">
               Settings
             </p>
           </nav>
@@ -28,6 +39,25 @@
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         {{ greeting }}
         <ul class="dropdown-menu">
+          <li class="" *ngFor="let account of accounts; let i = index"
+            (click)="switchAccount(account.address)"
+            [ngClass]="{ current:  i === 0 }">
+            {{ account.full_name || account.email || account.address }}
+          </li>
+          <li class="color-ablue--base" (click)="addAccount = true">
+            Add account
+          </li>
+          <li class="separator color-ablue--base" (click)="logout()">
+            Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}
+          </li>
+          <li class="color-ared--base" (click)="logoutAll()">
+            Log out of all accounts
+          </li>
+        </ul>
+      </li>
+      <li id="header-dropdown" class="header-menu__item dropdown dropdown__no-arrow hide-all display-640-inline-block p-v-10" appClickThisActive>
+        <img src="/assets/svg/settings.svg" width="17px" height="17px">
+        <ul class="dropdown-menu">
           <li routerLink="/settings">
             Settings
           </li>
@@ -37,4 +67,10 @@
     </ul>
   </div>
 </header>
-<div class="overlay" *ngIf="overlay" (click)="overlay = !overlay"></div>
+<div class="overlay" *ngIf="addAccount || overlay" (click)="overlay = false; addAccount = false"></div>
+<div class="modal--right p-a-10" *ngIf="addAccount">
+  <div class="modal__header">
+    <img src="/assets/raster/close.png" (click)="addAccount = false">
+  </div>
+  <!-- <app-signin></app-signin> -->
+</div>

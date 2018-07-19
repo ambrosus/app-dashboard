@@ -2,13 +2,13 @@
 <app-breadcrumbs></app-breadcrumbs>
 
 <div class="overlay" *ngIf="addAccount" (click)="addAccount = false"></div>
-  <div class="modal--right p-a-10" *ngIf="addAccount">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="addAccount = false">
-    </div>
-    <!-- <h1 class="center m-v-40">Create events</h1> -->
-    <app-signin></app-signin>
+<div class="modal--right p-a-10" *ngIf="addAccount">
+  <div class="modal__header">
+    <img src="/assets/raster/close.png" (click)="addAccount = false">
   </div>
+  <!-- <h1 class="center m-v-40">Create events</h1> -->
+  <app-signin></app-signin>
+</div>
 
 <div class="block-center m-w-4 p-h-20" style="margin-top: 40px;">
   <h2 class="m-v-30 center">Settings</h2>

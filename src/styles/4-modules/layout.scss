@@ -87,6 +87,14 @@ pre {
     &:last-child {
       border-bottom: none;
     }
+
+    &.separator {
+      border-top: 1px solid #ddd;
+    }
+
+    &.current {
+      background-color: #f6f8fe;
+    }
   }
 }
 
