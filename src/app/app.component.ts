@@ -7,7 +7,13 @@ import { StorageService } from './services/storage.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private el: ElementRef, private renderer: Renderer2, private storage: StorageService) {}
+  noWebWorker = false;
+
+  constructor(private el: ElementRef, private renderer: Renderer2, private storage: StorageService) {
+    if (typeof(Worker) === 'undefined') {
+      this.noWebWorker = true;
+    }
+  }
 
   // Dropdown close on click outside of it
   @HostListener('click', ['$event'])
@@ -19,4 +25,6 @@ export class AppComponent {
       }
     }
   }
+
+
 }
