@@ -1,6 +1,12 @@
 ![alt text](https://cdn-images-1.medium.com/max/1600/1*hGJHnXJuOmfjIcEofbC0Ww.png "Ambrosus")
 
-# angular-dashboard
+# Ambrosus Dashboard Module
+
+## Browsers support
+
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari-ios/safari-ios_48x48.png" alt="iOS Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>iOS Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
+| --------- | --------- | --------- | --------- | --------- | --------- |
+| IE10, IE11, Edge| last 3 versions| last 3 versions| last 3 versions| last 3 versions| last 3 versions
 
 [![Build Status](https://travis-ci.com/ambrosus/app-dashboard.svg?token=tMTWCoK9SU2CizZxjcNz&branch=dev)](https://travis-ci.com/ambrosus/app-dashboard)
 
@@ -39,7 +45,7 @@ SASS folder is organized into different folders, each specific to the scss codes
 Each folder imports all of the scss files inside it in index.scss inside it.\
 Then, all the index.scss files from every folder + sass/custom.scss is imported in sass/partials.scss, sass/partials file is imported in sass/style.scss, and then src/sass/style.scss is imported to src/style.scss which at the end gets compiled to the final css code for the app.
 
-Folders are: 
+Folders are:
 
 1. Variables...\
 This folder holds all SCSS regarding all the variables + some useful mixins, functions and placeholders (scss syntax).\
@@ -81,7 +87,7 @@ Have auth and data-storage service.
 + **Auth service** handles authentication of the user and its state.
 1. Main 2 methods are login() and logout(). login() takes in address and secret. First it creates token, if response is 200, then it checks the validity of the address, and only then is the user logged in, any errors in between, login fails. Also, this method returns an observable, that login component subscribes to on login form submit.
 2. logout() cleans the address and token from localStorage if they exist and redirects user to /login.
-3. isLoggedIn() method checks whether token and address exists in localStorage and returns a boolean. 
+3. isLoggedIn() method checks whether token and address exists in localStorage and returns a boolean.
 + **Data storage** \
 Data storage is a wrap for any localStorage interaction + for POST requests to the API.
 + **Authentication guards** \
