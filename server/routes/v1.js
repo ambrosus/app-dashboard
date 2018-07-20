@@ -11,7 +11,9 @@ const authRoutes = express.Router();
 const notificationsRoutes = express.Router();
 
 /********************************
+
           auth endpoints
+
 ********************************/
 
 // append auth routes to api routes
@@ -26,16 +28,19 @@ authRoutes.get('/accounts/:address', AuthController.account);
 authRoutes.delete('/accounts', AuthController.clean);
 
 /********************************
-    notifications endpoints
+
+     notifications endpoints
+
 ********************************/
 
 // append auth routes to api routes
 apiRoutes.use('/notifications', notificationsRoutes);
 
 // Auth routes
-notificationsRoutes.post('/', NotificationController.create);
+notificationsRoutes.post('/:address', NotificationController.create);
 notificationsRoutes.get('/:address', NotificationController.get);
-notificationsRoutes.put('/viewed', NotificationController.viewed);
+notificationsRoutes.put('/:address/viewed', NotificationController.viewed);
+notificationsRoutes.delete('/', NotificationController.clean);
 
 
 module.exports = apiRoutes;
