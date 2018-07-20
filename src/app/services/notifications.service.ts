@@ -29,7 +29,7 @@ export class NotificationsService {
     return user;
   }
 
-  createNotification(address, message) {
+  createNotification(address, body) {
     let notifications: any = this.storage.get('notifications');
     notifications = notifications ? JSON.parse(notifications) : [];
 
@@ -37,7 +37,10 @@ export class NotificationsService {
       notifications.map((user) => {
         if (user.address === address) {
           user.notifications.unshift({
-            notification: message,
+            _id: Date.now,
+            title: body.title,
+            type: body.type || 'info',
+            message: body.message,
             timestamp: Date.now(),
             seen: false
           });
@@ -47,7 +50,10 @@ export class NotificationsService {
       notifications.push({
         address: address,
         notifications: [{
-          notification: message,
+          _id: Date.now,
+          title: body.title,
+          type: body.type || 'info',
+          message: body.message,
           timestamp: Date.now(),
           seen: false
         }]
