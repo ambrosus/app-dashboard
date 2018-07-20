@@ -257,6 +257,12 @@ exports.edit = (req, res) => {
       });
     }
   });
+
+  if (saveAccounts(accounts)) {
+    res.status(200).json({ message: 'Edit successful' });
+  } else {
+    res.status(200).json({ message: 'Edit failed' });
+  }
 }
 
 exports.clean = (req, res) => {
