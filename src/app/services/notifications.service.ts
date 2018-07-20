@@ -8,33 +8,7 @@ export class NotificationsService {
 
   constructor(private storage: StorageService) { }
 
-  createNotification(message, address) {
-    let notifications: any = this.storage.get('notifications');
-    notifications = notifications ? JSON.parse(notifications) : [];
-
-    if (notifications.some((n) => n.address === address)) {
-      notifications.map((user) => {
-        if (user.address === address) {
-          user.notifications.unshift({
-            notification: message,
-            timestamp: Date.now()
-          });
-        }
-      });
-    } else {
-      notifications.push({
-        address: address,
-        notifications: [{
-          notification: message,
-          timestamp: Date.now()
-        }]
-      });
-    }
-
-    this.storage.set('notifications', JSON.stringify(notifications));
-  }
-
-  getUserNotifications(address) {
+  getNotifications(address) {
     let notifications: any = this.storage.get('notifications');
     notifications = notifications ? JSON.parse(notifications) : [];
 
@@ -53,5 +27,50 @@ export class NotificationsService {
     this.storage.set('notifications', JSON.stringify(notifications));
 
     return user;
+  }
+
+  createNotification(address, message) {
+    let notifications: any = this.storage.get('notifications');
+    notifications = notifications ? JSON.parse(notifications) : [];
+
+    if (notifications.some((n) => n.address === address)) {
+      notifications.map((user) => {
+        if (user.address === address) {
+          user.notifications.unshift({
+            notification: message,
+            timestamp: Date.now(),
+            seen: false
+          });
+        }
+      });
+    } else {
+      notifications.push({
+        address: address,
+        notifications: [{
+          notification: message,
+          timestamp: Date.now(),
+          seen: false
+        }]
+      });
+    }
+
+    this.storage.set('notifications', JSON.stringify(notifications));
+  }
+
+  seenNotification(address, timestamp) {
+    let notifications: any = this.storage.get('notifications');
+    notifications = notifications ? JSON.parse(notifications) : [];
+
+    notifications.map((user) => {
+      if (user.address === address) {
+        user.notifications.map((n) => {
+          if (n.timestamp === timestamp) {
+            n.seen = true;
+          }
+        });
+      }
+    });
+
+    this.storage.set('notifications', JSON.stringify(notifications));
   }
 }
