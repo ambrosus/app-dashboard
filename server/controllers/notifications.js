@@ -1,4 +1,5 @@
 const fs = require('fs');
+const uuidv4 = require('uuid/v4');
 
 let notifications_cache;
 
@@ -12,9 +13,13 @@ function getNotifications() {
     fs.writeFile(`${__dirname}/../notifications.json`, JSON.stringify({}));
   }
 
-  notifications_cache = JSON.parse(fs.readFileSync(`${__dirname}/../notifications.json`));
+  try {
+    notifications_cache = JSON.parse(fs.readFileSync(`${__dirname}/../notifications.json`));
+  } catch (err) {
+    notifications_cache = {};
+  }
 
-  return getNotifications(address);
+  return getNotifications();
 }
 
 function saveNotifications(notifications) {
@@ -39,19 +44,29 @@ exports.create = (req, res) => {
     notifications[address] = [];
   }
 
-  notifications[address].push({
-    _id: '',
-    title: notification.title,
-    type: notification.type,
-    message: notification.message,
-    viewed: false,
-    timestamp: Date.now()
-  });
+  if (notification && notification.title && notification.message && notification.type) {
+    notifications[address].push({
+      _id: uuidv4(),
+      title: notification.title,
+      type: notification.type,
+      message: notification.message,
+      viewed: false,
+      timestamp: Date.now()
+    });
 
-  if (saveNotifications(notifications)) {
-    return res.status(200).json({ message: 'Notifications create success' });
-  } else {
-    return res.status(400).json({ message: 'Notifications create failed' });
+    if (saveNotifications(notifications)) {
+      return res.status(200).json({ message: 'Notifications create success' });
+    } else {
+      return res.status(400).json({ message: 'Notifications create failed' });
+    }
+  } else if (!notification) {
+    return res.status(400).json({ message: 'Notification required.' });
+  } else if (!notification.title) {
+    return res.status(400).json({ message: 'Notification title required.' });
+  } else if (!notification.message) {
+    return res.status(400).json({ message: 'Notification message required.' });
+  } else if (!notification.type) {
+    return res.status(400).json({ message: 'Notification type required.' });
   }
 }
 
@@ -60,18 +75,24 @@ exports.viewed = (req, res) => {
   const viewedNotifications = req.body.notifications;
   const notifications = getNotifications();
 
-  if (notifications[address]) {
-    notifications[address].map((n) => {
-      n.viewed = viewedNotifications.indexOf((id) => id === n._id ) > -1 ? true : false;
-    });
+  if (Array.isArray(viewedNotifications) && viewedNotifications.length > 0) {
+    if (notifications[address]) {
+      notifications[address].map((n) => {
+        if (!n.viewed) {
+          n.viewed = viewedNotifications.indexOf(n._id) > -1 ? true : false;
+        }
+      });
 
-    if (saveNotifications(notifications)) {
-      return res.status(200).json({ message: 'Notifications marked as viewed success' });
+      if (saveNotifications(notifications)) {
+        return res.status(200).json({ message: 'Notifications marked as viewed success' });
+      } else {
+        return res.status(400).json({ message: 'Notifications marked as viewed failed' });
+      }
     } else {
-      return res.status(400).json({ message: 'Notifications marked as viewed failed' });
+      res.status(404).json({ message: 'No address' });
     }
   } else {
-    res.status(404).json({ message: 'No address' });
+    return res.status(400).json({ message: 'Non empty array of ids required' });
   }
 }
 
