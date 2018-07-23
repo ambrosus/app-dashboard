@@ -96,8 +96,7 @@ exports.viewed = (req, res) => {
   }
 }
 
-exports.get = (req, res) => {
-  const address = req.params.address;
+exports.getNewestNotifications = (address) => {
   const notifications = getNotifications();
 
   if (notifications[address]) {
@@ -109,8 +108,19 @@ exports.get = (req, res) => {
 
     saveNotifications(notifications);
 
+    return notifications[address];
+  } else {
+    return [];
+  }
+}
+
+exports.get = (req, res) => {
+  const address = req.params.address;
+  const notifications = getNotifications();
+
+  if (notifications[address]) {
     res.status(200).json({
-      data: notifications[address],
+      data: getNewestNotifications(notifications[address]),
       message: 'Success'
     });
   } else {

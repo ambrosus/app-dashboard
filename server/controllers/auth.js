@@ -1,5 +1,6 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const notifications = require('./notifications')
 
 function decrypt(text, password) {
   const decipher = crypto.createDecipher('aes-256-ctr', password);
@@ -218,7 +219,8 @@ exports.account = (req, res) => {
     if (account) {
       res.status(200).json({
         data: account,
-        message: 'Success'
+        message: 'Success',
+        notifications: notifications.getNewestNotifications(address)
       });
     } else {
       return res.status(404).json({message: 'No account'});
