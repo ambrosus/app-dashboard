@@ -151,7 +151,19 @@ exports.signup = (req, res) => {
       full_name,
       company,
       email,
-      address
+      address,
+      settings: {
+        notifications: {
+          asset: {
+            create: true,
+            edit: true
+          },
+          event: {
+            create: true,
+            edit: true
+          }
+        }
+      }
     });
 
     if (saveAccounts(accounts)) {
@@ -225,6 +237,37 @@ exports.account = (req, res) => {
     }
   } else {
     return res.status(404).json({message: 'No accounts'});
+  }
+}
+
+exports.edit = (req, res) => {
+  const address = req.params.address;
+  const settings = req.body.settings;
+  const accounts = getAccounts();
+  let updateOptions = {};
+  Object.keys(req.body).map((opt) => {
+    updateOptions[opt] = req.body[opt];
+  });
+  updateOptions = Object.entries(updateOptions)
+    .filter((opt) => opt[0] === 'full_name' || opt[0] === 'email' || opt[0] === 'company');
+
+  accounts.map((account) => {
+    if (account.address === address) {
+      updateOptions.map((opt) => {
+        account[opt[0]] = opt[1];
+      });
+      // notifications
+      account.settings.notifications.asset.create = settings.notifications.indexOf((n) => n === 'assetCreate') > -1 ? true : false;
+      account.settings.notifications.asset.edit = settings.notifications.indexOf((n) => n === 'assetEdit') > -1 ? true : false;
+      account.settings.notifications.event.create = settings.notifications.indexOf((n) => n === 'eventCreate') > -1 ? true : false;
+      account.settings.notifications.event.edit = settings.notifications.indexOf((n) => n === 'eventEdit') > -1 ? true : false;
+    }
+  });
+
+  if (saveAccounts(accounts)) {
+    res.status(200).json({ message: 'Edit successful' });
+  } else {
+    res.status(200).json({ message: 'Edit failed' });
   }
 }
 
