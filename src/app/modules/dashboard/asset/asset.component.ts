@@ -13,7 +13,6 @@ export class AssetComponent implements OnInit, AfterViewInit, OnDestroy {
   asset;
   assetId: string;
   createEvents = false;
-  hostLink = 'amb.to';
   jsonEvents;
   json = false;
   events;
@@ -150,16 +149,9 @@ export class AssetComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  toggleChart() {
-    const chart = this.el.nativeElement.querySelector('#chart');
-    if (chart.classList.contains('active')) {
-      this.renderer.removeClass(chart, 'active');
-    } else {
-      this.renderer.addClass(chart, 'active');
-    }
-  }
-
   initChart() {
+    console.log(this.chartData);
+
     this.chart = this.AmCharts.makeChart('chart', {
       type: 'serial',
       theme: 'light',

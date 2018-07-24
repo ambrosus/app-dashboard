@@ -31,9 +31,9 @@
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <qr-code class="qr" [value]="'https://' + hostLink + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
+      <qr-code class="qr" [value]="'https://amb.to/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></qr-code>
       <div>
-        <a href="https://{{ hostLink }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
       </div>
       <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEvent()">Add Event</button>
@@ -96,21 +96,22 @@
         </div>
 
         <!-- Sensor data -->
-        <div *ngIf="sensor">
+        <div *ngIf="sensor" class="sensors">
           <h5 class="m-t-20 m-b-10 p-h-10">Sensor data</h5>
 
-          <div class="item">
-            <p class="item__cell__title" (click)="toggleChart()" style="cursor: pointer;">Temperature: </p>
-            <p class="item__cell" (click)="toggleChart()" style="cursor: pointer;">{{ sensor[0].value }}</p>
+          <div class="item sensors__item" (click)="displayChart">
+            <p class="item__cell__title">Temperature: </p>
+            <p class="item__cell">{{ sensor[0].value }}</p>
+
+            <div>
+              <div id="chart" class="chart"></div>
+              <a class="block" style="padding: 7px 10px;" (click)="viewChartTimeline = true">view in timeline</a>
+            </div>
           </div>
-          <div class="item">
-            <p class="item__cell__title" (click)="toggleChart()" style="cursor: pointer;">Humidity: </p>
-            <p class="item__cell" (click)="toggleChart()" style="cursor: pointer;">{{ sensor[1].value }}</p>
-          </div>
-          <a class="block" style="padding: 7px 10px;" (click)="viewChartTimeline = true">view in timeline</a>
+          
         </div>
 
-        <div id="chart" class="chart" *ngIf="sensor"></div>
+        
       </div>
 
       <!-- Events -->
