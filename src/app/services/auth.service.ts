@@ -67,7 +67,7 @@ export class AuthService {
     return this.http.post(url, params);
   }
 
-  addAccount(address, secret, token, has_account = false, email = false, full_name = false) {
+  addAccount(address, secret, token, has_account = false, email = false, full_name = false, company = false) {
     let accounts: any = this.storage.get('accounts');
     accounts = accounts ? JSON.parse(accounts) : [];
 
@@ -78,7 +78,8 @@ export class AuthService {
         token,
         has_account,
         email,
-        full_name
+        full_name,
+        company
       });
       this.accountsAction.next(true);
       this.storage.set('accounts', JSON.stringify(accounts));
@@ -94,7 +95,7 @@ export class AuthService {
         accounts.splice(index, 1);
         accounts.unshift(account);
         this.setDetails(account.address, account.secret, account.token, account.has_account || false,
-          account.email || '', account.full_name || '');
+          account.email || '', account.full_name || '', account.company || '');
         this.storage.set('accounts', JSON.stringify(accounts));
         this.assets.initSDK();
         this.accountsAction.next(true);
@@ -124,7 +125,7 @@ export class AuthService {
                   this.storage.set('email', r.data.email);
                   this.storage.set('full_name', r.data.full_name);
                   this.storage.set('has_account', true);
-                  this.addAccount(address, secret, resp.token, true, r.data.email, r.data.full_name);
+                  this.addAccount(address, secret, resp.token, true, r.data.email, r.data.full_name, r.data.company);
                 },
                 err => {
                   this.storage.set('has_account', false);
@@ -147,13 +148,14 @@ export class AuthService {
     });
   }
 
-  setDetails (address, secret, token, has_account, email, full_name) {
+  setDetails (address, secret, token, has_account, email, full_name, company) {
     this.storage.set('address', address);
     this.storage.set('secret', secret);
     this.storage.set('token', token);
     this.storage.set('has_account', has_account);
     this.storage.set('email', email);
     this.storage.set('full_name', full_name);
+    this.storage.set('company', company);
   }
 
   logout() {
@@ -166,7 +168,7 @@ export class AuthService {
       this.logoutAll();
     } else {
       this.setDetails(accounts[0].address, accounts[0].secret, accounts[0].token, accounts[0].has_account ||
-        false, accounts[0].email || '', accounts[0].full_name || '');
+        false, accounts[0].email || '', accounts[0].full_name || '', accounts[0].company || '');
       this.accountsAction.next(true);
       this.router.navigate(['/assets']);
     }

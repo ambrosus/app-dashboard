@@ -39,10 +39,13 @@
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         {{ greeting }}
         <ul class="dropdown-menu">
-          <li class="" *ngFor="let account of accounts; let i = index"
+          <li *ngFor="let account of accounts; let i = index"
             (click)="switchAccount(account.address)"
             [ngClass]="{ current:  i === 0 }">
-            {{ account.full_name || account.email || account.address }}
+            <p *ngIf="!account.full_name && !account.email">{{ account.address }}</p>
+            <p class="color-blacks--base" *ngIf="account.full_name">{{ account.full_name }}</p>
+            <p *ngIf="account.email">{{ account.email }}</p>
+            <p *ngIf="account.company">{{ account.company }}</p>
           </li>
           <li class="color-ablue--base" (click)="addAccount = true">
             Add account
