@@ -1,5 +1,4 @@
 import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
-import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +6,13 @@ import { StorageService } from './services/storage.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private el: ElementRef, private renderer: Renderer2, private storage: StorageService) {}
+  noWebWorker = false;
+
+  constructor(private el: ElementRef, private renderer: Renderer2) {
+    if (typeof(Worker) === 'undefined') {
+      this.noWebWorker = true;
+    }
+  }
 
   // Dropdown close on click outside of it
   @HostListener('click', ['$event'])
