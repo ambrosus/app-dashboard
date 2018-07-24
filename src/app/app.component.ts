@@ -6,15 +6,12 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  noWebWorker = false;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
-    /* window.addEventListener('asset:created', function(e) {
-      console.log('ASSET CREATED', e);
-    });
-
-    window.addEventListener('event:created', function(e) {
-      console.log('EVENT CREATED', e);
-    }); */
+  constructor(private el: ElementRef, private renderer: Renderer2, private storage: StorageService) {
+    if (typeof(Worker) === 'undefined') {
+      this.noWebWorker = true;
+    }
   }
 
   // Dropdown close on click outside of it
