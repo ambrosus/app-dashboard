@@ -96,7 +96,7 @@ exports.viewed = (req, res) => {
   }
 }
 
-exports.getNewestNotifications = (address) => {
+exports.getNewestNotifications = address => {
   const notifications = getNotifications();
 
   if (notifications[address]) {

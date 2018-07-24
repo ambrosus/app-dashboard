@@ -1,82 +1,69 @@
 import { Injectable } from '@angular/core';
-import { StorageService } from './storage.service';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
+  apiEndpoint = '/api/notifications/';
 
-  constructor(private storage: StorageService) { }
+  constructor(private http: HttpClient) {}
 
-  getNotifications(address) {
-    let notifications: any = this.storage.get('notifications');
-    notifications = notifications ? JSON.parse(notifications) : [];
+  create(address, notification) {
+    return new Observable(observer => {
+      const url = `${this.apiEndpoint}${address}`;
+      const body = {
+        notification
+      };
 
-    let user: any;
-
-    const limit = 1000 * 60 * 60 * 24 * 3;
-
-    notifications.map((u) => {
-      if (u.address === address) {
-        // remove notifications older than 3 days
-        u.notifications = u.notifications.filter((n) => Date.now() - n.timestamp < limit);
-        user = u;
-      }
-    });
-
-    this.storage.set('notifications', JSON.stringify(notifications));
-
-    return user;
-  }
-
-  createNotification(address, body) {
-    let notifications: any = this.storage.get('notifications');
-    notifications = notifications ? JSON.parse(notifications) : [];
-
-    if (notifications.some((n) => n.address === address)) {
-      notifications.map((user) => {
-        if (user.address === address) {
-          user.notifications.unshift({
-            _id: Date.now,
-            title: body.title,
-            type: body.type || 'info',
-            message: body.message,
-            timestamp: Date.now(),
-            seen: false
-          });
+      this.http.post(url, body).subscribe(
+        resp => {
+          console.log('POST / create notification success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('POST / create notification failed: ', err);
+          return observer.error(err);
         }
-      });
-    } else {
-      notifications.push({
-        address: address,
-        notifications: [{
-          _id: Date.now,
-          title: body.title,
-          type: body.type || 'info',
-          message: body.message,
-          timestamp: Date.now(),
-          seen: false
-        }]
-      });
-    }
-
-    this.storage.set('notifications', JSON.stringify(notifications));
+      );
+    });
   }
 
-  seenNotification(address, timestamp) {
-    let notifications: any = this.storage.get('notifications');
-    notifications = notifications ? JSON.parse(notifications) : [];
+  get(address) {
+    return new Observable(observer => {
+      const url = `${this.apiEndpoint}${address}`;
 
-    notifications.map((user) => {
-      if (user.address === address) {
-        user.notifications.map((n) => {
-          if (n.timestamp === timestamp) {
-            n.seen = true;
-          }
-        });
-      }
+      this.http.get(url).subscribe(
+        resp => {
+          console.log('GET notifications success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('GET notifications failed: ', err);
+          return observer.error(err);
+        }
+      );
     });
+  }
 
-    this.storage.set('notifications', JSON.stringify(notifications));
+  viewed(address, notifications) {
+    return new Observable(observer => {
+      const url = `${this.apiEndpoint}${address}`;
+      const body = {
+        notifications
+      };
+
+      this.http.put(url, body).subscribe(
+        resp => {
+          console.log('PUT / viewed notifications success: ', resp);
+          return observer.next(resp);
+        },
+        err => {
+          console.log('PUT / viewed notifications failed: ', err);
+          return observer.error(err);
+        }
+      );
+    });
   }
 }
