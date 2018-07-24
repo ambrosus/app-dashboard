@@ -2,6 +2,11 @@
 
 # Ambrosus Dashboard Module
 
+[![license-badge][license-badge]][license]
+
+[license-badge]: https://img.shields.io/badge/license-MIT%20License-blue.svg?style=flat-square
+[license]: https://github.com/kentcdodds/custom-badges/blob/master/LICENSE
+
 ## Browsers support
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari-ios/safari-ios_48x48.png" alt="iOS Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>iOS Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
@@ -13,7 +18,6 @@
 Dashboard's Angular app documentation overview.
 
 ## Overview:
-
 * [Development](#development)
 * [Deployment](#deployment)
 * [Dashboard API (node server)](#dashboard-api-node-server)
@@ -60,7 +64,7 @@ There are 3 different deployment versions:
 ### Dashboard API (node server)
 
 Node API service for handling account management. \
-**Database**: /server/accounts.json 
+**Database**: /server/accounts.json
 
 #### API
 
@@ -112,7 +116,7 @@ password | string | true
 
 **Responses:**
 
-**200** 
+**200**
 ```
   {
     address,
@@ -180,7 +184,7 @@ GET /api/auth/accounts
 }
 ```
 
-**404** *No accounts* 
+**404** *No accounts*
 
 ***ACCOUNT***
 
@@ -209,7 +213,7 @@ GET /api/auth/accounts/:address
 }
 ```
 
-**404** *No account* 
+**404** *No account*
 
 ***CLEAN***
 
@@ -227,7 +231,7 @@ DELETE /api/auth/accounts
 **200** *Cleanup successful*
 
 **400** *Cleanup failed* <br>
-**404** *No accounts* 
+**404** *No accounts*
 
 
 ### Angular app:
@@ -244,6 +248,7 @@ Shared module holds all componenets, pipes and directives that are to be reused 
 e.g. `<app-spinner>, <app-header>, <app-footer>`\
 Everything that's created in this module and is declared, is also exported so it can be used in other modules.\
 In other modules we just import this module, and we can use it's shared components, directives and pipes.
+
 3. **Auth** \
 Handles authentication part of the app, has login, sign in and sign up components.
 4. **Dash** \
@@ -261,4 +266,5 @@ Adds the secret or token from localStorage in the headers.
 ### Modular strategy and Angular PWA
 * Dashboard angular app is converted to Angular PWA, which uses advance strategies for caching various assets and preloading them when possible.
 * Lazy loading is setup as well, dash and auth modules are lazy loaded.
+
 

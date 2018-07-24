@@ -45,7 +45,7 @@
         <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
-      <div class="assets-list__label assets-list__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
+      <div class="assets-list__label assets-list__label__heading dropdown dropdown__no-arrow color-ablue--base" (click)="toggleDropdown = !toggleDropdown" [ngClass]="{'active': toggleDropdown}">
         <span class="header-control-text dropdown">Bulk actions</span>
         <ul class="dropdown-menu">
           <li (click)="openCreateEvents()">

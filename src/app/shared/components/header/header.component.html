@@ -7,7 +7,7 @@
     <ul class="header-menu" *ngIf="isLoggedin">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown dropdown__no-arrow" appClickThisActive (click)="overlay = !overlay" style="position: static;">
+        <div class="hamburger-icon dropdown dropdown__no-arrow" (click)="overlay = !overlay; toggleMobileMenu = !toggleMobileMenu" [ngClass]="{'active': toggleMobileMenu}" style="position: static;">
           <div></div>
           <div></div>
           <div></div>
@@ -28,7 +28,7 @@
       <!-- end Mobile menu -->
 
       <!-- Desktop menu -->
-      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
+      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" (click)="toggleDesktopMenu = !toggleDesktopMenu" [ngClass]="{'active': toggleDesktopMenu}">
         {{ greeting }}
         <ul class="dropdown-menu">
           <li routerLink="/settings">
