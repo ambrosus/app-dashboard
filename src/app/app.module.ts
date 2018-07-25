@@ -9,6 +9,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
+import { AmChartsModule } from '@amcharts/amcharts3-angular';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -17,6 +19,7 @@ import { environment } from '../environments/environment';
     ReactiveFormsModule,
     CoreModule,
     DashboardModule,
+    AmChartsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]

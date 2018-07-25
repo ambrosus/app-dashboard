@@ -8,7 +8,7 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 export class AppComponent {
   noWebWorker = false;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private storage: StorageService) {
+  constructor(private el: ElementRef, private renderer: Renderer2) {
     if (typeof(Worker) === 'undefined') {
       this.noWebWorker = true;
     }
