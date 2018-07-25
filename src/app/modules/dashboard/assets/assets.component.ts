@@ -13,6 +13,9 @@ import { AuthService } from 'app/services/auth.service';
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSubscription;
+
+  toggleDropdown: false;
+
   assets = {
     assets: [],
     resultCount: 0

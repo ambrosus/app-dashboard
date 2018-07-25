@@ -14,6 +14,7 @@ import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 import { TimelineComponent } from 'app/shared/components/timeline/timeline.component';
+import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule],
@@ -31,7 +32,8 @@ import { TimelineComponent } from 'app/shared/components/timeline/timeline.compo
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent
+    TimelineComponent,
+    JsonPreviewComponent
   ],
   declarations: [
     HeaderComponent,
@@ -46,7 +48,8 @@ import { TimelineComponent } from 'app/shared/components/timeline/timeline.compo
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent
+    TimelineComponent,
+    JsonPreviewComponent
   ]
 })
 export class SharedModule {}

@@ -13,10 +13,9 @@
   <!-- JSON view -->
   <div class="modal--right p-a-10" *ngIf="json">
     <div class="modal__header" style="justify-content: space-between;">
-      <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
       <img src="/assets/raster/close.png" (click)="json = false">
     </div>
-    <pre [innerHTML]="syntaxHighlight(stringify(jsonEvents, null, 3))"></pre>
+    <app-json-preview *ngIf="jsonEvents" [(data)]="jsonEvents" [(name)]="asset.info.name || asset.timestamp"></app-json-preview>
   </div>
 
   <!-- Sensor chart -->
@@ -108,10 +107,10 @@
               <a class="block" style="padding: 7px 10px;" (click)="viewChartTimeline = true">view in timeline</a>
             </div>
           </div>
-          
+
         </div>
 
-        
+
       </div>
 
       <!-- Events -->
