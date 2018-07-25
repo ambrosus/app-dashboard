@@ -13,22 +13,35 @@
           <div></div>
           <!-- Menu -->
           <nav class="menu-mobile">
-            <p class="menu-mobile__item" *ngFor="let account of accounts; let i = index"
-              (click)="switchAccount(account.address)"
-              [ngClass]="{ current:  i === 0 }">
-              {{ account.full_name || account.email || account.address }}
+            <p class="menu-mobile__item" *ngFor="let account of accounts; let i = index" (click)="switchAccount(account.address)" [ngClass]="{ current:  i === 0 }">
+              <span *ngIf="!account.full_name && !account.email">{{ account.address }}</span>
+              <span class="color-blacks--base" *ngIf="account.full_name">{{ account.full_name }} </span>
+              <span *ngIf="account.email">- {{ account.email }}</span>
+              <span *ngIf="account.company">, {{ account.company }}</span>
             </p>
-            <p class="menu-mobile__item color-ablue--base" (click)="addAccount = true">
+            <p class="menu-mobile__item separator color-ablue--base" (click)="addAccount = true">
               Add account
             </p>
-            <p class="menu-mobile__item separator color-ablue--base" (click)="logout()">
+            <p class="menu-mobile__item color-ablue--base" (click)="logout()">
               Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}
             </p>
-            <p class="menu-mobile__item color-ared--base" (click)="logoutAll()">
+            <p class="menu-mobile__item separator color-ared--base" (click)="logoutAll()">
               Log out of all accounts
             </p>
-            <p class="menu-mobile__item separator" routerLink="/settings">
+            <p class="menu-mobile__item" routerLink="/settings">
               Settings
+            </p>
+            <p class="menu-mobile__item section">
+              Administration
+            </p>
+            <p class="menu-mobile__item" routerLink="/administration/company">
+              Company
+            </p>
+            <p class="menu-mobile__item separator" routerLink="/administration/company/settings">
+              Settings
+            </p>
+            <p class="menu-mobile__item" routerLink="/administration/user-management">
+              User management
             </p>
           </nav>
         </div>
@@ -37,32 +50,50 @@
 
       <!-- Desktop menu -->
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
+        Administration
+        <ul class="dropdown-menu">
+          <li>
+            <span routerLink="/administration/user-management">User management</span>
+          </li>
+          <li class="sub-menu">
+            <span routerLink="/administration/company">Company</span>
+            <ul class="dropdown-menu dropdown-menu__sub-menu">
+              <li>
+                <span routerLink="/administration/company/settings">Settings</span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         {{ greeting }}
         <ul class="dropdown-menu">
-          <li *ngFor="let account of accounts; let i = index"
-            (click)="switchAccount(account.address)"
-            [ngClass]="{ current:  i === 0 }">
-            <p *ngIf="!account.full_name && !account.email">{{ account.address }}</p>
-            <p class="color-blacks--base" *ngIf="account.full_name">{{ account.full_name }}</p>
-            <p *ngIf="account.email">{{ account.email }}</p>
-            <p *ngIf="account.company">{{ account.company }}</p>
+          <li *ngFor="let account of accounts; let i = index" [ngClass]="{ current:  i === 0 }">
+            <span (click)="switchAccount(account.address)">
+              <p *ngIf="!account.full_name && !account.email">{{ account.address }}</p>
+              <p class="color-blacks--base" *ngIf="account.full_name">
+                {{ account.full_name }}
+                <span *ngIf="account.email" style="display: inline; padding: 0;">- {{ account.email }}</span>
+              </p>
+              <p *ngIf="account.company">{{ account.company }}</p>
+            </span>
           </li>
-          <li class="color-ablue--base" (click)="addAccount = true">
-            Add account
+          <li class="separator color-ablue--base">
+            <span (click)="addAccount = true">Add account</span>
           </li>
-          <li class="separator color-ablue--base" (click)="logout()">
-            Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}
+          <li class="color-ablue--base">
+            <span (click)="logout()">Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}</span>
           </li>
-          <li class="color-ared--base" (click)="logoutAll()">
-            Log out of all accounts
+          <li class="color-ared--base">
+            <span (click)="logoutAll()">Log out of all accounts</span>
           </li>
         </ul>
       </li>
       <li id="header-dropdown" class="header-menu__item dropdown dropdown__no-arrow hide-all display-640-inline-block p-v-10" appClickThisActive>
         <img src="/assets/svg/settings.svg" width="17px" height="17px">
         <ul class="dropdown-menu">
-          <li routerLink="/settings">
-            Settings
+          <li>
+            <span routerLink="/settings">Settings</span>
           </li>
         </ul>
       </li>
