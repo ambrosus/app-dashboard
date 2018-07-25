@@ -2,8 +2,10 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CompanyComponent } from './components/company/company/company.component';
 import { SettingsComponent } from './components/company/settings/settings.component';
-import { UserManagementComponent } from './components/user-management/user-management/user-management.component';
 import { AdministrationComponent } from './components/administration/administration.component';
+import { UsersComponent } from './components/users/users/users.component';
+import { AllComponent } from './components/users/all/all.component';
+import { InviteComponent } from './components/users/invite/invite.component';
 
 const routes: Routes = [
   {
@@ -31,8 +33,23 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'user-management',
-        component: UserManagementComponent
+        path: 'users',
+        component: UsersComponent,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'all'
+          },
+          {
+            path: 'all',
+            component: AllComponent
+          },
+          {
+            path: 'invite',
+            component: InviteComponent
+          }
+        ]
       }
     ]
   }

@@ -32,13 +32,13 @@
   </div>
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
-  <div class="assets-list">
+  <div class="table">
     <!-- Header -->
     <!-- Select all -->
-    <div class="assets-list__item assets-list__item__header" style="border-bottom: 1px solid #f1f1f1; border-radius: 0; z-index: 3;">
-      <label class="assets-list__label assets-list__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
+    <div class="table__item table__item__header" style="border-bottom: 1px solid #f1f1f1; border-radius: 0; z-index: 3;">
+      <label class="table__label table__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
         <div class="relative">
-          <input type="checkbox" id="selectAll" class="assets-list__checkbox" appOnchecked #input>
+          <input type="checkbox" id="selectAll" class="table__checkbox" appOnchecked #input>
           <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
           </svg>
@@ -46,7 +46,7 @@
         <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
-      <div class="assets-list__label assets-list__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
+      <div class="table__label table__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
         <span class="header-control-text dropdown">Bulk actions</span>
         <ul class="dropdown-menu">
           <li>
@@ -54,7 +54,7 @@
           </li>
         </ul>
       </div>
-      <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
+      <div class="table__label table__label__heading table__label__select color-ablue--base">
         <select (change)="changeAccount(acc)" #acc>
           <option *ngFor="let a of accounts" value="{{ a.address }}">{{ a.full_name }}</option>
         </select>
@@ -64,65 +64,65 @@
       <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create asset</button>
     </div>
 
-    <div class="assets-list__item assets-list__item__header header--sticky" appSticky [addClass]="'sticky'">
+    <div class="table__item table__item__header header--sticky" appSticky [addClass]="'sticky'">
       <div style="width: 100px; height: 10px; flex: 0 0 100px;"></div>
       <div style="width: 100px; height: 10px; flex: 0 0 100px;"></div>
-      <p class="assets-list__column assets-list__column__header">Title</p>
-      <p class="assets-list__column assets-list__column__header">Created by</p>
-      <p class="assets-list__column assets-list__column__header">Timestamp</p>
-      <p class="assets-list__column assets-list__column__header">Status</p>
+      <p class="table__column table__column__header">Title</p>
+      <p class="table__column table__column__header">Created by</p>
+      <p class="table__column table__column__header">Timestamp</p>
+      <p class="table__column table__column__header">Status</p>
     </div>
 
-    <div class="assets-list__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div>
+    <div class="table__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div>
   </div>
 
   <app-assets-loader-indicator *ngIf="!searchNoResultsFound && loader"></app-assets-loader-indicator>
 
   <h4 class="color-greys--base center p-h-20 m-t-20" *ngIf="searchActive && searchNoResultsFound">No results found</h4>
 
-  <div class="assets-list" id="assets-list">
+  <div class="table m-t-20 p-h-30" id="table">
 
     <!-- Items -->
-    <div class="assets-list__item table" *ngFor="let asset of assets.assets; let i = index">
-      <label class="assets-list__label" for="{{ i }}">
+    <div class="table__item table" *ngFor="let asset of assets.assets; let i = index">
+      <label class="table__label" for="{{ i }}">
         <div class="relative">
-          <input type="checkbox" id="{{ i }}" appOnchecked class="assets-list__checkbox" name="{{asset.assetId}}">
+          <input type="checkbox" id="{{ i }}" appOnchecked class="table__checkbox" name="{{asset.assetId}}">
           <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
           </svg>
         </div>
       </label>
 
-      <div class="assets-list__column__image">
+      <div class="table__column__image">
         <a href="https://amb.to/{{asset.assetId}}" target="_blank">
           <img src="./assets/raster/link.png">
         </a>
       </div>
 
-      <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title hide-1024">Title</p>
+      <div class="table__column" routerLink="{{asset.assetId}}">
+        <p class="table__column-title hide-1024">Title</p>
         <div *ngIf="asset.info && findInfo(asset.info) !== 'undefined'">
-          <p class="assets-list__column-content">{{ findInfo(asset.info).name }}</p>
-          <p class="assets-list__column-meta">{{ asset.assetId }}</p>
+          <p class="table__column-content">{{ findInfo(asset.info).name }}</p>
+          <p class="table__column-meta">{{ asset.assetId }}</p>
         </div>
         <div *ngIf="!asset.info || findInfo(asset.info) === 'undefined'">
-          <p class="assets-list__column-content">{{ asset.assetId }}</p>
+          <p class="table__column-content">{{ asset.assetId }}</p>
         </div>
       </div>
 
-      <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title hide-1024">Created by</p>
-        <p class="assets-list__column-content">{{ asset.content.idData.createdBy }}</p>
+      <div class="table__column" routerLink="{{asset.assetId}}">
+        <p class="table__column-title hide-1024">Created by</p>
+        <p class="table__column-content">{{ asset.content.idData.createdBy }}</p>
       </div>
 
-      <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title hide-1024">Timestamp</p>
-        <p class="assets-list__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
+      <div class="table__column" routerLink="{{asset.assetId}}">
+        <p class="table__column-title hide-1024">Timestamp</p>
+        <p class="table__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
       </div>
 
-      <div class="assets-list__column" routerLink="{{asset.assetId}}">
-        <p class="assets-list__column-title hide-1024">Status</p>
-        <p class="assets-list__column-content">some status</p>
+      <div class="table__column" routerLink="{{asset.assetId}}">
+        <p class="table__column-title hide-1024">Status</p>
+        <p class="table__column-content">some status</p>
       </div>
     </div>
 

@@ -134,8 +134,8 @@ export class AssetsService {
             obj.timestamp = timestamp;
             obj.author = author;
             obj.name = obj.name || obj.type;
-            obj.action = obj.type;
-            obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
+            obj.action = obj.type ? obj.type : '';
+            obj.type = obj.type ? obj.type.substr(obj.type.lastIndexOf('.') + 1) : '';
             obj.eventId = eventId;
 
             if (obj.type === 'location') {

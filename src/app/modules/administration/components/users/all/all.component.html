@@ -1,0 +1,66 @@
+<h4 class="m-b-30">All users</h4>
+
+<div class="table" style="padding: 0;">
+  <!-- Header -->
+  <!-- Select all -->
+  <div class="table__item table__item__header" style="border-bottom: 1px solid #f1f1f1; border-radius: 0; z-index: 3;">
+    <label class="table__label table__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
+      <div class="relative">
+        <input type="checkbox" id="selectAll" class="table__checkbox" appOnchecked [toSelect]="'administration'" #input>
+        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+        </svg>
+      </div>
+      <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
+    </label>
+    <!-- Bulk actions -->
+    <div class="table__label table__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
+      <span class="header-control-text dropdown">Bulk actions</span>
+      <ul class="dropdown-menu">
+        <li>
+          <span>Edit roles</span>
+        </li>
+        <li>
+          <span>Remove members</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table__item table__item__header header--sticky">
+    <div style="width: 130px; height: 10px; flex: 0 0 100px;"></div>
+    <p class="table__column table__column__header">Full name</p>
+    <p class="table__column table__column__header">Email</p>
+    <p class="table__column table__column__header">Role</p>
+  </div>
+</div>
+
+<div class="table m-t-20" id="table">
+
+  <!-- Items -->
+  <div class="table__item table" *ngFor="let member of members; let i = index">
+    <label class="table__label" for="{{ i }}">
+      <div class="relative">
+        <input type="checkbox" id="{{ i }}" appOnchecked [toSelect]="'administration'" class="table__checkbox" name="{{member._id}}">
+        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+        </svg>
+      </div>
+    </label>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Full name</p>
+      <p class="table__column-content">{{ member.full_name }}</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Email</p>
+      <p class="table__column-content">{{ member.email }}</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Role</p>
+      <p class="table__column-content">{{ member.role }}</p>
+    </div>
+  </div>
+</div>

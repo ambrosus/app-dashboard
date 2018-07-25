@@ -40,8 +40,14 @@
             <p class="menu-mobile__item separator" routerLink="/administration/company/settings">
               Settings
             </p>
-            <p class="menu-mobile__item" routerLink="/administration/user-management">
-              User management
+            <p class="menu-mobile__item" routerLink="/administration/users">
+              Users
+            </p>
+            <p class="menu-mobile__item" routerLink="/administration/users/all">
+              All users
+            </p>
+            <p class="menu-mobile__item" routerLink="/administration/users/invite">
+              Invite members
             </p>
           </nav>
         </div>
@@ -52,14 +58,22 @@
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         Administration
         <ul class="dropdown-menu">
-          <li>
-            <span routerLink="/administration/user-management">User management</span>
-          </li>
           <li class="sub-menu">
             <span routerLink="/administration/company">Company</span>
             <ul class="dropdown-menu dropdown-menu__sub-menu">
               <li>
                 <span routerLink="/administration/company/settings">Settings</span>
+              </li>
+            </ul>
+          </li>
+          <li class="sub-menu">
+            <span routerLink="/administration/users">Users</span>
+            <ul class="dropdown-menu dropdown-menu__sub-menu">
+              <li>
+                <span routerLink="/administration/users/all">All users</span>
+              </li>
+              <li>
+                <span routerLink="/administration/users/invite">Invite members</span>
               </li>
             </ul>
           </li>
