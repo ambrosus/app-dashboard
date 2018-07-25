@@ -20,6 +20,11 @@ const routes: Routes = [
         component: CompanyComponent,
         children: [
           {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'settings'
+          },
+          {
             path: 'settings',
             component: SettingsComponent
           }
