@@ -1,8 +1,39 @@
 <header class="header">
   <div class="header-container">
-    <a class="header-logo" routerLink="/">
-      <app-svg-icon name="logo" width="120px"></app-svg-icon>
-    </a>
+    <div class="flex flex-direction-r justify-content-fs align-items-c">
+      <a class="header-logo m-r-40" routerLink="/">
+        <app-svg-icon name="logo" width="120px"></app-svg-icon>
+      </a>
+      <!-- Administration menu -->
+      <ul class="header-menu" *ngIf="isLoggedin">
+        <!-- Desktop menu -->
+        <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
+          Administration
+          <ul class="dropdown-menu">
+            <li class="sub-menu">
+              <span routerLink="/administration/company">Company</span>
+              <ul class="dropdown-menu dropdown-menu__sub-menu">
+                <li>
+                  <span routerLink="/administration/company/settings">Settings</span>
+                </li>
+              </ul>
+            </li>
+            <li class="sub-menu">
+              <span routerLink="/administration/users">Users</span>
+              <ul class="dropdown-menu dropdown-menu__sub-menu">
+                <li>
+                  <span routerLink="/administration/users/all">All users</span>
+                </li>
+                <li>
+                  <span routerLink="/administration/users/invite">Invite members</span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <!-- end Desktop menu -->
+      </ul>
+    </div>
 
     <ul class="header-menu" *ngIf="isLoggedin">
       <!-- Mobile menu -->
@@ -21,9 +52,6 @@
             </p>
             <p class="menu-mobile__item separator color-ablue--base" (click)="addAccount = true">
               Add account
-            </p>
-            <p class="menu-mobile__item color-ablue--base" (click)="logout()">
-              Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}
             </p>
             <p class="menu-mobile__item separator color-ared--base" (click)="logoutAll()">
               Log out of all accounts
@@ -55,29 +83,8 @@
       <!-- end Mobile menu -->
 
       <!-- Desktop menu -->
-      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        Administration
-        <ul class="dropdown-menu">
-          <li class="sub-menu">
-            <span routerLink="/administration/company">Company</span>
-            <ul class="dropdown-menu dropdown-menu__sub-menu">
-              <li>
-                <span routerLink="/administration/company/settings">Settings</span>
-              </li>
-            </ul>
-          </li>
-          <li class="sub-menu">
-            <span routerLink="/administration/users">Users</span>
-            <ul class="dropdown-menu dropdown-menu__sub-menu">
-              <li>
-                <span routerLink="/administration/users/all">All users</span>
-              </li>
-              <li>
-                <span routerLink="/administration/users/invite">Invite members</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
+      <li id="header-dropdown" class="header-menu__item hide-all display-640-inline-block p-v-10" appClickThisActive>
+        <app-svg-icon name="settings" width="17px" height="17px" routerLink="/settings"></app-svg-icon>
       </li>
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         {{ greeting }}
@@ -95,19 +102,8 @@
           <li class="separator color-ablue--base">
             <span (click)="addAccount = true">Add account</span>
           </li>
-          <li class="color-ablue--base">
-            <span (click)="logout()">Log out of {{ currentAccount.full_name || currentAccount.email || currentAccount.address }}</span>
-          </li>
           <li class="color-ared--base">
             <span (click)="logoutAll()">Log out of all accounts</span>
-          </li>
-        </ul>
-      </li>
-      <li id="header-dropdown" class="header-menu__item dropdown dropdown__no-arrow hide-all display-640-inline-block p-v-10" appClickThisActive>
-        <img src="/assets/svg/settings.svg" width="17px" height="17px">
-        <ul class="dropdown-menu">
-          <li>
-            <span routerLink="/settings">Settings</span>
           </li>
         </ul>
       </li>
