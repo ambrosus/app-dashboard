@@ -1,7 +1,7 @@
 <main class="main">
 
   <!-- Overlay + createEvent modal -->
-  <div class="overlay" *ngIf="createEvents || json || viewChartTimeline" (click)="createEvents = false; json = false; viewChartTimeline = false"></div>
+  <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false;"></div>
   <div class="modal--right p-a-10" *ngIf="createEvents">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="createEvents = false">
@@ -12,19 +12,10 @@
 
   <!-- JSON view -->
   <div class="modal--right p-a-10" *ngIf="json">
-    <div class="modal__header" style="justify-content: space-between;">
+    <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="json = false">
     </div>
     <app-json-preview *ngIf="jsonEvents" [(data)]="jsonEvents" [(name)]="asset.info.name || asset.timestamp"></app-json-preview>
-  </div>
-
-  <!-- Sensor chart -->
-  <div class="modal--right p-a-10" *ngIf="viewChartTimeline">
-    <div class="modal__header">
-      <!-- <button class="abtn btn-outline-ablue" (click)="sensorTimeline = !sensorTimeline;">chart / timeline</button> -->
-      <img src="/assets/raster/close.png" (click)="openChart = false">
-    </div>
-    <app-timeline [events]="sensor" [assetId]="assetId"></app-timeline>
   </div>
 
   <!-- Asset header -->
@@ -92,22 +83,6 @@
               <p class="item__cell item__cell--json" *ngIf="isObject(asset.info[key][k])">{{ valueJSON(stringify(asset.info[key][k], null, 5)) }}</p>
             </div>
           </div>
-        </div>
-
-        <!-- Sensor data -->
-        <div *ngIf="sensor" class="sensors">
-          <h5 class="m-t-20 m-b-10 p-h-10">Sensor data</h5>
-
-          <div class="item sensors__item" (click)="displayChart">
-            <p class="item__cell__title">Temperature: </p>
-            <p class="item__cell">{{ sensor[0].value }}</p>
-
-            <div>
-              <div id="chart" class="chart"></div>
-              <a class="block" style="padding: 7px 10px;" (click)="viewChartTimeline = true">view in timeline</a>
-            </div>
-          </div>
-
         </div>
 
 

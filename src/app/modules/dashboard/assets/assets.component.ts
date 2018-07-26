@@ -70,10 +70,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
       case 'createEvent':
         if (this.assetsService.getSelectedAssets().length === 0) {
           alert(`You didn\'t select any assets. Please do so first.`);
-          return;
+        } else {
+          this.createEvents = true;
         }
-        this.createEvents = true;
-
         break;
     }
 

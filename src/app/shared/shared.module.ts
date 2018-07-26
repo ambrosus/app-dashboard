@@ -17,6 +17,7 @@ import { TimelineComponent } from 'app/shared/components/timeline/timeline.compo
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ClickThisActiveDirective } from './directives/click-this-active.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule],
@@ -36,7 +37,8 @@ import { HttpClientModule } from '@angular/common/http';
     LoopExcludePipe,
     TimelineComponent,
     JsonPreviewComponent,
-    SvgIconComponent
+    SvgIconComponent,
+    ClickThisActiveDirective
   ],
   declarations: [
     HeaderComponent,
@@ -53,7 +55,8 @@ import { HttpClientModule } from '@angular/common/http';
     LoopExcludePipe,
     TimelineComponent,
     JsonPreviewComponent,
-    SvgIconComponent
+    SvgIconComponent,
+    ClickThisActiveDirective
   ]
 })
 export class SharedModule {}

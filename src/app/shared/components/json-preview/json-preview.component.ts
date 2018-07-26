@@ -39,7 +39,7 @@ export class JsonPreviewComponent implements OnInit {
         return `<span class="${cls}">${match}</span>`;
       }
     );
-  } 
+  }
 
   downloadJSON() {
     const filename = this.name;

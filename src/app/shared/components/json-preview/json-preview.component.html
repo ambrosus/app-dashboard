@@ -1,6 +1,5 @@
 <div class="json_preview">
-    <div class="json_preview__header">
-        <span class="json_preview__header__title">{{this.name}}.json</span>
+    <div class="json_preview__header m-b-10">
         <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
     </div>
     <pre *ngIf="data" [innerHTML]="syntaxHighlight(stringify(data, null, 3))"></pre>

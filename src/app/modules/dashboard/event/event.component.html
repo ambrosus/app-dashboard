@@ -5,7 +5,7 @@
 
   <!-- JSON view -->
   <div class="modal--right p-a-10" *ngIf="json">
-    <div class="modal__header" style="justify-content: space-between;">
+    <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="json = false">
     </div>
     <app-json-preview [data]="jsonEvent" [name]="event.content.data[0].name || event.content.idData.timestamp"></app-json-preview>
