@@ -1,19 +1,27 @@
-import { AuthGuardChild } from './modules/auth/auth-guard-child.service';
+import { AuthGuardChild } from './services/auth-guard-child.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
-import { AuthGuard } from './modules/auth/auth-guard.service';
-import { AuthGuardLogin } from 'app/modules/auth/auth-guard-login.service';
+import { AuthGuard } from './services/auth-guard.service';
+import { AuthGuardLogin } from 'app/services/auth-guard-login.service';
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { SettingsComponent } from './core/components/settings/settings.component';
+import { LoginComponent } from './core/components/login/login.component';
+import { SignupComponent } from './core/components/signup/signup.component';
 
 const routes: Routes = [
   {
     path: 'login',
     canActivate: [AuthGuardLogin],
-    loadChildren: 'app/modules/auth/auth.module#AuthModule',
+    component: LoginComponent,
+    runGuardsAndResolvers: 'always'
+  },
+  {
+    path: 'signup',
+    canActivate: [AuthGuardLogin],
+    component: SignupComponent,
     runGuardsAndResolvers: 'always'
   },
   {

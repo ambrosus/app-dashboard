@@ -1,4 +1,3 @@
-import { AuthModule } from 'app/modules/auth/auth.module';
 import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
@@ -10,12 +9,14 @@ import { AboutComponent } from './components/about/about.component';
 import { HelpComponent } from './components/help/help.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
 
 
 @NgModule({
-  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule, AuthModule],
+  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent],
+  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SignupComponent],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

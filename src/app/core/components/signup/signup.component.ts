@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
@@ -8,7 +8,8 @@ import { PasswordService } from 'app/services/password.service';
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
-  providers: [PasswordService]
+  providers: [PasswordService],
+  encapsulation: ViewEncapsulation.None
 })
 export class SignupComponent {
   signupForm: FormGroup;

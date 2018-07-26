@@ -7,12 +7,12 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.scss'],
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class SigninComponent {
+export class LoginComponent {
   loginForm: FormGroup;
   addressForm: FormGroup;
 
