@@ -15,9 +15,11 @@ import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 import { TimelineComponent } from 'app/shared/components/timeline/timeline.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
+import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HttpClientModule],
   exports: [
     CommonModule,
     HeaderComponent,
@@ -33,7 +35,8 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
     LoopIncludePipe,
     LoopExcludePipe,
     TimelineComponent,
-    JsonPreviewComponent
+    JsonPreviewComponent,
+    SvgIconComponent
   ],
   declarations: [
     HeaderComponent,
@@ -49,7 +52,8 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
     LoopIncludePipe,
     LoopExcludePipe,
     TimelineComponent,
-    JsonPreviewComponent
+    JsonPreviewComponent,
+    SvgIconComponent
   ]
 })
 export class SharedModule {}
