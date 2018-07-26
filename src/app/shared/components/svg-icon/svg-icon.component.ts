@@ -35,13 +35,13 @@ export class SvgIconComponent implements OnInit {
         this.renderer.appendChild(element, svg.documentElement);
         // set width, height and fill
         if (this.width) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'width', this.width || '100%');
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'width', this.width);
         }
         if (this.height) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'height', this.height || '100%');
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'height', this.height);
         }
-        if (this.height) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'fill', this.fill || 'currentColor');
+        if (this.fill) {
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'fill', this.fill);
         }
       },
       err => {
