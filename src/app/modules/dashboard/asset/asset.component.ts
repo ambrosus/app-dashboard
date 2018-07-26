@@ -19,6 +19,8 @@ export class AssetComponent implements OnInit {
 
   objectKeys = Object.keys;
 
+  stringify = JSON.stringify;
+
   constructor(private route: ActivatedRoute, private assetService: AssetsService, private AmCharts: AmChartsService, private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit() {

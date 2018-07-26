@@ -48,15 +48,14 @@
         <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
-      <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
-
+      <div class="table__label table__label__heading table__label__select color-ablue--base">
         <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions>
           <option value="default" disabled>Bulk actions</option>
           <option value="createEvent">Create Event</option>
         </select>
-
-
       </div>
+
+      <!-- Select account -->
       <div class="table__label table__label__heading table__label__select color-ablue--base">
         <select (change)="changeAccount(acc)" #acc>
           <option *ngFor="let a of accounts" value="{{ a.address }}">{{ a.full_name }}</option>
