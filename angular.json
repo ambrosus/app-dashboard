@@ -28,6 +28,7 @@
             ],
             "styles": [
               "node_modules/normalize.css/normalize.css",
+              "node_modules/sanitize.css/sanitize.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {

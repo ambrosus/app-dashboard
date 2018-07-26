@@ -65,12 +65,19 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.el.nativeElement.querySelector('#search').value = '';
   }
 
-  openCreateEvents() {
-    if (this.assetsService.getSelectedAssets().length === 0) {
-      alert(`You didn\'t select any assets. Please do so first.`);
-      return;
+  bulkActions(action) {
+    switch (action.value) {
+      case 'createEvent':
+        if (this.assetsService.getSelectedAssets().length === 0) {
+          alert(`You didn\'t select any assets. Please do so first.`);
+          return;
+        }
+        this.createEvents = true;
+
+        break;
     }
-    this.createEvents = true;
+
+    action.value = 'default';
   }
 
   ngOnInit() {
