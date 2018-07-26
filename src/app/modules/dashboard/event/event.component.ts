@@ -1,6 +1,7 @@
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AdministrationService } from '../../../services/administration.service';
 
 @Component({
   selector: 'app-event',
@@ -17,6 +18,7 @@ export class EventComponent implements OnInit, OnDestroy {
   assetId;
   eventId;
   infoEvent = false;
+  previewAppUrl;
 
 
   objectKeys = Object.keys;
@@ -27,7 +29,8 @@ export class EventComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private assetService: AssetsService,
-              private router: Router) {}
+              private router: Router,
+              private administration: AdministrationService) {}
 
   downloadQR(el: any) {
     const data = el.elementRef.nativeElement.children[0].src;
@@ -91,6 +94,8 @@ export class EventComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.previewAppUrl = this.administration.previewAppUrl;
   }
 
   ngOnDestroy() {

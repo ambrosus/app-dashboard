@@ -34,7 +34,7 @@
     <div class="view-header">
       <div class="flex flex-direction-r align-items-fe">
         <button class="abtn btn-outline-ablue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
-        <qr-code class="qr" [value]="'https://' + hostLink + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"
+        <qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"
           #qrCode (click)="downloadQR(qrCode)"></qr-code>
       </div>
       <div class="m-t-10">
