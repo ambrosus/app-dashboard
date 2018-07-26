@@ -9,6 +9,7 @@ export class SvgIconComponent implements OnInit {
   path;
 
   @Input() name;
+  @Input() url;
   @Input() width;
   @Input() height;
   @Input() fill;
@@ -17,7 +18,7 @@ export class SvgIconComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.path = this.name.split('.').length > 1 ? this.name : `/assets/svg/${this.name}.svg`;
+    this.path = this.url ? this.url : `/assets/svg/${this.name}.svg`;
     this.loadSvg();
   }
 
@@ -32,10 +33,16 @@ export class SvgIconComponent implements OnInit {
         const svg = parser.parseFromString(res, 'image/svg+xml');
         // insert the svg result
         this.renderer.appendChild(element, svg.documentElement);
-        // set width and height
-        this.renderer.setStyle(this.el.nativeElement.children[0], 'width', this.width || '100%');
-        this.renderer.setStyle(this.el.nativeElement.children[0], 'height', this.height || '100%');
-        this.renderer.setStyle(this.el.nativeElement.children[0], 'fill', this.fill || 'currentColor');
+        // set width, height and fill
+        if (this.width) {
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'width', this.width || '100%');
+        }
+        if (this.height) {
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'height', this.height || '100%');
+        }
+        if (this.height) {
+          this.renderer.setStyle(this.el.nativeElement.children[0], 'fill', this.fill || 'currentColor');
+        }
       },
       err => {
         console.error(err);
