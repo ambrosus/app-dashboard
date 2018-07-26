@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewEncapsulation } from '@angular/core';
 
 interface Help {
   title: string;
@@ -8,7 +8,8 @@ interface Help {
 @Component({
   selector: 'app-help',
   templateUrl: './help.component.html',
-  styleUrls: ['./help.component.scss']
+  styleUrls: ['./help.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HelpComponent implements OnInit {
   help: Help[] = [

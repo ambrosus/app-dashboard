@@ -17,6 +17,7 @@ $_6: #2e5d78;
 $ablue: #5078f1;
 $agreen: #57b846;
 $aorange: #fcbc58;
+$ared: #ea7070;
 
 // Color  map
 
@@ -57,5 +58,8 @@ $palettes: (
   ),
   aorange: (
     base: $aorange
+  ),
+  ared: (
+    base: $ared
   )
 );

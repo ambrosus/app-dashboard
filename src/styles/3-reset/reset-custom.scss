@@ -146,3 +146,11 @@ a {
   cursor: pointer;
   line-height: 1;
 }
+
+hr {
+  box-sizing: content-box;
+  height: 1px;
+  overflow: visible;
+  margin: 25px 0;
+  border-bottom: 1px solid #ddd;
+}

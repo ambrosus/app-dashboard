@@ -1,0 +1,15 @@
+<h4 class="m-b-30">Settings</h4>
+<h5 class="m-b-10">Preview app</h5>
+<p class="m-b-30">Application your QR codes will redirect to, for previewing your assets and events.</p>
+<form [formGroup]="previewAppForm" (ngSubmit)="previewAppSave()" class="form-group m-w-6" style="padding: 0;">
+  <div class="form-text m-b-20">
+    <label for="url">Preview app URL</label>
+    <input formControlName="url" type="url" name="url" id="url" spellcheck="false" appInput>
+  </div>
+  <div class="flex flex-direction-r justify-content-fe align-items-c">
+    <app-spinner *ngIf="spinner"></app-spinner>
+    <button type="submit" class="abtn m-l-20 btn-outline-ablue">Save preview app</button>
+  </div>
+</form>
+<h5 class="m-v-20" *ngIf="errorPreviewApp" style="color: #ea7070">All fields required</h5>
+<h5 class="m-v-20" *ngIf="successPreviewApp" style="color: #57b846">Success</h5>

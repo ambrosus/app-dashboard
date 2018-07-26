@@ -1,0 +1,29 @@
+<h4 class="m-b-40">Invite Members</h4>
+<form [formGroup]="inviteForm" (ngSubmit)="invite()" class="form-group m-w-6" style="padding: 0;">
+  <div formArrayName="members">
+    <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i" class="right">
+      <div class="form-fields-coupled">
+        <div class="form-text m-b-20 m-r-20 w-50">
+          <label for="{{ i + 'email' }}">Email</label>
+          <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
+        </div>
+        <div class="form-text m-b-20 w-50">
+          <label for="{{ i + 'name' }}">Full name</label>
+          <input formControlName="name" type="text" id="{{ i + 'name' }}" spellcheck="false" appInput>
+        </div>
+        <a class="remove" (click)="remove('members', i)">&#8855;</a>
+      </div>
+    </div>
+    <a class="color-ablue--base" (click)="addMember()">+ Add another</a>
+  </div>
+  <div class="form-textarea m-t-40 m-b-20">
+    <label for="url">Message</label>
+    <textarea formControlName="message" name="message" id="message"></textarea>
+  </div>
+  <div class="flex flex-direction-r justify-content-fe align-items-c">
+    <app-spinner *ngIf="spinner"></app-spinner>
+    <button type="submit" class="abtn m-l-20 btn-outline-ablue">Send invites</button>
+  </div>
+</form>
+<h5 class="m-v-20" *ngIf="errorInvite" style="color: #ea7070">All fields required</h5>
+<h5 class="m-v-20" *ngIf="successInvite" style="color: #57b846">Success</h5>

@@ -3,16 +3,16 @@
 
 <div class="main">
   <h2 class="center m-v-30">Help</h2>
-  <div class="help-wrapper">
-    <div class="help">
+  <div class="sidebar-pages__wrapper">
+    <div class="sidebar-pages">
       <!-- Sidebar -->
-      <aside class="help__sidebar-wrapper">
-        <div class="help__sidebar" appSticky [addClass]="'fixed'">
-          <a class="help__sidebar__item" (click)="scroll(slug(item.title))" *ngFor="let item of help">{{ item.title }}</a>
+      <aside class="sidebar-pages__sidebar">
+        <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
+          <p (click)="scroll(slug(item.title))" *ngFor="let item of help">{{ item.title }}</p>
         </div>
       </aside>
       <!-- Main -->
-      <div class="help__main">
+      <div class="sidebar-pages__main">
         <article *ngFor="let item of help" [id]="slug(item.title)">
           <h3 id="item1">{{ item.title }}</h3>
           <p class="m-t-10 m-b-30">{{ item.lesson }}</p>

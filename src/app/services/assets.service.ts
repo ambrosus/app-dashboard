@@ -134,8 +134,8 @@ export class AssetsService {
             obj.timestamp = timestamp;
             obj.author = author;
             obj.name = obj.name || obj.type;
-            obj.action = obj.type;
-            obj.type = obj.type.substr(obj.type.lastIndexOf('.') + 1);
+            obj.action = obj.type ? obj.type : '';
+            obj.type = obj.type ? obj.type.substr(obj.type.lastIndexOf('.') + 1) : '';
             obj.eventId = eventId;
 
             if (obj.type === 'location') {
@@ -160,7 +160,7 @@ export class AssetsService {
     return events;
   }
 
-  searchEvents(queries, page = 0, perPage = 20, address) {
+  searchEvents(queries, page = 0, perPage = 15, address) {
     const params = {};
     queries.map((query) => {
       params[query.param] = query.value;
@@ -209,7 +209,7 @@ export class AssetsService {
 
   // GET assets
 
-  getAssetsInfo(page = 0, perPage = 20, address = this.storage.get('address')) {
+  getAssetsInfo(page = 0, perPage = 15, address = this.storage.get('address')) {
     let cachedAssetsInfo;
     try {
       cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;

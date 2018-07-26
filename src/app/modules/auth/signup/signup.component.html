@@ -1,7 +1,5 @@
 <h3 class="p-h-30">Sign up</h3>
 <p class="m-v-10 p-h-30">To login with email and password</p>
-<h4 class="p-h-40 m-v-30" *ngIf="passwordsNotMatch" style="color: #ea7070">Passwords do not match</h4>
-<h4 class="p-h-40 m-v-30" *ngIf="signupError" style="color: #ea7070">Error signing up.</h4>
 <h4 class="p-h-40 m-v-30" *ngIf="signupSuccess" style="color: green">Signup was successful!
   <br>You can login now.</h4>
 <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group login-form" [ngClass]="{ error: error }">
@@ -52,3 +50,5 @@
     <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign up</button>
   </div>
 </form>
+<h5 class="p-h-40 m-v-30" *ngIf="passwordsNotMatch" style="color: #ea7070">Passwords do not match</h5>
+<h5 class="p-h-40 m-v-30" *ngIf="signupError" style="color: #ea7070">Error signing up.</h5>

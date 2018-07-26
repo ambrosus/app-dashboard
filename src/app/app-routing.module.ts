@@ -22,6 +22,12 @@ const routes: Routes = [
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always'
   },
+  {
+    path: 'administration',
+    canActivateChild: [AuthGuardChild],
+    loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
+    runGuardsAndResolvers: 'always'
+  },
   { path: '', pathMatch: 'full', redirectTo: '/login' },
   { path: 'help', component: HelpComponent },
   { path: 'terms', component: TermsComponent },

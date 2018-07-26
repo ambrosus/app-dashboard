@@ -100,7 +100,7 @@
     }
 
     & .menu-mobile {
-      max-height: 204px;
+      max-height: 1000px;
     }
   }
 }
@@ -124,9 +124,20 @@
   line-height: 1.2;
   word-break: break-word;
   border-bottom: 1px solid #f1f1f1;
-  color: #4a4a4a;
   text-align: center;
   font-size: 14px;
+
+  &.current {
+    background-color: #f6f8fe;
+  }
+
+  &.separator {
+    border-bottom: 1px solid #ddd;
+  }
+
+  &.section {
+    background-color: #fafafa;
+  }
 }
 
 .menu-mobile__item__button {

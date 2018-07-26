@@ -37,10 +37,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   // Pagination
   currentAssetPage = 1;
   totalAssetPages = 0;
-  resultCountAsset = 0;
+  resultCountAsset;
   currentSearchPage = 1;
   totalSearchPages = 0;
-  resultCountSearch = 0;
+  resultCountSearch;
   assetsActive = true;
   searchActive = false;
   pagination = [];
@@ -327,21 +327,22 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   onSelectAll(e, input) {
-    const assetsList = this.el.nativeElement.querySelectorAll('.assets-list__item.table');
+    let table = this.el.nativeElement.querySelectorAll('.table__item.table');
+    table = Array.from(table);
     if (input.checked) {
       this.selectAllText = 'Unselect all';
-      for (const asset of assetsList) {
-        const checkbox = asset.children[0].children[0].children[0];
+      table.map((item) => {
+        const checkbox = item.children[0].children[0].children[0];
         checkbox.checked = true;
         this.assetsService.selectAsset(checkbox.name);
-      }
+      });
       this.assetsService.toggleSelect.next('true');
     } else {
       this.selectAllText = 'Select all';
-      for (const asset of assetsList) {
-        const checkbox = asset.children[0].children[0].children[0];
+      table.map((item) => {
+        const checkbox = item.children[0].children[0].children[0];
         checkbox.checked = false;
-      }
+      });
       this.assetsService.unselectAssets();
       this.assetsService.toggleSelect.next('true');
     }
