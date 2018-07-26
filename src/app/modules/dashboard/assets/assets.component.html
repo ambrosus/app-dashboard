@@ -1,25 +1,27 @@
 <main class="main">
+   <div class="wrapper">
 
-  <!-- Search bar -->
-  <h2 class="center m-v-30">All assets
-    <br>
-    <p *ngIf="assetsActive">Total count: {{ resultCountAsset }}</p>
-    <p *ngIf="searchActive">Total count: {{ resultCountSearch }}</p>
-  </h2>
-  <div class="block-center m-w-6 p-h-10">
-    <div class="search">
-      <select id="select">
-        <option value="name" selected>name</option>
-        <option value="createdBy">createdBy</option>
-        <option value="asset identifiers">asset identifiers</option>
-        <option value="event identifiers">event identifiers</option>
-        <option value="type">type</option>
-      </select>
-      <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
-      <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
+    <!-- Search bar -->
+    <h2 class="center m-v-30">All assets</h2>
+    <p class="center m-v-30">Total count: {{ (assetsActive ? resultCountAsset : resultCountSearch) || 0 }}</p>
+
+    <div class="block-center m-w-6 p-h-10">
+      <div class="search">
+        <select id="select">
+          <option value="name" selected>name</option>
+          <option value="createdBy">createdBy</option>
+          <option value="asset identifiers">asset identifiers</option>
+          <option value="event identifiers">event identifiers</option>
+          <option value="type">type</option>
+        </select>
+        <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
+        <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
+      </div>
+      <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
+
     </div>
-    <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
   </div>
+
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
@@ -46,13 +48,14 @@
         <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
-      <div class="table__label table__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
-        <span class="header-control-text dropdown">Bulk actions</span>
-        <ul class="dropdown-menu">
-          <li>
-            <span (click)="openCreateEvents()">New Events</span>
-          </li>
-        </ul>
+      <div class="assets-list__label assets-list__label__heading assets-list__label__select color-ablue--base">
+
+        <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions>
+          <option value="default" disabled>Bulk actions</option>
+          <option value="createEvent">Create Event</option>
+        </select>
+
+
       </div>
       <div class="table__label table__label__heading table__label__select color-ablue--base">
         <select (change)="changeAccount(acc)" #acc>

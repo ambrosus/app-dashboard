@@ -1,18 +1,9 @@
-.wrapper {
-  background-image: url('/assets/raster/bg.jpg');
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .main {
   min-height: calc(100vh - 215px);
   position: relative;
+  background-image: url('/assets/raster/bg.jpg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
 }
 
 pre {
@@ -217,21 +208,6 @@ pre {
   }
 }
 
-.string {
-  color: green;
-}
-.number {
-  color: blue;
-}
-.boolean {
-  color: darkorange;
-}
-.null {
-  color: magenta;
-}
-.key {
-  color: red;
-}
 
 .item {
   display: flex;

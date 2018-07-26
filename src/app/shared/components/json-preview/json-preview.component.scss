@@ -1,0 +1,35 @@
+@import 'var';
+
+
+.json_preview{
+  white-space: pre;
+
+  & __header{
+    margin-bottom: 20px;
+
+    & __title{
+      color: #333;
+      padding-right: 20px;
+    }
+  }
+
+  .string {
+  color: green;
+  }
+
+  .number {
+    color: blue;
+  }
+
+  .boolean {
+    color: darkorange;
+  }
+
+  .null {
+    color: magenta;
+  }
+  
+  .key {
+    color: red;
+  }
+}

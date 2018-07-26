@@ -6,6 +6,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CoreModule } from './core/core.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+
+import { AmChartsModule } from '@amcharts/amcharts3-angular';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,7 +18,9 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     HttpClientModule,
     ReactiveFormsModule,
     CoreModule,
-    DashboardModule
+    DashboardModule,
+    AmChartsModule,
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]
 })

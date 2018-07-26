@@ -1,0 +1,41 @@
+@import 'var';
+
+.events {
+  position: relative;
+
+  &:after {
+    content: '';
+    height: 100%;
+    width: 2px;
+    position: absolute;
+    background: #4f77f1;
+    top: 0;
+    left: calc(50% - 1px);
+    z-index: -1;
+  }
+}
+
+.event {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 15px;
+  border: 2px solid #f1f1f1;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: #fff;
+
+  & > p {
+    &:first-of-type {
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  &__location {
+    font-weight: 400;
+    color: $grey;
+    margin-left: 4px;
+  }
+}
