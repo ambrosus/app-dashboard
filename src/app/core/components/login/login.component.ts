@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 export class LoginComponent {
   loginForm: FormGroup;
   addressForm: FormGroup;
+  loginPage = true;
 
   error = false;
   spinner = false;
@@ -41,6 +42,7 @@ export class LoginComponent {
       address: new FormControl(null, [Validators.required]),
       secret: new FormControl(null, [Validators.required])
     });
+    this.loginPage = location.pathname.includes('/login');
   }
 
   tabOpen(open, element) {

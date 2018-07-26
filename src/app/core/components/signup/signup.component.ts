@@ -3,6 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
+import { AuthService } from 'app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -32,7 +34,9 @@ export class SignupComponent {
   constructor(
     private storage: StorageService,
     private http: HttpClient,
-    private passwordService: PasswordService
+    private passwordService: PasswordService,
+    private auth: AuthService,
+    private router: Router
   ) {
     this.signupForm = new FormGroup({
       address: new FormControl(this.storage.get('address'), [Validators.required]),
@@ -116,7 +120,11 @@ export class SignupComponent {
           this.signupSuccess = true;
           this.signupForm.reset();
 
-          console.log('Signup success: ', resp);
+          this.auth.login(address, secret).subscribe(
+            r => {
+              this.router.navigate(['/assets']);
+            }
+          );
         },
         err => {
           this.spinner = false;

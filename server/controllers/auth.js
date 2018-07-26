@@ -103,7 +103,6 @@ exports.resetpassword = (req, res) => {
 exports.login = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
   const account = accountExists(email);
 
   if (email && password && account) {
@@ -230,8 +229,8 @@ exports.account = (req, res) => {
 
     if (account) {
       res.status(200).json({
-        data: account,
-        message: 'Success',
+        account,
+        accounts,
         notifications: notifications.getNewestNotifications(address)
       });
     } else {
