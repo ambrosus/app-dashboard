@@ -1,7 +1,7 @@
 import { AssetsService } from 'app/services/assets.service';
-import { Component, OnInit, ViewEncapsulation, AfterViewInit, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AmChartsService, AmChart } from '@amcharts/amcharts3-angular';
+import { AdministrationService } from 'app/services/administration.service';
 
 @Component({
   selector: 'app-asset',
@@ -16,12 +16,13 @@ export class AssetComponent implements OnInit {
   jsonEvents;
   json = false;
   events;
+  previewAppUrl;
 
   objectKeys = Object.keys;
 
   stringify = JSON.stringify;
 
-  constructor(private route: ActivatedRoute, private assetService: AssetsService, private AmCharts: AmChartsService, private el: ElementRef, private renderer: Renderer2) {}
+  constructor(private route: ActivatedRoute, private assetService: AssetsService, private administration: AdministrationService) {}
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -34,6 +35,8 @@ export class AssetComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.assetId = params.assetid;
     });
+
+    this.previewAppUrl = this.administration.previewAppUrl;
   }
 
   isObject(value) {

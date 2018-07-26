@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AdministrationService } from 'app/services/administration.service';
 
 @Component({
   selector: 'app-settings',
@@ -12,7 +13,7 @@ export class SettingsComponent implements OnInit {
   errorPreviewApp = false;
   successPreviewApp = false;
 
-  constructor() {
+  constructor(private administration: AdministrationService) {
     this.initPreviewAppForm();
   }
 
@@ -29,7 +30,7 @@ export class SettingsComponent implements OnInit {
   prefillPreviewApp() {
     // Current users API settings
     const previewAppForm = this.previewAppForm;
-    previewAppForm.get('url').setValue('https://amb.to');
+    previewAppForm.get('url').setValue(this.administration.previewAppUrl);
   }
 
   errorsResetPreviewApp() {
@@ -44,6 +45,7 @@ export class SettingsComponent implements OnInit {
     if (this.previewAppForm.valid) {
       this.spinner = true;
       console.log(previewAppUrl);
+      this.administration.previewAppUrl = previewAppUrl;
 
       setTimeout(() => {
         this.spinner = false;

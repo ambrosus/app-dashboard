@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 export class AdministrationService {
   usersSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
+  previewAppUrl = 'https://amb.to';
 
   constructor() { }
 
