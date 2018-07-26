@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 
 @Component({
   selector: 'app-json-preview',
@@ -7,26 +7,23 @@ import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class JsonPreviewComponent implements OnInit {
-
-  @Input () data;
-  @Input () name;
+  @Input() data;
+  @Input() name;
 
   stringify = JSON.stringify;
 
-  constructor() { }
-
-  ngOnInit() {
-  }
+  constructor() {}
+  ngOnInit() {}
 
   syntaxHighlight() {
-    let json = JSON.stringify(this.data, null, 3)
+    const json = JSON.stringify(this.data, null, 3)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
     return json.replace(
       /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
 
-      function(match) {
+      match => {
         let cls = 'number';
         if (/^"/.test(match)) {
           if (/:$/.test(match)) {
@@ -42,13 +39,13 @@ export class JsonPreviewComponent implements OnInit {
         return `<span class="${cls}">${match}</span>`;
       }
     );
-  }
+  } 
 
   downloadJSON() {
     const filename = this.name;
     const copy = [];
 
-console.log(this.data);
+    console.log(this.data);
 
     this.data.map(obj => {
       copy.push(JSON.parse(JSON.stringify(obj)));
@@ -74,5 +71,4 @@ console.log(this.data);
       document.body.removeChild(elem);
     }
   }
-
 }
