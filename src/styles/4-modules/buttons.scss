@@ -80,4 +80,12 @@ button,
       margin-bottom: 4px;
     }
   }
+
+  &:disabled {
+    opacity: .5;
+
+    &:hover {
+      opacity: .5;
+    }
+  }
 }
