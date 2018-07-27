@@ -21,7 +21,7 @@
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" [logo]="'logo'" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+      <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" [logo]="'/assets/raster/logotip.jpg'" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       <div>
         <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>
