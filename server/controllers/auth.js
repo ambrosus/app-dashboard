@@ -141,6 +141,8 @@ exports.signup = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  const role = 'owner';
+
   const account = accountExists(email) || accountExists(address);
 
   if (address && secret && email && password && !account) {
@@ -152,6 +154,7 @@ exports.signup = (req, res) => {
       company,
       email,
       address,
+      role,
       settings: {
         notifications: {
           asset: {

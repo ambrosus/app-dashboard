@@ -1,8 +1,9 @@
 <header class="header">
-  <div class="header-container">
+  
+  <div class="header-container wrapper">
     <div class="flex flex-direction-r justify-content-fs align-items-c">
       <a class="header-logo m-r-40" routerLink="/">
-        <img src="/assets/svg/logo.svg" alt="Ambrosus">
+        <app-svg-icon name="logo" width="100px"></app-svg-icon>
       </a>
       <!-- Administration menu -->
       <ul class="header-menu" *ngIf="isLoggedin">
@@ -83,21 +84,21 @@
       <!-- end Mobile menu -->
 
       <!-- Desktop menu -->
-      <li id="header-dropdown" class="header-menu__item hide-all display-640-inline-block p-v-10" appClickThisActive>
-        <app-svg-icon name="settings" width="17px" height="17px" routerLink="/settings"></app-svg-icon>
+      <li class="header-menu__item hide-all display-640-inline-block p-v-10">
+        <a routerLink="/settings"><app-svg-icon name="cog" width="17px" height="17px"></app-svg-icon></a>
       </li>
+
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         {{ greeting }}
         <ul class="dropdown-menu">
-          <li *ngFor="let account of accounts; let i = index" [ngClass]="{ current:  i === 0 }">
-            <span (click)="switchAccount(account.address)">
-              <p *ngIf="!account.full_name && !account.email">{{ account.address }}</p>
-              <p class="color-blacks--base" *ngIf="account.full_name">
-                {{ account.full_name }}
-                <span *ngIf="account.email" style="display: inline; padding: 0;">- {{ account.email }}</span>
-              </p>
+          <li *ngFor="let account of accounts; let i = index" [ngClass]="{ current:  i === 0 }" (click)="switchAccount(account.address)">
+
+              <p *ngIf="!account.full_name && !account.email">{{ account.address.substring(0,8) }}...</p>
+
+              <p *ngIf="account.full_name">{{ account.full_name }}</p>
+              <p *ngIf="account.email">{{ account.email }}</p>
               <p *ngIf="account.company">{{ account.company }}</p>
-            </span>
+
           </li>
           <li class="separator color-ablue--base">
             <span (click)="addAccount = true">Add account</span>
