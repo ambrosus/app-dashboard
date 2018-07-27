@@ -17,10 +17,6 @@
     <h4 class="m-b-30">Reset password</h4>
     <form class="form-group p-a-30" [formGroup]="resetForm" (ngSubmit)="resetPassword()" [ngClass]="{ error: error }">
       <div class="form-text m-b-20">
-        <label for="email">Registered Email Address *</label>
-        <input formControlName="email" type="email" name="email" type="email" required id="email" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
         <label for="passwordConfirm">Old Password *</label>
         <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
       </div>

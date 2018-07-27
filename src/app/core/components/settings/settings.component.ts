@@ -49,7 +49,6 @@ export class SettingsComponent implements OnInit {
     private auth: AuthService
   ) {
     this.resetForm = new FormGroup({
-      email: new FormControl(null, [Validators.required, Validators.email]),
       oldPassword: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
@@ -63,7 +62,7 @@ export class SettingsComponent implements OnInit {
 
   resetPassword() {
     this.resetErrors();
-    const email = this.resetForm.get('email').value;
+    const email = this.storage.get('email');
     const password = this.resetForm.get('password').value;
     const oldPassword = this.resetForm.get('oldPassword').value;
     const passwordConfirm = this.resetForm.get('passwordConfirm').value;
