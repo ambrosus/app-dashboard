@@ -34,6 +34,15 @@ export class AllComponent implements OnInit {
   ngOnInit() {
   }
 
+  bulkActions(action) {
+    switch (action.value) {
+      case 'createEvent':
+        break;
+    }
+
+    action.value = 'default';
+  }
+
   onSelectAll(e, input) {
     let table = this.el.nativeElement.querySelectorAll('.table__item.table');
     table = Array.from(table);

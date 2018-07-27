@@ -122,10 +122,11 @@ export class AuthService {
 
               this.getAccountByAddress(address).subscribe(
                 (r: any) => {
-                  this.storage.set('email', r.data.email);
-                  this.storage.set('full_name', r.data.full_name);
+                  this.storage.set('email', r.account.email);
+                  this.storage.set('full_name', r.account.full_name);
                   this.storage.set('has_account', true);
-                  this.addAccount(address, secret, resp.token, true, r.data.email, r.data.full_name, r.data.company);
+                  this.storage.set('notifications', JSON.stringify(r.notifications));
+                  this.addAccount(address, secret, resp.token, true, r.account.email, r.account.full_name, r.account.company);
                 },
                 err => {
                   this.storage.set('has_account', false);

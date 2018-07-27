@@ -14,16 +14,12 @@
       <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
     </label>
     <!-- Bulk actions -->
-    <div class="table__label table__label__heading dropdown dropdown__no-arrow color-ablue--base" appClickThisActive>
-      <span class="header-control-text dropdown">Bulk actions</span>
-      <ul class="dropdown-menu">
-        <li>
-          <span>Edit roles</span>
-        </li>
-        <li>
-          <span>Remove members</span>
-        </li>
-      </ul>
+    <div class="table__label table__label__heading table__label__select color-ablue--base center">
+      <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions>
+        <option value="default" disabled>Bulk actions</option>
+        <option value="createEvent">Edit role</option>
+        <option value="createEvent">Remove member</option>
+      </select>
     </div>
   </div>
 

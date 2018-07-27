@@ -11,6 +11,7 @@ export class InviteComponent implements OnInit {
   spinner = false;
   errorInvite = false;
   successInvite = false;
+  message = false;
 
   constructor() {
     this.initInviteForm();
@@ -21,14 +22,14 @@ export class InviteComponent implements OnInit {
       members: new FormArray([
         new FormGroup({
           email: new FormControl('', [Validators.required]),
-          name: new FormControl('', [Validators.required])
+          name: new FormControl('', [])
         }),
         new FormGroup({
           email: new FormControl('', [Validators.required]),
-          name: new FormControl('', [Validators.required])
+          name: new FormControl('', [])
         })
       ]),
-      message: new FormControl('', [Validators.required])
+      message: new FormControl('', [])
     });
   }
 
@@ -44,7 +45,7 @@ export class InviteComponent implements OnInit {
     (<FormArray>this.inviteForm.get('members')).push(
       new FormGroup({
         email: new FormControl('', [Validators.required]),
-        name: new FormControl('', [Validators.required])
+        name: new FormControl('', [])
       })
     );
   }

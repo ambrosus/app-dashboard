@@ -1,7 +1,6 @@
 .main {
   min-height: calc(100vh - 215px);
   position: relative;
-  background-image: url('/assets/raster/bg.jpg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
 }
@@ -102,18 +101,18 @@ pre {
       &:after {
         content: '\221F';
         font-size: 12px;
-        transform: rotate(45deg);
+        transform: rotate(225deg);
         display: inline-block;
         position: absolute;
         top: calc(50% - 6px);
-        left: 10px;
+        right: 10px;
       }
     }
   }
 
   &.dropdown-menu__sub-menu {
     top: 0;
-    right: 100%;
+    right: -100%;
   }
 }
 
@@ -162,8 +161,8 @@ pre {
   cursor: pointer;
 
   & img {
-    height: 80px;
-    max-width: 80px;
+    height: 90px;
+    max-width: 90px;
   }
 
   @include min-640 {

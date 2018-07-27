@@ -103,7 +103,6 @@ exports.resetpassword = (req, res) => {
 exports.login = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
   const account = accountExists(email);
 
   if (email && password && account) {
@@ -142,6 +141,8 @@ exports.signup = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  const role = 'owner';
+
   const account = accountExists(email) || accountExists(address);
 
   if (address && secret && email && password && !account) {
@@ -153,6 +154,7 @@ exports.signup = (req, res) => {
       company,
       email,
       address,
+      role,
       settings: {
         notifications: {
           asset: {
@@ -230,8 +232,8 @@ exports.account = (req, res) => {
 
     if (account) {
       res.status(200).json({
-        data: account,
-        message: 'Success',
+        account,
+        accounts,
         notifications: notifications.getNewestNotifications(address)
       });
     } else {

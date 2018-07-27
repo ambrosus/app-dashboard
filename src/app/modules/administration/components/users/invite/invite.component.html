@@ -11,18 +11,19 @@
           <label for="{{ i + 'name' }}">Full name</label>
           <input formControlName="name" type="text" id="{{ i + 'name' }}" spellcheck="false" appInput>
         </div>
-        <a class="remove" (click)="remove('members', i)">&#8855;</a>
+        <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&#8855;</a>
       </div>
     </div>
     <a class="color-ablue--base" (click)="addMember()">+ Add another</a>
   </div>
-  <div class="form-textarea m-t-40 m-b-20">
+  <p class="m-t-20 color-blacks--base" (click)="message = !message" style="cursor: default; user-select: none;">Compose a custom message to your members.</p>
+  <div class="form-textarea m-t-40 m-b-20" *ngIf="message">
     <label for="url">Message</label>
     <textarea formControlName="message" name="message" id="message"></textarea>
   </div>
   <div class="flex flex-direction-r justify-content-fe align-items-c">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <button type="submit" class="abtn m-l-20 btn-outline-ablue">Send invites</button>
+    <button [disabled]="!inviteForm.valid" type="submit" class="abtn m-l-20 btn-outline-ablue">Send invites</button>
   </div>
 </form>
 <h5 class="m-v-20" *ngIf="errorInvite" style="color: #ea7070">All fields required</h5>
