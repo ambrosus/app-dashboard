@@ -162,8 +162,8 @@ pre {
   cursor: pointer;
 
   & img {
-    height: 90px;
-    max-width: 90px;
+    height: 120px;
+    max-width: 120px;
   }
 
   @include min-640 {
