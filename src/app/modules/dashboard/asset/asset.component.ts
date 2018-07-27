@@ -3,6 +3,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdministrationService } from 'app/services/administration.service';
 
+declare let QRCode: any;
+
 @Component({
   selector: 'app-asset',
   templateUrl: './asset.component.html',
@@ -48,7 +50,7 @@ export class AssetComponent implements OnInit {
   }
 
   downloadQR(el: any) {
-    const data = el.elementRef.nativeElement.children[0].src;
+    const data = el.el.nativeElement.children[0].src;
     const filename = `QR_code_${this.assetId}.png`;
     if (window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveBlob(data, filename);

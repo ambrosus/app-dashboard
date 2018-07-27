@@ -16,7 +16,6 @@ import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
-import { QRCodeModule } from 'angular2-qrcode';
 
 @NgModule({
   imports: [
@@ -24,8 +23,7 @@ import { QRCodeModule } from 'angular2-qrcode';
     DashboardRoutingModule,
     SharedModule,
     ReactiveFormsModule,
-    RouterModule,
-    QRCodeModule
+    RouterModule
   ],
   declarations: [
     AssetComponent,

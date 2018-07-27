@@ -33,7 +33,7 @@ export class EventComponent implements OnInit, OnDestroy {
               private administration: AdministrationService) {}
 
   downloadQR(el: any) {
-    const data = el.elementRef.nativeElement.children[0].src;
+    const data = el.el.nativeElement.children[0].src;
     const filename = `QR_code_${this.event.content.idData.assetId}_${
       this.event.eventId
     }.png`;
