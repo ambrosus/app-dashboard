@@ -19,6 +19,7 @@ import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ClickThisActiveDirective } from './directives/click-this-active.directive';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule],
@@ -40,7 +41,8 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
     JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
-    QrCodeComponent
+    QrCodeComponent,
+    NotificationComponent
   ],
   declarations: [
     HeaderComponent,
@@ -59,7 +61,8 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
     JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
-    QrCodeComponent
+    QrCodeComponent,
+    NotificationComponent
   ]
 })
 export class SharedModule {}
