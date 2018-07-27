@@ -20,15 +20,10 @@ export class SettingsComponent implements OnInit {
     '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
   color = '#D9534F';
   passwordExists: Boolean = false;
-  weakPassword = false;
   spinner = false;
-  error = false;
+  error;
   resetForm: FormGroup;
-  passwordsNotMatch = false;
-  serverMessage = false;
   resetSuccess: Boolean = false;
-  showWeakPasswordError: Boolean = false;
-  blankField: Boolean = false;
   strengthObj: any;
   flags = [];
   has_account = false;
@@ -64,11 +59,6 @@ export class SettingsComponent implements OnInit {
   resetErrors() {
     this.error = false;
     this.resetSuccess = false;
-    this.passwordsNotMatch = false;
-    this.serverMessage = false;
-    this.showWeakPasswordError = false;
-    this.blankField = false;
-    this.weakPassword = false;
   }
 
   resetPassword() {
@@ -79,24 +69,21 @@ export class SettingsComponent implements OnInit {
     const passwordConfirm = this.resetForm.get('passwordConfirm').value;
 
     if (!email || !password || !oldPassword || !passwordConfirm) {
-      this.blankField = true;
+      this.error = 'All fields are required';
       return;
     }
 
     let flagCounter = 0;
     this.flags.forEach(v => v ? flagCounter++ : v);
 
-    if (flagCounter <= 3) {
-      this.weakPassword = true;
-      this.showWeakPasswordError = true;
-      this.error = true;
+    if (flagCounter <= 2) {
+      this.error = 'Weak password';
       this.spinner = false;
       return;
     }
 
     if (password !== passwordConfirm) {
-      this.passwordsNotMatch = true;
-      this.error = true;
+      this.error = 'Passwords do not match';
       this.spinner = false;
       return;
     }
@@ -116,7 +103,7 @@ export class SettingsComponent implements OnInit {
       },
       err => {
         this.spinner = false;
-        this.serverMessage = err.error.message;
+        this.error = err.error.message;
         console.log('Signup failed: ', err);
       }
     );
@@ -137,7 +124,7 @@ export class SettingsComponent implements OnInit {
 
   updateBar() {
     const i = Math.round(this.width / 10);
-    this.color = this.colors[i];
+    this.color = i > this.colors.length - 1 ? this.colors[this.colors.length - 1] : this.colors[i];
   }
 
   switchAccount(address) {

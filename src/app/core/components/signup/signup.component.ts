@@ -15,13 +15,9 @@ import { Router } from '@angular/router';
 })
 export class SignupComponent {
   signupForm: FormGroup;
-  error = false;
+  error;
   spinner = false;
-  weakPassword = false;
-  passwordsNotMatch = false;
   passwordExists: Boolean = false;
-  signupError = false;
-  signupSuccess = false;
   private value: string;
   public width = 1;
   public colors: any = [
@@ -65,13 +61,11 @@ export class SignupComponent {
 
   updateBar() {
     const i = Math.round(this.width / 10);
-    this.color = this.colors[i];
+    this.color = i > this.colors.length - 1 ? this.colors[this.colors.length - 1] : this.colors[i];
   }
 
   resetErrors() {
     this.error = false;
-    this.weakPassword = false;
-    this.passwordsNotMatch = false;
   }
 
   signup() {
@@ -83,24 +77,27 @@ export class SignupComponent {
     const password = this.signupForm.get('password').value;
     const passwordConfirm = this.signupForm.get('passwordConfirm').value;
     const terms = this.signupForm.get('terms').value;
+    this.resetErrors();
 
     let flagCounter = 0;
     this.flags.forEach(v => v ? flagCounter++ : v);
 
-    if (flagCounter <= 3) {
-      this.weakPassword = true;
-      this.error = true;
+    if (this.signupForm.invalid || !terms) {
+      this.error = 'All fields are required';
+      return;
+    }
+
+    if (flagCounter <= 2) {
+      this.error = 'Weak password';
       return;
     }
 
     if (password !== passwordConfirm) {
-      this.passwordsNotMatch = true;
-      this.error = true;
+      this.error = 'Passwords do not match';
       return;
     }
 
     if (this.signupForm.valid && terms) {
-      this.resetErrors();
       this.spinner = true;
 
       const body = {
@@ -117,8 +114,6 @@ export class SignupComponent {
       this.http.post(url, body).subscribe(
         resp => {
           this.spinner = false;
-          this.signupSuccess = true;
-          this.signupForm.reset();
 
           this.auth.login(address, secret).subscribe(
             r => {
@@ -128,14 +123,11 @@ export class SignupComponent {
         },
         err => {
           this.spinner = false;
-          this.error = true;
-          this.signupError = true;
+          this.error = JSON.stringify(err.message ? err.message : err);
 
           console.log('Signup failed: ', err);
         }
       );
-    } else {
-      this.error = true;
     }
   }
 }

@@ -5,8 +5,6 @@
     <div class="login__forms__wrapper" style="margin-top: 50px">
       <h3 class="p-h-30">Sign up</h3>
       <p class="m-v-10 p-h-30">To login with email and password</p>
-      <h4 class="p-h-40 m-v-30" *ngIf="signupSuccess" style="color: green">Signup was successful!
-        <br>You can login now.</h4>
       <form [formGroup]="signupForm" (ngSubmit)="signup()" class="form-group login-form" [ngClass]="{ error: error }">
         <div class="form-text m-b-20">
           <label for="address">Address *</label>
@@ -29,21 +27,19 @@
           <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
         </div>
         <div class="form-text m-b-20">
-          <label for="password">Password *
-            <span class="false" *ngIf="weakPassword">(Weak Password)</span>
-          </label>
+          <label for="password">Password *</label>
           <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
             appInput>
         </div>
         <div *ngIf="passwordExists" class="progress password-pad">
           <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
-          <small>Strong passwords contain combination of symbol, uppercase letter & a number</small>
+          <small>Strong passwords contain combination of symbol, lowercase, uppercase letter & a number</small>
         </div>
         <div class="form-text m-b-20">
           <label for="passwordConfirm">Password Confirm *</label>
           <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
         </div>
-        <div class="form-checkbox m-b-20 m-t-10">
+        <div class="form-checkbox m-b-20 p-t-10">
           <label for="terms">
             <input formControlName="terms" type="checkbox" name="terms" id="terms" appOnchecked> I accept Terms & Conditions *
             <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -56,8 +52,7 @@
           <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign up</button>
         </div>
       </form>
-      <h5 class="p-h-40 m-v-30" *ngIf="passwordsNotMatch" style="color: #ea7070">Passwords do not match</h5>
-      <h5 class="p-h-40 m-v-30" *ngIf="signupError" style="color: #ea7070">Error signing up.</h5>
+      <h5 class="p-h-40 m-v-30" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
 
     </div>
 
