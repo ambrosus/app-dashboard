@@ -32,7 +32,6 @@
     "core-js": "^2.5.4",
     "ng-chartist": "^2.0.0-beta.1",
     "ng2-slim-loading-bar": "^4.0.0",
-    "node-sass": "^4.9.2",
     "normalize.css": "^8.0.0",
     "qrcode": "^1.2.0",
     "rxjs": "^6.0.0",
