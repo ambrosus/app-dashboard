@@ -16,6 +16,8 @@ import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
+import { ChartComponent } from './chart/chart.component';
+import { ChartistComponent } from './chart/chartist/chartist.component';
 
 @NgModule({
   imports: [
@@ -31,7 +33,9 @@ import { StorageService } from 'app/services/storage.service';
     AssetAddComponent,
     DashboardComponent,
     EventComponent,
-    EventAddComponent
+    EventAddComponent,
+    ChartComponent,
+    ChartistComponent
   ],
   providers: [AssetsService, StorageService, AssetResolver, EventResolver, AssetsResolver]
 })
