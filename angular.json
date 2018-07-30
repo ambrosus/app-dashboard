@@ -98,6 +98,7 @@
             ],
             "styles": [
               "node_modules/normalize.css/normalize.css",
+              "node_modules/chartist/dist/chartist.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
@@ -106,8 +107,7 @@
               ]
             },
             "scripts": [
-              "node_modules/qrcode/build/qrcode.min.js",
-              "node_modules/chartist/dist/chartist.css"
+              "node_modules/qrcode/build/qrcode.min.js"
             ]
           }
         },
