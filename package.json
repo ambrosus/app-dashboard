@@ -29,6 +29,7 @@
     "@angular/router": "^6.0.2",
     "@angular/service-worker": "^6.0.2",
     "chartist": "^0.11.0",
+    "animate.css": "^3.7.0",
     "core-js": "^2.5.4",
     "ng-chartist": "^2.0.0-beta.1",
     "ng2-slim-loading-bar": "^4.0.0",
