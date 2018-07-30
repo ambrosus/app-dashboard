@@ -28,6 +28,7 @@
     "@angular/pwa": "^0.6.8",
     "@angular/router": "^6.0.2",
     "@angular/service-worker": "^6.0.2",
+    "animate.css": "^3.7.0",
     "core-js": "^2.5.4",
     "ng2-slim-loading-bar": "^4.0.0",
     "normalize.css": "^8.0.0",
