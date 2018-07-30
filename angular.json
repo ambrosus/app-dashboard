@@ -37,7 +37,8 @@
               ]
             },
             "scripts": [
-              "node_modules/qrcode/build/qrcode.min.js"
+              "node_modules/qrcode/build/qrcode.min.js",
+              "node_modules/chartist/dist/chartist.css"
             ]
           },
           "configurations": {
@@ -105,7 +106,8 @@
               ]
             },
             "scripts": [
-              "node_modules/qrcode/build/qrcode.min.js"
+              "node_modules/qrcode/build/qrcode.min.js",
+              "node_modules/chartist/dist/chartist.css"
             ]
           }
         },
