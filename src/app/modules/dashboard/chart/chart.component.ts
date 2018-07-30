@@ -19,7 +19,7 @@ export interface Chart {
 })
 export class ChartComponent implements OnInit {
 
-  chart = {};
+  chart: any = {};
 
   constructor() { }
 
