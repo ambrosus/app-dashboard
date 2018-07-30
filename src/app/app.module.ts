@@ -10,7 +10,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 import { AmChartsModule } from '@amcharts/amcharts3-angular';
-import { ChartistModule } from 'ng-chartist';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,7 +20,6 @@ import { ChartistModule } from 'ng-chartist';
     CoreModule,
     DashboardModule,
     AmChartsModule,
-    ChartistModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]
