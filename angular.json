@@ -29,7 +29,8 @@
             "styles": [
               "node_modules/normalize.css/normalize.css",
               "node_modules/sanitize.css/sanitize.css",
-              "src/styles/style.scss"
+              "src/styles/style.scss",
+              "node_modules/animate.css/animate.min.css"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
