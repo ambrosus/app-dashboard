@@ -1,6 +1,8 @@
 <main class="main">
    <div class="wrapper">
 
+    <app-chart></app-chart>
+
     <!-- Search bar -->
     <h2 class="center m-t-30">All assets</h2>
     <p class="center m-b-30">Total count: {{ (assetsActive ? resultCountAsset : resultCountSearch) || 0 }}</p>
@@ -21,8 +23,6 @@
 
     </div>
   </div>
-
-  <app-chart></app-chart>
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
