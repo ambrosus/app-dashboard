@@ -1,32 +1,38 @@
 <main class="main">
 
   <!-- overlay -->
-  <div class="overlay" *ngIf="json || edit" (click)="json = false; edit = false"></div>
+  <div *ngIf="json || edit" (click)="json = false; edit = false"></div>
 
   <!-- JSON view -->
-  <div class="modal--right p-a-10" *ngIf="json">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="json = false">
-    </div>
-    <app-json-preview [data]="jsonEvent" [name]="event.content.data[0].name || event.content.idData.timestamp"></app-json-preview>
+  <div *ngIf="json">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="json = false">
+      </div>
+      <app-json-preview [data]="jsonEvent" [name]="event.content.data[0].name || event.content.idData.timestamp"></app-json-preview>
+    </kendo-dialog>
   </div>
 
-  <div class="modal--right p-a-10" *ngIf="edit && !infoEvent">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="edit = false">
-    </div>
-    <!-- Edit form + pass current JSON to prefill the form -->
-    <h1 class="center m-v-40">Edit event</h1>
-    <app-event-add [prefill]="event" [assetId]="assetId"></app-event-add>
+  <div *ngIf="edit && !infoEvent">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="edit = false">
+      </div>
+      <!-- Edit form + pass current JSON to prefill the form -->
+      <h1 class="center m-v-40">Edit event</h1>
+      <app-event-add [prefill]="event" [assetId]="assetId"></app-event-add>
+    </kendo-dialog>
   </div>
 
-  <div class="modal--right p-a-10" *ngIf="edit && infoEvent">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="edit = false">
-    </div>
-    <!-- Edit form + pass current JSON to prefill the form -->
-    <h1 class="center m-v-40">Edit info event</h1>
-    <app-asset-add [prefill]="event" [assetId]="assetId"></app-asset-add>
+  <div *ngIf="edit && infoEvent">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="edit = false">
+      </div>
+      <!-- Edit form + pass current JSON to prefill the form -->
+      <h1 class="center m-v-40">Edit info event</h1>
+      <app-asset-add [prefill]="event" [assetId]="assetId"></app-asset-add>
+    </kendo-dialog>
   </div>
 
   <!-- Asset header -->
@@ -34,7 +40,8 @@
     <div class="view-header">
       <div class="flex flex-direction-r align-items-fe">
         <button class="abtn btn-outline-ablue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
-        <app-qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" [logo]="'/assets/raster/logotip.jpg'" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+        <app-qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300"
+          [logo]="'/assets/raster/logotip.jpg'" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       </div>
       <div class="m-t-10">
         <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"

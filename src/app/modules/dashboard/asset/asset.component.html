@@ -1,27 +1,33 @@
 <main class="main">
 
   <!-- Overlay + createEvent modal -->
-  <div class="overlay" *ngIf="createEvents || json" (click)="createEvents = false; json = false;"></div>
-  <div class="modal--right p-a-10" *ngIf="createEvents">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="createEvents = false">
-    </div>
-    <h1 class="center m-v-40">Create event</h1>
-    <app-event-add></app-event-add>
+  <div *ngIf="createEvents || json" (click)="createEvents = false; json = false; open = true;"></div>
+
+  <div *ngIf="createEvents">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="createEvents = false">
+      </div>
+      <h1 class="center m-v-40">Create event</h1>
+      <app-event-add></app-event-add>
+    </kendo-dialog>
   </div>
 
   <!-- JSON view -->
-  <div class="modal--right p-a-10" *ngIf="json">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="json = false">
-    </div>
-    <app-json-preview *ngIf="jsonEvents" [(data)]="jsonEvents" [(name)]="asset.info.name || asset.timestamp"></app-json-preview>
+  <div *ngIf="json">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="json = false">
+      </div>
+      <app-json-preview *ngIf="jsonEvents" [(data)]="jsonEvents" [(name)]="asset.info.name || asset.timestamp"></app-json-preview>
+    </kendo-dialog>
   </div>
 
   <!-- Asset header -->
   <div class="block-center m-w-12">
     <div class="view-header">
-      <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" [logo]="'/assets/raster/logotip.jpg'" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+      <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" [logo]="'/assets/raster/logotip.jpg'" #qrCode
+        (click)="downloadQR(qrCode)"></app-qr-code>
       <div>
         <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue" (click)="json = true">View JSON</button>

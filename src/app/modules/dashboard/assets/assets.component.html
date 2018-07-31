@@ -1,5 +1,5 @@
 <main class="main">
-   <div class="wrapper">
+  <div class="wrapper">
 
     <!-- Search bar -->
     <h2 class="center m-t-30">All assets</h2>
@@ -24,13 +24,16 @@
 
   <!-- overlay + createEvent modal -->
   <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <div class="modal--right p-a-10" *ngIf="createEvents">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="createEvents = false">
-    </div>
-    <h1 class="center m-v-40">Create events</h1>
-    <app-event-add></app-event-add>
+  <div *ngIf="createEvents">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
+      <div class="modal__header">
+        <img src="/assets/raster/close.png" (click)="createEvents = false">
+      </div>
+      <h1 class="center m-v-40">Create events</h1>
+      <app-event-add></app-event-add>
+    </kendo-dialog>
   </div>
+
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
   <div class="table">

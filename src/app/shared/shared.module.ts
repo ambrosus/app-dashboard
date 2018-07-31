@@ -43,7 +43,8 @@ import { DialogModule } from '@progress/kendo-angular-dialog';
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
-    NotificationComponent
+    NotificationComponent,
+    DialogModule
   ],
   declarations: [
     HeaderComponent,
