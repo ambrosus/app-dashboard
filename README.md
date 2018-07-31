@@ -22,6 +22,7 @@ Dashboard's Angular app documentation overview.
 * [Deployment](#deployment)
 * [Dashboard API (node server)](#dashboard-api-node-server)
 * [Angular app](#angular-app)
+* [Todo](#todo)
 
 
 
@@ -268,3 +269,23 @@ Adds the secret or token from localStorage in the headers.
 * Lazy loading is setup as well, dash and auth modules are lazy loaded.
 
 
+### Todo:
+
+1. dash options for user roles
+
+option | owner | admin | editor | viewer
+-------|-------|-------|--------|-------
+Manage admin roles | ✓ |  |  | 
+Deactivate company | ✓ |  |  | 
+Edit company info | ✓ | ✓ |  | 
+Create branding template | ✓ | ✓ |  | 
+Manage users | ✓ | ✓ |  | 
+Invite users | ✓ | ✓ |  | 
+Approve users | ✓ | ✓ |  | 
+Set preview app and logo | ✓ | ✓ |  | 
+Edit dash company theme | ✓ | ✓ |  | 
+POST requests | ✓ | ✓ | ✓ | 
+GET requests | ✓ | ✓ | ✓ | ✓
+Edit personal account | ✓ | ✓ | ✓ | ✓
+
+Interceptor to control outgoing requests per user role.
