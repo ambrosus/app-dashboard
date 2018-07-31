@@ -24,6 +24,11 @@ export class ChartComponent implements OnInit {
   chart3: any = {};
   chart4: any = {};
 
+  chart1Toggle: Boolean = false;
+  chart2Toggle: Boolean = false;
+  chart3Toggle: Boolean = false;
+  chart4Toggle: Boolean = false;
+
   constructor() { }
 
   ngOnInit() {
@@ -38,6 +43,23 @@ export class ChartComponent implements OnInit {
 
     this.chart4['data'] = data.Pie;
     this.chart4['type'] = 'Pie';
+  }
+
+  showChart(number) {
+    this.chart1Toggle = false;
+    this.chart2Toggle = false;
+    this.chart3Toggle = false;
+    this.chart4Toggle = false;
+
+    if (number === 1) {
+      this.chart1Toggle = true;
+    } else if (number === 2) {
+      this.chart2Toggle = true;
+    } else if (number === 3) {
+      this.chart3Toggle = true;
+    } else if (number === 4) {
+      this.chart4Toggle = true;
+    }
 
   }
 
