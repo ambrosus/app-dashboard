@@ -1,5 +1,4 @@
 @import 'var';
-
 .form-pad {
   padding: 20px;
 }
@@ -14,13 +13,27 @@
   user-select: none;
   box-shadow: 0 2px 20px 0 rgba(74, 124, 226, 0.09);
   transition: transform .3s, box-shadow .3s;
-
   &:hover {
     transform: scale(.97);
     box-shadow: none;
   }
-
   &:active {
     transform: scale(.95);
   }
+}
+
+.kendo-modal {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  padding: 0px 0;
+  position: fixed;
+  overflow-y: auto;
+  top: 0;
+  right: 0;
+  left: auto;
+  z-index: 999;
+  background-color: #fff;
+  border: none;
 }
