@@ -20,9 +20,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { ClickThisActiveDirective } from './directives/click-this-active.directive';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { DialogModule } from '@progress/kendo-angular-dialog';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, DialogModule],
   exports: [
     CommonModule,
     HeaderComponent,

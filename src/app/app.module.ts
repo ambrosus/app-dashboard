@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -20,6 +21,7 @@ import { AmChartsModule } from '@amcharts/amcharts3-angular';
     CoreModule,
     DashboardModule,
     AmChartsModule,
+    BrowserAnimationsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]

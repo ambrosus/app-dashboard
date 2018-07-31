@@ -15,9 +15,12 @@ export class HeaderComponent implements OnInit {
   accounts;
   currentAccount;
   addAccount;
+  public opened: Boolean = true;
 
-  constructor(private auth: AuthService,
-              private storage: StorageService) {
+  constructor(
+    private auth: AuthService,
+    private storage: StorageService
+  ) {
     this.auth.accountsAction.subscribe(resp => {
       this.headerInit();
     });
@@ -45,5 +48,14 @@ export class HeaderComponent implements OnInit {
 
   logoutAll() {
     this.auth.logoutAll();
+  }
+
+  public close(status) {
+    console.log(`Dialog result: ${status}`);
+    this.opened = false;
+  }
+
+  public open() {
+    this.opened = true;
   }
 }
