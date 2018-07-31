@@ -1,34 +1,35 @@
-<div class="layout-split">
-
-  <div class="layout-split__col1">
-    <div style="max-width: 550px; max-height: 350px; padding: 30px 0px;">
-      <h5>Humidity</h5>
-      <app-chartist [data]="chart1.data" [type]="chart1.type"></app-chartist>
-    </div>
+<div class="layout-split layout-split_pad">
+  <div class="button-block">
+    <button (click)="showChart(1)" [ngClass]="chart1Toggle ? 'blue-text' : ''">Humidity Chart</button>
   </div>
-  <div class="layout-split__col2">
-    <div style="max-width: 550px; max-height: 350px; padding: 30px 0px;">
-        <h5>Temperature</h5>
-      <app-chartist [data]="chart2.data" [type]="chart2.type"></app-chartist>
-    </div>
+  <div class="button-block">
+    <button (click)="showChart(2)" [ngClass]="chart2Toggle ? 'blue-text' : ''">Temperature Chart</button>
   </div>
-
+  <div class="button-block">
+    <button (click)="showChart(3)" [ngClass]="chart3Toggle ? 'blue-text' : ''">pH Chart</button>
+  </div>
+  <div class="button-block">
+    <button (click)="showChart(4)" [ngClass]="chart4Toggle ? 'blue-text' : ''">Moisture Chart</button>
+  </div>
 </div>
 
 
-<div class="layout-split">
+<div *ngIf="chart1Toggle" class="chart-block">
+  <h5>Humidity</h5>
+  <app-chartist [data]="chart1.data" [type]="chart1.type"></app-chartist>
+</div>
 
-  <div class="layout-split__col1">
-    <div style="max-width: 550px; max-height: 350px; padding: 30px 0px;">
-      <h5>pH</h5>
-      <app-chartist [data]="chart3.data" [type]="chart3.type"></app-chartist>
-    </div>
-  </div>
-  <div class="layout-split__col2">
-    <div style="max-width: 550px; max-height: 350px; padding: 30px 0px;">
-      <h5>Moisture</h5>
-      <app-chartist [data]="chart4.data" [type]="chart4.type"></app-chartist>
-    </div>
-  </div>
+<div *ngIf="chart2Toggle" class="chart-block">
+  <h5>Temperature</h5>
+  <app-chartist [data]="chart2.data" [type]="chart2.type"></app-chartist>
+</div>
 
+<div *ngIf="chart3Toggle" class="chart-block">
+  <h5>pH</h5>
+  <app-chartist [data]="chart3.data" [type]="chart3.type"></app-chartist>
+</div>
+
+<div *ngIf="chart4Toggle" class="chart-block">
+  <h5>Moisture</h5>
+  <app-chartist [data]="chart4.data" [type]="chart4.type"></app-chartist>
 </div>
