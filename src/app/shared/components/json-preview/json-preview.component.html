@@ -2,5 +2,5 @@
     <div class="json_preview__header m-b-10">
         <button class="abtn btn-outline-ablue" (click)="downloadJSON()">Download JSON</button>
     </div>
-    <pre *ngIf="data" [innerHTML]="syntaxHighlight(stringify(data, null, 3))"></pre>
+    <pre *ngIf="data" wrap="soft" [innerHTML]="syntaxHighlight(stringify(data, null, 3))"></pre>
 </div>
