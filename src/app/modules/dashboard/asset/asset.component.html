@@ -4,7 +4,7 @@
   <div *ngIf="createEvents || json" (click)="createEvents = false; json = false; open = true;"></div>
 
   <div *ngIf="createEvents">
-    <kendo-dialog class="kendo-modal" [minWidth]="250" [width]="600">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
       <div class="modal__header">
         <img src="/assets/raster/close.png" (click)="createEvents = false">
       </div>
@@ -15,7 +15,7 @@
 
   <!-- JSON view -->
   <div *ngIf="json">
-    <kendo-dialog class="kendo-modal" [minWidth]="250" [width]="600">
+    <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
       <div class="modal__header">
         <img src="/assets/raster/close.png" (click)="json = false">
       </div>

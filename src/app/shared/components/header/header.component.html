@@ -117,7 +117,7 @@
 </header>
 <div *ngIf="addAccount || overlay" (click)="overlay = false; addAccount = false"></div>
 <div *ngIf="addAccount">
-  <kendo-dialog class="kendo-modal" [minWidth]="250" [width]="600">
+  <kendo-dialog class="modal--right" [minWidth]="250" [width]="600">
     <div class="modal__header">
       <img src="/assets/raster/close.png" (click)="addAccount = false">
     </div>
