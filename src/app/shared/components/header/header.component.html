@@ -115,13 +115,3 @@
     </ul>
   </div>
 </header>
-<div class="overlay" *ngIf="addAccount || overlay" (click)="overlay = false; addAccount = false"></div>
-<div class="modal--right p-a-10" *ngIf="addAccount">
-  <div class="modal__header">
-    <span (click)="addAccount = false">
-      <app-svg-icon name="cross"></app-svg-icon>
-    </span>
-  </div>
-  <!-- <app-signin></app-signin> -->
-
-</div>
