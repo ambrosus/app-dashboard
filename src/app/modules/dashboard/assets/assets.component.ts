@@ -355,6 +355,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
       width: '600px',
       position: { right: '0'}
     });
+    const instance = dialogRef.componentInstance;
+    instance.assetId = this.assetsService.getSelectedAssets();
+    instance.isMultiple = true;
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');

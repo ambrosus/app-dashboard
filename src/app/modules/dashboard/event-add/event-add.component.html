@@ -2,7 +2,8 @@
 <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">Success!</h4>
 <h4 class="center p-h-40 m-b-30" *ngIf="errorResponse" style="color: #ea7070">Error creating the event</h4>
 
-<h1 style="display:inline;" class="center">Create Event</h1>
+<h1 *ngIf="!isMultiple" style="display:inline;" class="center">Create Event</h1>
+<h1 *ngIf="isMultiple" style="display:inline;" class="center">Create Events</h1>
 <img (click)="closeDialog()" style="height: 20px; width: 20px; cursor: pointer; position: relative; left: 350; bottom: 5;"
   src="/assets/raster/close.png">
 

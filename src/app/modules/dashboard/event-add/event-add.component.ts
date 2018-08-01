@@ -48,6 +48,7 @@ export class EventAddComponent implements OnInit {
 
   @Input() prefill;
   @Input() assetId;
+  @Input() isMultiple;
 
   isObject(value) {
     return typeof value === 'object';
@@ -389,11 +390,15 @@ export class EventAddComponent implements OnInit {
       }
 
       this.spinner = true;
-
+      let selectedAssets = [];
       // Create event for each selected asset
-      const selectedAssets = this.assetService.getSelectedAssets();
-      console.log(selectedAssets);
+      if (this.isMultiple) {
+        selectedAssets = this.assetId;
+      } else {
+        selectedAssets = this.assetService.getSelectedAssets();
+      }
       // Confirmation window
+      this.assetService.assetsSelected = selectedAssets;
       const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
       if (!confirm(`You are about to create an event for ${selectedAssets.length} ${assetsString}, are you sure you want to proceed?`)) {
         this.spinner = false;
