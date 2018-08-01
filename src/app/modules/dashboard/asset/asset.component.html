@@ -36,7 +36,10 @@
 
       <!-- Details -->
       <div class="layout-split__col1">
-        <h3 class="m-t-10 m-b-30 p-h-10">Asset details</h3>
+        <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
+          Asset details
+          <app-svg-icon name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
+        </h3>
 
         <!-- image -->
         <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
