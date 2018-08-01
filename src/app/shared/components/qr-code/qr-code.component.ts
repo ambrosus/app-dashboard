@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
 import { AdministrationService } from '../../../services/administration.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
 declare let QRCode: any;
 
@@ -15,7 +16,7 @@ export class QrCodeComponent implements OnInit {
   @Input() logo;
 
   constructor(private el: ElementRef, private renderer: Renderer2,
-    private administration: AdministrationService, private sanitize: DomSanitizer) {}
+    private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) {}
 
   ngOnInit() {
     this.generateQR();
@@ -48,47 +49,63 @@ export class QrCodeComponent implements OnInit {
       canvas.height = h;
       const ctx = canvas.getContext('2d');
 
-      const img = document.createElement('img');
-      img.src = this.logo;
+      this.http.get(this.logo, { responseType: 'blob' }).subscribe(
+        (resp: any) => {
+          const blob = new Blob([resp], { type: 'image/jpg' });
+          let url: any = this.sanitize.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
+          const fileReader = new FileReader();
+          fileReader.onload = (e: any) => {
+            url = e.target.result;
+            const img = document.createElement('img');
+            img.src = url;
+            img.onerror = () => {
+              this.logo = false;
+              rej();
+            };
 
-      try {
-        img.onerror = () => {
+            img.onload = () => {
+              try {
+                ctx.drawImage(img, 0, 0, w, h);
+                url = canvas.toDataURL();
+                res(url);
+              } catch (err) {
+                this.logo = false;
+                rej();
+              }
+            };
+          };
+          fileReader.readAsDataURL(blob);
+        },
+        err => {
           this.logo = false;
           rej();
-        };
-
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, w, h);
-          const url = canvas.toDataURL();
-          res(url);
-        };
-      } catch (err) {
-        this.logo = false;
-        rej();
-      }
+        }
+      );
     });
   }
 
   drawLogo(canvas) {
     return new Promise((_resolve, _reject) => {
-      this.resizeLogo().then((url: any) => {
-        const img = document.createElement('img');
-        img.src = url;
-        img.onload = () => {
-          const ctx = canvas.getContext('2d');
+      this.resizeLogo()
+        .then((url: any) => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.onload = () => {
+            const ctx = canvas.getContext('2d');
 
-          const width = img.width;
-          const height = img.height;
+            const width = img.width;
+            const height = img.height;
 
-          const x = (canvas.width - width) / 2;
-          const y = (canvas.height - height) / 2;
+            const x = (canvas.width - width) / 2;
+            const y = (canvas.height - height) / 2;
 
-          ctx.drawImage(img, x, y, width, height);
+            ctx.drawImage(img, x, y, width, height);
+            _resolve(canvas);
+          };
+        })
+        .catch(err => {
           _resolve(canvas);
-        };
-      }).catch (err => {
-        _resolve(canvas);
-      });
+        });
     });
   }
 }
