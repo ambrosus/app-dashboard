@@ -1,14 +1,6 @@
 <app-header></app-header>
 <app-breadcrumbs></app-breadcrumbs>
 
-<div class="overlay" *ngIf="addAccount" (click)="addAccount = false"></div>
-<div class="modal--right p-a-10" *ngIf="addAccount">
-  <div class="modal__header">
-    <img src="/assets/raster/close.png" (click)="addAccount = false">
-  </div>
-  <app-login></app-login>
-</div>
-
 <div class="block-center m-w-4 p-h-20" style="margin-top: 40px;">
   <h2 class="m-v-30 center">Settings</h2>
 
@@ -56,7 +48,7 @@
     </p>
   </div>
 
-  <a class="abtn btn-solid-ablue" (click)="addAccount = true">Add account</a>
+  <a class="abtn btn-solid-ablue" (click)="addAccountDialog()">Add account</a>
 
   <hr>
 
