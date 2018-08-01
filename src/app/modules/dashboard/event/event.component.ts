@@ -126,8 +126,6 @@ export class EventComponent implements OnInit, OnDestroy {
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
     instance.assetId = this.assetId;
-    instance.infoEvent = this.infoEvent;
-    instance.isDialog = true;
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
