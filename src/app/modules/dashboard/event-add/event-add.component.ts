@@ -49,6 +49,7 @@ export class EventAddComponent implements OnInit {
   @Input() prefill;
   @Input() assetId;
   @Input() isMultiple;
+  @Input() isEdit;
 
   isObject(value) {
     return typeof value === 'object';

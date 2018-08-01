@@ -1,3 +1,4 @@
+import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -104,6 +105,17 @@ export class EventComponent implements OnInit, OnDestroy {
     this.previewAppUrl = this.administration.previewAppUrl;
   }
 
+  openDialog() {
+    if (this.infoEvent) {
+      // console.log('Asset Info');
+      this.openAssetEditDialog();
+      return;
+    } else {
+      this.openEditDialog();
+      return;
+    }
+  }
+
   openJsonDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
@@ -117,6 +129,20 @@ export class EventComponent implements OnInit, OnDestroy {
     });
   }
 
+  openAssetEditDialog() {
+    const dialogRef = this.dialog.open(AssetAddComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.prefill = this.event;
+    instance.assetId = this.assetId;
+    instance.infoEvent = true;
+    instance.isDialog = true;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
 
   openEditDialog(): void {
     const dialogRef = this.dialog.open(EventAddComponent, {
@@ -126,6 +152,7 @@ export class EventComponent implements OnInit, OnDestroy {
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
     instance.assetId = this.assetId;
+    instance.isEdit = true;
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
