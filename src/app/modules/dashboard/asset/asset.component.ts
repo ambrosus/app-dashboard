@@ -85,6 +85,9 @@ export class AssetComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+    const instance = dialogRef.componentInstance;
+    instance.prefill = this.events;
+    instance.assetId = this.assetId;
 
   }
 
