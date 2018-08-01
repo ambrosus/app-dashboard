@@ -37,6 +37,7 @@ import { ChartistComponent } from './chart/chartist/chartist.component';
     ChartComponent,
     ChartistComponent
   ],
-  providers: [AssetsService, StorageService, AssetResolver, EventResolver, AssetsResolver]
+  providers: [AssetsService, StorageService, AssetResolver, EventResolver, AssetsResolver],
+  entryComponents: [EventAddComponent]
 })
 export class DashboardModule {}
