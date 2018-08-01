@@ -3,7 +3,7 @@ import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdministrationService } from '../../../services/administration.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AssetAddComponent } from './../asset-add/asset-add.component';
+import { EventAddComponent } from './../event-add/event-add.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
@@ -119,7 +119,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
 
   openEditDialog(): void {
-    const dialogRef = this.dialog.open(AssetAddComponent, {
+    const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { right: '0'}
     });
