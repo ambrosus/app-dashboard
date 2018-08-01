@@ -2,6 +2,7 @@ import { StorageService } from 'app/services/storage.service';
 import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AssetsService } from 'app/services/assets.service';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-asset-add',
@@ -48,6 +49,8 @@ export class AssetAddComponent implements OnInit {
 
   @Input() prefill;
   @Input() assetId;
+  @Input() infoEvent;
+  @Input() isDialog;
 
   isObject(value) {
     return typeof value === 'object';
@@ -57,7 +60,8 @@ export class AssetAddComponent implements OnInit {
     private assetService: AssetsService,
     private storage: StorageService,
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private dialogRef: MatDialog
   ) {
     this.initForm();
   }
@@ -434,5 +438,9 @@ export class AssetAddComponent implements OnInit {
     asset['content']['data'].push(basicAndCustom);
 
     return asset;
+  }
+
+  closeDialog() {
+    this.dialogRef.closeAll();
   }
 }

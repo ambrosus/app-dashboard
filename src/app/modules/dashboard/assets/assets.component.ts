@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { EventAddComponent } from './../event-add/event-add.component';
 
 @Component({
   selector: 'app-assets',
@@ -51,7 +53,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private router: Router,
     private storage: StorageService,
-    private auth: AuthService
+    private auth: AuthService,
+    public dialog: MatDialog
   ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
@@ -71,7 +74,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
         if (this.assetsService.getSelectedAssets().length === 0) {
           alert(`You didn\'t select any assets. Please do so first.`);
         } else {
-          this.createEvents = true;
+          this.createEventsDialog();
         }
         break;
     }
@@ -346,4 +349,16 @@ export class AssetsComponent implements OnInit, OnDestroy {
       this.assetsService.toggleSelect.next('true');
     }
   }
+
+  createEventsDialog() {
+    const dialogRef = this.dialog.open(EventAddComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
 }

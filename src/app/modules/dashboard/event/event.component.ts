@@ -2,6 +2,9 @@ import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdministrationService } from '../../../services/administration.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AssetAddComponent } from './../asset-add/asset-add.component';
+import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
   selector: 'app-event',
@@ -27,10 +30,13 @@ export class EventComponent implements OnInit, OnDestroy {
     return value instanceof Array;
   }
 
-  constructor(private route: ActivatedRoute,
-              private assetService: AssetsService,
-              private router: Router,
-              private administration: AdministrationService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private assetService: AssetsService,
+    private router: Router,
+    private administration: AdministrationService,
+    public dialog: MatDialog
+  ) {}
 
   downloadQR(el: any) {
     const data = el.el.nativeElement.children[0].src;
@@ -96,6 +102,35 @@ export class EventComponent implements OnInit, OnDestroy {
     );
 
     this.previewAppUrl = this.administration.previewAppUrl;
+  }
+
+  openJsonDialog(): void {
+    const dialogRef = this.dialog.open(JsonPreviewComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.data = this.jsonEvent;
+    instance.name = this.event.content.data[0].name || this.event.content.idData.timestamp;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+
+  openEditDialog(): void {
+    const dialogRef = this.dialog.open(AssetAddComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.prefill = this.event;
+    instance.assetId = this.assetId;
+    instance.infoEvent = this.infoEvent;
+    instance.isDialog = true;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   ngOnDestroy() {
