@@ -8,6 +8,7 @@ export class AdministrationService {
   usersSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
   previewAppUrl = 'https://amb.to';
+  companyLogo = '/assets/raster/logotip.jpg';
 
   constructor() { }
 
