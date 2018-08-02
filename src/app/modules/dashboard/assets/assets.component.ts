@@ -47,7 +47,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   pagination = [];
 
   constructor(
-    public assetsService: AssetsService,
+    private assetsService: AssetsService,
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
