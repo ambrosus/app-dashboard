@@ -7,7 +7,8 @@ import { AdministrationService } from '../../../services/administration.service'
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class EventComponent implements OnInit, OnDestroy {
   hostLink = 'amb.to';
