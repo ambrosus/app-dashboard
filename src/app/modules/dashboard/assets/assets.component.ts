@@ -111,7 +111,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
             address: this.storage.get('address')
           }
         ];
-        this.accountSelected = this.accounts[0].address;
       }
     );
 
