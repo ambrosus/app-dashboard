@@ -15,8 +15,7 @@ export class QrCodeComponent implements OnInit {
   @Input() size;
   @Input() logo;
 
-  constructor(private el: ElementRef, private renderer: Renderer2,
-    private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) {}
+  constructor(private el: ElementRef, private renderer: Renderer2, private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) {}
 
   ngOnInit() {
     this.generateQR();
@@ -42,11 +41,9 @@ export class QrCodeComponent implements OnInit {
       });
   }
 
-  resizeLogo(w = 40, h = 40) {
+  resizeLogo(maxSize = 40) {
     return new Promise((res, rej) => {
       const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
       const ctx = canvas.getContext('2d');
 
       this.http.get(this.logo, { responseType: 'blob' }).subscribe(
@@ -65,7 +62,18 @@ export class QrCodeComponent implements OnInit {
 
             img.onload = () => {
               try {
-                ctx.drawImage(img, 0, 0, w, h);
+                let width = maxSize;
+                let height = (img.height * maxSize) / img.width;
+
+                if (img.width < img.height) {
+                  height = maxSize;
+                  width = (img.width * maxSize) / img.height;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.drawImage(img, 0, 0, width, height);
                 url = canvas.toDataURL();
                 res(url);
               } catch (err) {
