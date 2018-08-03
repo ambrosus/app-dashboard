@@ -125,6 +125,7 @@
 
 .header--sticky {
   display: none;
+  background-color: #F6F8FE;
 
   @include min-1024 {
     display: flex;
