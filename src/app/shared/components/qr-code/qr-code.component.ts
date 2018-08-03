@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
+import { AdministrationService } from '../../../services/administration.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare let QRCode: any;
 
@@ -12,10 +14,12 @@ export class QrCodeComponent implements OnInit {
   @Input() size;
   @Input() logo;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(private el: ElementRef, private renderer: Renderer2,
+    private administration: AdministrationService, private sanitize: DomSanitizer) {}
 
   ngOnInit() {
     this.generateQR();
+    this.logo = this.logo ? this.logo : this.administration.companyLogo;
   }
 
   generateQR() {
@@ -33,30 +37,58 @@ export class QrCodeComponent implements OnInit {
         });
       })
       .catch(err => {
-        console.log('QRCode generate error: ', err);
+        console.log('QR code fail: ', err);
       });
   }
 
-  drawLogo(canvas) {
-    return new Promise((resolve, reject) => {
-      if (this.logo) {
-        const img = document.createElement('img');
-        img.src = this.logo;
-        img.onload = () => {
-          const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+  resizeLogo(w = 40, h = 40) {
+    return new Promise((res, rej) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
 
-          const width = 40;
-          const height = 40;
+      const img = document.createElement('img');
+      img.src = this.logo;
+
+      try {
+        img.onerror = () => {
+          this.logo = false;
+          rej();
+        };
+
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, w, h);
+          const url = canvas.toDataURL();
+          res(url);
+        };
+      } catch (err) {
+        this.logo = false;
+        rej();
+      }
+    });
+  }
+
+  drawLogo(canvas) {
+    return new Promise((_resolve, _reject) => {
+      this.resizeLogo().then((url: any) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.onload = () => {
+          const ctx = canvas.getContext('2d');
+
+          const width = img.width;
+          const height = img.height;
 
           const x = (canvas.width - width) / 2;
           const y = (canvas.height - height) / 2;
 
           ctx.drawImage(img, x, y, width, height);
-          resolve(canvas);
+          _resolve(canvas);
         };
-      } else {
-        resolve(canvas);
-      }
+      }).catch (err => {
+        _resolve(canvas);
+      });
     });
   }
 }

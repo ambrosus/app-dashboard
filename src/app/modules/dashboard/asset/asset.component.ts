@@ -12,7 +12,8 @@ declare let QRCode: any;
   selector: 'app-asset',
   templateUrl: './asset.component.html',
   styleUrls: ['./asset.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class AssetComponent implements OnInit {
   asset;

@@ -8,54 +8,55 @@ import { AdministrationService } from 'app/services/administration.service';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  previewAppForm: FormGroup;
+  settingsForm: FormGroup;
   spinner = false;
-  errorPreviewApp = false;
-  successPreviewApp = false;
+  error;
+  success = false;
 
   constructor(private administration: AdministrationService) {
-    this.initPreviewAppForm();
+    this.initSettingsForm();
   }
 
-  initPreviewAppForm() {
-    this.previewAppForm = new FormGroup({
-      url: new FormControl('', [Validators.required])
+  initSettingsForm() {
+    this.settingsForm = new FormGroup({
+      url: new FormControl('', [Validators.required]),
+      logo: new FormControl('', [Validators.required])
     });
   }
 
   ngOnInit() {
-    this.prefillPreviewApp();
+    this.prefillSettings();
   }
 
-  prefillPreviewApp() {
+  prefillSettings() {
     // Current users API settings
-    const previewAppForm = this.previewAppForm;
-    previewAppForm.get('url').setValue(this.administration.previewAppUrl);
+    this.settingsForm.get('url').setValue(this.administration.previewAppUrl);
+    this.settingsForm.get('logo').setValue(this.administration.companyLogo);
   }
 
-  errorsResetPreviewApp() {
-    this.errorPreviewApp = false;
+  errorsReset() {
+    this.error = false;
   }
 
-  previewAppSave() {
-    const previewAppUrl = this.previewAppForm.get('url').value;
-    // reset errors
-    this.errorsResetPreviewApp();
+  save() {
+    const previewApp = this.settingsForm.get('url').value;
+    const logo = this.settingsForm.get('logo').value;
+    this.errorsReset();
 
-    if (this.previewAppForm.valid) {
+    if (this.settingsForm.valid) {
       this.spinner = true;
-      console.log(previewAppUrl);
-      this.administration.previewAppUrl = previewAppUrl;
+      this.administration.previewAppUrl = previewApp;
+      this.administration.companyLogo = logo;
 
       setTimeout(() => {
         this.spinner = false;
-        this.successPreviewApp = true;
+        this.success = true;
         setTimeout(() => {
-          this.successPreviewApp = false;
+          this.success = false;
         }, 1500);
       }, 1500);
     } else {
-      this.errorPreviewApp = true;
+      this.error = 'All fields are required';
     }
   }
 }

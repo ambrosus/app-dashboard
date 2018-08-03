@@ -11,7 +11,8 @@ import { EventAddComponent } from './../event-add/event-add.component';
   selector: 'app-assets',
   templateUrl: './assets.component.html',
   styleUrls: ['./assets.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSubscription;
@@ -64,6 +65,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   pageLoad() {
+    this.assetsService = new AssetsService(this.storage);
+    this.ngOnInit();
     this.loadAssets();
     this.el.nativeElement.querySelector('#search').value = '';
   }
@@ -93,7 +96,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
               address: _address
             }
           ];
-          this.accountSelected = this.accounts[0].address;
         } else {
           this.accounts = resp.data;
           // Loggedin user always default
@@ -101,7 +103,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
             if (account.address === _address) {
               this.accounts.splice(index, 1);
               this.accounts.unshift(account);
-              this.accountSelected = account.address;
             }
           });
         }
@@ -113,9 +114,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
             address: this.storage.get('address')
           }
         ];
-        this.accountSelected = this.accounts[0].address;
       }
     );
+
+    this.accountSelected = this.storage.get('address');
   }
 
   changeAccount(acc) {
@@ -157,9 +159,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.searchNoResultsFound = null;
   }
 
-  loadAssets(page = 0, perPage = this.perPage, address = this.accountSelected) {
+  loadAssets(page = 0, perPage = this.perPage) {
     this.resetLoadAssets();
     this.loader = true;
+    const address = this.accountSelected;
     this.assetSub = this.assetsService.getAssetsInfo(page, perPage, address).subscribe(
       (resp: any) => {
         this.loader = false;

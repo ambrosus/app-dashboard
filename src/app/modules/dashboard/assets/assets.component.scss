@@ -102,3 +102,7 @@
     justify-content: flex-end;
   }
 }
+
+.grey-placeholder::placeholder { /* Most modern browsers support this now. */
+  color:lightgray;
+}

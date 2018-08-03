@@ -8,7 +8,8 @@ import { MatDialogRef } from '@angular/material/dialog';
   selector: 'app-event-add',
   templateUrl: './event-add.component.html',
   styleUrls: ['./event-add.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class EventAddComponent implements OnInit {
   eventForm: FormGroup;

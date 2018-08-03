@@ -209,7 +209,7 @@ export class AssetsService {
 
   // GET assets
 
-  getAssetsInfo(page = 0, perPage = 15, address = this.storage.get('address')) {
+  getAssetsInfo(page = 0, perPage = 15, address = '') {
     let cachedAssetsInfo;
     try {
       cachedAssetsInfo = JSON.parse(this.storage.get('assets')) || null;
@@ -217,6 +217,7 @@ export class AssetsService {
       cachedAssetsInfo = null;
     }
     const that = this;
+    address = address || this.storage.get('address');
     const params = {
       createdBy: address,
       page: page,

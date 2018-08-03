@@ -49,12 +49,12 @@ There are 3 different deployment versions:
 1. Everything pushed on 'dev' branch. \
 **Purpose:** for developing new app features.
 
-    https://ambrosus-dev-dashboard.herokuapp.com
+    https://dashboard-dev.ambrosus.com
 
 2. Everything pushed on 'master' branch. \
 **Purpose:** for testing, staging before production.
 
-    https://ambrosus-test-dashboard.herokuapp.com
+    https://dashboard-test.ambrosus.com
 
 3. Code from 'master' manually promoted to production. \
 **Purpose:** production version.

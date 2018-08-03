@@ -11,7 +11,8 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class EventComponent implements OnInit, OnDestroy {
   hostLink = 'amb.to';
@@ -83,6 +84,12 @@ export class EventComponent implements OnInit, OnDestroy {
         console.log('err ', err);
       }
     );
+    // Query params
+    this.route.queryParams.subscribe(resp => {
+      if (resp.edit && resp['edit'] === 'true') {
+        this.edit = true;
+      }
+    });
     // New info event created from edit
     this.assetService.infoEventCreated.subscribe(
       (resp: any) => {
