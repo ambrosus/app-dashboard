@@ -1,3 +1,11 @@
+<div class="search m-b-20">
+  <select id="select">
+    <option value="type" selected>type</option>
+  </select>
+  <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
+  <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
+</div>
+
 <div class="events">
   <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
     <p>
@@ -11,28 +19,50 @@
 </div>
 
 <div class="block-center m-w-12 m-v-10 p-h-10">
-  <div *ngIf="pagination.length !== 0">
-    Showing {{ (currentPage - 1) * perPage + 1 }} to
-    <span *ngIf="currentPage * perPage > resultCount">{{ resultCount }}</span>
-    <span *ngIf="currentPage * perPage <= resultCount">{{ currentPage * perPage }}</span>
-    of {{ resultCount }} events
+  <div *ngIf="eventsActive && pagination.length !== 0">
+    Showing {{ (currentEventsPage - 1) * perPage + 1 }} to
+    <span *ngIf="currentEventsPage * perPage > resultCountEvents">{{ resultCountEvents }}</span>
+    <span *ngIf="currentEventsPage * perPage <= resultCountEvents">{{ currentEventsPage * perPage }}</span>
+    of {{ resultCountEvents }} events
+  </div>
+  <div *ngIf="searchActive && pagination.length !== 0">
+    Showing {{ (currentSearchPage - 1) * perPage + 1 }} to
+    <span *ngIf="currentSearchPage * perPage > resultCountSearch">{{ resultCountSearch }}</span>
+    <span *ngIf="currentSearchPage * perPage <= resultCountSearch">{{ currentSearchPage * perPage }}</span>
+    of {{ resultCountSearch }} events
   </div>
 </div>
 
 <!-- Pagination -->
 <div class="block-center m-w-12 m-t-10 p-h-10">
-  <ul class="pagination" *ngIf="pagination.length !== 0">
-    <li class="pagination__item" *ngIf="currentPage !== 1">
-      <span (click)="loadEvents(currentPage - 2)">Previous</span>
+  <!-- Asset pagination -->
+  <ul class="pagination" *ngIf="eventsActive && pagination.length !== 0">
+    <li class="pagination__item" *ngIf="currentEventsPage !== 1">
+      <span (click)="loadEvents(currentEventsPage - 2)">Previous</span>
     </li>
-    <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentPage === number, dots: number === '...' }">
-      <span *ngIf="currentPage === number">{{ number }}</span>
-      <span *ngIf="currentPage !== number && number === '...' && i === 1" (click)="loadEvents(pagination[i+1] - 2)">{{ number }}</span>
-      <span *ngIf="currentPage !== number && number === '...' && i === pagination.length - 2" (click)="loadEvents(pagination[i-1])">{{ number }}</span>
-      <span *ngIf="currentPage !== number && number !== '...'" (click)="loadEvents(number-1)">{{ number }}</span>
+    <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentEventsPage === number, dots: number === '...' }">
+      <span *ngIf="currentEventsPage === number">{{ number }}</span>
+      <span *ngIf="currentEventsPage !== number && number === '...' && i === 1" (click)="loadEvents(pagination[i+1] - 2)">{{ number }}</span>
+      <span *ngIf="currentEventsPage !== number && number === '...' && i === pagination.length - 2" (click)="loadEvents(pagination[i-1])">{{ number }}</span>
+      <span *ngIf="currentEventsPage !== number && number !== '...'" (click)="loadEvents(number-1)">{{ number }}</span>
     </li>
-    <li class="pagination__item" *ngIf="currentPage !== pagination[pagination.length -1]">
-      <span (click)="loadEvents(currentPage)">Next</span>
+    <li class="pagination__item" *ngIf="currentEventsPage !== pagination[pagination.length -1]">
+      <span (click)="loadEvents(currentEventsPage)">Next</span>
+    </li>
+  </ul>
+  <!-- Search pagination -->
+  <ul class="pagination" *ngIf="searchActive && pagination.length !== 0">
+    <li class="pagination__item" *ngIf="currentSearchPage !== 1">
+      <span (click)="search(currentSearchPage - 2)">Previous</span>
+    </li>
+    <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentSearchPage === number, dots: number === '...' }">
+      <span *ngIf="currentSearchPage === number">{{ number }}</span>
+      <span *ngIf="currentSearchPage !== number && number === '...' && i === 1" (click)="search(pagination[i+1] - 2)">{{ number }}</span>
+      <span *ngIf="currentSearchPage !== number && number === '...' && i === pagination.length - 2" (click)="search(pagination[i-1])">{{ number }}</span>
+      <span *ngIf="currentSearchPage !== number && number !== '...'" (click)="search(number-1)">{{ number }}</span>
+    </li>
+    <li class="pagination__item" *ngIf="currentSearchPage !== pagination[pagination.length -1]">
+      <span (click)="search(currentSearchPage)">Next</span>
     </li>
   </ul>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 
 @Component({
@@ -9,22 +9,29 @@ import { AssetsService } from 'app/services/assets.service';
 export class TimelineComponent implements OnInit {
   events;
   perPage = 25;
-  resultCount;
-  currentPage;
-  totalPages;
+  // Pagination
+  currentEventsPage = 1;
+  totalEventsPages = 0;
+  resultCountEvents;
+  currentSearchPage = 1;
+  totalSearchPages = 0;
+  resultCountSearch;
+  eventsActive = true;
+  searchActive = false;
   pagination = [];
+  searchPlaceholder = 'ie. sold';
 
   @Input() data;
   @Input() assetId;
 
-  constructor(private assets: AssetsService) {}
+  constructor(private assets: AssetsService, private el: ElementRef) {}
 
   ngOnInit() {
     this.events = this.data.events || [];
-    this.currentPage = 1;
-    this.resultCount = this.data.resultCount;
-    this.totalPages = Math.ceil(this.resultCount / this.perPage);
-    this.pagination = this.paginationGenerate(this.currentPage, this.totalPages);
+    this.currentEventsPage = 1;
+    this.resultCountEvents = this.data.resultCount;
+    this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
+    this.pagination = this.paginationGenerate(this.currentEventsPage, this.totalEventsPages);
   }
 
   paginationGenerate(currentPage, pageCount) {
@@ -56,15 +63,72 @@ export class TimelineComponent implements OnInit {
     return result;
   }
 
+  resetLoadEvents() {
+    this.eventsActive = true;
+    this.searchActive = false;
+  }
+
   loadEvents(page) {
+    this.resetLoadEvents();
+
     this.assets
       .loadEvents(this.assetId, page)
       .then((resp: any) => {
         this.events = resp.events;
-        this.currentPage = page + 1;
-        this.resultCount = this.data.resultCount;
-        this.totalPages = Math.ceil(this.resultCount / this.perPage);
-        this.pagination = this.paginationGenerate(this.currentPage, this.totalPages);
+        this.currentEventsPage = page + 1;
+        this.resultCountEvents = resp.resultCount;
+        this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
+        this.pagination = this.paginationGenerate(this.currentEventsPage, this.totalEventsPages);
+      })
+      .catch(err => {
+        console.log('Load events error: ', err);
+      });
+  }
+
+  resetSearch() {
+    this.searchActive = true;
+    this.eventsActive = false;
+  }
+
+  search(page = 0) {
+    const search = this.el.nativeElement.querySelector('#search').value;
+    const select = this.el.nativeElement.querySelector('#select').value;
+    this.searchPlaceholder = 'ie. sold';
+    if (search.length < 1) {
+      if (this.searchActive) {
+        this.loadEvents(0);
+      } else {
+        this.searchPlaceholder = 'Please type something first';
+      }
+      return;
+    }
+    this.resetSearch();
+
+    const searchValues = search.split(',');
+    const queries = [
+      {
+        param: 'assetId',
+        value: this.assetId
+      }
+    ];
+    switch (select) {
+      case 'type':
+        queries.push({
+          param: 'data[type]',
+          value: `${searchValues[0].trim()}`
+        });
+        break;
+    }
+    console.log(queries);
+
+    this.assets
+      .searchAllEvents(queries, page)
+      .then((resp: any) => {
+        this.events = resp.events;
+        this.currentSearchPage = page + 1;
+        this.resultCountSearch = resp.resultCount;
+        this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
+        this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
       })
       .catch(err => {
         console.log('Load events error: ', err);

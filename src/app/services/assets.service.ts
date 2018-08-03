@@ -176,6 +176,26 @@ export class AssetsService {
     return events;
   }
 
+  searchAllEvents(queries, page = 0, perPage = 15) {
+    const params = {};
+    queries.map((query) => {
+      params[query.param] = query.value;
+    });
+    params['page'] = page;
+    params['perPage'] = perPage;
+    return new Promise((resolve, reject) => {
+      this.ambrosus.getEvents(params).then(events => {
+        if (events.data.resultCount > 0) {
+          resolve(this.parseAllEvents(events.data));
+        } else {
+          resolve(events.data);
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
   searchEvents(queries, page = 0, perPage = 15, address) {
     const params = {};
     queries.map((query) => {
