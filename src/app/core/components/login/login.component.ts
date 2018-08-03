@@ -1,10 +1,11 @@
 import { AuthService } from 'app/services/auth.service';
-import { Component, ElementRef, Renderer2 } from '@angular/core';
+import { Component, ElementRef, Renderer2, Input} from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-login',
@@ -26,13 +27,16 @@ export class LoginComponent {
   email = true;
   address = false;
 
+  @Input() isDialog;
+
   constructor(
     private auth: AuthService,
     private router: Router,
     private storage: StorageService,
     private http: HttpClient,
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    public dialog: MatDialog
   ) {
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
@@ -148,4 +152,9 @@ export class LoginComponent {
       this.error = true;
     }
   }
+
+  closeDialog() {
+    this.dialog.closeAll();
+  }
+
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } fr
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-event-add',
@@ -48,6 +49,8 @@ export class EventAddComponent implements OnInit {
 
   @Input() prefill;
   @Input() assetId;
+  @Input() isMultiple;
+  @Input() isEdit;
 
   isObject(value) {
     return typeof value === 'object';
@@ -57,7 +60,8 @@ export class EventAddComponent implements OnInit {
     private assetService: AssetsService,
     private storage: StorageService,
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private dialogRef: MatDialogRef<EventAddComponent>
   ) {
     this.initForm();
   }
@@ -388,10 +392,15 @@ export class EventAddComponent implements OnInit {
       }
 
       this.spinner = true;
-
+      let selectedAssets = [];
       // Create event for each selected asset
-      const selectedAssets = this.assetService.getSelectedAssets();
+      if (this.isMultiple) {
+        selectedAssets = this.assetId;
+      } else {
+        selectedAssets = this.assetService.getSelectedAssets();
+      }
       // Confirmation window
+      this.assetService.assetsSelected = selectedAssets;
       const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
       if (!confirm(`You are about to create an event for ${selectedAssets.length} ${assetsString}, are you sure you want to proceed?`)) {
         this.spinner = false;
@@ -542,4 +551,9 @@ export class EventAddComponent implements OnInit {
 
     return event;
   }
+
+  closeDialog() {
+    this.dialogRef.close();
+  }
+
 }
