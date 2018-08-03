@@ -3,10 +3,36 @@
     <p>
       <span style="color: #4f77f1;">{{ event.type || '' }}</span>
       {{ event.name || event.type }}
-      <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
-        }}
+      <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name }}
       </span>
     </p>
     <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
   </div>
+</div>
+
+<div class="block-center m-w-12 m-v-10 p-h-10">
+  <div *ngIf="pagination.length !== 0">
+    Showing {{ (currentPage - 1) * perPage + 1 }} to
+    <span *ngIf="currentPage * perPage > resultCount">{{ resultCount }}</span>
+    <span *ngIf="currentPage * perPage <= resultCount">{{ currentPage * perPage }}</span>
+    of {{ resultCount }} events
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="block-center m-w-12 m-t-10 p-h-10">
+  <ul class="pagination" *ngIf="pagination.length !== 0">
+    <li class="pagination__item" *ngIf="currentPage !== 1">
+      <span (click)="loadEvents(currentPage - 2)">Previous</span>
+    </li>
+    <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentPage === number, dots: number === '...' }">
+      <span *ngIf="currentPage === number">{{ number }}</span>
+      <span *ngIf="currentPage !== number && number === '...' && i === 1" (click)="loadEvents(pagination[i+1] - 2)">{{ number }}</span>
+      <span *ngIf="currentPage !== number && number === '...' && i === pagination.length - 2" (click)="loadEvents(pagination[i-1])">{{ number }}</span>
+      <span *ngIf="currentPage !== number && number !== '...'" (click)="loadEvents(number-1)">{{ number }}</span>
+    </li>
+    <li class="pagination__item" *ngIf="currentPage !== pagination[pagination.length -1]">
+      <span (click)="loadEvents(currentPage)">Next</span>
+    </li>
+  </ul>
 </div>

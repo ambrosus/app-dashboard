@@ -31,7 +31,7 @@ export class AssetComponent implements OnInit {
     this.route.data.subscribe(data => {
       this.asset = data.asset;
       this.events = data.asset.eventsAll;
-      this.jsonEvents = data.asset.eventsJSON.results;
+      this.jsonEvents = data.asset.eventsJSON;
       console.log(this.asset);
     });
 

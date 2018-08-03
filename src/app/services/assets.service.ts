@@ -72,10 +72,26 @@ export class AssetsService {
     });
   }
 
-  getEvents(assetId) {
+  loadEvents(assetId, page = 0, perPage = 25) {
+    return new Promise((resolve, reject) => {
+      this.getEvents(assetId, page, perPage).then(events => {
+        resolve(this.parseAllEvents(events));
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+  getEvents(assetId, page = 0, perPage = 25) {
+    const params = {
+      assetId,
+      perPage,
+      page
+    };
+
     return new Promise((resolve, reject) => {
       this.ambrosus
-        .getEvents({ assetId: assetId })
+        .getEvents(params)
         .then(response => {
           resolve(response.data);
         })
@@ -146,16 +162,16 @@ export class AssetsService {
               }, obj);
             }
 
-            _events.push(obj);
+            _events.events.push(obj);
             return obj;
           });
         }
         return _events;
       },
-      []
+      { events: [], resultCount: e.resultCount }
     );
 
-    events.sort(this.sortEventsByTimestamp);
+    events.events.sort(this.sortEventsByTimestamp);
 
     return events;
   }
