@@ -7,7 +7,8 @@ import { AssetsService } from 'app/services/assets.service';
   selector: 'app-asset-add',
   templateUrl: './asset-add.component.html',
   styleUrls: ['./asset-add.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [AssetsService]
 })
 export class AssetAddComponent implements OnInit {
   assetForm: FormGroup;
