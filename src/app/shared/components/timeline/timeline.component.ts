@@ -23,6 +23,7 @@ export class TimelineComponent implements OnInit {
 
   @Input() data;
   @Input() assetId;
+  @Input() showSearch;
 
   constructor(private assets: AssetsService, private el: ElementRef) {}
 
