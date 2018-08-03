@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-json-preview',
@@ -12,7 +13,7 @@ export class JsonPreviewComponent implements OnInit {
 
   stringify = JSON.stringify;
 
-  constructor() {}
+  constructor(private dialogRef: MatDialogRef<JsonPreviewComponent>) {}
   ngOnInit() {}
 
   syntaxHighlight() {
@@ -71,4 +72,9 @@ export class JsonPreviewComponent implements OnInit {
       document.body.removeChild(elem);
     }
   }
+
+  closeDialog() {
+    this.dialogRef.close();
+  }
+
 }
