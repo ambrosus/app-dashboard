@@ -14,7 +14,7 @@
           <option value="event identifiers">event identifiers</option>
           <option value="type">type</option>
         </select>
-        <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
+        <input type="text" id="search" class="grey-placeholder" placeholder="{{ searchPlaceholder }}">
         <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
       </div>
       <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
@@ -22,15 +22,6 @@
     </div>
   </div>
 
-  <!-- overlay + createEvent modal -->
-  <div class="overlay" *ngIf="createEvents" (click)="createEvents = false"></div>
-  <div class="modal--right p-a-10" *ngIf="createEvents">
-    <div class="modal__header">
-      <img src="/assets/raster/close.png" (click)="createEvents = false">
-    </div>
-    <h1 class="center m-v-40">Create events</h1>
-    <app-event-add></app-event-add>
-  </div>
   <h5 class="color-greys--base p-h-20 center m-t-50" *ngIf="noEvents">No assets with info event. :/</h5>
 
   <div class="table">
@@ -62,7 +53,7 @@
         <span>assets</span>
       </div>
       <!-- Refresh -->
-      <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create asset</button>
+      <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create Asset <app-svg-icon class="p-l-10" width="17px" height="17px" name="add-icon"></app-svg-icon></button>
     </div>
 
     <div class="table__item table__item__header header--sticky" appSticky [addClass]="'sticky'">
