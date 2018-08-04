@@ -6,34 +6,7 @@
         <app-svg-icon name="logo" width="100px"></app-svg-icon>
       </a>
       <!-- Administration menu -->
-      <ul class="header-menu" *ngIf="isLoggedin">
-        <!-- Desktop menu -->
-        <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-          Administration
-          <ul class="dropdown-menu">
-            <li class="sub-menu">
-              <span routerLink="/administration/company">Company</span>
-              <ul class="dropdown-menu dropdown-menu__sub-menu">
-                <li>
-                  <span routerLink="/administration/company/settings">Settings</span>
-                </li>
-              </ul>
-            </li>
-            <li class="sub-menu">
-              <span routerLink="/administration/users">Users</span>
-              <ul class="dropdown-menu dropdown-menu__sub-menu">
-                <li>
-                  <span routerLink="/administration/users/all">All users</span>
-                </li>
-                <li>
-                  <span routerLink="/administration/users/invite">Invite members</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <!-- end Desktop menu -->
-      </ul>
+
     </div>
 
     <ul class="header-menu" *ngIf="isLoggedin">
@@ -115,6 +88,36 @@
     </ul>
   </div>
 </header>
+
+<div class="container" style="height: 50px; background-color: #F6F8FE;">
+  <div class="header-container wrapper">
+    <div class="flex flex-direction-r justify-content-fs align-items-c">
+      <ul class="header-menu" *ngIf="isLoggedin">
+        <!-- Desktop menu -->
+
+        <div class="" style="color: #5078f1; cursor: pointer;">
+          <span class="header-menu__item hide-all display-640-inline-block p-v-10">
+            <app-svg-icon name="blue-stack" class="p-r-10" width="25px" height="25px"></app-svg-icon>Assets</span>
+        </div>
+
+        <div class="active-page m-l-15" style="color: grey; cursor: pointer;">
+          <span style="color: grey;" class="header-menu__item hide-all display-640-inline-block p-v-10">
+            <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>Users</span>
+        </div>
+
+        <div class="m-l-15" style="color: grey; cursor: pointer;">
+          <span class="header-menu__item hide-all display-640-inline-block p-v-10">
+            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>Settings</span>
+        </div>
+
+        <!-- end Desktop menu -->
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
 <div class="overlay" *ngIf="addAccount || overlay" (click)="overlay = false; addAccount = false"></div>
 <div class="modal--right p-a-10" *ngIf="addAccount">
   <div class="modal__header">
