@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -16,13 +17,39 @@ export class HeaderComponent implements OnInit {
   currentAccount;
   addAccount;
   public opened: Boolean = true;
+  navigationSubscription;
+  assetsActive: Boolean;
+  usersActive: Boolean;
+  settingsActive: Boolean;
 
   constructor(
     private auth: AuthService,
-    private storage: StorageService
+    private storage: StorageService,
+    private router: Router
   ) {
     this.auth.accountsAction.subscribe(resp => {
       this.headerInit();
+    });
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd) {
+        const url = e.url.split('/')[1];
+        console.log(url);
+        if (url === 'assets') {
+          this.assetsActive = true;
+          this.usersActive = false;
+          this.settingsActive = false;
+        } else if (url === 'administration') {
+          if (e.url.split('/')[2] === 'users') {
+            this.assetsActive = false;
+            this.usersActive = true;
+            this.settingsActive = false;
+          }
+        } else if (url === 'settings') {
+          this.assetsActive = false;
+          this.usersActive = false;
+          this.settingsActive = true;
+        }
+      }
     });
   }
 
