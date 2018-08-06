@@ -3,10 +3,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 491.865 491.865" style="enable-background:new 0 0 491.865 491.865;" xml:space="preserve" width="512px" height="512px">
 <g>
 	<g>
-		<rect x="136.027" y="351.356" width="355.838" height="76.511" fill="#5078f1"/>
-		<rect x="109.308" y="263.914" width="355.838" height="76.511" fill="#5078f1"/>
-		<rect x="131.169" y="175.259" width="355.838" height="76.511" fill="#5078f1"/>
-		<polygon points="140.377,87.817 142.182,78.405 67.041,63.99 0,413.461 75.142,427.875 136.027,110.491 136.027,164.328     491.865,164.328 491.865,87.817   " fill="#5078f1"/>
+		<rect x="136.027" y="351.356" width="355.838" height="76.511" fill="currentColor"/>
+		<rect x="109.308" y="263.914" width="355.838" height="76.511" fill="currentColor"/>
+		<rect x="131.169" y="175.259" width="355.838" height="76.511" fill="currentColor"/>
+		<polygon points="140.377,87.817 142.182,78.405 67.041,63.99 0,413.461 75.142,427.875 136.027,110.491 136.027,164.328     491.865,164.328 491.865,87.817   " fill="currentColor"/>
 	</g>
 </g>
 </svg>
