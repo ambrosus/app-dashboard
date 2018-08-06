@@ -72,9 +72,13 @@ export class TimelineComponent implements OnInit {
   loadEvents(page) {
     this.resetLoadEvents();
 
-    this.assets
-      .loadEvents(this.assetId, page)
-      .then((resp: any) => {
+    const queries = {
+      assetId: this.assetId
+    };
+
+    this.assets.getEvents(queries, page)
+      .then((r: any) => {
+        const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
         this.currentEventsPage = page + 1;
         this.resultCountEvents = resp.resultCount;
@@ -106,25 +110,19 @@ export class TimelineComponent implements OnInit {
     this.resetSearch();
 
     const searchValues = search.split(',');
-    const queries = [
-      {
-        param: 'assetId',
-        value: this.assetId
-      }
-    ];
+    const queries = {
+      assetId: this.assetId
+    };
+
     switch (select) {
       case 'type':
-        queries.push({
-          param: 'data[type]',
-          value: `${searchValues[0].trim()}`
-        });
+        queries['data[type]'] = `${searchValues[0].trim()}`;
         break;
     }
-    console.log(queries);
 
-    this.assets
-      .searchAllEvents(queries, page)
-      .then((resp: any) => {
+    this.assets.getEvents(queries, page)
+      .then((r: any) => {
+        const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
         this.currentSearchPage = page + 1;
         this.resultCountSearch = resp.resultCount;
