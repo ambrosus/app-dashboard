@@ -117,26 +117,3 @@
 
   </div>
 </div>
-
-
-<div class="overlay" *ngIf="addAccount || overlay" (click)="overlay = false; addAccount = false"></div>
-<div class="modal--right p-a-10" *ngIf="addAccount">
-  <div class="modal__header">
-    <span (click)="addAccount = false">
-      <app-svg-icon name="cross"></app-svg-icon>
-    </span>
-  </div>
-  <!-- <app-signin></app-signin> -->
-
-  <div class="example-wrapper">
-    <button *ngIf="!opened" (click)="open()">Open dialog</button>
-    <kendo-dialog title="Please confirm" *ngIf="opened" (close)="close('cancel')" [minWidth]="250" [width]="450">
-      <p style="margin: 30px; text-align: center;">Are you sure you want to continue?</p>
-      <kendo-dialog-actions>
-        <button (click)="close('no')">No</button>
-        <button (click)="close('yes')" primary="true">Yes</button>
-      </kendo-dialog-actions>
-    </kendo-dialog>
-  </div>
-
-</div>

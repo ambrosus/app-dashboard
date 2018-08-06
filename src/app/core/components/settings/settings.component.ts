@@ -1,9 +1,11 @@
+import { LoginComponent } from './../login/login.component';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-settings',
@@ -46,7 +48,8 @@ export class SettingsComponent implements OnInit {
     private http: HttpClient,
     private passwordService: PasswordService,
     private storage: StorageService,
-    private auth: AuthService
+    private auth: AuthService,
+    public dialog: MatDialog
   ) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
@@ -137,4 +140,18 @@ export class SettingsComponent implements OnInit {
   logoutAll() {
     this.auth.logoutAll();
   }
+
+  addAccountDialog() {
+    const dialogRef = this.dialog.open(LoginComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.isDialog = true;
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
 }

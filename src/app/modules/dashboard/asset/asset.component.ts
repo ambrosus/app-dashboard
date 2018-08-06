@@ -2,6 +2,9 @@ import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdministrationService } from 'app/services/administration.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { JsonPreviewComponent } from './../../../shared/components/json-preview/json-preview.component';
+import { EventAddComponent } from './../event-add/event-add.component';
 
 declare let QRCode: any;
 
@@ -25,7 +28,12 @@ export class AssetComponent implements OnInit {
 
   stringify = JSON.stringify;
 
-  constructor(private route: ActivatedRoute, private assetService: AssetsService, private administration: AdministrationService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private assetService: AssetsService,
+    private administration: AdministrationService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -65,9 +73,37 @@ export class AssetComponent implements OnInit {
     }
   }
 
-  openCreateEvent() {
+  openCreateEventDialog() {
     this.assetService.unselectAssets();
     this.assetService.selectAsset(this.assetId);
     this.createEvents = true;
+
+    const dialogRef = this.dialog.open(EventAddComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+    const instance = dialogRef.componentInstance;
+    instance.prefill = this.events;
+    instance.assetId = this.assetId;
+
   }
+
+  openJsonDialog(): void {
+    const dialogRef = this.dialog.open(JsonPreviewComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.data = this.jsonEvents;
+    instance.name = this.asset.info.name || this.asset.timestamp;
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
 }

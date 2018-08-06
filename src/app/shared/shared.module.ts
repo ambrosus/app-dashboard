@@ -20,10 +20,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ClickThisActiveDirective } from './directives/click-this-active.directive';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
-import { DialogModule } from '@progress/kendo-angular-dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, DialogModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
   exports: [
     CommonModule,
     HeaderComponent,
@@ -43,7 +44,8 @@ import { DialogModule } from '@progress/kendo-angular-dialog';
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
-    NotificationComponent
+    NotificationComponent,
+    MatDialogModule
   ],
   declarations: [
     HeaderComponent,
@@ -64,6 +66,7 @@ import { DialogModule } from '@progress/kendo-angular-dialog';
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent
-  ]
+  ],
+  entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
 export class SharedModule {}
