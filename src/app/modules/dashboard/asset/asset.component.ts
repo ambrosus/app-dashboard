@@ -23,7 +23,6 @@ export class AssetComponent implements OnInit {
   json = false;
   events;
   previewAppUrl;
-  showSearch = false;
 
   objectKeys = Object.keys;
 

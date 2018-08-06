@@ -20,10 +20,10 @@ export class TimelineComponent implements OnInit {
   searchActive = false;
   pagination = [];
   searchPlaceholder = 'ie. sold';
+  showSearch = false;
 
   @Input() data;
   @Input() assetId;
-  @Input() showSearch;
 
   constructor(private assets: AssetsService, private el: ElementRef) {}
 

@@ -78,12 +78,9 @@
 
       <!-- Events -->
       <div class="layout-split__col2" *ngIf="events">
-        <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
-          Events
-          <app-svg-icon name="search" width="15" height="15" (click)="showSearch = !showSearch" class="inline-block m-l-auto"></app-svg-icon>
-        </h3>
+        <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">Events</h3>
 
-        <app-timeline [data]="events" [assetId]="assetId" [showSearch]="showSearch"></app-timeline>
+        <app-timeline [data]="events" [assetId]="assetId"></app-timeline>
       </div>
     </div>
   </div>
