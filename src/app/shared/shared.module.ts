@@ -22,6 +22,7 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
@@ -45,7 +46,8 @@ import { EventAddComponent } from './../modules/dashboard/event-add/event-add.co
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent,
-    MatDialogModule
+    MatDialogModule,
+    PaginationComponent
   ],
   declarations: [
     HeaderComponent,
@@ -65,7 +67,8 @@ import { EventAddComponent } from './../modules/dashboard/event-add/event-add.co
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
-    NotificationComponent
+    NotificationComponent,
+    PaginationComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

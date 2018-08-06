@@ -28,6 +28,10 @@ export class TimelineComponent implements OnInit {
   constructor(private assets: AssetsService, private el: ElementRef) {}
 
   ngOnInit() {
+    // Bind this for pagination
+    this.loadEvents = this.loadEvents.bind(this);
+    this.search = this.search.bind(this);
+
     this.events = this.data.events || [];
     this.currentEventsPage = 1;
     this.resultCountEvents = this.data.resultCount;

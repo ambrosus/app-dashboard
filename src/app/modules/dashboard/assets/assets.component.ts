@@ -86,6 +86,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Bind this for pagination
+    this.loadAssets = this.loadAssets.bind(this);
+    this.search = this.search.bind(this);
+
     this.auth.getAccounts().subscribe(
       (resp: any) => {
         const _address = this.storage.get('address');
