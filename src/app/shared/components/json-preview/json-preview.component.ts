@@ -43,17 +43,16 @@ export class JsonPreviewComponent implements OnInit {
   }
 
   downloadJSON() {
-    const filename = this.name;
+    const filename = this.name || new Date();
     const copy = [];
-
-    console.log(this.data);
 
     this.data.map(obj => {
       copy.push(JSON.parse(JSON.stringify(obj)));
     });
     copy.map(obj => {
-      obj.content.idData.assetId = '{{assetId}}';
-      obj.content.idData.createdBy = '{{userAddress}}';
+      obj.content.idData.assetId = '{{ assetId }}';
+      obj.content.idData.createdBy = '{{ userAddress }}';
+      obj.content.idData.timestamp = '{{ timestamp }}';
       delete obj.eventId;
       delete obj.metadata;
       delete obj.content.idData.dataHash;
