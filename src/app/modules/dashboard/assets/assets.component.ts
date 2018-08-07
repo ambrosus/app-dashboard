@@ -318,7 +318,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
         checkbox.checked = true;
         this.assetsService.selectAsset(checkbox.name);
       });
-      this.assetsService.toggleSelect.next('true');
+      const event = new Event('on:checked');
+      window.dispatchEvent(event);
     } else {
       this.selectAllText = 'Select all';
       table.map((item) => {
@@ -326,7 +327,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
         checkbox.checked = false;
       });
       this.assetsService.unselectAssets();
-      this.assetsService.toggleSelect.next('true');
+      const event = new Event('on:checked');
+      window.dispatchEvent(event);
     }
   }
 
