@@ -46,12 +46,16 @@ export class AssetsService {
         return observer.next(this.asset);
       }
 
-      this.getAssetById(assetId).then(response => {
-        this.getEvents(assetId).then(events => {
-          this.parseEvents(events).then(parsedData => {
-            this.asset = parsedData;
-            this.asset.eventsAll = this.parseAllEvents(events);
-            this.asset.eventsJSON = events;
+      this.getAssetById(assetId).then(resp => {
+        const queries = {
+          assetId
+        };
+
+        this.getEvents(queries).then((events: any) => {
+          this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
+            this.asset = parsedData.data;
+            this.asset.eventsAll = this.parseEvents(events.data);
+            this.asset.eventsJSON = events.data;
             return observer.next(this.asset);
           });
         });
@@ -72,16 +76,18 @@ export class AssetsService {
     });
   }
 
-  getEvents(assetId) {
+  getEvents(queries = {}, page = 0, perPage = 25) {
+    queries['page'] = page;
+    queries['perPage'] = perPage;
+
     return new Promise((resolve, reject) => {
-      this.ambrosus
-        .getEvents({ assetId: assetId })
-        .then(response => {
-          resolve(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.ambrosus.getEvents(queries).then(resp => {
+        resolve(resp);
+      })
+      .catch(err => {
+        console.log('GET events fail: ', err);
+        reject(err);
+      });
     });
   }
 
@@ -108,22 +114,8 @@ export class AssetsService {
     return 0;
   }
 
-  // Latest events
-  parseEvents(eventsArray) {
-    return new Promise((resolve, reject) => {
-      this.ambrosus
-        .parseEvents(eventsArray)
-        .then(response => {
-          resolve(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    });
-  }
-
   // All, unfiltered events
-  parseAllEvents(e) {
+  parseEvents(e) {
     const events = e.results.reduce(
       (_events, { content, eventId }) => {
         const timestamp = content.idData.timestamp;
@@ -131,14 +123,19 @@ export class AssetsService {
 
         if (content && content.data) {
           content.data.filter(obj => {
+            const parts = obj.type.split('.');
+            const type = parts[parts.length - 1];
+            const category = parts[parts.length - 2] || 'asset';
+            const namespace = parts[parts.length - 3] || 'ambrosus';
+
             obj.timestamp = timestamp;
             obj.author = author;
-            obj.name = obj.name || obj.type;
-            obj.action = obj.type ? obj.type : '';
-            obj.type = obj.type ? obj.type.substr(obj.type.lastIndexOf('.') + 1) : '';
+            obj.name = obj.name || type;
+            obj.action = type;
+            obj.type = type;
             obj.eventId = eventId;
 
-            if (obj.type === 'location') {
+            if (obj.type === 'location' && category === 'event') {
               content.data.reduce((location, _event) => {
                 if (_event.type !== 'location') {
                   _event.location = location;
@@ -146,63 +143,53 @@ export class AssetsService {
               }, obj);
             }
 
-            _events.push(obj);
+            _events.events.push(obj);
             return obj;
           });
         }
         return _events;
       },
-      []
+      { events: [], resultCount: e.resultCount }
     );
 
-    events.sort(this.sortEventsByTimestamp);
+    events.events.sort(this.sortEventsByTimestamp);
 
     return events;
   }
 
-  searchEvents(queries, page = 0, perPage = 15, address) {
-    const params = {};
-    queries.map((query) => {
-      params[query.param] = query.value;
-    });
-    params['page'] = page;
-    params['perPage'] = perPage;
-    return new Promise((resolve, reject) => {
-      this.ambrosus.getEvents(params).then(resp => {
-        // Unique events
-        const events = this.latestEvents(resp.data.results);
-        // Extract and build asset objects in []
-        const assets = events.reduce((_assets, event) => {
-          const asset = {
-            assetId: event.content.idData.assetId,
-            content: {
-              idData: {
-                createdBy: event.content.idData.createdBy,
-                timestamp: event.content.idData.timestamp
-              }
+  attachInfoEvents(resp, address = null) {
+    return new Promise ((resolve, reject) => {
+      // Unique events
+      const events = this.latestEvents(resp.data.results);
+      // Extract and build asset objects in []
+      const assets = events.reduce((_assets, event) => {
+        const asset = {
+          assetId: event.content.idData.assetId,
+          content: {
+            idData: {
+              createdBy: event.content.idData.createdBy,
+              timestamp: event.content.idData.timestamp
             }
-          };
-          _assets.push(asset);
-          return _assets;
-        }, []);
-        // Get info events + connect them to assets
-        const that = this;
-        const _params = {
-          createdBy: address,
-          'data[type]': 'ambrosus.asset.info'
+          }
         };
-        this.ambrosus.getEvents(_params).then(function(info) {
-          const _assets = {
-            resultCount: resp.data.resultCount,
-            assets: that.parseAssetsInfo(assets, info.data.results)
-          };
-          resolve(_assets);
-        }).catch(function(e) {
-          console.log('Get info events error: ', e);
-          reject(e);
-        });
-      }).catch(error => {
-        reject('No event results.');
+        _assets.push(asset);
+        return _assets;
+      }, []);
+      // Get info events + connect them to assets
+      const that = this;
+      const _params = {
+        createdBy: address,
+        'data[type]': 'ambrosus.asset.info'
+      };
+      this.ambrosus.getEvents(_params).then(function(info) {
+        const _assets = {
+          resultCount: resp.data.resultCount,
+          assets: that.parseAssetsInfo(assets, info.data.results)
+        };
+        resolve(_assets);
+      }).catch(function(e) {
+        console.log('GET info events error: ', e);
+        reject(e);
       });
     });
   }

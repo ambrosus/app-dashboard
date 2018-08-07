@@ -1,12 +1,47 @@
+<app-svg-icon name="search" width="15" height="15" fill="#4a4a4a" (click)="showSearch = !showSearch" class="block m-l-auto m-b-20"
+  style="width: 15px;"></app-svg-icon>
+
+<div class="search m-b-20" *ngIf="showSearch">
+  <select id="select">
+    <option value="type" selected>type</option>
+  </select>
+  <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
+  <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
+</div>
+
 <div class="events">
   <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
     <p>
       <span style="color: #4f77f1;">{{ event.type || '' }}</span>
       {{ event.name || event.type }}
-      <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name
-        }}
+      <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name }}
       </span>
     </p>
     <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
   </div>
+</div>
+
+<div class="block-center m-w-12 m-v-10 p-h-10">
+  <div *ngIf="eventsActive && pagination.length !== 0">
+    Showing {{ (currentEventsPage - 1) * perPage + 1 }} to
+    <span *ngIf="currentEventsPage * perPage > resultCountEvents">{{ resultCountEvents }}</span>
+    <span *ngIf="currentEventsPage * perPage <= resultCountEvents">{{ currentEventsPage * perPage }}</span>
+    of {{ resultCountEvents }} events
+  </div>
+  <div *ngIf="searchActive && pagination.length !== 0">
+    Showing {{ (currentSearchPage - 1) * perPage + 1 }} to
+    <span *ngIf="currentSearchPage * perPage > resultCountSearch">{{ resultCountSearch }}</span>
+    <span *ngIf="currentSearchPage * perPage <= resultCountSearch">{{ currentSearchPage * perPage }}</span>
+    of {{ resultCountSearch }} events
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="block-center m-w-12 m-t-10 p-h-10">
+  <!-- Asset pagination -->
+  <app-pagination *ngIf="eventsActive && pagination.length !== 0" [currentPage]="currentEventsPage" [pagination]="pagination"
+    [method]="loadEvents"></app-pagination>
+  <!-- Search pagination -->
+  <app-pagination *ngIf="searchActive && pagination.length !== 0" [currentPage]="currentSearchPage"
+    [pagination]="pagination" [method]="search"></app-pagination>
 </div>
