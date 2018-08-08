@@ -165,13 +165,6 @@ export class EventComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkerApp() {
-    window.open(
-      `https://ambrosus.github.io/app-checker/?eventId=${this.eventId}`,
-      '_blank'
-    );
-  }
-
   ngOnDestroy() {
     this.assetService.unselectAssets();
   }
