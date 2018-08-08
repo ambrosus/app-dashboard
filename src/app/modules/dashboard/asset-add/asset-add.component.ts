@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material';
   providers: [AssetsService]
 })
 export class AssetAddComponent implements OnInit {
+  demo;
   assetForm: FormGroup;
   error = false;
   invalidJSON = false;
@@ -47,6 +48,10 @@ export class AssetAddComponent implements OnInit {
   errorJSON = false;
   textArea: any = '';
   buttonText = 'Create asset';
+  demoForm: FormGroup;
+  errorDemo;
+  successDemo;
+  demoData;
 
   @Input() prefill;
   @Input() assetId;
@@ -65,6 +70,74 @@ export class AssetAddComponent implements OnInit {
     private dialogRef: MatDialog
   ) {
     this.initForm();
+    // demo
+    this.initDemoForm();
+  }
+
+  initDemoForm() {
+    this.demoForm = new FormGroup({
+      assetsNumber: new FormControl(30, [Validators.required]),
+      groups: new FormArray([
+        new FormGroup({
+          title: new FormControl(null, [Validators.required]),
+          image: new FormControl(null, [Validators.required]),
+          description: new FormControl(null, [Validators.required])
+        })
+      ])
+    });
+  }
+
+  // Methods for adding/removing new fields to demo form
+  demoRemove(array, index: number) {
+    (<FormArray>this.demoForm.get(array)).removeAt(index);
+  }
+
+  addGroup() {
+    (<FormArray>this.demoForm.get('groups')).push(
+      new FormGroup({
+        title: new FormControl(null, [Validators.required]),
+        image: new FormControl(null, [Validators.required]),
+        description: new FormControl(null, [Validators.required])
+      })
+    );
+  }
+
+  onDemo() {
+    this.errorDemo = false;
+
+    if (this.demoForm.valid) {
+      this.spinner = true;
+      this.demoData = {
+        assets: this.demoForm.get('assetsNumber').value,
+        groups: []
+      };
+
+      if (!confirm(`You are about to create ${this.demoData.assets} demo assets, are you sure you want to proceed?`)) {
+        this.spinner = false;
+        return;
+      }
+
+      // Demo data
+      const groups = this.demoForm.get('groups')['controls'];
+      if (groups.length > 0) {
+        const group = {};
+        groups.map((g) => {
+          group['title'] = g.get('title').value;
+          group['image'] = g.get('image').value;
+          group['description'] = g.get('description').value;
+          this.demoData.groups.push(group);
+        });
+      }
+      console.log(this.demoData);
+      // Create random assets (method in assets service)
+      this.spinner = false;
+      this.successDemo = true;
+      setTimeout(() => {
+        this.successDemo = false;
+      }, 1500);
+    } else {
+      this.errorDemo = 'All fields are required.';
+    }
   }
 
   ngOnInit() {
@@ -90,6 +163,8 @@ export class AssetAddComponent implements OnInit {
       this.prefillForm();
       this.buttonText = 'Edit info event';
     }
+    // demo
+    this.demo = this.storage.get('demo');
   }
 
   prefillForm() {

@@ -31,7 +31,6 @@ export class AuthService {
 
       this.http.get(url).subscribe(
         resp => {
-          console.log('GET accounts success: ', resp);
           return observer.next(resp);
         },
         err => {
@@ -84,6 +83,17 @@ export class AuthService {
       this.accountsAction.next(true);
       this.storage.set('accounts', JSON.stringify(accounts));
     }
+  }
+
+  loginDemoAccounts(demoAccounts) {
+    this.setDetails(demoAccounts[0]['address'], demoAccounts[0]['secret'], null,
+      true, demoAccounts[0]['email'], demoAccounts[0]['full_name'], demoAccounts[0]['company']);
+    this.storage.set('isLoggedin', true);
+    this.storage.set('demo', true);
+    this.storage.set('accounts', JSON.stringify(demoAccounts));
+    this.assets.initSDK();
+    this.accountsAction.next(true);
+    this.router.navigate(['/assets']);
   }
 
   switchAccount(address) {
@@ -149,7 +159,7 @@ export class AuthService {
     });
   }
 
-  setDetails (address, secret, token, has_account, email, full_name, company) {
+  setDetails (address, secret, token = null, has_account = false, email = null, full_name = null, company = null) {
     this.storage.set('address', address);
     this.storage.set('secret', secret);
     this.storage.set('token', token);

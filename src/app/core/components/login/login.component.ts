@@ -17,12 +17,10 @@ export class LoginComponent {
   loginForm: FormGroup;
   addressForm: FormGroup;
   loginPage = true;
-
   error = false;
   spinner = false;
   loginFailed = false;
   alreadyLoggedIn = false;
-
   // email or address
   email = true;
   address = false;
@@ -100,6 +98,14 @@ export class LoginComponent {
     }
   }
 
+  loginDemo() {
+    this.http.get('/assets/demo/accounts.json').subscribe(accounts => {
+      this.auth.loginDemoAccounts(accounts);
+    }, err => {
+      return;
+    });
+  }
+
   loginEmail() {
     const email = this.loginForm.get('email').value;
     const password = this.loginForm.get('password').value;
@@ -115,6 +121,12 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.resetErrors();
       this.spinner = true;
+
+      // demo login
+      if (email === 'demo@ambrosus.com') {
+        this.loginDemo();
+        return;
+      }
 
       const body = {
         email,

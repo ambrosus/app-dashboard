@@ -188,8 +188,45 @@
     </div>
   </div>
 
-  <!--TEST ONLY-->
-  <!-- <pre *ngIf="json">
-    {{json}}
-  </pre> -->
+  <!--DEMO ACCOUNT-->
+  <div class="block-center m-w-6">
+    <h4 class="p-h-20 m-t-50 m-b-10 center color-ared--base" *ngIf="demo">DEMO ONLY: Generate random assets</h4>
+    <p class="m-b-30 center p-h-20">
+      Input multiple groups of title, image and description, and number of assets to be created. Each asset will be created with
+      randomly chosen group of inputs. After assets are created, you can easily edit each asset's information or any event.
+    </p>
+    <h4 class="center p-h-40 m-b-30" *ngIf="errorDemo" style="color: #ea7070">{{ errorDemo }}</h4>
+    <div style="border: solid #f7f7f9;">
+      <form [formGroup]="demoForm" (ngSubmit)="onDemo()" class="form-group p-a-30" [ngClass]="{error: errorDemo, success: successDemo}">
+        <div class="form-text m-b-20">
+          <label for="assetsNumber">Number of assets to generate *</label>
+          <input formControlName="assetsNumber" type="number" id="assetsNumber" spellcheck="false" appInput>
+        </div>
+        <h4 class="m-t-30 m-b-20">Groups of info</h4>
+        <div formArrayName="groups">
+          <div *ngFor="let group of demoForm.get('groups')['controls']; let i = index" [formGroupName]="i" class="right" [ngClass]="{ 'm-b-50': i === 0 }">
+            <div class="form-text m-b-20">
+              <label for="{{ i + 'title' }}">Asset title</label>
+              <input formControlName="title" type="text" id="{{ i + 'title' }}" spellcheck="false" appInput>
+            </div>
+            <div class="form-text m-b-20">
+              <label for="{{ i + 'image' }}">Asset image url</label>
+              <input formControlName="image" type="text" id="{{ i + 'image' }}" spellcheck="false" appInput>
+            </div>
+            <div class="form-text m-b-20">
+              <label for="{{ i + 'description' }}">Asset description</label>
+              <input formControlName="description" type="text" id="{{ i + 'description' }}" spellcheck="false" appInput>
+            </div>
+            <a class="color-greys--base m-b-20 inline-block" (click)="demoRemove('groups', i)" *ngIf="i > 0">Remove</a>
+          </div>
+          <a class="color-ablue--base" (click)="addGroup()">Add group</a>
+        </div>
+
+        <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
+          <app-spinner *ngIf="spinner"></app-spinner>
+          <button type="submit" class="abtn m-l-20 btn-solid-ablue">Generate assets</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </main>
