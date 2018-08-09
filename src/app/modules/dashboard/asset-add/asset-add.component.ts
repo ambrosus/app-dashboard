@@ -48,10 +48,12 @@ export class AssetAddComponent implements OnInit {
   errorJSON = false;
   textArea: any = '';
   buttonText = 'Create asset';
+  // demo
   demoForm: FormGroup;
   errorDemo;
   successDemo;
   demoData;
+  demoAssetsCreated;
 
   @Input() prefill;
   @Input() assetId;
@@ -76,12 +78,12 @@ export class AssetAddComponent implements OnInit {
 
   initDemoForm() {
     this.demoForm = new FormGroup({
-      assetsNumber: new FormControl(30, [Validators.required]),
+      assetsNumber: new FormControl(10, [Validators.required]),
       groups: new FormArray([
         new FormGroup({
-          title: new FormControl(null, [Validators.required]),
-          image: new FormControl(null, [Validators.required]),
-          description: new FormControl(null, [Validators.required])
+          title: new FormControl('Product name', [Validators.required]),
+          image: new FormControl('https://cdn.stocksnap.io/img-thumbs/960w/BYYO0AG3ZE.jpg', [Validators.required]),
+          description: new FormControl('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', [Validators.required])
         })
       ])
     });
@@ -95,15 +97,16 @@ export class AssetAddComponent implements OnInit {
   addGroup() {
     (<FormArray>this.demoForm.get('groups')).push(
       new FormGroup({
-        title: new FormControl(null, [Validators.required]),
-        image: new FormControl(null, [Validators.required]),
-        description: new FormControl(null, [Validators.required])
+        title: new FormControl('Product name', [Validators.required]),
+        image: new FormControl('https://cdn.stocksnap.io/img-thumbs/960w/BYYO0AG3ZE.jpg', [Validators.required]),
+        description: new FormControl('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', [Validators.required])
       })
     );
   }
 
   onDemo() {
     this.errorDemo = false;
+    this.demoAssetsCreated = null;
 
     if (this.demoForm.valid) {
       this.spinner = true;
@@ -120,21 +123,24 @@ export class AssetAddComponent implements OnInit {
       // Demo data
       const groups = this.demoForm.get('groups')['controls'];
       if (groups.length > 0) {
-        const group = {};
         groups.map((g) => {
+          const group = {};
           group['title'] = g.get('title').value;
           group['image'] = g.get('image').value;
           group['description'] = g.get('description').value;
           this.demoData.groups.push(group);
         });
       }
-      console.log(this.demoData);
       // Create random assets (method in assets service)
-      this.spinner = false;
-      this.successDemo = true;
-      setTimeout(() => {
-        this.successDemo = false;
-      }, 1500);
+      this.assetService.demoData = this.demoData;
+      const assetsNumber = this.demoData.assets;
+      this.assetService.generateDemoAssets(assetsNumber).subscribe(
+      resp => { },
+      err => { },
+      () => {
+        this.spinner = false;
+        this.demoAssetsCreated = 'Assets created!';
+      });
     } else {
       this.errorDemo = 'All fields are required.';
     }

@@ -223,6 +223,7 @@
         </div>
 
         <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
+          <h6 class="m-r-20 color-agreen--base" *ngIf="demoAssetsCreated">{{ demoAssetsCreated }}</h6>
           <app-spinner *ngIf="spinner"></app-spinner>
           <button type="submit" class="abtn m-l-20 btn-solid-ablue">Generate assets</button>
         </div>
