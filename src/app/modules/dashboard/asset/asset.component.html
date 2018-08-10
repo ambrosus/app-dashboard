@@ -17,23 +17,23 @@
     <div class="layout-split">
 
       <!-- Details -->
-      <div class="layout-split__col1">
+      <div class="layout-split__col1" *ngIf="asset && asset.info">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
           Asset details
-          <app-svg-icon *ngIf="asset.info" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
+          <app-svg-icon *ngIf="asset.info.eventId" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
         </h3>
 
-        <div *ngIf="asset.info">
+        <div>
           <!-- image -->
-          <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
+          <div class="item m-b-20 asset-image" *ngIf="asset.info.images && asset.info.images.default && !isObject(asset.info.images.default)">
             <img src="{{ asset.info.images.default }}">
           </div>
-          <div class="item m-b-20 asset-image" *ngIf="asset.info && asset.info.images && asset.info.images.default && isObject(asset.info.images.default)">
+          <div class="item m-b-20 asset-image" *ngIf="asset.info.images && asset.info.images.default && asset.info.images.default.url">
             <img src="{{ asset.info.images.default.url }}">
           </div>
 
           <!-- timestamp -->
-          <div class="item">
+          <div class="item" *ngIf="asset.info.timestamp">
             <p class="item__cell__title">timestamp: </p>
             <p class="item__cell">{{ asset.info.timestamp * 1000 | date:'d MMM yyyy' }} ({{ asset.info.timestamp }})</p>
           </div>
@@ -41,8 +41,9 @@
           <!-- key - value -->
           <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
             <div class="item" *ngIf="!isObject(asset.info[key])">
-              <p class="item__cell__title">{{ key }}: </p>
-              <p class="item__cell">{{ asset.info[key] }}</p>
+              <p class="item__cell__title" *ngIf="!isArray(asset.info[key])">{{ key }}: </p>
+              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.info[key]) }"
+                [innerHtml]="isObject(asset.info[key]) ? valueJSON(stringify(asset.info[key], null, 5)) : asset.info[key]"></p>
             </div>
           </div>
 
@@ -62,17 +63,15 @@
               <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
 
               <div class="item" *ngFor="let k of objectKeys(asset.info[key])">
-                <p class="item__cell__title ">{{ k }}:</p>
-
-                <!-- IF OR NOT OBJECT, DISPLAY STRING OR STRINGIFY -->
-                <p class="item__cell" *ngIf="!isObject(asset.info[key][k])">{{ asset.info[key][k] }}</p>
-                <p class="item__cell item__cell--json" *ngIf="isObject(asset.info[key][k])">{{ valueJSON(stringify(asset.info[key][k], null, 5)) }}</p>
+                <p class="item__cell__title" *ngIf="!isArray(asset.info[key])">{{ k }}:</p>
+                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.info[key][k]) }"
+                  [innerHtml]="isObject(asset.info[key][k]) ? valueJSON(stringify(asset.info[key][k], null, 5)) : asset.info[key][k]"></p>
               </div>
             </div>
           </div>
         </div>
 
-        <app-chart></app-chart>
+        <!-- <app-chart></app-chart> -->
 
       </div>
 

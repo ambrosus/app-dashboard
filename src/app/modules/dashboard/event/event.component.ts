@@ -28,8 +28,14 @@ export class EventComponent implements OnInit, OnDestroy {
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
-  isArray(value) {
-    return value instanceof Array;
+  isArray = Array.isArray;
+
+  isObject(value) {
+    return typeof value === 'object';
+  }
+
+  valueJSON(value) {
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   constructor(
@@ -57,17 +63,9 @@ export class EventComponent implements OnInit, OnDestroy {
     }
   }
 
-  isObject(value) {
-    return typeof value === 'object';
-  }
-
   hasInfoEvent() {
     const event = this.event || null;
     return event ? this.event.content.data.some(obj => obj.type === 'ambrosus.asset.info') : false;
-  }
-
-  valueJSON(value) {
-    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   ngOnInit() {
