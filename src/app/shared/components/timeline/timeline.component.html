@@ -1,5 +1,10 @@
 <div class="m-b-20 flex flex-direction-r justify-content-fe align-items-c">
-  <a class="abtn btn-outline-ablue m-r-20" (click)="openDialog()">View JSON</a>
+  <div class="table__label__select color-ablue--base m-r-20">
+    <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions style="padding: 3px 5px; border-radius: 5px;">
+      <option value="default" disabled>Bulk actions</option>
+      <option value="exportEvents">Export events, page: {{ searchActive ? currentSearchPage : currentEventsPage }}</option>
+    </select>
+  </div>
 
   <app-svg-icon name="search" width="15" height="15" fill="#4a4a4a" (click)="showSearch = !showSearch"></app-svg-icon>
 </div>

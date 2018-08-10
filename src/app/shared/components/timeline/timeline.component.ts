@@ -52,6 +52,16 @@ export class TimelineComponent implements OnInit {
     this.loadEvents(0);
   }
 
+  bulkActions(action) {
+    switch (action.value) {
+      case 'exportEvents':
+        this.openDialog();
+        break;
+    }
+
+    action.value = 'default';
+  }
+
   paginationGenerate(currentPage, pageCount) {
     const delta = 2,
       left = currentPage - delta,
