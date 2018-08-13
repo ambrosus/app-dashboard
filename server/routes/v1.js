@@ -51,10 +51,10 @@ notificationsRoutes.delete('/', NotificationController.clean);
 
 ********************************/
 
-// append auth routes to api routes
+// append email routes to api routes
 apiRoutes.use('/email', emailRoutes);
 
-// Auth routes
+// Email routes
 emailRoutes.post('/', EmailController.sendEmail);
 
 
