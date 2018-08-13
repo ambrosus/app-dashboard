@@ -23,7 +23,7 @@ import { NotificationComponent } from './components/notification/notification.co
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
-import { ValidationDirective } from './directives/validation.directive';
+import { CheckIfPipe } from './pipes/checkIf.pipe';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
@@ -49,7 +49,7 @@ import { ValidationDirective } from './directives/validation.directive';
     NotificationComponent,
     MatDialogModule,
     PaginationComponent,
-    ValidationDirective
+    CheckIfPipe
   ],
   declarations: [
     HeaderComponent,
@@ -71,7 +71,7 @@ import { ValidationDirective } from './directives/validation.directive';
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    ValidationDirective
+    CheckIfPipe
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
