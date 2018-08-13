@@ -10,11 +10,16 @@ export class ValidationDirective implements OnInit {
   @Input() validate: string;
 
   ngOnInit() {
+    this.checkNested(this.data, this.validate.split('.').splice(1));
+  }
 
-    if (!this.data[`${this.validate}`]) {
-      this.el.nativeElement.style.display = 'none';
+  checkNested(obj , args) {
+    for (let i = 0; i < args.length; i++) {
+      if (!obj || !obj.hasOwnProperty(args[i])) {
+        this.el.nativeElement.style.display = 'none';
+      }
+      obj = obj[args[i]];
     }
-
   }
 
 }
