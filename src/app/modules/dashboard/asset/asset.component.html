@@ -17,7 +17,7 @@
     <div class="layout-split">
 
       <!-- Details -->
-      <div class="layout-split__col1">
+      <div class="layout-split__col1" appValidation [data]="asset" [validate]="'info'">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
           Asset details
           <app-svg-icon *ngIf="asset.info" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
