@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -17,12 +16,10 @@ export class HeaderComponent implements OnInit {
   currentAccount;
   addAccount;
   public opened: Boolean = true;
-  navigationSubscription;
 
   constructor(
     private auth: AuthService,
-    private storage: StorageService,
-    private router: Router
+    private storage: StorageService
   ) {
     this.auth.accountsAction.subscribe(resp => {
       this.headerInit();
