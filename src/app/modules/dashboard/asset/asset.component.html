@@ -6,7 +6,6 @@
       <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       <div>
         <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
-        <button class="abtn btn-outline-ablue" (click)="openJsonDialog()">View JSON</button>
       </div>
       <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEventDialog()">Add Event</button>
     </div>
@@ -77,10 +76,10 @@
       </div>
 
       <!-- Events -->
-      <div class="layout-split__col2" *ngIf="events">
+      <div class="layout-split__col2">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">Events</h3>
 
-        <app-timeline [data]="events" [assetId]="assetId"></app-timeline>
+        <app-timeline [assetId]="assetId" [name]="asset && asset.info ? asset.info.name : null"></app-timeline>
       </div>
     </div>
   </div>

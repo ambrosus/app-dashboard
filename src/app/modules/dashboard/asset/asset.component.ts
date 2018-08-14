@@ -38,9 +38,6 @@ export class AssetComponent implements OnInit {
   ngOnInit() {
     this.route.data.subscribe(data => {
       this.asset = data.asset;
-      this.events = data.asset.eventsAll;
-      this.jsonEvents = data.asset.eventsJSON;
-      console.log(this.asset);
     });
 
     this.route.params.subscribe(params => {
