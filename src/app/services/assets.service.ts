@@ -54,8 +54,6 @@ export class AssetsService {
         this.getEvents(queries).then((events: any) => {
           this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
             this.asset = parsedData.data;
-            this.asset.eventsAll = this.parseEvents(events.data);
-            this.asset.eventsJSON = events.data;
             return observer.next(this.asset);
           });
         });
