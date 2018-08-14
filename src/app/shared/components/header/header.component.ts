@@ -18,9 +18,6 @@ export class HeaderComponent implements OnInit {
   addAccount;
   public opened: Boolean = true;
   navigationSubscription;
-  assetsActive: Boolean;
-  usersActive: Boolean;
-  settingsActive: Boolean;
 
   constructor(
     private auth: AuthService,
