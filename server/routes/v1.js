@@ -3,12 +3,14 @@ const express = require('express');
 // Controllers
 const AuthController = require('../controllers/auth');
 const NotificationController = require('../controllers/notifications');
+const EmailController = require('../controllers/email');
 
 // API routes
 const apiRoutes = express.Router();
 
 const authRoutes = express.Router();
 const notificationsRoutes = express.Router();
+const emailRoutes = express.Router();
 
 /********************************
 
@@ -42,6 +44,18 @@ notificationsRoutes.post('/:address', NotificationController.create);
 notificationsRoutes.get('/:address', NotificationController.get);
 notificationsRoutes.put('/:address/viewed', NotificationController.viewed);
 notificationsRoutes.delete('/', NotificationController.clean);
+
+/********************************
+
+        email endpoints
+
+********************************/
+
+// append email routes to api routes
+apiRoutes.use('/email', emailRoutes);
+
+// Email routes
+emailRoutes.post('/', EmailController.sendEmail);
 
 
 module.exports = apiRoutes;

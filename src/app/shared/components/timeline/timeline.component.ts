@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
   selector: 'app-timeline',
@@ -8,6 +10,7 @@ import { AssetsService } from 'app/services/assets.service';
 })
 export class TimelineComponent implements OnInit {
   events;
+  json;
   perPage = 25;
   // Pagination
   currentEventsPage = 1;
@@ -24,19 +27,39 @@ export class TimelineComponent implements OnInit {
 
   @Input() data;
   @Input() assetId;
+  @Input() name;
 
-  constructor(private assets: AssetsService, private el: ElementRef) {}
+  constructor(private assets: AssetsService, private el: ElementRef, public dialog: MatDialog) {}
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(JsonPreviewComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.data = this.json;
+    instance.name = this.name;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
 
   ngOnInit() {
     // Bind this for pagination
     this.loadEvents = this.loadEvents.bind(this);
     this.search = this.search.bind(this);
 
-    this.events = this.data.events || [];
-    this.currentEventsPage = 1;
-    this.resultCountEvents = this.data.resultCount;
-    this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
-    this.pagination = this.paginationGenerate(this.currentEventsPage, this.totalEventsPages);
+    this.loadEvents(0);
+  }
+
+  bulkActions(action) {
+    switch (action.value) {
+      case 'exportEvents':
+        this.openDialog();
+        break;
+    }
+
+    action.value = 'default';
   }
 
   paginationGenerate(currentPage, pageCount) {
@@ -82,6 +105,7 @@ export class TimelineComponent implements OnInit {
 
     this.assets.getEvents(queries, page)
       .then((r: any) => {
+        this.json = r.data.results;
         const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
         this.currentEventsPage = page + 1;
@@ -126,6 +150,7 @@ export class TimelineComponent implements OnInit {
 
     this.assets.getEvents(queries, page)
       .then((r: any) => {
+        this.json = r.data.results;
         const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
         this.currentSearchPage = page + 1;

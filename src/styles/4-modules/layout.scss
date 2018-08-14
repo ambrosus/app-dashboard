@@ -190,8 +190,9 @@ pre {
 
     &--json {
       white-space: pre-wrap;
-      width: 100%;
       text-indent: 16px;
+      margin-left: -16px;
+      width: 100%;
     }
   }
 
