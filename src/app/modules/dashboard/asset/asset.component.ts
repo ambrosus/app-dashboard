@@ -25,8 +25,16 @@ export class AssetComponent implements OnInit {
   previewAppUrl;
 
   objectKeys = Object.keys;
-
+  isArray = Array.isArray;
   stringify = JSON.stringify;
+
+  isObject(value) {
+    return typeof value === 'object';
+  }
+
+  valueJSON(value) {
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -45,14 +53,6 @@ export class AssetComponent implements OnInit {
     });
 
     this.previewAppUrl = this.administration.previewAppUrl;
-  }
-
-  isObject(value) {
-    return typeof value === 'object';
-  }
-
-  valueJSON(value) {
-    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   downloadQR(el: any) {
