@@ -78,9 +78,9 @@
 
       <!-- Events -->
       <div class="layout-split__col2" *ngIf="events">
-        <h3 class="m-t-10 m-b-30 p-h-10">Events</h3>
+        <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">Events</h3>
 
-        <app-timeline [events]="events" [assetId]="assetId"></app-timeline>
+        <app-timeline [data]="events" [assetId]="assetId"></app-timeline>
       </div>
     </div>
   </div>

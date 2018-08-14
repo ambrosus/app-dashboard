@@ -86,6 +86,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Bind this for pagination
+    this.loadAssets = this.loadAssets.bind(this);
+    this.search = this.search.bind(this);
+
     this.auth.getAccounts().subscribe(
       (resp: any) => {
         const _address = this.storage.get('address');
@@ -208,66 +212,39 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loader = true;
 
     const searchValues = search.split(',');
-    let queries = [];
+    const queries = {};
     switch (select) {
       case 'name':
-        queries.push({
-          param: 'data[name]',
-          value: searchValues[0].trim()
-        });
+        queries['data[name]'] = searchValues[0].trim();
         break;
       case 'createdBy':
-        address = searchValues[0].trim();
-        queries.push({
-          param: 'createdBy',
-          value: address
-        });
+        queries['createdBy'] = searchValues[0].trim();
         break;
       case 'type':
-        queries.push({
-          param: 'data[type]',
-          value: `ambrosus.asset.${searchValues[0].trim()}`
-        });
+        queries['data[type]'] = `ambrosus.asset.${searchValues[0].trim()}`;
         break;
       case 'asset identifiers':
-        queries.push({
-          param: 'data[type]',
-          value: 'ambrosus.asset.identifiers'
-        });
-        queries = searchValues.reduce((_queries, query) => {
+        queries['data[type]'] = `ambrosus.asset.identifiers`;
+        searchValues.map((query) => {
           const ide = query.split(':');
-          const _query = {
-            param: `data[identifiers.${ide[0].trim()}]`,
-            value: ide[1] ? ide[1].trim() : ''
-          };
-          _queries.push(_query);
-
-          return _queries;
-        }, queries);
+          const param = `data[identifiers.${ide[0].trim()}]`;
+          const value = ide[1] ? ide[1].trim() : '';
+          queries[param] = value;
+        });
         break;
       case 'event identifiers':
-        queries.push({
-          param: 'data[type]',
-          value: 'ambrosus.event.identifiers'
-        });
-        queries = searchValues.reduce((_queries, query) => {
+        queries['data[type]'] = `ambrosus.event.identifiers`;
+        searchValues.map((query) => {
           const ide = query.split(':');
-          const _query = {
-            param: `data[identifiers.${ide[0].trim()}]`,
-            value: ide[1] ? ide[1].trim() : ''
-          };
-          _queries.push(_query);
-
-          return _queries;
-        }, queries);
+          const param = `data[identifiers.${ide[0].trim()}]`;
+          const value = ide[1] ? ide[1].trim() : '';
+          queries[param] = value;
+        });
         break;
     }
 
     if (select !== 'createdBy') {
-      queries.push({
-        param: 'createdBy',
-        value: address
-      });
+      queries['createdBy'] = address;
     }
 
     this.searchResults = null;
@@ -275,25 +252,25 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.searchResultsFound = null;
 
     // Make a request
-    this.assetsService
-      .searchEvents(queries, page, perPage, address)
+    this.assetsService.getEvents(queries, page, perPage)
       .then((resp: any) => {
-        this.loader = false;
-        if (resp.assets.length > 0) {
-          this.assets = resp;
-          this.currentSearchPage = page + 1;
-          this.resultCountSearch = resp.resultCount;
-          this.totalSearchPages = Math.ceil(resp.resultCount / perPage);
-          // generate pagination
-          this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
-          this.searchResultsFound = `Found ${resp.resultCount} results`;
-        } else {
-          this.searchNoResultsFound = 'No results found';
-        }
+        this.assetsService.attachInfoEvents(resp, address).then((r: any) => {
+          this.loader = false;
+          if (r.assets.length > 0) {
+            this.assets = r;
+            this.currentSearchPage = page + 1;
+            this.resultCountSearch = r.resultCount;
+            this.totalSearchPages = Math.ceil(r.resultCount / perPage);
+            // generate pagination
+            this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
+            this.searchResultsFound = `Found ${r.resultCount} results`;
+          } else {
+            this.searchNoResultsFound = 'No results found';
+          }
+        }).catch(e => {});
       })
       .catch(err => {
         this.loader = false;
-        console.log(err);
       });
   }
 
@@ -341,7 +318,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
         checkbox.checked = true;
         this.assetsService.selectAsset(checkbox.name);
       });
-      this.assetsService.toggleSelect.next('true');
+      const event = new Event('on:checked');
+      window.dispatchEvent(event);
     } else {
       this.selectAllText = 'Select all';
       table.map((item) => {
@@ -349,7 +327,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
         checkbox.checked = false;
       });
       this.assetsService.unselectAssets();
-      this.assetsService.toggleSelect.next('true');
+      const event = new Event('on:checked');
+      window.dispatchEvent(event);
     }
   }
 

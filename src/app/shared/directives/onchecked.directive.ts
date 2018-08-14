@@ -11,12 +11,12 @@ export class OncheckedDirective {
 
   constructor(private el: ElementRef, private renderer: Renderer2,
     private assets: AssetsService, private administration: AdministrationService) {
-    this.assets.toggleSelect.subscribe(resp => {
-      this.checkboxClicked();
-    });
-    this.administration.toggleSelect.subscribe(resp => {
-      this.checkboxClicked();
-    });
+      window.addEventListener('on:checked', () => {
+        this.checkboxClicked();
+      });
+      this.administration.toggleSelect.subscribe(resp => {
+        this.checkboxClicked();
+      });
   }
 
   @HostListener('change')
