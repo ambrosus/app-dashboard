@@ -30,27 +30,6 @@ export class HeaderComponent implements OnInit {
     this.auth.accountsAction.subscribe(resp => {
       this.headerInit();
     });
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) {
-        const url = e.url.split('/')[1];
-        console.log(url);
-        if (url === 'assets') {
-          this.assetsActive = true;
-          this.usersActive = false;
-          this.settingsActive = false;
-        } else if (url === 'administration') {
-          if (e.url.split('/')[2] === 'users') {
-            this.assetsActive = false;
-            this.usersActive = true;
-            this.settingsActive = false;
-          }
-        } else if (url === 'settings') {
-          this.assetsActive = false;
-          this.usersActive = false;
-          this.settingsActive = true;
-        }
-      }
-    });
   }
 
   ngOnInit() {
