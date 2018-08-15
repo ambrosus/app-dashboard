@@ -141,3 +141,20 @@
   background: $aorange;
   color: #fff;
 }
+
+.grey-text {
+  color: grey;
+}
+
+.blue-text {
+  color: #5078f1;
+}
+
+.active-page {
+  top: 0px;
+  margin:0px;  
+  padding: 0px 2px 0px 3px;    
+  border-width: 2px;
+  border-bottom: 2px #5078f1 solid;
+  color: #5078f1;
+}
