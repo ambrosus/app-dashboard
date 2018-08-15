@@ -1,0 +1,239 @@
+[
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1531389862,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.identifiers",
+              "identifiers": {
+                 "Production code": [
+                    "L0128"
+                 ]
+              }
+           },
+           {
+              "type": "ambrosus.asset.info",
+              "name": "Product name",
+              "assetType": "info",
+              "images": {
+                 "default": {
+                    "url": "https://cdn.stocksnap.io/img-thumbs/960w/BYYO0AG3ZE.jpg"
+                 }
+              },
+              "Product Information": {
+                 "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+              }
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1525972747,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.displayed",
+              "name": "Displayed"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       29.9621546,
+                       -95.5466907
+                    ]
+                 }
+              },
+              "name": "River",
+              "city": "Houston",
+              "country": "Texas, USA",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1522054929,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.received",
+              "name": "Warehouse Inspection"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       45.8226165,
+                       8.749495
+                    ]
+                 }
+              },
+              "name": "Galveston",
+              "city": "Galveston",
+              "country": "Texas, USA",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1517826665,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.imported",
+              "name": "Product Imported"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       45.8226165,
+                       8.749495
+                    ]
+                 }
+              },
+              "name": "Galveston",
+              "city": "Galveston",
+              "country": "Texas, USA",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1515580265,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.inspected",
+              "name": "Post-shipment Inspection"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       40.0692366,
+                       -74.1758856
+                    ]
+                 }
+              },
+              "name": "Brick",
+              "city": "New Jersey",
+              "country": "USA",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1514100665,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.exported",
+              "name": "Product Exported"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       55.1999442,
+                       -6.5290512
+                    ]
+                 }
+              },
+              "name": "County Antrim",
+              "city": "County Antrim",
+              "country": "County Antrim BT57 8XH, UK",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  },
+  {
+     "content": {
+        "idData": {
+           "assetId": "{{assetId}}",
+           "timestamp": 1498894260,
+           "accessLevel": 0,
+           "createdBy": "{{userAddress}}"
+        },
+        "data": [
+           {
+              "type": "ambrosus.asset.manufactured",
+              "name": "Product Manufactured"
+           },
+           {
+              "type": "ambrosus.event.location",
+              "location": {
+                 "type": "Feature",
+                 "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                       55.1999442,
+                       -6.5290512
+                    ]
+                 }
+              },
+              "name": "County Antrim",
+              "city": "County Antrim",
+              "country": "County Antrim BT57 8XH, UK",
+              "locationId": "809c578721b74cae1d56504594819285",
+              "GLN": 9501101530003
+           }
+        ]
+     }
+  }
+]

@@ -1,7 +1,8 @@
 import { environment } from 'environments/environment';
 import { StorageService } from 'app/services/storage.service';
-import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subject, Observable, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
@@ -9,7 +10,7 @@ declare let Web3: any;
 @Injectable({
   providedIn: 'root'
 })
-export class AssetsService {
+export class AssetsService implements OnDestroy {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
   inputChanged = new Subject();
@@ -24,9 +25,18 @@ export class AssetsService {
   editInfoEventJSON;
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
+  // demo
+  demoData;
+  demoSubscription: Subscription;
 
-  constructor(private storage: StorageService) {
+  constructor(private storage: StorageService, private http: HttpClient) {
     this.initSDK();
+  }
+
+  ngOnDestroy() {
+    if (this.demoSubscription) {
+      this.demoSubscription.unsubscribe();
+    }
   }
 
   initSDK() {
@@ -39,6 +49,34 @@ export class AssetsService {
       headers: {
         Authorization: `AMB_TOKEN ${this.storage.get('token')}`
       }
+    });
+  }
+
+  // demo
+  generateDemoAssets(assetsNumber) {
+    return new Observable(observer => {
+      this.http.get('/assets/demo/asset.json').subscribe(asset => {
+        const assetsNumberArray = [];
+        for (let i = 0; i < assetsNumber; i++) {
+          assetsNumberArray.push(i);
+        }
+
+        assetsNumberArray.forEach(() => {
+          const a = JSON.parse(JSON.stringify(asset));
+          const demoDataItem = this.demoData.groups[Math.floor(Math.random() * this.demoData.groups.length)];
+          a[0]['content']['data'][1]['name'] = demoDataItem['title'];
+          a[0]['content']['data'][1]['Product Information']['Description'] = demoDataItem['description'];
+          a[0]['content']['data'][1]['images']['default']['url'] = demoDataItem['image'];
+
+          const createdAsset = this.createAsset(a).toPromise();
+
+          createdAsset.then(result => console.log(result)).catch(err => console.log(err));
+        });
+
+        observer.complete();
+      }, err => {
+        observer.error(err);
+      });
     });
   }
 

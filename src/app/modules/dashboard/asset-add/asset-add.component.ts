@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material';
   providers: [AssetsService]
 })
 export class AssetAddComponent implements OnInit {
+  demo;
   assetForm: FormGroup;
   error = false;
   invalidJSON = false;
@@ -47,6 +48,12 @@ export class AssetAddComponent implements OnInit {
   errorJSON = false;
   textArea: any = '';
   buttonText = 'Create asset';
+  // demo
+  demoForm: FormGroup;
+  errorDemo;
+  successDemo;
+  demoData;
+  demoAssetsCreated;
 
   @Input() prefill;
   @Input() assetId;
@@ -65,6 +72,78 @@ export class AssetAddComponent implements OnInit {
     private dialogRef: MatDialog
   ) {
     this.initForm();
+    // demo
+    this.initDemoForm();
+  }
+
+  initDemoForm() {
+    this.demoForm = new FormGroup({
+      assetsNumber: new FormControl(10, [Validators.required]),
+      groups: new FormArray([
+        new FormGroup({
+          title: new FormControl('Product name', [Validators.required]),
+          image: new FormControl('https://cdn.stocksnap.io/img-thumbs/960w/BYYO0AG3ZE.jpg', [Validators.required]),
+          description: new FormControl('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', [Validators.required])
+        })
+      ])
+    });
+  }
+
+  // Methods for adding/removing new fields to demo form
+  demoRemove(array, index: number) {
+    (<FormArray>this.demoForm.get(array)).removeAt(index);
+  }
+
+  addGroup() {
+    (<FormArray>this.demoForm.get('groups')).push(
+      new FormGroup({
+        title: new FormControl('Product name', [Validators.required]),
+        image: new FormControl('https://cdn.stocksnap.io/img-thumbs/960w/BYYO0AG3ZE.jpg', [Validators.required]),
+        description: new FormControl('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', [Validators.required])
+      })
+    );
+  }
+
+  onDemo() {
+    this.errorDemo = false;
+    this.demoAssetsCreated = null;
+
+    if (this.demoForm.valid) {
+      this.spinner = true;
+      this.demoData = {
+        assets: this.demoForm.get('assetsNumber').value,
+        groups: []
+      };
+
+      if (!confirm(`You are about to create ${this.demoData.assets} demo assets, are you sure you want to proceed?`)) {
+        this.spinner = false;
+        return;
+      }
+
+      // Demo data
+      const groups = this.demoForm.get('groups')['controls'];
+      if (groups.length > 0) {
+        groups.map((g) => {
+          const group = {};
+          group['title'] = g.get('title').value;
+          group['image'] = g.get('image').value;
+          group['description'] = g.get('description').value;
+          this.demoData.groups.push(group);
+        });
+      }
+      // Create random assets (method in assets service)
+      this.assetService.demoData = this.demoData;
+      const assetsNumber = this.demoData.assets;
+      this.assetService.generateDemoAssets(assetsNumber).subscribe(
+      resp => { },
+      err => { },
+      () => {
+        this.spinner = false;
+        this.demoAssetsCreated = 'Assets created!';
+      });
+    } else {
+      this.errorDemo = 'All fields are required.';
+    }
   }
 
   ngOnInit() {
@@ -90,6 +169,8 @@ export class AssetAddComponent implements OnInit {
       this.prefillForm();
       this.buttonText = 'Edit info event';
     }
+    // demo
+    this.demo = this.storage.get('demo');
   }
 
   prefillForm() {

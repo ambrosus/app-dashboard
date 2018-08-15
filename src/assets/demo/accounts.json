@@ -1,0 +1,37 @@
+[
+  {
+    "full_name": "Dave",
+    "email": "dave@meet.com",
+    "company": "Meet",
+    "address": "0x4Cf0f0AF0128574c287658c864290281e4D30C17",
+    "secret": "0xeb464e5f834e0795a0eb1e80666bffd41551b1bc8037f8621bb3cae408f28ad8"
+  },
+  {
+    "full_name": "Joe",
+    "email": "joe@drinks.com",
+    "company": "Drinks",
+    "address": "0x699B3A6D7086CEbc051F36EA515Ed89F1c8Bab70",
+    "secret": "0xe734277c71c7ac7fe753340cb11812a5789e9ff0596e7f4d0fd43d64afc82ab9"
+  },
+  {
+    "full_name": "Lora",
+    "email": "lora@vegetables.com",
+    "company": "Vegetables",
+    "address": "0x3057E1e9aB2E81c1f53A3D2B4B7C0712b2374C1a",
+    "secret": "0x3ad35c3de2c9d0aebc4e751ec3843840f975c56940250cf348ac0a2e50182ffd"
+  },
+  {
+    "full_name": "Mark",
+    "email": "mark@medicine.com",
+    "company": "Medicine",
+    "address": "0x553ad821E4c43BeB0a51ef83930c48eB7eFFD42a",
+    "secret": "0xb0c3df8da5f2c9aa4dc5ff423cf00eb9688ed03df6774580d0dd7f19fa37c133"
+  },
+  {
+    "full_name": "Irine",
+    "email": "irine@alcohol.com",
+    "company": "Alcohol",
+    "address": "0x629a416912C04eCe6F0b4e47D1828c1b368d1ED0",
+    "secret": "0xa37463e8fcceb8854e81e455a20b770047e1e9f13d84f8b4f89040ee8606805f"
+  }
+]

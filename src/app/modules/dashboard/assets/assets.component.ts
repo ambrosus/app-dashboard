@@ -6,6 +6,7 @@ import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-assets',
@@ -55,7 +56,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private router: Router,
     private storage: StorageService,
     private auth: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private http: HttpClient
   ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
@@ -65,7 +67,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   pageLoad() {
-    this.assetsService = new AssetsService(this.storage);
+    this.assetsService = new AssetsService(this.storage, this.http);
     this.ngOnInit();
     this.loadAssets();
     this.el.nativeElement.querySelector('#search').value = '';
