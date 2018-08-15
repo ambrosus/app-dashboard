@@ -34,7 +34,10 @@ export class AssetsService {
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,
       secret: this.storage.get('secret'),
-      address: this.storage.get('address')
+      address: this.storage.get('address'),
+      headers: {
+        Authorization: `AMB_TOKEN ${this.storage.get('token')}`
+      }
     });
   }
 
