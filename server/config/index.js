@@ -5,7 +5,8 @@ try {
 
 module.exports = {
   db: magic ? magic.MONGODB_URI : process.env.MONGODB_URI,
+  port: process.env.PORT || 5000,
   email: {
-    API_KEY: magic ? magic.EMAIL_API : process.env.EMAIL_API,
+    API_KEY: magic ? magic.EMAIL_API_KEY : process.env.EMAIL_API_KEY,
   }
 };
