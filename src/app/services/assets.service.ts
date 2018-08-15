@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 
 declare let AmbrosusSDK: any;
+declare let Web3: any;
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,7 @@ export class AssetsService {
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: apiEndpoint,
       secret: this.storage.get('secret'),
-      address: this.storage.get('address'),
+      Web3: Web3,
       headers: {
         Authorization: `AMB_TOKEN ${this.storage.get('token')}`
       }
@@ -85,10 +86,10 @@ export class AssetsService {
       this.ambrosus.getEvents(queries).then(resp => {
         resolve(resp);
       })
-      .catch(err => {
-        console.log('GET events fail: ', err);
-        reject(err);
-      });
+        .catch(err => {
+          console.log('GET events fail: ', err);
+          reject(err);
+        });
     });
   }
 
@@ -159,7 +160,7 @@ export class AssetsService {
   }
 
   attachInfoEvents(resp, address = null) {
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // Unique events
       const events = this.latestEvents(resp.data.results);
       // Extract and build asset objects in []
@@ -182,13 +183,13 @@ export class AssetsService {
         createdBy: address,
         'data[type]': 'ambrosus.asset.info'
       };
-      this.ambrosus.getEvents(_params).then(function(info) {
+      this.ambrosus.getEvents(_params).then(function (info) {
         const _assets = {
           resultCount: resp.data.resultCount,
           assets: that.parseAssetsInfo(assets, info.data.results)
         };
         resolve(_assets);
-      }).catch(function(e) {
+      }).catch(function (e) {
         console.log('GET info events error: ', e);
         reject(e);
       });
@@ -220,25 +221,25 @@ export class AssetsService {
       // 1. Get all the assets
       this.ambrosus
         .getAssets(params)
-        .then(function(assets) {
+        .then(function (assets) {
           // 2. Get all info events
           const _params = {
             createdBy: address,
             'data[type]': 'ambrosus.asset.info'
           };
-          that.ambrosus.getEvents(_params).then(function(info) {
+          that.ambrosus.getEvents(_params).then(function (info) {
             const _assets = {
               resultCount: assets.data.resultCount,
               assets: that.parseAssetsInfo(assets.data.results, info.data.results)
             };
             that.storage.set('assets', _assets);
             return observer.next(_assets);
-          }).catch(function(e) {
+          }).catch(function (e) {
             console.log('Get info events error: ', e);
             return observer.error(e);
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log('Get assets error: ', error);
           return observer.error(error);
         });
@@ -281,10 +282,10 @@ export class AssetsService {
     return new Observable(observer => {
       this.ambrosus
         .createAsset(data)
-        .then(function(resp) {
+        .then(function (resp) {
           return observer.next(resp);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           return observer.error(error);
         });
     });
@@ -294,10 +295,10 @@ export class AssetsService {
     return new Promise((resolve, reject) => {
       this.ambrosus
         .createEvent(assetId, event)
-        .then(function(resp) {
+        .then(function (resp) {
           resolve(resp);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           reject(error);
         });
     });
