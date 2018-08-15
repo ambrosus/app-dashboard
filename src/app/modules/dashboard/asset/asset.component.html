@@ -19,13 +19,16 @@
       <div class="layout-split__col1" *ngIf="asset | checkIf: 'asset.info'">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
           Asset details
-          <app-svg-icon *ngIf="asset | checkIf: 'asset.info.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
+          <app-svg-icon *ngIf="asset | checkIf: 'asset.info.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId"
+            [queryParams]="{edit: 'true'}"></app-svg-icon>
         </h3>
 
         <div>
           <!-- image -->
-          <div class="item m-b-20 asset-image" *ngIf="!isObject(asset.info.images.default) && asset | checkIf: 'asset.info.images.default'">
-            <img src="{{ asset.info.images.default }}">
+          <div *ngIf="asset | checkIf: 'asset.info.images.default'">
+            <div class="item m-b-20 asset-image" *ngIf="!isObject(asset.info.images.default)">
+              <img src="{{ asset.info.images.default }}">
+            </div>
           </div>
           <div class="item m-b-20 asset-image" *ngIf="asset | checkIf: 'asset.info.images.default.url'">
             <img src="{{ asset.info.images.default.url }}">
