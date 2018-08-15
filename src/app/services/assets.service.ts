@@ -36,7 +36,7 @@ export class AssetsService {
       secret: this.storage.get('secret'),
       address: this.storage.get('address'),
       headers: {
-        Authorization: `AMB_TOKEN eyJpZERhdGEiOnsiY3JlYXRlZEJ5IjoiMHg1RmMyREVmRjc5YzY3ZjkwZjc4N2M2QTYxMTE0RTA5OTEwRTBjMDY3IiwidmFsaWRVbnRpbCI6MTk5NjMwMDgwMH0sInNpZ25hdHVyZSI6IjB4ZGVkMzM5ZjZlMmZiMDg2MjZlYWYwNWQ2OThlMTJhZGU5YWRiZDRjNjA4ZjkwMjkxYzZhMTQ2OGFjNTc2OTgxMjRjMmRjYzhiMzJjZjFlODUzMmRiNTZjODFhYjg1ZmQwNDY5YWM3NWIzZjEyODJmMzU1ZTI0Nzc3Njg0OTYzNTgxYyJ9`
+        Authorization: `AMB_TOKEN ${this.storage.get('token')}`
       }
     });
   }
