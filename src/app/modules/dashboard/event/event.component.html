@@ -56,7 +56,7 @@
         <h3 class="m-t-10 m-b-30 p-h-10 ">Basic info</h3>
 
         <!-- timestamp -->
-        <div class="item" *ngIf="event.content && event.content.idData && event.content.idData.timestamp">
+        <div class="item" *ngIf="event | checkIf: 'event.content.idData.timestamp'">
           <p class="item__cell__title ">timestamp: </p>
           <p class="item__cell ">{{ event.content.idData.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.content.idData.timestamp }})</p>
         </div>
@@ -66,7 +66,7 @@
           <p class="item__cell ">{{ event.eventId }}</p>
         </div>
 
-        <div *ngIf="event.content && event.content.idData">
+        <div *ngIf="event | checkIf: 'event.content.idData'">
           <div class="item" *ngFor="let key of objectKeys(event.content.idData) | loopExclude:[ 'timestamp']">
             <p class="item__cell__title ">{{ key }}: </p>
             <p class="item__cell ">{{ event.content.idData[key] }}</p>

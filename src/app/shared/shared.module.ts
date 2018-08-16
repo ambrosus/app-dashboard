@@ -23,6 +23,7 @@ import { NotificationComponent } from './components/notification/notification.co
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
+import { CheckIfPipe } from './pipes/checkIf.pipe';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
@@ -47,7 +48,8 @@ import { PaginationComponent } from './components/pagination/pagination.componen
     QrCodeComponent,
     NotificationComponent,
     MatDialogModule,
-    PaginationComponent
+    PaginationComponent,
+    CheckIfPipe
   ],
   declarations: [
     HeaderComponent,
@@ -68,7 +70,8 @@ import { PaginationComponent } from './components/pagination/pagination.componen
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent,
-    PaginationComponent
+    PaginationComponent,
+    CheckIfPipe
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
