@@ -158,6 +158,7 @@ export class EventAddComponent implements OnInit {
           this.eventForm.get('type').setValue(obj.type);
           this.eventForm.get('name').setValue(obj.name);
           this.eventForm.get('description').setValue(obj.description || '');
+          this.eventForm.get('accessLevel').setValue(obj.accessLevel || '0');
           let i = 0;
 
           Object.keys(obj).map(key => {
@@ -198,7 +199,7 @@ export class EventAddComponent implements OnInit {
                 break;
 
               default:
-                if (key !== 'type' && key !== 'name' && key !== 'description') {
+                if (key !== 'type' && key !== 'name' && key !== 'description' && key !== 'accessLevel') {
                   (<FormArray>this.eventForm.get('customData')).push(
                     new FormGroup({
                       customDataKey: new FormControl(key, [Validators.required]),
@@ -228,6 +229,7 @@ export class EventAddComponent implements OnInit {
       type: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl('', []),
+      accessLevel: new FormControl(0, [Validators.required]),
       documents: new FormArray([]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
@@ -423,7 +425,7 @@ export class EventAddComponent implements OnInit {
     event['content']['idData'] = {};
     event['content']['idData']['assetId'] = 'placeholder';
     event['content']['idData']['createdBy'] = this.storage.get('address');
-    event['content']['idData']['accessLevel'] = 0;
+    event['content']['idData']['accessLevel'] = this.eventForm.get('accessLevel').value;
     event['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 
     // event.content.data
