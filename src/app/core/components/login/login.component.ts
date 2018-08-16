@@ -1,5 +1,5 @@
 import { AuthService } from 'app/services/auth.service';
-import { Component, ElementRef, Renderer2, Input} from '@angular/core';
+import { Component, ElementRef, Renderer2, Input, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material';
   styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   addressForm: FormGroup;
   loginPage = true;
@@ -49,6 +49,23 @@ export class LoginComponent {
     this.loginPage = location.pathname.includes('/login');
   }
 
+  ngOnInit() {
+    const url = `/api/hermes`;
+
+    this.http.get(url).subscribe(
+      (resp: any) => {
+        if (resp.resultCount === 0) {
+          this.router.navigate(['/hermes']);
+        } else {
+          this.storage.set('hermes', resp.data[0]);
+        }
+      },
+      err => {
+        console.log('Hermes GET error: ', err);
+      }
+    );
+  }
+
   tabOpen(open, element) {
     this.email = open === 'email' ? true : false;
     this.address = open === 'address' ? true : false;
@@ -72,9 +89,9 @@ export class LoginComponent {
     const secret = this.addressForm.get('secret').value;
 
     let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? JSON.parse(accounts) : [];
+    accounts = accounts ? accounts : [];
 
-    if (accounts.some((account) => account.address === address)) {
+    if (accounts.some((account) => account.address === address) && location.pathname !== '/login') {
       this.alreadyLoggedIn = true;
       return;
     }
@@ -105,7 +122,7 @@ export class LoginComponent {
     const password = this.loginForm.get('password').value;
 
     let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? JSON.parse(accounts) : [];
+    accounts = accounts ? accounts : [];
 
     if (accounts.some((account) => account.email === email)) {
       this.alreadyLoggedIn = true;
@@ -121,7 +138,7 @@ export class LoginComponent {
         password
       };
 
-      const url = `/api/auth/login`;
+      const url = `/api/person/login`;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {

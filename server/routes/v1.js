@@ -47,6 +47,7 @@ apiRoutes.use('/person', PersonRoutes);
 
 PersonRoutes.post('/login', PersonController.login);
 PersonRoutes.post('/resetpassword', PersonController.resetpassword);
+PersonRoutes.get('/accounts/:address', PersonController.account);
 
 /********************************
 

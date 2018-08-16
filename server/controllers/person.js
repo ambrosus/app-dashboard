@@ -4,10 +4,13 @@ const Person = require('../models/person');
 
 exports.login = (req, res) => {
   const email = req.body.email;
+  const address = req.body.address;
   const password = req.body.password;
 
-  if (email && password) {
-    Person.findOne({ email })
+  if ((email || address) && password) {
+    const query = email ? { email } : { address };
+
+    Person.findOne(query)
       .populate({
         path: 'company',
         populate: [
@@ -34,12 +37,40 @@ exports.login = (req, res) => {
       .catch(error => {
         return res.status(400).json({ message: error });
       });
-  } else if (!email) {
-    res.status(400).json({ message: 'email is required' });
+  } else if (!(email || address)) {
+    res.status(400).json({ message: 'email or address is required' });
   } else if (!password) {
     res.status(400).json({ message: 'password is required' });
   }
 };
+
+exports.account = (req, res) => {
+  const address = req.params.address;
+
+  if (address) {
+    const query = { address };
+
+    Person.findOne(query)
+      .populate({
+        path: 'company',
+        populate: [
+          { path: 'hermes' }
+        ]
+      })
+      .then(person => {
+        if (person) {
+          res.status(200).json(person);
+        } else {
+          throw 'No account found';
+        }
+      })
+      .catch(error => {
+        return res.status(400).json({ message: error });
+      });
+  } else if (!address) {
+    res.status(400).json({ message: 'address is required' });
+  }
+}
 
 exports.resetpassword = (req, res) => {
   const email = req.body.email;

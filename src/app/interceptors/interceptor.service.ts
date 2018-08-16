@@ -12,12 +12,12 @@ export class InterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.storage.get('token');
-    const secret = this.storage.get('secret');
-    const address = this.storage.get('address');
+    const { address, secret } = <any>this.storage.get('person') || <any>{};
+    const hermes: any = this.storage.get('hermes') || <any>{};
 
     let request: HttpRequest<any> = req.clone();
 
-    if (req.url === `${environment.host}${environment.apiUrls.address}${address}`) {
+    if (req.url === `${hermes.url}/accounts/${address}`) {
       request = req.clone({
         headers: new HttpHeaders({
           Accept: 'application/json',

@@ -11,12 +11,13 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { HermesregisterComponent } from './components/hermesregister/hermesregister.component';
 
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SignupComponent],
+  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SignupComponent, HermesregisterComponent],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
