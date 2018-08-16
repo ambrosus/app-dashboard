@@ -11,7 +11,10 @@ const app = express();
 
 // Mongoose
 // mongoose.connect('mongodb://localhost:27017/dash', { useNewUrlParser: true });
-mongoose.connect(config.db, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost:27017/dash', { useNewUrlParser: true })
+.then(connected => console.log('Mongodb connected'))
+.catch(error => console.log('Mongodb connection error: ', error));
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));
