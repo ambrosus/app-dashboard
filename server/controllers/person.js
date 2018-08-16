@@ -1,161 +1,83 @@
+const utilsPassword = require('../utils/password');
 
-
-exports.resetpassword = (req, res) => {
-  const email = req.body.email;
-  const oldPassword = req.body.oldPassword;
-  const newPassword = req.body.password;
-
-  const account = accountExists(email);
-
-  if (email && oldPassword && newPassword && account) {
-    const [address, secret] = decrypt(account.token, oldPassword).split('|||');
-
-    if (address && secret) {
-      // Resign with newPassword
-      account.token = encrypt(`${address}|||${secret}`, newPassword);
-
-      let accounts = getAccounts();
-      accounts = accounts.map(a => (a.email === email ? account : a));
-
-      if (saveAccounts(accounts)) {
-        res.status(200).json({
-          message: 'Reset password succesfull.'
-        });
-      } else {
-        res.status(400).json({
-          message: 'Reset password failed.'
-        });
-      }
-    } else {
-      return res.status(401).json({
-        message: 'Password is incorrect.'
-      });
-    }
-  } else if (!email) {
-    return res.status(401).json({
-      message: 'E-mail is missing.'
-    });
-  } else if (!oldPassword) {
-    return res.status(401).json({
-      message: 'Old password is missing.'
-    });
-  } else if (!newPassword) {
-    return res.status(401).json({
-      message: 'Password is missing'
-    });
-  } else {
-    return res.status(401).json({
-      message: 'Account does not exists.'
-    });
-  }
-};
+const Person = require('../models/person');
 
 exports.login = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const account = accountExists(email);
 
-  if (email && password && account) {
-    const [address, secret] = decrypt(account.token, password).split('|||');
+  if (email && password) {
+    Person.findOne({ email })
+      .populate({
+        path: 'company',
+        populate: [
+          { path: 'hermes' }
+        ]
+      })
+      .then(person => {
+        if (person) {
+          const [address, secret] = utilsPassword.decrypt(person.token, password).split('|||');
 
-    if (address && secret) {
-      res.status(200).json({
-        address,
-        secret
+          if (address && secret) {
+            res.status(200).json({
+              person,
+              address,
+              secret
+            });
+          } else {
+            return res.status(401).json({ message: 'password is incorrect' });
+          }
+        } else {
+          throw 'No account found';
+        }
+      })
+      .catch(error => {
+        return res.status(400).json({ message: error });
       });
-    } else {
-      return res.status(401).json({
-        message: 'Password is incorrect.'
-      });
-    }
   } else if (!email) {
-    return res.status(401).json({
-      message: 'E-mail is missing.'
-    });
+    res.status(400).json({ message: 'email is required' });
   } else if (!password) {
-    return res.status(401).json({
-      message: 'Password is missing'
-    });
-  } else {
-    return res.status(401).json({
-      message: 'Account does not exists.'
-    });
+    res.status(400).json({ message: 'password is required' });
   }
 };
 
-exports.accounts = (req, res) => {
-  const accounts = getAccounts();
+exports.resetpassword = (req, res) => {
+  const email = req.body.email;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
 
-  if (accounts.length > 0) {
-    const _accounts = [];
+  if (email && oldPassword && newPassword) {
+    Person.findOne({ email })
+      .then(person => {
+        if (person) {
+          const [address, secret] = utilsPassword.decrypt(person.token, oldPassword).split('|||');
 
-    accounts.map(account => {
-      _accounts.push({
-        full_name: account.full_name,
-        address: account.address
+          if (address && secret) {
+            person.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
+
+            person
+              .save()
+              .then(saved => {
+                return res.status(200).json({ message: 'Reset password success' });
+              })
+              .catch(error => {
+                return res.status(400).json({ message: 'Reset password failed' });
+              });
+          } else {
+            return res.status(401).json({ message: 'password is incorrect' });
+          }
+        } else {
+          throw 'No account found';
+        }
+      })
+      .catch(error => {
+        return res.status(400).json({ message: error });
       });
-    });
-
-    res.status(200).json({
-      resultCount: _accounts.length,
-      data: _accounts,
-      message: 'Success'
-    });
-  } else {
-    return res.status(404).json({
-      message: 'No accounts'
-    });
+  } else if (!email) {
+    res.status(400).json({ message: 'email is required' });
+  } else if (!oldPassword) {
+    res.status(400).json({ message: 'oldPassword is required' });
+  } else if (!newPassword) {
+    res.status(400).json({ message: 'newPassword is required' });
   }
-}
-
-exports.account = (req, res) => {
-  const address = req.params.address;
-  const accounts = getAccounts();
-
-  if (accounts.length > 0) {
-    const account = accounts.find((acc) => acc.address === address);
-
-    if (account) {
-      res.status(200).json({
-        account,
-        accounts,
-        notifications: notifications.getNewestNotifications(address)
-      });
-    } else {
-      return res.status(404).json({message: 'No account'});
-    }
-  } else {
-    return res.status(404).json({message: 'No accounts'});
-  }
-}
-
-exports.edit = (req, res) => {
-  const address = req.params.address;
-  const settings = req.body.settings;
-  const accounts = getAccounts();
-  let updateOptions = {};
-  Object.keys(req.body).map((opt) => {
-    updateOptions[opt] = req.body[opt];
-  });
-  updateOptions = Object.entries(updateOptions)
-    .filter((opt) => opt[0] === 'full_name' || opt[0] === 'email' || opt[0] === 'company');
-
-  accounts.map((account) => {
-    if (account.address === address) {
-      updateOptions.map((opt) => {
-        account[opt[0]] = opt[1];
-      });
-      // notifications
-      account.settings.notifications.asset.create = settings.notifications.indexOf((n) => n === 'assetCreate') > -1 ? true : false;
-      account.settings.notifications.asset.edit = settings.notifications.indexOf((n) => n === 'assetEdit') > -1 ? true : false;
-      account.settings.notifications.event.create = settings.notifications.indexOf((n) => n === 'eventCreate') > -1 ? true : false;
-      account.settings.notifications.event.edit = settings.notifications.indexOf((n) => n === 'eventEdit') > -1 ? true : false;
-    }
-  });
-
-  if (saveAccounts(accounts)) {
-    res.status(200).json({ message: 'Edit successful' });
-  } else {
-    res.status(200).json({ message: 'Edit failed' });
-  }
-}
+};

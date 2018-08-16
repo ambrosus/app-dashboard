@@ -17,7 +17,7 @@ const hermesSchema = mongoose.Schema({
   },
   public: {
     type: Boolean,
-    required: true
+    default: true
   },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }

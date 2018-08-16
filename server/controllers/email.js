@@ -1,5 +1,5 @@
 const sgMail = require('@sendgrid/mail'),
-      config = require('../config');
+  config = require('../config');
 
 sgMail.setApiKey(config.email.API_KEY);
 
@@ -17,20 +17,22 @@ exports.sendEmail = (req, res) => {
       html
     };
 
-    sgMail.send(msg).then(() => {
-      res.status(200).json({ message: 'success' });
-    })
-    .catch(error => {
-      console.error('Email send error: ', JSON.stringify(error, null, 2));
-      res.status(400).json({ message: error });
-    });
+    sgMail
+      .send(msg)
+      .then(() => {
+        res.status(200).json({ message: 'success' });
+      })
+      .catch(error => {
+        console.error('Email send error: ', JSON.stringify(error, null, 2));
+        res.status(400).json({ message: error });
+      });
   } else if (!to) {
-    res.status(400).json({ message: 'To is required.' });
+    res.status(400).json({ message: 'to is required.' });
   } else if (!from) {
-    res.status(400).json({ message: 'From is required.' });
+    res.status(400).json({ message: 'from is required.' });
   } else if (!subject) {
-    res.status(400).json({ message: 'Subject is required.' });
+    res.status(400).json({ message: 'subject is required.' });
   } else if (!html) {
-    res.status(400).json({ message: 'HTML (email message/body) is required.' });
+    res.status(400).json({ message: 'html (email message/body) is required.' });
   }
-}
+};
