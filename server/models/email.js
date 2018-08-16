@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const inviteSchema = mongoose.Schema({
+const emailSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   by: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,14 +20,14 @@ const inviteSchema = mongoose.Schema({
   updated: { type: Date, default: Date.now }
 });
 
-inviteSchema.pre('update', function(next) {
+emailSchema.pre('update', function(next) {
   this.updated = Date.now();
   next();
 });
 
-inviteSchema.pre('save', function(next) {
+emailSchema.pre('save', function(next) {
   this.updated = Date.now();
   next();
 });
 
-module.exports = mongoose.model('Invite', inviteSchema);
+module.exports = mongoose.model('Email', emailSchema);

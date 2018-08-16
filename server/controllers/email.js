@@ -17,9 +17,7 @@ exports.sendEmail = (req, res) => {
       html
     };
 
-    sgMail
-    .send(msg)
-    .then(() => {
+    sgMail.send(msg).then(() => {
       res.status(200).json({ message: 'success' });
     })
     .catch(error => {
@@ -27,12 +25,12 @@ exports.sendEmail = (req, res) => {
       res.status(400).json({ message: error });
     });
   } else if (!to) {
-    res.status(400).json({ message: 'to is required.' });
+    res.status(400).json({ message: 'To is required.' });
   } else if (!from) {
-    res.status(400).json({ message: 'from is required.' });
+    res.status(400).json({ message: 'From is required.' });
   } else if (!subject) {
-    res.status(400).json({ message: 'subject is required.' });
+    res.status(400).json({ message: 'Subject is required.' });
   } else if (!html) {
-    res.status(400).json({ message: 'html (email message/body) is required.' });
+    res.status(400).json({ message: 'HTML (email message/body) is required.' });
   }
 }

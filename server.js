@@ -10,7 +10,7 @@ const apiRoutes = require('./server/routes/v1');
 const app = express();
 
 // Mongoose
-mongoose.connect(config.db, { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost:27017/dash', { useNewUrlParser: true });
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));

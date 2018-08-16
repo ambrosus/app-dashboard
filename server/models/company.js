@@ -6,13 +6,13 @@ const companySchema = mongoose.Schema({
     type: String,
     required: true
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Person'
-  },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hermes'
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Person'
   },
   public: {
     type: Boolean,
