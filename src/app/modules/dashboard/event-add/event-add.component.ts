@@ -93,6 +93,7 @@ export class EventAddComponent implements OnInit {
 
   prefillForm() {
     const event = this.prefill;
+    this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel || '0');
     event.content.data.map(obj => {
       switch (obj.type) {
         case 'ambrosus.event.location':
@@ -158,7 +159,6 @@ export class EventAddComponent implements OnInit {
           this.eventForm.get('type').setValue(obj.type);
           this.eventForm.get('name').setValue(obj.name);
           this.eventForm.get('description').setValue(obj.description || '');
-          this.eventForm.get('accessLevel').setValue(obj.accessLevel || '0');
           let i = 0;
 
           Object.keys(obj).map(key => {
