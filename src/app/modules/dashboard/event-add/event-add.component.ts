@@ -86,6 +86,8 @@ export class EventAddComponent implements OnInit {
       this.assetService.selectAsset(this.assetId);
       this.prefillForm();
       this.buttonText = 'Edit event';
+    } else if (this.assetId) {
+      this.assetService.selectAsset(this.assetId);
     }
   }
 
