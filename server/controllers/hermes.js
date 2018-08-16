@@ -1,0 +1,4 @@
+
+exports.register = (req, res) => {
+
+}

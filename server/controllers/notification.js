@@ -1,39 +1,4 @@
-const fs = require('fs');
-const uuidv4 = require('uuid/v4');
 
-let notifications_cache;
-
-function getNotifications() {
-
-  if (notifications_cache){
-    return notifications_cache;
-  }
-
-  if (!fs.existsSync(`${__dirname}/../notifications.json`)) {
-    fs.writeFile(`${__dirname}/../notifications.json`, JSON.stringify({}));
-  }
-
-  try {
-    notifications_cache = JSON.parse(fs.readFileSync(`${__dirname}/../notifications.json`));
-  } catch (err) {
-    notifications_cache = {};
-  }
-
-  return getNotifications();
-}
-
-function saveNotifications(notifications) {
-  if (notifications) {
-    try {
-      fs.writeFileSync(`${__dirname}/../notifications.json`, JSON.stringify(notifications));
-      notifications_cache = notifications;
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-  return false;
-}
 
 exports.create = (req, res) => {
   const address = req.params.address;
@@ -70,16 +35,16 @@ exports.create = (req, res) => {
   }
 }
 
-exports.viewed = (req, res) => {
+exports.seen = (req, res) => {
   const address = req.params.address;
-  const viewedNotifications = req.body.notifications;
+  const seenNotifications = req.body.notifications;``
   const notifications = getNotifications();
 
-  if (Array.isArray(viewedNotifications) && viewedNotifications.length > 0) {
+  if (Array.isArray(seenNotifications) && seenNotifications.length > 0) {
     if (notifications[address]) {
       notifications[address].map((n) => {
         if (!n.viewed) {
-          n.viewed = viewedNotifications.indexOf(n._id) > -1 ? true : false;
+          n.viewed = seenNotifications.indexOf(n._id) > -1 ? true : false;
         }
       });
 
@@ -125,25 +90,5 @@ exports.get = (req, res) => {
     });
   } else {
     res.status(404).json({ message: 'No address' });
-  }
-}
-
-exports.clean = (req, res) => {
-  const notifications = getNotifications();
-
-  if (Object.keys(notifications).length > 0) {
-    if (saveNotifications({})) {
-      return res.status(200).json({
-        message: 'Cleanup successful'
-      });
-    } else {
-      return res.status(400).json({
-        message: 'Cleanup failed'
-      });
-    }
-  } else {
-    return res.status(404).json({
-      message: 'No notifications'
-    });
   }
 }
