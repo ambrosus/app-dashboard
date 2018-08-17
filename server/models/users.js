@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const personSchema = mongoose.Schema({
+const usersSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   full_name: {
     type: String,
@@ -12,7 +12,7 @@ const personSchema = mongoose.Schema({
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company'
+    ref: 'Companies'
   },
   address: {
     type: String,
@@ -23,9 +23,8 @@ const personSchema = mongoose.Schema({
     required: true
   },
   role: {
-    type: String,
-    enum: [1, 2, 3, 4, 5],
-    default: 1
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Roles'
   },
   active: {
     type: Boolean,
@@ -59,18 +58,18 @@ const personSchema = mongoose.Schema({
       }
     }
   },
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: +new Date() },
+  updatedAt: { type: Date, default: +new Date() }
 });
 
-personSchema.pre('update', function(next) {
-  this.updated = Date.now();
+usersSchema.pre('update', function(next) {
+  this.updatedAt = +new Date();
   next();
 });
 
-personSchema.pre('save', function(next) {
-  this.updated = Date.now();
+usersSchema.pre('save', function(next) {
+  this.updatedAt = +new Date();
   next();
 });
 
-module.exports = mongoose.model('Person', personSchema);
+module.exports = mongoose.model('Users', usersSchema);

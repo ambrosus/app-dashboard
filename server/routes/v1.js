@@ -1,63 +1,63 @@
 const express = require('express');
 
 // Controllers
-const HermesController = require('../controllers/hermes');
-const CompanyController = require('../controllers/company');
-const PersonController = require('../controllers/person');
-const EmailController = require('../controllers/email');
-const NotificationController = require('../controllers/notification');
+const HermesesController = require('../controllers/hermeses');
+const CompaniesController = require('../controllers/companies');
+const UsersController = require('../controllers/users');
+const InvitesController = require('../controllers/invites');
+const NotificationController = require('../controllers/notifications');
 
 // API routes
 const apiRoutes = express.Router();
 
-const HermesRoutes = express.Router();
-const CompanyRoutes = express.Router();
-const PersonRoutes = express.Router();
-const EmailRoutes = express.Router();
-const NotificationRoutes = express.Router();
+const HermesesRoutes = express.Router();
+const CompaniesRoutes = express.Router();
+const UsersRoutes = express.Router();
+const InvitesRoutes = express.Router();
+const NotificationsRoutes = express.Router();
 
 /********************************
 
-        hermes endpoints
+        hermeses endpoints
 
 ********************************/
 
-apiRoutes.use('/hermes', HermesRoutes);
+apiRoutes.use('/hermeses', HermesesRoutes);
 
-HermesRoutes.post('/', HermesController.register);
-HermesRoutes.get('/', HermesController.getAll);
+HermesesRoutes.post('/', HermesesController.create);
+HermesesRoutes.get('/', HermesesController.getAll);
 
 /********************************
 
-        company endpoints
+        companies endpoints
 
 ********************************/
 
-apiRoutes.use('/company', CompanyRoutes);
+apiRoutes.use('/companies', CompaniesRoutes);
 
-CompanyRoutes.post('/', CompanyController.create);
+CompaniesRoutes.post('/', CompaniesController.create);
 
 /********************************
 
-        person endpoints
+        users endpoints
 
 ********************************/
 
-apiRoutes.use('/person', PersonRoutes);
+apiRoutes.use('/users', UsersRoutes);
 
-PersonRoutes.post('/login', PersonController.login);
-PersonRoutes.post('/resetpassword', PersonController.resetpassword);
-PersonRoutes.get('/accounts/:address', PersonController.account);
+UsersRoutes.post('/login', UsersController.login);
+UsersRoutes.post('/changepassword', UsersController.changePassword);
+UsersRoutes.get('/accounts/:address', UsersController.getAccount);
 
 /********************************
 
-        email endpoints
+        invites endpoints
 
 ********************************/
 
-apiRoutes.use('/email', EmailRoutes);
+apiRoutes.use('/invites', InvitesRoutes);
 
-EmailRoutes.post('/', EmailController.sendEmail);
+InvitesRoutes.post('/', InvitesController.send);
 
 /********************************
 
@@ -65,11 +65,11 @@ EmailRoutes.post('/', EmailController.sendEmail);
 
 ********************************/
 
-// apiRoutes.use('/notification', NotificationRoutes);
+// apiRoutes.use('/notification', NotificationsRoutes);
 
-// NotificationRoutes.post('/:address', NotificationController.create);
-// NotificationRoutes.get('/:address', NotificationController.get);
-// NotificationRoutes.put('/:address/seen', NotificationController.seen);
+// NotificationsRoutes.post('/:address', NotificationController.create);
+// NotificationsRoutes.get('/:address', NotificationController.get);
+// NotificationsRoutes.put('/:address/seen', NotificationController.seen);
 
 
 module.exports = apiRoutes;

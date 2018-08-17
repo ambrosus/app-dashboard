@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 
-const Hermes = require('../models/hermes');
+const Hermes = require('../models/hermeses');
 
-exports.register = (req, res) => {
+exports.create = (req, res) => {
   const title = req.body.title;
   const url = req.body.url;
-  const type = req.body.type;
 
-  if (title && url && type && (type === 'dev' || type === 'test' || type === 'prod')) {
+  if (title && url) {
     Hermes.findOne({ url: url })
       .then(hermes => {
         if (hermes) {
@@ -16,8 +15,7 @@ exports.register = (req, res) => {
           const hermes = new Hermes({
             _id: new mongoose.Types.ObjectId(),
             title,
-            url,
-            type
+            url
           });
 
           hermes
@@ -37,18 +35,18 @@ exports.register = (req, res) => {
         res.status(400).json({ message: error });
       });
   } else if (!title) {
-    res.status(400).json({ message: 'title is required' });
+    res.status(400).json({ message: '"title" is required' });
   } else if (!url) {
-    res.status(400).json({ message: 'url is required' });
-  } else if (!type) {
-    res.status(400).json({ message: 'type is required' });
-  } else if (!(type === 'dev' || type === 'test' || type === 'prod')) {
-    res.status(400).json({ message: 'type needs to be either: dev, test or prod' });
+    res.status(400).json({ message: '"url" is required' });
   }
 };
 
 exports.getAll = (req, res) => {
-  Hermes.find()
+  const query = {
+    public: true
+  }
+
+  Hermes.find(query)
     .then(results => {
       res.status(200).json({
         resultCount: results.length,

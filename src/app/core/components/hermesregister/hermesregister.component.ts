@@ -19,13 +19,12 @@ export class HermesregisterComponent implements OnInit {
               private storage: StorageService) {
     this.hermesForm = new FormGroup({
       title: new FormControl(null, [Validators.required]),
-      url: new FormControl(null, [Validators.required]),
-      type: new FormControl(null, [Validators.required])
+      url: new FormControl(null, [Validators.required])
     });
   }
 
   ngOnInit() {
-    const url = `/api/hermes`;
+    const url = `/api/hermeses`;
 
     this.http.get(url).subscribe(
       (resp: any) => {
@@ -41,19 +40,17 @@ export class HermesregisterComponent implements OnInit {
     );
   }
 
-  register() {
+  create() {
     const title = this.hermesForm.get('title').value;
     const url = this.hermesForm.get('url').value;
-    const type = this.hermesForm.get('type').value;
 
     if (this.hermesForm.valid) {
       const body = {
         title,
-        url,
-        type
+        url
       };
 
-      const _url = `/api/hermes`;
+      const _url = `/api/hermeses`;
 
       this.http.post(_url, body).subscribe(
         (resp: any) => {
@@ -62,7 +59,7 @@ export class HermesregisterComponent implements OnInit {
         },
         err => {
           this.spinner = false;
-          this.error = JSON.stringify(err.message ? err.message : err);
+          this.error = err.error.message ? err.error.message : 'Hermes creation error';
           console.log('Hermes register error: ', err);
         }
       );

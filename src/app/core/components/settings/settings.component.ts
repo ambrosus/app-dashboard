@@ -63,7 +63,7 @@ export class SettingsComponent implements OnInit {
     this.resetSuccess = false;
   }
 
-  resetPassword() {
+  changePassword() {
     this.resetErrors();
     const email = this.storage.get('email');
     const newPassword = this.resetForm.get('password').value;
@@ -98,7 +98,7 @@ export class SettingsComponent implements OnInit {
       newPassword
     };
 
-    this.http.post('/api/person/resetpassword', body).subscribe(
+    this.http.post('/api/users/changepassword', body).subscribe(
       resp => {
         this.spinner = false;
         this.resetSuccess = true;

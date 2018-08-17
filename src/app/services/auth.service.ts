@@ -38,7 +38,7 @@ export class AuthService {
 
   getAccountByAddress(address) {
     return new Observable(observer => {
-      const url = `/api/person/accounts/${address}`;
+      const url = `/api/users/accounts/${address}`;
 
       this.http.get(url).subscribe(
         resp => {
@@ -52,8 +52,7 @@ export class AuthService {
   }
 
   addAccount(person) {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? accounts : [];
+    const accounts: any = this.storage.get('accounts') || [];
 
     if (!accounts.some((account) => account.address === person.address || account.email === person.email)) {
       accounts.unshift(person);
@@ -63,8 +62,7 @@ export class AuthService {
   }
 
   switchAccount(address) {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? accounts : [];
+    const accounts: any = this.storage.get('accounts') || [];
 
     accounts.map((account, index) => {
       if (account.address === address) {
@@ -127,8 +125,7 @@ export class AuthService {
   }
 
   logout() {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? accounts : [];
+    const accounts: any = this.storage.get('accounts') || [];
     accounts.shift();
     this.storage.set('accounts', accounts);
 

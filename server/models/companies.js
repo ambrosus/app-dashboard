@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const companySchema = mongoose.Schema({
+const companiesSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   title: {
     type: String,
@@ -8,15 +8,11 @@ const companySchema = mongoose.Schema({
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hermes'
+    ref: 'Hermeses'
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Person'
-  },
-  public: {
-    type: Boolean,
-    default: true
+    ref: 'Users'
   },
   active: {
     type: Boolean,
@@ -33,18 +29,18 @@ const companySchema = mongoose.Schema({
     },
     logo: String
   },
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: +new Date() },
+  updatedAt: { type: Date, default: +new Date() }
 });
 
-companySchema.pre('update', function(next) {
-  this.updated = Date.now();
+companiesSchema.pre('update', function(next) {
+  this.updatedAt = +new Date();
   next();
 });
 
-companySchema.pre('save', function(next) {
-  this.updated = Date.now();
+companiesSchema.pre('save', function(next) {
+  this.updatedAt = +new Date();
   next();
 });
 
-module.exports = mongoose.model('Company', companySchema);
+module.exports = mongoose.model('Companies', companiesSchema);

@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    const url = `/api/hermes`;
+    const url = `/api/hermeses`;
 
     this.http.get(url).subscribe(
       (resp: any) => {
@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit {
         password
       };
 
-      const url = `/api/person/login`;
+      const url = `/api/users/login`;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {

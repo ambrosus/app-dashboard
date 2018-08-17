@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const utilsPassword = require('../utils/password');
 
-const Hermes = require('../models/hermes');
-const Company = require('../models/company');
-const Person = require('../models/person');
+const Hermes = require('../models/hermeses');
+const Company = require('../models/companies');
+const User = require('../models/users');
+const Role = require('../models/roles');
 
 exports.create = (req, res) => {
   const address = req.body.address;
@@ -19,10 +20,10 @@ exports.create = (req, res) => {
     Hermes.findById(hermes._id)
       .then(hermes => {
         if (hermes) {
-          // Find Person
-          Person.findOne({ email })
-            .then(person => {
-              if (person) {
+          // Find user
+          User.findOne({ email })
+            .then(user => {
+              if (user) {
                 throw 'Email is already in use';
               } else {
                 // Find Company
@@ -41,7 +42,7 @@ exports.create = (req, res) => {
                         .save()
                         .then(createdCompany => {
                           // Create the Owner
-                          const person = new Person({
+                          const user = new User({
                             _id: new mongoose.Types.ObjectId(),
                             full_name,
                             email,
@@ -50,10 +51,33 @@ exports.create = (req, res) => {
                             token: utilsPassword.encrypt(`${address}|||${secret}`, password)
                           });
 
-                          person
+                          user
                             .save()
-                            .then(createdPerson => {
-                              createdCompany['owner'] = createdPerson;
+                            .then(createdUser => {
+
+                              // Add a role to the user
+                              Role.findOne({ id: 1 })
+                              .then(role => {
+                                if (role) {
+                                  createdUser['role'] = role;
+                                  createdUser.save();
+                                } else {
+                                  const role = new Role({
+                                    title: 'admin',
+                                    id: 1
+                                  });
+                                  role.save()
+                                  .then(roleCreated => {
+                                    createdUser['role'] = roleCreated;
+                                    createdUser.save();
+                                  });
+                                }
+                              }).catch(error => {
+                                return res.status(400).json({ message: error });
+                              });
+
+                              // Add the user as company's owner
+                              createdCompany['owner'] = createdUser;
                               createdCompany
                                 .save()
                                 .then(success => {
@@ -96,18 +120,18 @@ exports.create = (req, res) => {
         res.status(400).json({ message: error });
       });
   } else if (!address) {
-    res.status(400).json({ message: 'address is required' });
+    res.status(400).json({ message: '"address" is required' });
   } else if (!secret) {
-    res.status(400).json({ message: 'secret is required' });
+    res.status(400).json({ message: '"secret" is required' });
   } else if (!full_name) {
-    res.status(400).json({ message: 'full_name is required' });
+    res.status(400).json({ message: '"full_name" is required' });
   } else if (!hermes) {
-    res.status(400).json({ message: 'hermes is required' });
+    res.status(400).json({ message: '"hermes" is required' });
   } else if (!title) {
-    res.status(400).json({ message: 'title is required' });
+    res.status(400).json({ message: '"title" is required' });
   } else if (!email) {
-    res.status(400).json({ message: 'email is required' });
+    res.status(400).json({ message: '"email" is required' });
   } else if (!password) {
-    res.status(400).json({ message: 'password is required' });
+    res.status(400).json({ message: '"password" is required' });
   }
 };

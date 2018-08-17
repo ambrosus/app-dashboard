@@ -47,7 +47,7 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
-    const url = `/api/hermes`;
+    const url = `/api/hermeses`;
 
     this.http.get(url).subscribe(
       (resp: any) => {
@@ -128,7 +128,7 @@ export class SignupComponent implements OnInit {
         password
       };
 
-      const url = `/api/company`;
+      const url = `/api/companies`;
 
       this.http.post(url, body).subscribe(
         resp => {
@@ -142,9 +142,9 @@ export class SignupComponent implements OnInit {
         },
         err => {
           this.spinner = false;
-          this.error = err.error.message ? err.error.message : err;
+          this.error = err.error.message ? err.error.message : 'Company creation error';
 
-          console.log('Signup failed: ', err);
+          console.log('Company creation failed: ', err);
         }
       );
     }

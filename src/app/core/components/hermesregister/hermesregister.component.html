@@ -4,7 +4,7 @@
 
     <div class="login__forms__wrapper" style="margin-top: 100px">
       <h3 class="p-h-30">Register Hermes Node</h3>
-      <form [formGroup]="hermesForm" (ngSubmit)="register()" class="form-group login-form" [ngClass]="{ error: error }">
+      <form [formGroup]="hermesForm" (ngSubmit)="create()" class="form-group login-form" [ngClass]="{ error: error }">
         <div class="form-text m-b-20">
           <label for="title">Hermes Title *</label>
           <input formControlName="title" type="text" name="title" id="title" spellcheck="false" appInput>
@@ -12,10 +12,6 @@
         <div class="form-text m-b-20">
           <label for="url">Hermes Gateway URL *</label>
           <input formControlName="url" type="text" name="url" id="url" spellcheck="false" appInput>
-        </div>
-        <div class="form-text m-b-20">
-          <label for="type">Type: dev, test or prod *</label>
-          <input formControlName="type" type="text" name="type" id="type" spellcheck="false" appInput>
         </div>
         <div class="flex flex-direction-r justify-content-fe align-items-c">
           <app-spinner *ngIf="spinner"></app-spinner>
