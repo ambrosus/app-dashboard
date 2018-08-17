@@ -290,6 +290,15 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkAsset(assetId) {
+    const selectedAssets = this.assetsService.getSelectedAssets();
+    if (selectedAssets.indexOf(assetId) === -1) {
+      this.assetsService.selectAsset(assetId);
+    } else {
+      this.assetsService.unselectAsset(assetId);
+    }
+  }
+
   createEventsDialog() {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',

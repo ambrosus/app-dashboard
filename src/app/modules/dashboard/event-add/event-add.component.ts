@@ -86,11 +86,14 @@ export class EventAddComponent implements OnInit {
       this.assetService.selectAsset(this.assetId);
       this.prefillForm();
       this.buttonText = 'Edit event';
+    } else if (this.assetId) {
+      this.assetService.selectAsset(this.assetId);
     }
   }
 
   prefillForm() {
     const event = this.prefill;
+    this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel || '0');
     event.content.data.map(obj => {
       switch (obj.type) {
         case 'ambrosus.event.location':
@@ -196,7 +199,7 @@ export class EventAddComponent implements OnInit {
                 break;
 
               default:
-                if (key !== 'type' && key !== 'name' && key !== 'description') {
+                if (key !== 'type' && key !== 'name' && key !== 'description' && key !== 'accessLevel') {
                   (<FormArray>this.eventForm.get('customData')).push(
                     new FormGroup({
                       customDataKey: new FormControl(key, [Validators.required]),
@@ -226,6 +229,7 @@ export class EventAddComponent implements OnInit {
       type: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl('', []),
+      accessLevel: new FormControl(0, [Validators.required]),
       documents: new FormArray([]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
@@ -421,7 +425,7 @@ export class EventAddComponent implements OnInit {
     event['content']['idData'] = {};
     event['content']['idData']['assetId'] = 'placeholder';
     event['content']['idData']['createdBy'] = <any>this.storage.get('person')['address'];
-    event['content']['idData']['accessLevel'] = 0;
+    event['content']['idData']['accessLevel'] = this.eventForm.get('accessLevel').value;
     event['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 
     // event.content.data
