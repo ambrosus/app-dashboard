@@ -89,10 +89,10 @@
   </div>
 </header>
 
-<div class="container" style="height: 50px; background-color: #F6F8FE;">
+<div class="container" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
   <div class="header-container wrapper">
     <div class="flex flex-direction-r justify-content-fs align-items-c">
-      <ul class="header-menu" *ngIf="isLoggedin">
+      <ul class="header-menu">
         <!-- Desktop menu -->
 
         <div routerLink="/assets" class="grey-text" routerLinkActive="active-page blue-text" style="cursor: pointer;">

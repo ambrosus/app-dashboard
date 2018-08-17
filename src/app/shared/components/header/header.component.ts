@@ -27,6 +27,10 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+    window.addEventListener('user:loggedin', () => {
+      this.headerInit();
+      console.log('This is it!');
+    });
     this.headerInit();
   }
 

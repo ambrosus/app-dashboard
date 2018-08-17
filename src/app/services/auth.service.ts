@@ -127,6 +127,7 @@ export class AuthService {
                   this.storage.set('has_account', true);
                   this.storage.set('notifications', JSON.stringify(r.notifications));
                   this.addAccount(address, secret, resp.token, true, r.account.email, r.account.full_name, r.account.company);
+                  window.dispatchEvent(new Event('user:loggedin'));
                 },
                 err => {
                   this.storage.set('has_account', false);
