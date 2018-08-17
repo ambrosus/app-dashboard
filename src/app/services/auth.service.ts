@@ -19,10 +19,10 @@ export class AuthService {
   ) {}
 
   isLoggedIn() {
-    const person: any = this.storage.get('person');
+    const user: any = this.storage.get('user');
     const token = this.storage.get('token');
 
-    return person && person.address && person.secret && token;
+    return user && user.address && user.secret && token;
   }
 
   getToken() {
@@ -51,11 +51,11 @@ export class AuthService {
     });
   }
 
-  addAccount(person) {
+  addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
 
-    if (!accounts.some((account) => account.address === person.address || account.email === person.email)) {
-      accounts.unshift(person);
+    if (!accounts.some((account) => account.address === user.address || account.email === user.email)) {
+      accounts.unshift(user);
       this.accountsAction.next(true);
       this.storage.set('accounts', accounts);
     }
@@ -68,7 +68,7 @@ export class AuthService {
       if (account.address === address) {
         accounts.splice(index, 1);
         accounts.unshift(account);
-        this.storage.set('person', account);
+        this.storage.set('user', account);
         this.storage.set('accounts', accounts);
         this.assets.initSDK();
         this.accountsAction.next(true);
@@ -78,10 +78,10 @@ export class AuthService {
   }
 
   login(address: string, secret: string) {
-    const person: any = this.storage.get('person') || {};
-    person['address'] = address;
-    person['secret'] = secret;
-    this.storage.set('person', person);
+    const user: any = this.storage.get('user') || {};
+    user['address'] = address;
+    user['secret'] = secret;
+    this.storage.set('user', user);
 
     return new Observable(observer => {
 
@@ -100,7 +100,7 @@ export class AuthService {
 
               this.getAccountByAddress(address).subscribe(
                 (r: any) => {
-                  this.storage.set('person', r);
+                  this.storage.set('user', r);
                   this.storage.set('has_account', true);
                   this.addAccount(r);
                 },
@@ -132,7 +132,7 @@ export class AuthService {
     if (accounts.length === 0) {
       this.logoutAll();
     } else {
-      this.storage.set('person', accounts[0]);
+      this.storage.set('user', accounts[0]);
       this.accountsAction.next(true);
       this.router.navigate(['/assets']);
     }

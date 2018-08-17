@@ -44,11 +44,10 @@ exports.login = (req, res) => {
 };
 
 exports.getAccount = (req, res) => {
-  const email = req.body.email;
-  const address = req.body.address;
+  const address = req.params.address;
 
-  if (email || address) {
-    const query = email ? { email } : { address };
+  if (address) {
+    const query = { address };
 
     User.findOne(query)
       .populate({
@@ -67,8 +66,8 @@ exports.getAccount = (req, res) => {
       .catch(error => {
         return res.status(400).json({ message: error });
       });
-  } else if (!(address || email)) {
-    res.status(400).json({ message: '"email" or "address" is required' });
+  } else if (!address) {
+    res.status(400).json({ message: '"address" is required' });
   }
 }
 

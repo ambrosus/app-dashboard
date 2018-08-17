@@ -90,7 +90,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loadAssets = this.loadAssets.bind(this);
     this.search = this.search.bind(this);
 
-    this.accountSelected = <any>this.storage.get('person')['address'];
+    this.accountSelected = <any>this.storage.get('user')['address'];
   }
 
   ngOnDestroy() {

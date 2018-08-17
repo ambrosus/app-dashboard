@@ -63,6 +63,7 @@ exports.create = (req, res) => {
                                   createdUser.save();
                                 } else {
                                   const role = new Role({
+                                    _id: new mongoose.Types.ObjectId(),
                                     title: 'admin',
                                     id: 1
                                   });

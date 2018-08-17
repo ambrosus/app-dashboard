@@ -12,7 +12,7 @@ export class InterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.storage.get('token');
-    const { address, secret } = <any>this.storage.get('person') || <any>{};
+    const { address, secret } = <any>this.storage.get('user') || <any>{};
     const hermes: any = this.storage.get('hermes') || <any>{};
 
     let request: HttpRequest<any> = req.clone();

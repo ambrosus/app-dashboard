@@ -375,7 +375,7 @@ export class AssetAddComponent implements OnInit {
     // asset.content.idData
     asset['content']['idData'] = {};
     asset['content']['idData']['assetId'] = assetId;
-    asset['content']['idData']['createdBy'] = <any>this.storage.get('person')['address'];
+    asset['content']['idData']['createdBy'] = <any>this.storage.get('user')['address'];
     asset['content']['idData']['accessLevel'] = 0;
     asset['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 

@@ -424,7 +424,7 @@ export class EventAddComponent implements OnInit {
     // event.content.idData
     event['content']['idData'] = {};
     event['content']['idData']['assetId'] = 'placeholder';
-    event['content']['idData']['createdBy'] = <any>this.storage.get('person')['address'];
+    event['content']['idData']['createdBy'] = <any>this.storage.get('user')['address'];
     event['content']['idData']['accessLevel'] = this.eventForm.get('accessLevel').value;
     event['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 

@@ -31,11 +31,10 @@ export class HeaderComponent implements OnInit {
   }
 
   headerInit() {
-    const person: any = this.storage.get('person') || {};
-    this.greeting = person.full_name || person.email || 'Hi, welcome!';
+    const user: any = this.storage.get('user') || {};
+    this.greeting = user.full_name || user.email || 'Hi, welcome!';
     this.isLoggedin = <any>this.storage.get('isLoggedin');
-    const accounts = this.storage.get('accounts');
-    this.accounts = accounts ? accounts : [];
+    this.accounts = this.storage.get('accounts') || [];
     this.currentAccount = this.accounts[0];
   }
 
