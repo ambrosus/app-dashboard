@@ -38,9 +38,9 @@ export class SettingsComponent implements OnInit {
   }
 
   settingsInit() {
-    this.has_account = JSON.parse(this.storage.get('has_account'));
+    this.has_account = <any>this.storage.get('has_account');
     const accounts = this.storage.get('accounts');
-    this.accounts = accounts ? JSON.parse(accounts) : [];
+    this.accounts = accounts ? accounts : [];
     this.currentAccount = this.accounts[0];
   }
 
@@ -63,14 +63,14 @@ export class SettingsComponent implements OnInit {
     this.resetSuccess = false;
   }
 
-  resetPassword() {
+  changePassword() {
     this.resetErrors();
     const email = this.storage.get('email');
-    const password = this.resetForm.get('password').value;
+    const newPassword = this.resetForm.get('password').value;
     const oldPassword = this.resetForm.get('oldPassword').value;
     const passwordConfirm = this.resetForm.get('passwordConfirm').value;
 
-    if (!email || !password || !oldPassword || !passwordConfirm) {
+    if (!email || !newPassword || !oldPassword || !passwordConfirm) {
       this.error = 'All fields are required';
       return;
     }
@@ -84,7 +84,7 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
-    if (password !== passwordConfirm) {
+    if (newPassword !== passwordConfirm) {
       this.error = 'Passwords do not match';
       this.spinner = false;
       return;
@@ -95,10 +95,10 @@ export class SettingsComponent implements OnInit {
     const body = {
       email,
       oldPassword,
-      password
+      newPassword
     };
 
-    this.http.post('/api/auth/resetpassword', body).subscribe(
+    this.http.post('/api/users/changepassword', body).subscribe(
       resp => {
         this.spinner = false;
         this.resetSuccess = true;
@@ -106,7 +106,7 @@ export class SettingsComponent implements OnInit {
       err => {
         this.spinner = false;
         this.error = err.error.message;
-        console.log('Signup failed: ', err);
+        console.log('Reset password error: ', err);
       }
     );
   }

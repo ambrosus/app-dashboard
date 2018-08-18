@@ -2,7 +2,6 @@ import { AssetsService } from './assets.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from 'environments/environment';
 import { StorageService } from './storage.service';
 import { Observable, Subject } from 'rxjs';
 
@@ -20,83 +19,57 @@ export class AuthService {
   ) {}
 
   isLoggedIn() {
+    const user: any = this.storage.get('user');
     const token = this.storage.get('token');
-    const address = this.storage.get('address');
-    return token && address;
-  }
 
-  getAccounts() {
-    return new Observable(observer => {
-      const url = `/api/auth/accounts`;
-
-      this.http.get(url).subscribe(
-        resp => {
-          console.log('GET accounts success: ', resp);
-          return observer.next(resp);
-        },
-        err => {
-          console.log('GET accounts err: ', err);
-          return observer.error(err);
-        }
-      );
-    });
-  }
-
-  getAccountByAddress(address) {
-    return new Observable(observer => {
-      const url = `/api/auth/accounts/${address}`;
-
-      this.http.get(url).subscribe(
-        resp => {
-          console.log('GET account success: ', resp);
-          return observer.next(resp);
-        },
-        err => {
-          console.log('GET account err: ', err);
-          return observer.error(err);
-        }
-      );
-    });
+    return user && user.address && user.secret && token;
   }
 
   getToken() {
     const params = {
       validUntil: 1600000000
     };
-    const url = `${environment.host}${environment.apiUrls.token}`;
+
+    const hermes: any = this.storage.get('hermes') || {};
+    const url = `${hermes.url}/token`;
+
     return this.http.post(url, params);
   }
 
-  addAccount(address, secret, token, has_account = false, email = false, full_name = false, company = false) {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? JSON.parse(accounts) : [];
+  getAccountByAddress(address) {
+    return new Observable(observer => {
+      const url = `/api/users/accounts/${address}`;
 
-    if (!accounts.some((account) => account.address === address || account.email === email)) {
-      accounts.unshift({
-        address,
-        secret,
-        token,
-        has_account,
-        email,
-        full_name,
-        company
-      });
+      this.http.get(url).subscribe(
+        resp => {
+          return observer.next(resp);
+        },
+        err => {
+          return observer.error(err);
+        }
+      );
+    });
+  }
+
+  addAccount(user) {
+    const accounts: any = this.storage.get('accounts') || [];
+
+    if (!accounts.some((account) => account.address === user.address || account.email === user.email)) {
+      accounts.unshift(user);
       this.accountsAction.next(true);
-      this.storage.set('accounts', JSON.stringify(accounts));
+      this.storage.set('accounts', accounts);
     }
   }
 
   switchAccount(address) {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? JSON.parse(accounts) : [];
+    const accounts: any = this.storage.get('accounts') || [];
 
     accounts.map((account, index) => {
       if (account.address === address) {
         accounts.splice(index, 1);
         accounts.unshift(account);
-        this.setDetails(account.address, account.secret, account.token, account.has_account || false,
-          account.email || '', account.full_name || '', account.company || '');
-        this.storage.set('accounts', JSON.stringify(accounts));
+        this.storage.set('user', account);
+        this.storage.set('accounts', accounts);
         this.assets.initSDK();
         this.accountsAction.next(true);
         this.router.navigate(['/assets']);
@@ -105,32 +78,35 @@ export class AuthService {
   }
 
   login(address: string, secret: string) {
-    // Used by interceptor, to set headers
-    this.storage.set('secret', secret);
-    this.storage.set('address', address);
+    const user: any = this.storage.get('user') || {};
+    user['address'] = address;
+    user['secret'] = secret;
+    this.storage.set('user', user);
+
     return new Observable(observer => {
+
+      // Hermes token request
       this.getToken().subscribe(
         (resp: any) => {
           this.storage.set('token', resp.token);
-          // Address request
-          const url = `${environment.host}${environment.apiUrls.address}${address}`;
+          const hermes: any = this.storage.get('hermes') || {};
+
+          // Hermes address request
+          const url = `${hermes.url}/accounts/${address}`;
           this.http.get(url).subscribe(
             _resp => {
-              this.storage.set('address', address);
               this.storage.set('isLoggedin', true);
               this.assets.initSDK();
 
               this.getAccountByAddress(address).subscribe(
                 (r: any) => {
-                  this.storage.set('email', r.account.email);
-                  this.storage.set('full_name', r.account.full_name);
+                  this.storage.set('user', r);
                   this.storage.set('has_account', true);
-                  this.storage.set('notifications', JSON.stringify(r.notifications));
-                  this.addAccount(address, secret, resp.token, true, r.account.email, r.account.full_name, r.account.company);
+                  this.addAccount(r);
                 },
                 err => {
                   this.storage.set('has_account', false);
-                  this.addAccount(address, secret, resp.token);
+                  this.addAccount({ address, secret });
                 }
               );
 
@@ -142,34 +118,21 @@ export class AuthService {
           );
         },
         err => {
-          this.storage.delete('secret');
           observer.error(err);
         }
       );
     });
   }
 
-  setDetails (address, secret, token, has_account, email, full_name, company) {
-    this.storage.set('address', address);
-    this.storage.set('secret', secret);
-    this.storage.set('token', token);
-    this.storage.set('has_account', has_account);
-    this.storage.set('email', email);
-    this.storage.set('full_name', full_name);
-    this.storage.set('company', company);
-  }
-
   logout() {
-    let accounts: any = this.storage.get('accounts');
-    accounts = accounts ? JSON.parse(accounts) : [];
+    const accounts: any = this.storage.get('accounts') || [];
     accounts.shift();
-    this.storage.set('accounts', JSON.stringify(accounts));
+    this.storage.set('accounts', accounts);
 
     if (accounts.length === 0) {
       this.logoutAll();
     } else {
-      this.setDetails(accounts[0].address, accounts[0].secret, accounts[0].token, accounts[0].has_account ||
-        false, accounts[0].email || '', accounts[0].full_name || '', accounts[0].company || '');
+      this.storage.set('user', accounts[0]);
       this.accountsAction.next(true);
       this.router.navigate(['/assets']);
     }

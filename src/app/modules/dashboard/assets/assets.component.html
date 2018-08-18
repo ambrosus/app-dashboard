@@ -44,14 +44,6 @@
           <option value="createEvent">Create Event</option>
         </select>
       </div>
-
-      <!-- Select account -->
-      <div class="table__label table__label__heading table__label__select color-ablue--base">
-        <select (change)="changeAccount(acc)" #acc>
-          <option *ngFor="let a of accounts" value="{{ a.address }}">{{ a.full_name }}</option>
-        </select>
-        <span>assets</span>
-      </div>
       <!-- Refresh -->
       <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create Asset <app-svg-icon class="p-l-10" width="17px" height="17px" name="add-icon"></app-svg-icon></button>
     </div>

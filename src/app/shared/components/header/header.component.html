@@ -23,7 +23,7 @@
               <span *ngIf="!account.full_name && !account.email">{{ account.address }}</span>
               <span class="color-blacks--base" *ngIf="account.full_name">{{ account.full_name }} </span>
               <span *ngIf="account.email">- {{ account.email }}</span>
-              <span *ngIf="account.company">, {{ account.company }}</span>
+              <span *ngIf="account | checkIf: 'account.company.title'">, {{ account.company.title }}</span>
             </p>
             <p class="menu-mobile__item separator color-ablue--base" (click)="addAccount = true">
               Add account
@@ -73,7 +73,7 @@
 
             <p *ngIf="account.full_name">{{ account.full_name }}</p>
             <p *ngIf="account.email">{{ account.email }}</p>
-            <p *ngIf="account.company">{{ account.company }}</p>
+            <p *ngIf="account.company && account.company.title">{{ account.company.title }}</p>
 
           </li>
           <li class="separator color-ablue--base">

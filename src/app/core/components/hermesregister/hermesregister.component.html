@@ -1,0 +1,29 @@
+<div class="login">
+  <div class="login__forms justify-content-fs">
+    <img src="/assets/raster/amb-logo.png" alt="Ambrosus" class="m-h-30 m-t-30" style="max-width: 120px;">
+
+    <div class="login__forms__wrapper" style="margin-top: 100px">
+      <h3 class="p-h-30">Register Hermes Node</h3>
+      <form [formGroup]="hermesForm" (ngSubmit)="create()" class="form-group login-form" [ngClass]="{ error: error }">
+        <div class="form-text m-b-20">
+          <label for="title">Hermes Title *</label>
+          <input formControlName="title" type="text" name="title" id="title" spellcheck="false" appInput>
+        </div>
+        <div class="form-text m-b-20">
+          <label for="url">Hermes Gateway URL *</label>
+          <input formControlName="url" type="text" name="url" id="url" spellcheck="false" appInput>
+        </div>
+        <div class="flex flex-direction-r justify-content-fe align-items-c">
+          <app-spinner *ngIf="spinner"></app-spinner>
+          <button type="submit" class="abtn m-l-20 btn-solid-ablue">Register</button>
+        </div>
+      </form>
+      <h5 class="p-h-40 m-v-30" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+
+    </div>
+  </div>
+  <div class="login__background">
+    <h1 class="d1 p-h-50 m-b-10" style="color: #fff; font-weight: 500;">Welcome to Ambrosus!</h1>
+    <h1 class="d5 p-h-50 m-b-75" style="color: #fff; font-weight: 400;">Register the Hermes Node.</h1>
+  </div>
+</div>

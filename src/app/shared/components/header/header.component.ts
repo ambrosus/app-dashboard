@@ -31,10 +31,10 @@ export class HeaderComponent implements OnInit {
   }
 
   headerInit() {
-    this.greeting = this.storage.get('full_name') || 'Hi, welcome!';
-    this.isLoggedin = JSON.parse(this.storage.get('isLoggedin'));
-    const accounts = this.storage.get('accounts');
-    this.accounts = accounts ? JSON.parse(accounts) : [];
+    const user: any = this.storage.get('user') || {};
+    this.greeting = user.full_name || user.email || 'Hi, welcome!';
+    this.isLoggedin = <any>this.storage.get('isLoggedin');
+    this.accounts = this.storage.get('accounts') || [];
     this.currentAccount = this.accounts[0];
   }
 

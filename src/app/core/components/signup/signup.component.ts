@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   providers: [PasswordService],
   encapsulation: ViewEncapsulation.None
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   signupForm: FormGroup;
   error;
   spinner = false;
@@ -38,12 +38,29 @@ export class SignupComponent {
       address: new FormControl(this.storage.get('address'), [Validators.required]),
       secret: new FormControl(this.storage.get('secret'), [Validators.required]),
       fullname: new FormControl(null, [Validators.required]),
-      company: new FormControl(null, [Validators.required]),
+      title: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
       password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.required])
     });
+  }
+
+  ngOnInit() {
+    const url = `/api/hermeses`;
+
+    this.http.get(url).subscribe(
+      (resp: any) => {
+        if (resp.resultCount === 0) {
+          this.router.navigate(['/hermes']);
+        } else {
+          this.storage.set('hermes', resp.data[0]);
+        }
+      },
+      err => {
+        console.log('Hermes GET error: ', err);
+      }
+    );
   }
 
   checkPassword(event: any) {
@@ -72,11 +89,12 @@ export class SignupComponent {
     const address = this.signupForm.get('address').value;
     const secret = this.signupForm.get('secret').value;
     const full_name = this.signupForm.get('fullname').value;
-    const company = this.signupForm.get('company').value;
+    const title = this.signupForm.get('title').value;
     const email = this.signupForm.get('email').value;
     const password = this.signupForm.get('password').value;
     const passwordConfirm = this.signupForm.get('passwordConfirm').value;
     const terms = this.signupForm.get('terms').value;
+    const hermes = this.storage.get('hermes');
     this.resetErrors();
 
     let flagCounter = 0;
@@ -104,12 +122,13 @@ export class SignupComponent {
         address,
         secret,
         full_name,
-        company,
+        hermes,
+        title,
         email,
         password
       };
 
-      const url = `/api/auth/signup`;
+      const url = `/api/companies`;
 
       this.http.post(url, body).subscribe(
         resp => {
@@ -123,9 +142,9 @@ export class SignupComponent {
         },
         err => {
           this.spinner = false;
-          this.error = JSON.stringify(err.message ? err.message : err);
+          this.error = err.error.message ? err.error.message : 'Company creation error';
 
-          console.log('Signup failed: ', err);
+          console.log('Company creation failed: ', err);
         }
       );
     }
