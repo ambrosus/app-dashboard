@@ -31,14 +31,15 @@ export class AssetsService {
 
   initSDK() {
     const hermes = <any>this.storage.get('hermes') || <any>{};
-    const { address, secret } = <any>this.storage.get('user') || <any>{};
+    const secret = this.storage.get('secret');
+    const token = this.storage.get('token');
 
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: hermes.url,
       secret,
       Web3: Web3,
       headers: {
-        Authorization: `AMB_TOKEN ${this.storage.get('token')}`
+        Authorization: `AMB_TOKEN ${token}`
       }
     });
   }

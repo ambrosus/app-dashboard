@@ -21,8 +21,9 @@ export class AuthService {
   isLoggedIn() {
     const user: any = this.storage.get('user');
     const token = this.storage.get('token');
+    const secret = this.storage.get('secret');
 
-    return user && user.address && user.secret && token;
+    return user && user.address && secret && token;
   }
 
   getToken() {
@@ -80,8 +81,8 @@ export class AuthService {
   login(address: string, secret: string) {
     const user: any = this.storage.get('user') || {};
     user['address'] = address;
-    user['secret'] = secret;
     this.storage.set('user', user);
+    this.storage.set('secret', secret);
 
     return new Observable(observer => {
 
