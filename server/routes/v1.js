@@ -1,61 +1,75 @@
 const express = require('express');
 
 // Controllers
-const AuthController = require('../controllers/auth');
+const HermesesController = require('../controllers/hermeses');
+const CompaniesController = require('../controllers/companies');
+const UsersController = require('../controllers/users');
+const InvitesController = require('../controllers/invites');
 const NotificationController = require('../controllers/notifications');
-const EmailController = require('../controllers/email');
 
 // API routes
 const apiRoutes = express.Router();
 
-const authRoutes = express.Router();
-const notificationsRoutes = express.Router();
-const emailRoutes = express.Router();
+const HermesesRoutes = express.Router();
+const CompaniesRoutes = express.Router();
+const UsersRoutes = express.Router();
+const InvitesRoutes = express.Router();
+const NotificationsRoutes = express.Router();
 
 /********************************
 
-          auth endpoints
+        hermeses endpoints
 
 ********************************/
 
-// append auth routes to api routes
-apiRoutes.use('/auth', authRoutes);
+apiRoutes.use('/hermeses', HermesesRoutes);
 
-// Auth routes
-authRoutes.post('/signup', AuthController.signup);
-authRoutes.post('/login', AuthController.login);
-authRoutes.post('/resetpassword', AuthController.resetpassword);
-authRoutes.get('/accounts', AuthController.accounts);
-authRoutes.get('/accounts/:address', AuthController.account);
-authRoutes.put('/accounts/:address', AuthController.edit);
-authRoutes.delete('/accounts', AuthController.clean);
+HermesesRoutes.post('/', HermesesController.create);
+HermesesRoutes.get('/', HermesesController.getAll);
 
 /********************************
 
-     notifications endpoints
+        companies endpoints
 
 ********************************/
 
-// append auth routes to api routes
-apiRoutes.use('/notifications', notificationsRoutes);
+apiRoutes.use('/companies', CompaniesRoutes);
 
-// Auth routes
-notificationsRoutes.post('/:address', NotificationController.create);
-notificationsRoutes.get('/:address', NotificationController.get);
-notificationsRoutes.put('/:address/viewed', NotificationController.viewed);
-notificationsRoutes.delete('/', NotificationController.clean);
+CompaniesRoutes.post('/', CompaniesController.create);
 
 /********************************
 
-        email endpoints
+        users endpoints
 
 ********************************/
 
-// append email routes to api routes
-apiRoutes.use('/email', emailRoutes);
+apiRoutes.use('/users', UsersRoutes);
 
-// Email routes
-emailRoutes.post('/', EmailController.sendEmail);
+UsersRoutes.post('/login', UsersController.login);
+UsersRoutes.post('/changepassword', UsersController.changePassword);
+UsersRoutes.get('/accounts/:address', UsersController.getAccount);
+
+/********************************
+
+        invites endpoints
+
+********************************/
+
+apiRoutes.use('/invites', InvitesRoutes);
+
+InvitesRoutes.post('/', InvitesController.send);
+
+/********************************
+
+      notification endpoints
+
+********************************/
+
+// apiRoutes.use('/notification', NotificationsRoutes);
+
+// NotificationsRoutes.post('/:address', NotificationController.create);
+// NotificationsRoutes.get('/:address', NotificationController.get);
+// NotificationsRoutes.put('/:address/seen', NotificationController.seen);
 
 
 module.exports = apiRoutes;

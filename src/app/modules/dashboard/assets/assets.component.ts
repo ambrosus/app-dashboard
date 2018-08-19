@@ -90,49 +90,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loadAssets = this.loadAssets.bind(this);
     this.search = this.search.bind(this);
 
-    this.auth.getAccounts().subscribe(
-      (resp: any) => {
-        const _address = this.storage.get('address');
-        if (!resp.data.some(account => account.address === _address)) {
-          this.accounts = [
-            {
-              full_name: this.storage.get('full_name') || 'My account',
-              address: _address
-            }
-          ];
-        } else {
-          this.accounts = resp.data;
-          // Loggedin user always default
-          this.accounts.map((account, index) => {
-            if (account.address === _address) {
-              this.accounts.splice(index, 1);
-              this.accounts.unshift(account);
-            }
-          });
-        }
-      },
-      err => {
-        this.accounts = [
-          {
-            full_name: this.storage.get('full_name') || 'My account',
-            address: this.storage.get('address')
-          }
-        ];
-      }
-    );
-
-    this.accountSelected = this.storage.get('address');
-  }
-
-  changeAccount(acc) {
-    this.currentAssetPage = 0;
-    this.currentSearchPage = 0;
-    this.accountSelected = acc.value;
-    if (this.assetsActive) {
-      this.loadAssets(this.currentAssetPage, this.perPage);
-    } else {
-      this.search(this.currentSearchPage, this.perPage);
-    }
+    this.accountSelected = <any>this.storage.get('user')['address'];
   }
 
   ngOnDestroy() {

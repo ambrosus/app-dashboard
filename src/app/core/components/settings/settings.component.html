@@ -4,7 +4,7 @@
   <!-- Password reset -->
   <div *ngIf="has_account">
     <h4 class="m-b-30">Reset password</h4>
-    <form class="form-group p-a-30" [formGroup]="resetForm" (ngSubmit)="resetPassword()" [ngClass]="{ error: error }">
+    <form class="form-group p-a-30" [formGroup]="resetForm" (ngSubmit)="changePassword()" [ngClass]="{ error: error }">
       <div class="form-text m-b-20">
         <label for="passwordConfirm">Old Password *</label>
         <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
