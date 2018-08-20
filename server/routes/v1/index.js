@@ -1,7 +1,9 @@
-const HermesesRoutes = require('./v1/hermeses');
-const CompaniesRoutes = require('./v1/companies');
-const AuthRoutes = require('./v1/auth');
-const UsersRoutes = require('./v1/users');
+const express = require('express');
+
+const HermesesRoutes = require('./hermeses');
+const CompaniesRoutes = require('./companies');
+const AuthRoutes = require('./auth');
+const UsersRoutes = require('./users');
 
 const APIRoutes = express.Router();
 
