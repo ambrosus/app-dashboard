@@ -93,7 +93,7 @@ export class EventAddComponent implements OnInit {
   prefillForm() {
     const event = this.prefill;
     try {
-      this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel || '0');
+      this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel);
     } catch (err) {}
     event.content.data.map(obj => {
       switch (obj.type) {
