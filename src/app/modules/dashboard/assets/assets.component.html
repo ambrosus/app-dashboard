@@ -54,7 +54,6 @@
       <p class="table__column table__column__header">Title</p>
       <p class="table__column table__column__header">Created by</p>
       <p class="table__column table__column__header">Timestamp</p>
-      <p class="table__column table__column__header">Status</p>
     </div>
 
     <div class="table__item__gapFill" appSticky [offsetTop]="80" [addClass]="'gapFill'"></div>
@@ -102,11 +101,6 @@
       <div class="table__column" routerLink="{{asset.assetId}}">
         <p class="table__column-title hide-1024">Timestamp</p>
         <p class="table__column-content">{{ asset.content.idData.timestamp * 1000 | date:'d MMM yyyy HH:mm'}}</p>
-      </div>
-
-      <div class="table__column" routerLink="{{asset.assetId}}">
-        <p class="table__column-title hide-1024">Status</p>
-        <p class="table__column-content">some status</p>
       </div>
     </div>
 

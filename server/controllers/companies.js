@@ -6,7 +6,7 @@ const Company = require('../models/companies');
 const User = require('../models/users');
 const Role = require('../models/roles');
 
-exports.create = (req, res) => {
+exports.create = (req, res, next) => {
   const address = req.body.address;
   const secret = req.body.secret;
   const full_name = req.body.full_name;
@@ -74,7 +74,9 @@ exports.create = (req, res) => {
                                   });
                                 }
                               }).catch(error => {
-                                return res.status(400).json({ message: error });
+                                req.status = 400;
+                                req.json = { message: error };
+                                return next();
                               });
 
                               // Add the user as company's owner
@@ -82,35 +84,45 @@ exports.create = (req, res) => {
                               createdCompany
                                 .save()
                                 .then(success => {
-                                  return res.status(200).json({
-                                    message: 'Success'
-                                  });
+                                  req.status = 200;
+                                  req.json = { message: 'Success' };
+                                  return next();
                                 })
                                 .catch(error => {
                                   console.log(error);
-                                  return res.status(400).json({ message: error });
+                                  req.status = 400;
+                                  req.json = { message: error };
+                                  return next();
                                 });
                             })
                             .catch(error => {
                               console.log(error);
-                              return res.status(400).json({ message: error });
+                              req.status = 400;
+                              req.json = { message: error };
+                              return next();
                             });
                         })
                         .catch(error => {
                           console.log(error);
-                          return res.status(400).json({ message: error });
+                          req.status = 400;
+                          req.json = { message: error };
+                          return next();
                         });
                     }
                   })
                   .catch(error => {
                     console.log(error);
-                    return res.status(400).json({ message: error });
+                    req.status = 400;
+                    req.json = { message: error };
+                    return next();
                   });
               }
             })
             .catch(error => {
               console.log(error);
-              return res.status(400).json({ message: error });
+              req.status = 400;
+              req.json = { message: error };
+              return next();
             });
         } else {
           throw 'Hermes not found';
@@ -118,21 +130,37 @@ exports.create = (req, res) => {
       })
       .catch(error => {
         console.log(error);
-        res.status(400).json({ message: error });
+        req.status = 400;
+        req.json = { message: error };
+        return next();
       });
   } else if (!address) {
-    res.status(400).json({ message: '"address" is required' });
+    req.status = 400;
+    req.json = { message: '"address" is required' };
+    return next();
   } else if (!secret) {
-    res.status(400).json({ message: '"secret" is required' });
+    req.status = 400;
+    req.json = { message: '"secret" is required' };
+    return next();
   } else if (!full_name) {
-    res.status(400).json({ message: '"full_name" is required' });
+    req.status = 400;
+    req.json = { message: '"full_name" is required' };
+    return next();
   } else if (!hermes) {
-    res.status(400).json({ message: '"hermes" is required' });
+    req.status = 400;
+    req.json = { message: '"hermes" is required' };
+    return next();
   } else if (!title) {
-    res.status(400).json({ message: '"title" is required' });
+    req.status = 400;
+    req.json = { message: '"title" is required' };
+    return next();
   } else if (!email) {
-    res.status(400).json({ message: '"email" is required' });
+    req.status = 400;
+    req.json = { message: '"email" is required' };
+    return next();
   } else if (!password) {
-    res.status(400).json({ message: '"password" is required' });
+    req.status = 400;
+    req.json = { message: '"password" is required' };
+    return next();
   }
 };

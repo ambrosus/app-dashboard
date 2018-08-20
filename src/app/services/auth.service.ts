@@ -39,7 +39,7 @@ export class AuthService {
 
   getAccountByAddress(address) {
     return new Observable(observer => {
-      const url = `/api/users/accounts/${address}`;
+      const url = `/api/users/${address}`;
 
       this.http.get(url).subscribe(
         resp => {
