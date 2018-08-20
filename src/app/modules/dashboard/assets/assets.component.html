@@ -128,7 +128,7 @@
     <!-- Pagination -->
     <div class="block-center m-w-12 m-t-10 p-h-10">
       <!-- Asset pagination -->
-      <app-pagination *ngIf="assetsActive && pagination.length !== 0"
+      <app-pagination *ngIf="assetsActive"
         [currentPage]="currentAssetPage" [pagination]="pagination" [method]="loadAssets"></app-pagination>
       <!-- Search pagination -->
       <app-pagination *ngIf="searchActive && pagination.length !== 0 && !searchNoResultsFound"

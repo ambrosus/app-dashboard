@@ -1,12 +1,12 @@
 <ul class="pagination">
   <li class="pagination__item" *ngIf="currentPage !== 1">
-    <span (click)="method(currentPage - 2)">Previous</span>
+    <span (click)="previousPage()">Previous</span>
   </li>
   <li class="pagination__item">
-    <span><input type="text" value="{{inputPage}}" (keypress)="keyPress($event)" (keyup)="pageValue($event)" style="width: 30px; text-align: center;"></span>
+    <span><input type="tel" value="{{currentPage}}" (keypress)="keyPress($event)" (keyup)="pageValue($event)" style="width: 30px; text-align: center;"></span>
     <span>/ {{pagination[pagination.length -1]}}</span>
   </li>
   <li class="pagination__item" *ngIf="currentPage !== pagination[pagination.length -1]">
-    <span (click)="method(currentPage)">Next</span>
+    <span (click)="nextPage()">Next</span>
   </li>
 </ul>

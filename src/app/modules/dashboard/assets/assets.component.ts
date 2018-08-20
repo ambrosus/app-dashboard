@@ -129,7 +129,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
       (resp: any) => {
         this.loader = false;
         this.assets = resp;
-        this.currentAssetPage = page + 1;
         this.resultCountAsset = resp.resultCount;
         this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
         // generate pagination

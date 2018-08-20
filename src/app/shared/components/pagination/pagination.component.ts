@@ -7,15 +7,13 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class PaginationComponent implements OnInit {
 
-  @Input() currentPage;
+  @Input() currentPage: Number;
   @Input() pagination;
   @Input() method: (inputPage) => any;
-  inputPage: any;
 
   constructor() { }
 
   ngOnInit() {
-    this.inputPage = this.currentPage;
   }
 
   keyPress(event: any) {
@@ -23,15 +21,24 @@ export class PaginationComponent implements OnInit {
     const inputChar = String.fromCharCode(event.charCode);
 
     if (!pattern.test(inputChar)) {
-        // invalid character, prevent input
         event.preventDefault();
     }
   }
 
   pageValue(event: any) {
-    console.log(event.target.value);
-    this.inputPage = event.target.value;
-    this.method(this.inputPage);
+    this.currentPage = event.target.value;
+    this.method(+this.currentPage - 1);
+  }
+
+  nextPage() {
+    this.method(+this.currentPage + 1);
+    this.currentPage = +this.currentPage + 1;
+    console.log(this.currentPage);
+  }
+
+  previousPage() {
+    this.method(+this.currentPage - 1);
+    this.currentPage = +this.currentPage - 1;
   }
 
 }
