@@ -10,6 +10,7 @@ export class PaginationComponent implements OnInit {
   @Input() currentPage: Number;
   @Input() pagination;
   @Input() method: (inputPage) => any;
+  minPage: Number = 1;
 
   constructor() { }
 

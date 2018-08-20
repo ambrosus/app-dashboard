@@ -1,5 +1,5 @@
 <ul class="pagination">
-  <li class="pagination__item" *ngIf="currentPage !== 1">
+  <li class="pagination__item" *ngIf="currentPage !== minPage">
     <span (click)="previousPage()">Previous</span>
   </li>
   <li class="pagination__item">
