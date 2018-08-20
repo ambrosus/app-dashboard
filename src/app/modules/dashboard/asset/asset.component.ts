@@ -3,7 +3,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdministrationService } from 'app/services/administration.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { JsonPreviewComponent } from './../../../shared/components/json-preview/json-preview.component';
+import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { EventAddComponent } from './../event-add/event-add.component';
 
 declare let QRCode: any;
@@ -12,8 +12,7 @@ declare let QRCode: any;
   selector: 'app-asset',
   templateUrl: './asset.component.html',
   styleUrls: ['./asset.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  providers: [AssetsService]
+  encapsulation: ViewEncapsulation.None
 })
 export class AssetComponent implements OnInit {
   asset;
