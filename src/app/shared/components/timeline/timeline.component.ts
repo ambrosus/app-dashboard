@@ -108,7 +108,6 @@ export class TimelineComponent implements OnInit {
         this.json = r.data.results;
         const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
-        this.currentEventsPage = page + 1;
         this.resultCountEvents = resp.resultCount;
         this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
         this.pagination = this.paginationGenerate(this.currentEventsPage, this.totalEventsPages);
@@ -153,7 +152,6 @@ export class TimelineComponent implements OnInit {
         this.json = r.data.results;
         const resp = this.assets.parseEvents(r.data);
         this.events = resp.events;
-        this.currentSearchPage = page + 1;
         this.resultCountSearch = resp.resultCount;
         this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
         this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
