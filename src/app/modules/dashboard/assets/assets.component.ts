@@ -215,7 +215,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
           this.loader = false;
           if (r.assets.length > 0) {
             this.assets = r;
-            this.currentSearchPage = page + 1;
             this.resultCountSearch = r.resultCount;
             this.totalSearchPages = Math.ceil(r.resultCount / perPage);
             // generate pagination
