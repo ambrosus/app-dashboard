@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit {
         password
       };
 
-      const url = `/api/users/login`;
+      const url = `/api/auth/login`;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
