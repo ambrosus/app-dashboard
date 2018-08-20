@@ -92,9 +92,9 @@ export class EventAddComponent implements OnInit {
 
   prefillForm() {
     const event = this.prefill;
-    if (event && event.content && event.content.idData && event.content.idData.accessLevel) {
+    try {
       this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel || '0');
-    }
+    } catch (err) {}
     event.content.data.map(obj => {
       switch (obj.type) {
         case 'ambrosus.event.location':
