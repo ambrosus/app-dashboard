@@ -9,11 +9,18 @@ import { CoreModule } from './core/core.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { SharedModule } from './shared/shared.module';
 
 import { AmChartsModule } from '@amcharts/amcharts3-angular';
+import { HeaderComponent } from './shared/components/header/header.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    FooterComponent
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -22,6 +29,7 @@ import { AmChartsModule } from '@amcharts/amcharts3-angular';
     DashboardModule,
     AmChartsModule,
     BrowserAnimationsModule,
+    SharedModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]
