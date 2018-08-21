@@ -1,4 +1,6 @@
 const utilsPassword = require('../utils/password');
+const Company = require('./../models/companies');
+const Role = require('./../models/roles');
 
 const User = require('../models/users');
 
@@ -58,5 +60,60 @@ exports.logout = (req, res, next) => {
 }
 
 exports.signup = (req, res, next) => {
+  const full_name = req.body.full_name;
+  const email = req.body.email;
+  const company = req.body.company;
+  const address = req.body.address;
+  const password = req.body.password;
+  const secret = req.body.secret;
+
+  if (full_name && email && company && address) {
+    Company.findById(company._id)
+      .then(companyData => {
+        const user = new User({
+          _id: new mongoose.Types.ObjectId(),
+          full_name,
+          email,
+          company: companyData._id,
+          address,
+          token: utilsPassword.encrypt(`${address}|||${secret}`, password)
+        });
+        user
+          .save()
+          .then(createdUser => {
+            req.status = 200;
+            req.json = { message: 'Success' };
+            return next();
+          })
+          .catch(error => {
+            console.log(error);
+            req.status = 400;
+            req.json = { message: error };
+            return next();
+          })
+      })
+      .catch(error => {
+        console.log(error);
+        req.status = 400;
+        req.json = { message: error };
+        return next();
+      })
+  } else if (!full_name) {
+    req.status = 400;
+    req.json = { message: '"full_name" is required' };
+    return next();
+  } else if (!email) {
+    req.status = 400;
+    req.json = { message: '"email" is required' };
+    return next();
+  } else if (!company) {
+    req.status = 400;
+    req.json = { message: '"company" is required' };
+    return next();
+  } else if (!address) {
+    req.status = 400;
+    req.json = { message: '"address" is required' };
+    return next();
+  }
 
 }
