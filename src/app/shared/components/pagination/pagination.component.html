@@ -1,9 +1,17 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <ul class="pagination">
-  <li class="pagination__item" *ngIf="currentPage !== minPage">
-    <span (click)="changePage('back')">Previous</span>
+  <li class="pagination__item" *ngIf="currentPage > 1">
+    <span (click)="changePage('prev')">Previous</span>
   </li>
   <li class="pagination__item">
-    <span><input type="tel" value="{{currentPage}}" (keypress)="keyPress($event)" (keyup)="pageValue($event)" style="width: 30px; text-align: center;"></span>
+<span><input type="number" #pageNumber [(ngModel)]="currentPage" (change)="changePage(pageNumber.value)" style="width: 30px; text-align: center;"></span>
     <span>/ {{totalPages}}</span>
   </li>
   <li class="pagination__item" *ngIf="currentPage !== totalPages">
