@@ -1,14 +1,20 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <ul class="pagination">
-  <li class="pagination__item" *ngIf="currentPage !== 1">
-    <span (click)="method(currentPage - 2)">Previous</span>
+  <li class="pagination__item" *ngIf="currentPage > 1">
+    <span (click)="changePage('prev')">Previous</span>
   </li>
-  <li class="pagination__item" *ngFor="let number of pagination; let i = index" [ngClass]="{ active: currentPage === number, dots: number === '...' }">
-    <span *ngIf="currentPage === number">{{ number }}</span>
-    <span *ngIf="currentPage !== number && number === '...' && i === 1" (click)="method(pagination[i+1] - 2)">{{ number }}</span>
-    <span *ngIf="currentPage !== number && number === '...' && i === pagination.length - 2" (click)="method(pagination[i-1])">{{ number }}</span>
-    <span *ngIf="currentPage !== number && number !== '...'" (click)="method(number-1)">{{ number }}</span>
+  <li class="pagination__item">
+<span><input type="number" #pageNumber [(ngModel)]="currentPage" (change)="changePage(pageNumber.value)" style="width: 30px; text-align: center;"></span>
+    <span>/ {{totalPages}}</span>
   </li>
-  <li class="pagination__item" *ngIf="currentPage !== pagination[pagination.length -1]">
-    <span (click)="method(currentPage)">Next</span>
+  <li class="pagination__item" *ngIf="currentPage !== totalPages">
+    <span (click)="changePage('next')">Next</span>
   </li>
 </ul>
