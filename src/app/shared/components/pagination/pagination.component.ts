@@ -34,7 +34,6 @@ export class PaginationComponent implements OnInit {
   nextPage() {
     this.method(+this.currentPage + 1);
     this.currentPage = +this.currentPage + 1;
-    console.log(this.currentPage);
   }
 
   previousPage() {
