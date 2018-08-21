@@ -8,5 +8,6 @@ const UsersRoutes = express.Router();
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/:address', UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/:company', UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = UsersRoutes;
