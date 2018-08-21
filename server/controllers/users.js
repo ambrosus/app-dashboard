@@ -23,6 +23,7 @@ exports.getAccount = (req, res, next) => {
           { path: 'hermes' }
         ]
       })
+      .populate('role')
       .then(user => {
         if (user) {
           req.status = 200;
