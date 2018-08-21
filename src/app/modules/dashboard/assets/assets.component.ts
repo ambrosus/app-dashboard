@@ -130,8 +130,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.assets = resp;
         this.resultCountAsset = resp.resultCount;
         this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
-        // generate pagination
-        this.pagination = this.paginationGenerate(this.currentAssetPage, this.totalAssetPages);
       },
       err => {
         this.loader = false;
@@ -216,8 +214,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
             this.assets = r;
             this.resultCountSearch = r.resultCount;
             this.totalSearchPages = Math.ceil(r.resultCount / perPage);
-            // generate pagination
-            this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
             this.searchResultsFound = `Found ${r.resultCount} results`;
           } else {
             this.searchNoResultsFound = 'No results found';
@@ -232,35 +228,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   findInfo(info) {
     const infoEvent = info.content.data.find(obj => obj.type === 'ambrosus.asset.info');
     return infoEvent;
-  }
-
-  paginationGenerate(currentPage, pageCount) {
-    const delta = 2,
-      left = currentPage - delta,
-      right = currentPage + delta + 1;
-    let result = [];
-
-    result = Array.from({ length: pageCount }, (v, k) => k + 1).filter(i => i && i >= left && i < right);
-
-    if (result.length > 1) {
-      // Add first page and dots
-      if (result[0] > 1) {
-        if (result[0] > 2) {
-          result.unshift('...');
-        }
-        result.unshift(1);
-      }
-
-      // Add dots and last page
-      if (result[result.length - 1] < pageCount) {
-        if (result[result.length - 1] !== pageCount - 1) {
-          result.push('...');
-        }
-        result.push(pageCount);
-      }
-    }
-
-    return result;
   }
 
   onSelectAll(e, input) {

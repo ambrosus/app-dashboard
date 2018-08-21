@@ -4,9 +4,9 @@
   </li>
   <li class="pagination__item">
     <span><input type="tel" value="{{currentPage}}" (keypress)="keyPress($event)" (keyup)="pageValue($event)" style="width: 30px; text-align: center;"></span>
-    <span>/ {{pagination[pagination.length -1]}}</span>
+    <span>/ {{totalPages}}</span>
   </li>
-  <li class="pagination__item" *ngIf="currentPage !== pagination[pagination.length -1]">
+  <li class="pagination__item" *ngIf="currentPage !== totalPages">
     <span (click)="changePage('next')">Next</span>
   </li>
 </ul>

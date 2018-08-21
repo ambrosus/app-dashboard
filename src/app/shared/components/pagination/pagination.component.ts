@@ -8,7 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class PaginationComponent implements OnInit {
 
   @Input() currentPage: Number;
-  @Input() pagination;
+  @Input() totalPages: Number;
   @Input() method: (inputPage) => any;
   minPage: Number = 1;
 
