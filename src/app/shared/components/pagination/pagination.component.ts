@@ -26,19 +26,19 @@ export class PaginationComponent implements OnInit {
     }
   }
 
+  changePage(input) {
+    if (input === 'next') {
+      this.method(+this.currentPage + 1);
+      this.currentPage = +this.currentPage + 1;
+    } else if (input === 'back') {
+      this.method(+this.currentPage - 1);
+      this.currentPage = +this.currentPage - 1;
+    }
+  }
+
   pageValue(event: any) {
     this.currentPage = event.target.value;
     this.method(+this.currentPage - 1);
-  }
-
-  nextPage() {
-    this.method(+this.currentPage + 1);
-    this.currentPage = +this.currentPage + 1;
-  }
-
-  previousPage() {
-    this.method(+this.currentPage - 1);
-    this.currentPage = +this.currentPage - 1;
   }
 
 }
