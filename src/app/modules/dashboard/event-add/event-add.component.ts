@@ -8,8 +8,7 @@ import { MatDialogRef } from '@angular/material/dialog';
   selector: 'app-event-add',
   templateUrl: './event-add.component.html',
   styleUrls: ['./event-add.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  providers: [AssetsService]
+  encapsulation: ViewEncapsulation.None
 })
 export class EventAddComponent implements OnInit {
   eventForm: FormGroup;
@@ -93,7 +92,9 @@ export class EventAddComponent implements OnInit {
 
   prefillForm() {
     const event = this.prefill;
-    this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel || '0');
+    try {
+      this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel);
+    } catch (err) {}
     event.content.data.map(obj => {
       switch (obj.type) {
         case 'ambrosus.event.location':

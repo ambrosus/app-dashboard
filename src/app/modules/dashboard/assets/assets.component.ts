@@ -11,8 +11,7 @@ import { EventAddComponent } from './../event-add/event-add.component';
   selector: 'app-assets',
   templateUrl: './assets.component.html',
   styleUrls: ['./assets.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  providers: [AssetsService]
+  encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSubscription;

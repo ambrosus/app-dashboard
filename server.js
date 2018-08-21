@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const config = require('./server/config');
 const mongoose = require('mongoose');
 
-const apiRoutes = require('./server/routes/v1');
+const APIRoutes = require('./server/routes/v1');
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api', apiRoutes);
+app.use('/api', APIRoutes);
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });

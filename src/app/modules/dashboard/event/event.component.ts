@@ -2,7 +2,7 @@ import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdministrationService } from '../../../services/administration.service';
+import { AdministrationService } from 'app/services/administration.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
@@ -11,8 +11,7 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  providers: [AssetsService]
+  encapsulation: ViewEncapsulation.None
 })
 export class EventComponent implements OnInit, OnDestroy {
   hostLink = 'amb.to';

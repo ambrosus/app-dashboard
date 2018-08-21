@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from 'app/shared/components/header/header.component';
-import { FooterComponent } from 'app/shared/components/footer/footer.component';
 import { InputDirective } from 'app/shared/directives/input.directive';
 import { OncheckedDirective } from './directives/onchecked.directive';
 import { RouterModule } from '@angular/router';
@@ -29,8 +27,6 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
   exports: [
     CommonModule,
-    HeaderComponent,
-    FooterComponent,
     InputDirective,
     OncheckedDirective,
     SpinnerComponent,
@@ -52,8 +48,6 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     CheckIfPipe
   ],
   declarations: [
-    HeaderComponent,
-    FooterComponent,
     InputDirective,
     OncheckedDirective,
     SpinnerComponent,

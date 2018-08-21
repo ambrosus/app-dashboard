@@ -345,6 +345,7 @@ export class AssetsService {
     const assetId = this.getSelectedAssets()[0];
     this.editInfoEventJSON.content.idData.assetId = assetId;
     this.editInfoEventJSON.content.idData.createdBy = <any>this.storage.get('user')['address'];
+    console.log('editInfoEvent', this.editInfoEventJSON);
     this.createEvent(assetId, this.editInfoEventJSON).then(resp => {
       console.log('Info event creation/edit successful ', resp);
       this.infoEventCreated.next(resp);
