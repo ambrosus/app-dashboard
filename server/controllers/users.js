@@ -74,6 +74,43 @@ exports.getNotifications = (req, res, next) => {
 }
 
 exports.editInfo = (req, res, next) => {
+  const email = req.body.email;
+  const info = req.body;
+
+  if(email) {
+    User.findOne({ email })
+      .then(user => {
+        for (const key in info) {
+          if (
+            key === 'full_name' ||
+            key === 'company' ||
+            key === 'address' ||
+            key === 'role' ||
+            key === 'active' ||
+            key === 'settings'
+          ) {
+            user[key] = info[key]
+          }
+        }
+        user
+          .save()
+          .then(saved => {
+            req.status = 200;
+            req.json = { message: 'Update data successfull' };
+            return next();
+          })
+          .catch(error => {
+            req.status = 400;
+            req.json = { message: 'Update data failed' };
+            return next();
+          });
+      })
+      .catch(error => {
+        req.status = 400;
+        req.json = { message: '"email" is required' };
+        return next();
+      })
+  }
 
 }
 
