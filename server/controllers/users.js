@@ -37,6 +37,31 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
+  const company = req.params.company;
+
+  if (company) {
+    const query = { company };
+
+    User.find(query)
+      .then(users => {
+        if (users) {
+          req.status = 200;
+          req.json = user;
+          return next();
+        } else {
+          throw 'No user found';
+        }
+      })
+      .catch(error => {
+        req.status = 400;
+        req.json = { message: error };
+        return next();
+      });
+  } else if (!company) {
+    req.status = 400;
+    req.json = { message: '"company" is required' };
+    return next();
+  }
 
 }
 
