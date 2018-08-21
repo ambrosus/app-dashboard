@@ -3,13 +3,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  accountsAction = new Subject();
 
   constructor(
     private http: HttpClient,
@@ -17,6 +16,10 @@ export class AuthService {
     private storage: StorageService,
     private assets: AssetsService
   ) {}
+
+  emit(type) {
+    window.dispatchEvent(new Event(type));
+  }
 
   isLoggedIn() {
     const user: any = this.storage.get('user');
@@ -55,9 +58,8 @@ export class AuthService {
   addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
 
-    if (!accounts.some((account) => account.address === user.address || account.email === user.email)) {
+    if (!accounts.some((account) => account.address === user.address)) {
       accounts.unshift(user);
-      this.accountsAction.next(true);
       this.storage.set('accounts', accounts);
     }
   }
@@ -71,16 +73,14 @@ export class AuthService {
         accounts.unshift(account);
         this.storage.set('user', account);
         this.storage.set('accounts', accounts);
-        this.assets.initSDK();
-        this.accountsAction.next(true);
+        this.emit('user:login');
         this.router.navigate(['/assets']);
       }
     });
   }
 
   login(address: string, secret: string) {
-    const user: any = this.storage.get('user') || {};
-    user['address'] = address;
+    const user = { address };
     this.storage.set('user', user);
     this.storage.set('secret', secret);
 
@@ -97,21 +97,22 @@ export class AuthService {
           this.http.get(url).subscribe(
             _resp => {
               this.storage.set('isLoggedin', true);
-              this.assets.initSDK();
 
               this.getAccountByAddress(address).subscribe(
                 (r: any) => {
                   this.storage.set('user', r);
                   this.storage.set('has_account', true);
                   this.addAccount(r);
+                  this.emit('user:login');
+                  observer.next('success');
                 },
                 err => {
                   this.storage.set('has_account', false);
-                  this.addAccount({ address, secret });
+                  this.addAccount({ address });
+                  this.emit('user:login');
+                  observer.next('success');
                 }
               );
-
-              observer.next('success');
             },
             err => {
               observer.error(err);
@@ -134,14 +135,14 @@ export class AuthService {
       this.logoutAll();
     } else {
       this.storage.set('user', accounts[0]);
-      this.accountsAction.next(true);
+      this.emit('user:login');
       this.router.navigate(['/assets']);
     }
   }
 
   logoutAll() {
     this.storage.clear();
+    this.emit('user:login');
     this.router.navigate(['/login']);
-    this.accountsAction.next(true);
   }
 }

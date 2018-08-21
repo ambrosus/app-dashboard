@@ -64,7 +64,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   pageLoad() {
-    this.assetsService = new AssetsService(this.storage);
     this.ngOnInit();
     this.loadAssets();
     this.el.nativeElement.querySelector('#search').value = '';

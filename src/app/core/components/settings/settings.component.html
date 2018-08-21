@@ -25,7 +25,7 @@
       <div class="flex flex-direction-r justify-content-fe align-items-c">
         <app-spinner *ngIf="spinner"></app-spinner>
         <button type="submit" class="abtn m-l-20 btn-solid-ablue">
-          Reset password for {{ currentAccount ? currentAccount.full_name ? currentAccount.full_name : currentAccount.email ? currentAccount.email : 'current' : 'current account' }}
+          Reset password for {{ user ? user.full_name || user.email : 'current account' }}
         </button>
       </div>
       <div class="m-t-30 center">
@@ -37,21 +37,9 @@
 
   <hr>
 
-  <!-- Account management -->
-  <h4 class="m-b-30">Accounts switch</h4>
-  <div class="m-b-20" *ngIf="accounts.length > 0">
-    <p class="account" *ngFor="let account of accounts; let i = index" (click)="switchAccount(account.address)">
-      {{ account.full_name || account.email || account.address }} {{ i === 0 ? '(current)' : '' }}
-    </p>
-  </div>
-
-  <a class="abtn btn-solid-ablue" (click)="addAccountDialog()">Add account</a>
-
-  <hr>
-
   <h4 class="m-b-30">Logout</h4>
   <div class="flex flex-direction-c align-items-fs">
-    <a class="abtn btn-outline-ablue m-b-20" (click)="logout()">Log out of {{ currentAccount ? currentAccount.full_name ? currentAccount.full_name : currentAccount.email ? currentAccount.email : 'current' : 'current' }} account</a>
+    <a class="abtn btn-outline-ablue m-b-20" (click)="logout()">Log out of {{ user ? user.full_name || user.email : 'current' }} account</a>
   </div>
 
 </div>
