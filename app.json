@@ -2,8 +2,15 @@
   "name": "Ambrosus Dashboard",
   "description": "",
   "scripts": {
+    
   },
   "env": {
+    "EMAIL_API_KEY": {
+      "required": true
+    },
+    "MONGODB_URI": {
+      "required": true
+    }
   },
   "formation": {
     "web": {
@@ -11,11 +18,11 @@
     }
   },
   "addons": [
-
+    
   ],
   "buildpacks": [
     {
-      "url": "heroku/nodejs"
+      "url": "heroku\/nodejs"
     }
   ]
 }
