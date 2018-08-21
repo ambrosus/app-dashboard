@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const utilsPassword = require('../utils/password');
 const Company = require('./../models/companies');
 const Role = require('./../models/roles');
