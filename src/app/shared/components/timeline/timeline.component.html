@@ -50,5 +50,5 @@
   <app-pagination *ngIf="eventsActive && !searchActive" [currentPage]="currentEventsPage" [totalPages]="totalEventsPages"
     [method]="loadEvents"></app-pagination>
   <!-- Search pagination -->
-  <app-pagination *ngIf="searchActive && pagination.length !== 0" [currentPage]="currentSearchPage" [totalPages]="totalSearchPages" [method]="search"></app-pagination>
+  <app-pagination *ngIf="searchActive" [currentPage]="currentSearchPage" [totalPages]="totalSearchPages" [method]="search"></app-pagination>
 </div>

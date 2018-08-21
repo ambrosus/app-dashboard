@@ -125,7 +125,7 @@
       <app-pagination *ngIf="assetsActive && !searchActive"
         [currentPage]="currentAssetPage" [totalPages]="totalAssetPages" [method]="loadAssets"></app-pagination>
       <!-- Search pagination -->
-      <app-pagination *ngIf="searchActive && pagination.length !== 0 && !searchNoResultsFound"
+      <app-pagination *ngIf="searchActive && !searchNoResultsFound"
         [currentPage]="currentSearchPage" [totalPages]="totalSearchPages" [method]="search"></app-pagination>
     </div>
   </div>
