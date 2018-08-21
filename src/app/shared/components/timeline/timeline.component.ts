@@ -62,35 +62,6 @@ export class TimelineComponent implements OnInit {
     action.value = 'default';
   }
 
-  paginationGenerate(currentPage, pageCount) {
-    const delta = 2,
-      left = currentPage - delta,
-      right = currentPage + delta + 1;
-    let result = [];
-
-    result = Array.from({ length: pageCount }, (v, k) => k + 1).filter(i => i && i >= left && i < right);
-
-    if (result.length > 1) {
-      // Add first page and dots
-      if (result[0] > 1) {
-        if (result[0] > 2) {
-          result.unshift('...');
-        }
-        result.unshift(1);
-      }
-
-      // Add dots and last page
-      if (result[result.length - 1] < pageCount) {
-        if (result[result.length - 1] !== pageCount - 1) {
-          result.push('...');
-        }
-        result.push(pageCount);
-      }
-    }
-
-    return result;
-  }
-
   resetLoadEvents() {
     this.eventsActive = true;
     this.searchActive = false;
@@ -110,7 +81,6 @@ export class TimelineComponent implements OnInit {
         this.events = resp.events;
         this.resultCountEvents = resp.resultCount;
         this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
-        this.pagination = this.paginationGenerate(this.currentEventsPage, this.totalEventsPages);
       })
       .catch(err => {
         console.log('Load events error: ', err);
@@ -154,7 +124,6 @@ export class TimelineComponent implements OnInit {
         this.events = resp.events;
         this.resultCountSearch = resp.resultCount;
         this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
-        this.pagination = this.paginationGenerate(this.currentSearchPage, this.totalSearchPages);
       })
       .catch(err => {
         console.log('Load events error: ', err);
