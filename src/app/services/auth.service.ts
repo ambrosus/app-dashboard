@@ -59,6 +59,7 @@ export class AuthService {
     const accounts: any = this.storage.get('accounts') || [];
 
     if (!accounts.some((account) => account.address === user.address)) {
+      user.secret = this.storage.get('secret');
       accounts.unshift(user);
       this.storage.set('accounts', accounts);
     }
@@ -72,6 +73,7 @@ export class AuthService {
         accounts.splice(index, 1);
         accounts.unshift(account);
         this.storage.set('user', account);
+        this.storage.set('secret', account.secret);
         this.storage.set('accounts', accounts);
         this.emit('user:login');
         this.router.navigate(['/assets']);

@@ -95,6 +95,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assetSub.unsubscribe();
     this.navigationSubscription.unsubscribe();
     this.accountSelected = null;
+    this.assetsService.unselectAssets();
   }
 
   rowsPerPage(select) {
