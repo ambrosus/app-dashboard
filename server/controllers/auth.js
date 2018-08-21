@@ -68,36 +68,40 @@ exports.signup = (req, res, next) => {
   const secret = req.body.secret;
 
   if (full_name && email && company && address) {
-    Company.findById(company._id)
-      .then(companyData => {
-        const user = new User({
-          _id: new mongoose.Types.ObjectId(),
-          full_name,
-          email,
-          company: companyData._id,
-          address,
-          token: utilsPassword.encrypt(`${address}|||${secret}`, password)
-        });
-        user
-          .save()
-          .then(createdUser => {
-            req.status = 200;
-            req.json = { message: 'Success' };
-            return next();
-          })
-          .catch(error => {
-            console.log(error);
-            req.status = 400;
-            req.json = { message: error };
-            return next();
-          })
+
+    User.findOne({ email })
+      .then(user => {
+        if (user) {
+          throw 'Email is already in use';
+        } else {
+          const user = new User({
+            _id: new mongoose.Types.ObjectId(),
+            full_name,
+            email,
+            address,
+            token: 'utilsPassword.encrypt(`${address}|||${secret}`, password)'
+          });
+          user
+            .save()
+            .then(createdUser => {
+              req.status = 200;
+              req.json = { message: 'Success' };
+              return next();
+            })
+            .catch(error => {
+              console.log(error);
+              req.status = 400;
+              req.json = { message: error };
+              return next();
+            })
+        }
       })
       .catch(error => {
         console.log(error);
         req.status = 400;
         req.json = { message: error };
         return next();
-      })
+      });
   } else if (!full_name) {
     req.status = 400;
     req.json = { message: '"full_name" is required' };
