@@ -12,7 +12,7 @@ const UsersRoutes = express.Router();
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/:address', UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/:company', UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
-UsersRoutes.get('/settings/:queryparam', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
-UsersRoutes.put('/editinfo/:email', UsersController.editInfo, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.get('/settings/:emailoraddress', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.put('/:email', UsersController.editInfo, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = UsersRoutes;
