@@ -87,7 +87,7 @@ exports.signup = (req, res, next) => {
             full_name,
             email,
             address,
-            token: 'utilsPassword.encrypt(`${address}|||${secret}`, password)'
+            token: utilsPassword.encrypt(`${address}|||${secret}`, password)
           });
           user
             .save()
