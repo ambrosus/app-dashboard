@@ -75,10 +75,10 @@ exports.getAccounts = (req, res, next) => {
 }
 
 exports.getSettings = (req, res, next) => {
-  const queryparam = req.params.queryparam;
+  const emailoraddress = req.params.emailoraddress;
 
-  if (query) {
-    const query = { queryparam };
+  if (emailoraddress) {
+    const query = { emailoraddress };
 
     User.findOne(query)
       .then(user => {
@@ -95,7 +95,7 @@ exports.getSettings = (req, res, next) => {
         req.json = { message: error };
         return next();
       });
-  } else if (!address) {
+  } else if (!emailoraddress) {
     req.status = 400;
     req.json = { message: '"address" is required' };
     return next();
