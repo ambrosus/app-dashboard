@@ -70,12 +70,11 @@ exports.logout = (req, res, next) => {
 exports.signup = (req, res, next) => {
   const full_name = req.body.full_name;
   const email = req.body.email;
-  const company = req.body.company;
   const address = req.body.address;
   const password = req.body.password;
   const secret = req.body.secret;
 
-  if (full_name && email && company && address) {
+  if (full_name && email && address) {
 
     User.findOne({ email })
       .then(user => {
@@ -117,10 +116,6 @@ exports.signup = (req, res, next) => {
   } else if (!email) {
     req.status = 400;
     req.json = { message: '"email" is required' };
-    return next();
-  } else if (!company) {
-    req.status = 400;
-    req.json = { message: '"company" is required' };
     return next();
   } else if (!address) {
     req.status = 400;

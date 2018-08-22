@@ -21,7 +21,7 @@ UsersRoutes.get('/:company', UsersController.getAccounts, (req, res) =>
 {
     res.status(req.status).json(req.json);
 });
-UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) =>
+UsersRoutes.get('/settings/:queryparam', UsersController.getSettings, (req, res) =>
 {
     res.status(req.status).json(req.json);
 });

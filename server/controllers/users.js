@@ -55,10 +55,10 @@ exports.getAccounts = (req, res, next) => {
       .then(users => {
         if (users) {
           req.status = 200;
-          req.json = user;
+          req.json = users;
           return next();
         } else {
-          throw 'No user found';
+          throw 'No accounts found';
         }
       })
       .catch(error => {
@@ -75,11 +75,10 @@ exports.getAccounts = (req, res, next) => {
 }
 
 exports.getSettings = (req, res, next) => {
-  const email = req.params.email;
-  console.log(email);
+  const queryparam = req.params.queryparam;
 
-  if (email) {
-    const query = { email };
+  if (query) {
+    const query = { queryparam };
 
     User.findOne(query)
       .then(user => {
@@ -97,9 +96,9 @@ exports.getSettings = (req, res, next) => {
         req.json = { message: error };
         return next();
       });
-  } else if (!company) {
+  } else if (!address) {
     req.status = 400;
-    req.json = { message: '"company" is required' };
+    req.json = { message: '"address" is required' };
     return next();
   }
 }
