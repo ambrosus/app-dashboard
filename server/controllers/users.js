@@ -97,7 +97,7 @@ exports.getSettings = (req, res, next) => {
       });
   } else if (!emailoraddress) {
     req.status = 400;
-    req.json = { message: '"address" is required' };
+    req.json = { message: '"email or address" is required' };
     return next();
   }
 }
