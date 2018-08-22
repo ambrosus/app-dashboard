@@ -82,7 +82,6 @@ exports.getSettings = (req, res, next) => {
 
     User.findOne(query)
       .then(user => {
-        console.log(user);
         if (user) {
           req.status = 200;
           req.json = user.settings;
