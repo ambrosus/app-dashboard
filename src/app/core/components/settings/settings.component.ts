@@ -5,7 +5,6 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-settings',
@@ -29,27 +28,25 @@ export class SettingsComponent implements OnInit {
   strengthObj: any;
   flags = [];
   has_account = false;
-  accounts: any;
-  currentAccount;
-  addAccount;
+  user;
 
   ngOnInit() {
     this.settingsInit();
+    window.addEventListener('user:login', () => {
+      this.settingsInit();
+    });
   }
 
   settingsInit() {
-    this.has_account = <any>this.storage.get('has_account');
-    const accounts = this.storage.get('accounts');
-    this.accounts = accounts ? accounts : [];
-    this.currentAccount = this.accounts[0];
+    this.user = this.storage.get('user');
+    this.has_account = this.user.hasOwnProperty('full_name');
   }
 
   constructor(
     private http: HttpClient,
     private passwordService: PasswordService,
     private storage: StorageService,
-    private auth: AuthService,
-    public dialog: MatDialog
+    private auth: AuthService
   ) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
@@ -140,18 +137,4 @@ export class SettingsComponent implements OnInit {
   logoutAll() {
     this.auth.logoutAll();
   }
-
-  addAccountDialog() {
-    const dialogRef = this.dialog.open(LoginComponent, {
-      width: '600px',
-      position: { right: '0'}
-    });
-    const instance = dialogRef.componentInstance;
-    instance.isDialog = true;
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
-
 }

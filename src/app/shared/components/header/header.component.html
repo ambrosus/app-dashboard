@@ -5,8 +5,6 @@
       <a class="header-logo m-r-40" routerLink="/">
         <app-svg-icon name="logo" width="100px"></app-svg-icon>
       </a>
-      <!-- Administration menu -->
-
     </div>
 
     <ul class="header-menu" *ngIf="isLoggedin">
@@ -19,38 +17,17 @@
           <div></div>
           <!-- Menu -->
           <nav class="menu-mobile">
-            <p class="menu-mobile__item" *ngFor="let account of accounts; let i = index" (click)="switchAccount(account.address)" [ngClass]="{ current:  i === 0 }">
-              <span *ngIf="!account.full_name && !account.email">{{ account.address }}</span>
-              <span class="color-blacks--base" *ngIf="account.full_name">{{ account.full_name }} </span>
-              <span *ngIf="account.email">- {{ account.email }}</span>
-              <span *ngIf="account | checkIf: 'account.company.title'">, {{ account.company.title }}</span>
+            <p class="menu-mobile__item" *ngFor="let user of users; let i = index" (click)="switchAccount(user.address)" [ngClass]="{ current:  i === 0 }">
+              <span *ngIf="!user.full_name && !user.email">{{ user.address }}</span>
+              <span class="color-blacks--base" *ngIf="user.full_name">{{ user.full_name }} </span>
+              <span *ngIf="user.email">- {{ user.email }}</span>
+              <span *ngIf="user | checkIf: 'user.company.title'">, {{ user.company.title }}</span>
             </p>
-            <p class="menu-mobile__item separator color-ablue--base" (click)="addAccount = true">
+            <p class="menu-mobile__item separator color-ablue--base" (click)="addAccountDialog()">
               Add account
             </p>
-            <p class="menu-mobile__item separator color-ared--base" (click)="logoutAll()">
+            <p class="menu-mobile__item color-ared--base" (click)="logoutAll()">
               Log out of all accounts
-            </p>
-            <p class="menu-mobile__item" routerLink="/settings">
-              Settings
-            </p>
-            <p class="menu-mobile__item section">
-              Administration
-            </p>
-            <p class="menu-mobile__item" routerLink="/administration/company">
-              Company
-            </p>
-            <p class="menu-mobile__item separator" routerLink="/administration/company/settings">
-              Settings
-            </p>
-            <p class="menu-mobile__item" routerLink="/administration/users">
-              Users
-            </p>
-            <p class="menu-mobile__item" routerLink="/administration/users/all">
-              All users
-            </p>
-            <p class="menu-mobile__item" routerLink="/administration/users/invite">
-              Invite members
             </p>
           </nav>
         </div>
@@ -58,26 +35,21 @@
       <!-- end Mobile menu -->
 
       <!-- Desktop menu -->
-      <li class="header-menu__item hide-all display-640-inline-block p-v-10">
-        <a routerLink="/settings">
-          <app-svg-icon name="user-settings" width="25px" height="25px"></app-svg-icon>
-        </a>
-      </li>
-
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
+        <app-svg-icon name="user" width="15px" height="15px" style="padding-right: 5px"></app-svg-icon>
         {{ greeting }}
         <ul class="dropdown-menu">
-          <li *ngFor="let account of accounts; let i = index" [ngClass]="{ active:  i === 0 }" (click)="switchAccount(account.address)">
+          <li *ngFor="let user of users; let i = index" [ngClass]="{ active:  i === 0 }" (click)="switchAccount(user.address)">
 
-            <p *ngIf="!account.full_name && !account.email">{{ account.address.substring(0,8) }}...</p>
+            <p class="p-a-10" *ngIf="!user.full_name && !user.email">{{ user.address }}</p>
 
-            <p *ngIf="account.full_name">{{ account.full_name }}</p>
-            <p *ngIf="account.email">{{ account.email }}</p>
-            <p *ngIf="account.company && account.company.title">{{ account.company.title }}</p>
+            <p style="padding: 10px 10px 0 10px" *ngIf="user.full_name">{{ user.full_name }}</p>
+            <p style="padding: 0 10px" *ngIf="user.email">{{ user.email }}</p>
+            <p style="padding: 0 10px 10px 10px" *ngIf="user.company && user.company.title">{{ user.company.title }}</p>
 
           </li>
           <li class="separator color-ablue--base">
-            <span (click)="addAccount = true">Add account</span>
+            <span (click)="addAccountDialog()">Add account</span>
           </li>
           <li class="color-ared--base">
             <span (click)="logoutAll()">Log out of all accounts</span>
@@ -89,29 +61,32 @@
   </div>
 </header>
 
-<div class="container" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
+<div class="container p-h-10" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
   <div class="header-container wrapper">
     <div class="flex flex-direction-r justify-content-fs align-items-c">
       <ul class="header-menu">
-        <!-- Desktop menu -->
 
-        <div routerLink="/assets" class="grey-text" routerLinkActive="active-page blue-text" style="cursor: pointer;">
-          <span class="header-menu__item hide-all display-640-inline-block p-v-10">
-            <app-svg-icon name="blue-stack" fill="black" class="p-r-10" width="25px" height="25px"></app-svg-icon>Assets</span>
+        <div routerLink="/assets" class="header-submenu__item" routerLinkActive="active">
+          <span class="header-menu__item p-v-10">
+            <app-svg-icon name="blue-stack" fill="black" class="p-r-10" width="25px" height="25px"></app-svg-icon>
+            <span class="hide-all display-480-inline-block">Assets</span>
+          </span>
         </div>
 
-        <div routerLink="/administration/users/all" routerLinkActive="active-page blue-text" class="m-l-15 grey-text"
-          style="cursor: pointer;">
-          <span class="header-menu__item hide-all display-640-inline-block p-v-10">
-            <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>Users</span>
+        <div *ngIf="(user | checkIf: 'user.role.id') && user.role.id === 1" routerLink="/administration/users/all" class="header-submenu__item" routerLinkActive="active">
+          <span class="header-menu__item p-v-10">
+            <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
+            <span class="hide-all display-480-inline-block">Administration</span>
+          </span>
         </div>
 
-        <div routerLink="/settings" routerLinkActive="active-page blue-text" class="m-l-15 grey-text" style="cursor: pointer;">
-          <span class="header-menu__item hide-all display-640-inline-block p-v-10">
-            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>Settings</span>
+        <div routerLink="/settings" class="header-submenu__item" routerLinkActive="active">
+          <span class="header-menu__item p-v-10">
+            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
+            <span class="hide-all display-480-inline-block">Settings</span>
+          </span>
         </div>
 
-        <!-- end Desktop menu -->
       </ul>
     </div>
 

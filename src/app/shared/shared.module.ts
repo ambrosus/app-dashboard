@@ -1,4 +1,13 @@
+/*
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+*/
+
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputDirective } from 'app/shared/directives/input.directive';
 import { OncheckedDirective } from './directives/onchecked.directive';
@@ -24,7 +33,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule],
   exports: [
     CommonModule,
     InputDirective,

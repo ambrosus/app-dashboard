@@ -1,4 +1,3 @@
-import { environment } from 'environments/environment';
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
@@ -6,9 +5,7 @@ import { Subject, Observable } from 'rxjs';
 declare let AmbrosusSDK: any;
 declare let Web3: any;
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AssetsService {
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
@@ -27,6 +24,10 @@ export class AssetsService {
 
   constructor(private storage: StorageService) {
     this.initSDK();
+    window.addEventListener('user:login', () => {
+      this.initSDK();
+      console.log('CONS: ', this.ambrosus);
+    });
   }
 
   initSDK() {

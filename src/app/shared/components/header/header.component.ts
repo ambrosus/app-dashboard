@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
+import { LoginComponent } from 'app/core/components/login/login.component';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-header',
@@ -12,34 +14,29 @@ export class HeaderComponent implements OnInit {
   isLoggedin = false;
   greeting = 'Hi, welcome!';
   overlay = false;
-  accounts;
-  currentAccount;
+  users;
+  user;
   addAccount;
-  public opened: Boolean = true;
 
   constructor(
     private auth: AuthService,
-    private storage: StorageService
-  ) {
-    this.auth.accountsAction.subscribe(resp => {
-      this.headerInit();
-    });
-  }
+    private storage: StorageService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
-    window.addEventListener('user:loggedin', () => {
-      this.headerInit();
-      console.log('This is it!');
-    });
     this.headerInit();
+    window.addEventListener('user:login', () => {
+      this.headerInit();
+    });
   }
 
   headerInit() {
-    const user: any = this.storage.get('user') || {};
-    this.greeting = user.full_name || user.email || 'Hi, welcome!';
+    this.user = this.storage.get('user') || {};
+    this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
     this.isLoggedin = <any>this.storage.get('isLoggedin');
-    this.accounts = this.storage.get('accounts') || [];
-    this.currentAccount = this.accounts[0];
+    this.users = this.storage.get('accounts') || [];
+    this.dialog.closeAll();
   }
 
   switchAccount(address) {
@@ -54,12 +51,16 @@ export class HeaderComponent implements OnInit {
     this.auth.logoutAll();
   }
 
-  public close(status) {
-    console.log(`Dialog result: ${status}`);
-    this.opened = false;
-  }
+  addAccountDialog() {
+    const dialogRef = this.dialog.open(LoginComponent, {
+      width: '600px',
+      position: { right: '0'}
+    });
+    const instance = dialogRef.componentInstance;
+    instance.isDialog = true;
 
-  public open() {
-    this.opened = true;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 }
