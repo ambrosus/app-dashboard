@@ -115,8 +115,6 @@ exports.editInfo = (req, res, next) => {
     if (
       key === 'full_name' ||
       key === 'company' ||
-      key === 'address' ||
-      key === 'role' ||
       key === 'active' ||
       key === 'settings'
     ) {
