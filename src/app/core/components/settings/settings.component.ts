@@ -30,6 +30,9 @@ export class SettingsComponent implements OnInit {
   has_account = false;
   user;
 
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+
   ngOnInit() {
     this.settingsInit();
     window.addEventListener('user:login', () => {
@@ -53,6 +56,19 @@ export class SettingsComponent implements OnInit {
       password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
     });
+  }
+
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+  }
+  imageCropped(image: string) {
+    this.croppedImage = image;
+  }
+  imageLoaded() {
+    // show cropper
+  }
+  loadImageFailed() {
+    // show message
   }
 
   resetErrors() {

@@ -1,45 +1,90 @@
-<div class="block-center m-w-4 p-h-20" style="margin-top: 40px;">
-  <h2 class="m-v-30 center">Settings</h2>
+<div class="block-center m-w-4 p-h-20"
+     style="margin-top: 40px;">
+    <h2 class="m-v-30 center">Settings</h2>
 
-  <!-- Password reset -->
-  <div *ngIf="has_account">
-    <h4 class="m-b-30">Reset password</h4>
-    <form class="form-group p-a-30" [formGroup]="resetForm" (ngSubmit)="changePassword()" [ngClass]="{ error: error }">
-      <div class="form-text m-b-20">
-        <label for="passwordConfirm">Old Password *</label>
-        <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="password">Password *</label>
-        <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
-          appInput>
-      </div>
-      <div *ngIf="passwordExists" class="progress password-pad">
-        <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
-        <small>Strong passwords contain combination of symbol, lowercase, uppercase letter & a number</small>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="passwordConfirm">Password Confirm *</label>
-        <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
-      </div>
-      <div class="flex flex-direction-r justify-content-fe align-items-c">
-        <app-spinner *ngIf="spinner"></app-spinner>
-        <button type="submit" class="abtn m-l-20 btn-solid-ablue">
+    <!-- Avatar test-->
+
+    <div>
+        <input type="file"
+               (change)="fileChangeEvent($event)" />
+
+        <image-cropper style="max-height: 400px;"
+                       [imageChangedEvent]="imageChangedEvent"
+                       [maintainAspectRatio]="true"
+                       [aspectRatio]="1 / 1"
+                       [resizeToWidth]="150"
+                       [imageQuality]="100"
+                       format="png"
+                       (imageCroppedBase64)="imageCropped($event)"
+                       (imageLoaded)="imageLoaded()"
+                       (loadImageFailed)="loadImageFailed()"></image-cropper>
+
+        <div *ngIf="croppedImage" class="avatar" [style.backgroundImage]="'url('+ croppedImage +')'"></div>
+    </div>
+
+    <!-- Password reset -->
+    <div *ngIf="has_account">
+        <h4 class="m-b-30">Reset password</h4>
+        <form class="form-group p-a-30"
+              [formGroup]="resetForm"
+              (ngSubmit)="changePassword()"
+              [ngClass]="{ error: error }">
+            <div class="form-text m-b-20">
+                <label for="passwordConfirm">Old Password *</label>
+                <input formControlName="oldPassword"
+                       type="password"
+                       name="oldPassword"
+                       id="oldPassword"
+                       spellcheck="false"
+                       appInput>
+            </div>
+            <div class="form-text m-b-20">
+                <label for="password">Password *</label>
+                <input (input)="checkPassword($event)"
+                       formControlName="password"
+                       type="password"
+                       name="password"
+                       id="password"
+                       spellcheck="false"
+                       appInput>
+            </div>
+            <div *ngIf="passwordExists"
+                 class="progress password-pad">
+                <div class="progress_bar"
+                     [ngStyle]="{'width': width + '%', 'background': color}"></div>
+                <small>Strong passwords contain combination of symbol, lowercase, uppercase letter & a number</small>
+            </div>
+            <div class="form-text m-b-20">
+                <label for="passwordConfirm">Password Confirm *</label>
+                <input formControlName="passwordConfirm"
+                       type="password"
+                       name="passwordConfirm"
+                       id="passwordConfirm"
+                       spellcheck="false"
+                       appInput>
+            </div>
+            <div class="flex flex-direction-r justify-content-fe align-items-c">
+                <app-spinner *ngIf="spinner"></app-spinner>
+                <button type="submit"
+                        class="abtn m-l-20 btn-solid-ablue">
           Reset password for {{ user ? user.full_name || user.email : 'current account' }}
         </button>
-      </div>
-      <div class="m-t-30 center">
-        <h5 *ngIf="error" style="color: #ea7070;">{{ error }}</h5>
-        <h5 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h5>
-      </div>
-    </form>
-  </div>
+            </div>
+            <div class="m-t-30 center">
+                <h5 *ngIf="error"
+                    style="color: #ea7070;">{{ error }}</h5>
+                <h5 *ngIf="resetSuccess"
+                    style="color: green;">Password changed successfully!</h5>
+            </div>
+        </form>
+    </div>
 
-  <hr>
+    <hr>
 
-  <h4 class="m-b-30">Logout</h4>
-  <div class="flex flex-direction-c align-items-fs">
-    <a class="abtn btn-outline-ablue m-b-20" (click)="logout()">Log out of {{ user ? user.full_name || user.email : 'current' }} account</a>
-  </div>
+    <h4 class="m-b-30">Logout</h4>
+    <div class="flex flex-direction-c align-items-fs">
+        <a class="abtn btn-outline-ablue m-b-20"
+           (click)="logout()">Log out of {{ user ? user.full_name || user.email : 'current' }} account</a>
+    </div>
 
 </div>

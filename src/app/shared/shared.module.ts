@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { InputDirective } from 'app/shared/directives/input.directive';
 import { OncheckedDirective } from './directives/onchecked.directive';
 import { RouterModule } from '@angular/router';
+import { ImageCropperModule } from 'ngx-image-cropper';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
@@ -33,7 +34,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
   exports: [
     CommonModule,
     InputDirective,
@@ -54,7 +55,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     NotificationComponent,
     MatDialogModule,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    ImageCropperModule
   ],
   declarations: [
     InputDirective,
@@ -78,4 +80,4 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
-export class SharedModule {}
+export class SharedModule { }
