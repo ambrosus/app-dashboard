@@ -11,7 +11,7 @@ const HermesesRoutes = express.Router();
 const checkSession = require('../../middleware/checkSession');
 
 // Routes
-HermesesRoutes.post('/', HermesesController.create, (req, res) => res.status(req.status).json(req.json));
-HermesesRoutes.get('/', HermesesController.getAll, (req, res) => res.status(req.status).json(req.json));
+HermesesRoutes.post('/', HermesesController.create, (req, res) => { res.status(req.status).json(req.json); });
+HermesesRoutes.get('/', HermesesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = HermesesRoutes;
