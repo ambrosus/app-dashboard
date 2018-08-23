@@ -31,6 +31,7 @@ exports.login = (req, res, next) => {
           const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
 
           if (address && secret) {
+            req.session.address = address;
             req.status = 200;
             req.json = {
               user,
@@ -52,9 +53,9 @@ exports.login = (req, res, next) => {
         req.json = { message: error };
         return next();
       });
-  } else if (!address) {
+  } else if (!email) {
     req.status = 400;
-    req.json = { message: '"address" is required'  };
+    req.json = { message: '"email" is required'  };
     return next();
   } else if (!password) {
     req.status = 400;
