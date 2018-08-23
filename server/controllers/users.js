@@ -46,11 +46,62 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
+  const company = req.params.company;
+
+  if (company) {
+    const query = { company };
+
+    User.find(query)
+      .then(users => {
+        if (users) {
+          req.status = 200;
+          req.json = users;
+          return next();
+        } else {
+          throw 'No accounts found';
+        }
+      })
+      .catch(error => {
+        req.status = 400;
+        req.json = { message: error };
+        return next();
+      });
+  } else if (!company) {
+    req.status = 400;
+    req.json = { message: '"company" is required' };
+    return next();
+  }
 
 }
 
 exports.getSettings = (req, res, next) => {
 
+  const email = req.query.email;
+  const address = req.query.address;
+
+  const query = email ? { email } : { address }
+
+  if (query) {
+    User.findOne(query)
+      .then(response => {
+        if (response) {
+          req.status = 200;
+          req.json = response.settings;
+          return next();
+        } else {
+          throw 'No accounts found';
+        }
+      })
+      .catch(error => {
+        req.status = 400;
+        req.json = { message: error };
+        return next();
+      });
+  } else if (!query) {
+    req.status = 400;
+    req.json = { message: '"email or address" is required' };
+    return next();
+  }
 }
 
 exports.getNotifications = (req, res, next) => {
@@ -58,7 +109,41 @@ exports.getNotifications = (req, res, next) => {
 }
 
 exports.editInfo = (req, res, next) => {
+  const email = req.params.email;
+  const info = req.body;
+  const user = {}
 
+  for (const key in info) {
+    if (
+      key === 'full_name' || key === 'settings'
+    ) {
+      user[key] = info[key]
+    }
+  }
+
+  if(email) {
+    User.findOneAndUpdate({ email }, user)
+      .then(updateResponse => {
+        if (updateResponse === null) {
+          req.status = 400;
+          req.json = { message: 'Update data failed' };
+          return next();
+        } else {
+          req.status = 200;
+          req.json = { message: 'Update data successfull' };
+          return next();
+        }
+      })
+      .catch(error => {
+        req.status = 400;
+        req.json = { message: 'Update data failed' };
+        return next();
+      });
+    } else {
+        req.status = 400;
+        req.json = { message: '"email" is required' };
+        return next();
+    }
 }
 
 exports.changePassword = (req, res, next) => {

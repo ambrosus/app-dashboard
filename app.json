@@ -10,6 +10,12 @@
     },
     "MONGODB_URI": {
       "required": true
+    },
+    "SECRET": {
+      "required": true
+    },
+    "NODE_ENV": {
+      "required": true
     }
   },
   "formation": {
