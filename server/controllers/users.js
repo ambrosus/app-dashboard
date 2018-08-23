@@ -75,35 +75,21 @@ exports.getAccounts = (req, res, next) => {
 }
 
 exports.getSettings = (req, res, next) => {
-  const emailoraddress = req.params.emailoraddress;
 
-  if (emailoraddress) {
-    const emailQuery = { email: emailoraddress };
+  const email = req.query.email;
+  const address = req.query.address;
 
-    User.findOne(emailQuery)
-      .then(emailQueryResponse => {
-        if (emailQueryResponse) {
+  const query = email ? { email } : { address }
+
+  if (query) {
+    User.findOne(query)
+      .then(response => {
+        if (response) {
           req.status = 200;
-          req.json = emailQueryResponse.settings;
+          req.json = response.settings;
           return next();
         } else {
-          const addressQuery = { address: emailoraddress };
-
-          User.findOne(addressQuery)
-            .then(addressQueryResponse => {
-              if (addressQueryResponse) {
-                req.status = 200;
-                req.json = addressQueryResponse.settings;
-                return next();
-              } else {
-                throw 'No user found';
-              }
-            })
-            .catch(error => {
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            })
+          throw 'No accounts found';
         }
       })
       .catch(error => {
@@ -111,7 +97,7 @@ exports.getSettings = (req, res, next) => {
         req.json = { message: error };
         return next();
       });
-  } else if (!emailoraddress) {
+  } else if (!query) {
     req.status = 400;
     req.json = { message: '"email or address" is required' };
     return next();
