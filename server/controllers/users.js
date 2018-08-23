@@ -78,16 +78,32 @@ exports.getSettings = (req, res, next) => {
   const emailoraddress = req.params.emailoraddress;
 
   if (emailoraddress) {
-    const query = { emailoraddress };
+    const emailQuery = { email: emailoraddress };
 
-    User.findOne(query)
-      .then(user => {
-        if (user) {
+    User.findOne(emailQuery)
+      .then(emailQueryResponse => {
+        if (emailQueryResponse) {
           req.status = 200;
-          req.json = user.settings;
+          req.json = emailQueryResponse.settings;
           return next();
         } else {
-          throw 'No user found';
+          const addressQuery = { address: emailoraddress };
+
+          User.findOne(addressQuery)
+            .then(addressQueryResponse => {
+              if (addressQueryResponse) {
+                req.status = 200;
+                req.json = addressQueryResponse.settings;
+                return next();
+              } else {
+                throw 'No user found';
+              }
+            })
+            .catch(error => {
+              req.status = 400;
+              req.json = { message: error };
+              return next();
+            })
         }
       })
       .catch(error => {
@@ -113,10 +129,7 @@ exports.editInfo = (req, res, next) => {
 
   for (const key in info) {
     if (
-      key === 'full_name' ||
-      key === 'company' ||
-      key === 'active' ||
-      key === 'settings'
+      key === 'full_name' || key === 'settings'
     ) {
       user[key] = info[key]
     }
@@ -125,9 +138,15 @@ exports.editInfo = (req, res, next) => {
   if(email) {
     User.findOneAndUpdate({ email }, user)
       .then(updateResponse => {
-        req.status = 200;
-        req.json = { message: 'Update data successfull' };
-        return next();
+        if (updateResponse === null) {
+          req.status = 400;
+          req.json = { message: 'Update data failed' };
+          return next();
+        } else {
+          req.status = 200;
+          req.json = { message: 'Update data successfull' };
+          return next();
+        }
       })
       .catch(error => {
         req.status = 400;
