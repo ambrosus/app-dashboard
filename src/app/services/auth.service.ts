@@ -18,7 +18,7 @@ export class AuthService {
     private router: Router,
     private storage: StorageService
   ) {
-    const hermes: any = this.storage.get('hermes') || {};
+    const hermes: any = this.storage.get('hermes');
     this.sdk = new AmbrosusSDK({
       apiEndpoint: hermes.url,
       Web3
@@ -105,7 +105,7 @@ export class AuthService {
 
     return new Observable(observer => {
       const token = this.getToken(secret);
-      const hermes: any = this.storage.get('hermes') || {};
+      const hermes: any = this.storage.get('hermes');
 
       this.verifyAccount(address, token, hermes).subscribe(
         (r: any) => {
