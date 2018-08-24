@@ -21,8 +21,9 @@ export class PasswordService {
     const _upperLetters = /[A-Z]+/.test(p);
     const _numbers = /[0-9]+/.test(p);
     const _symbols = _regex.test(p);
+    const _length = p.length >= 8 ? true : false;
 
-    const _flags = [_lowerLetters, _upperLetters, _numbers, _symbols];
+    const _flags = [_lowerLetters, _upperLetters, _numbers, _symbols, _length];
 
     let _passedMatches = 0;
     for (const _flag of _flags) {
