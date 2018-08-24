@@ -45,43 +45,7 @@ const usersSchema = mongoose.Schema(
         type: Boolean,
         default: true
     },
-    settings:
-    {
-        developer:
-        {
-            type: Boolean,
-            default: false
-        },
-        notifications:
-        {
-            asset:
-            {
-                create:
-                {
-                    type: Boolean,
-                    default: true
-                },
-                edit:
-                {
-                    type: Boolean,
-                    default: true
-                }
-            },
-            event:
-            {
-                create:
-                {
-                    type: Boolean,
-                    default: true
-                },
-                edit:
-                {
-                    type: Boolean,
-                    default: true
-                }
-            }
-        }
-    },
+    settings: String,
     createdAt:
     {
         type: Date,
