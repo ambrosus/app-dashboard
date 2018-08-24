@@ -40,17 +40,29 @@ export class AuthService {
     return this.http.post(url, params);
   }
 
-  getAccount(address) {
+  getAccount(email) {
     return new Observable(observer => {
-      const url = `/api/users/${address}`;
+      const url = `/api/users/${email}`;
 
       this.http.get(url).subscribe(
-        resp => {
-          return observer.next(resp);
-        },
-        err => {
-          return observer.error(err);
-        }
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
+    });
+  }
+
+  verifyAccount(address, token, hermes) {
+    return new Observable(observer => {
+      const url = `/api/auth/verify`;
+      const body = {
+        address,
+        token,
+        hermes
+      };
+
+      this.http.post(url, body).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
       );
     });
   }
@@ -98,36 +110,26 @@ export class AuthService {
           this.storage.set('token', resp.token);
           const hermes: any = this.storage.get('hermes') || {};
 
-          // Hermes address request
-          const url = `${hermes.url}/accounts/${address}`;
-          this.http.get(url).subscribe(
-            _resp => {
+          this.verifyAccount(address, resp.token, hermes).subscribe(
+            (r: any) => {
               this.storage.set('isLoggedin', true);
-
-              this.getAccount(address).subscribe(
-                (r: any) => {
-                  this.storage.set('user', r);
-                  this.storage.set('has_account', true);
-                  this.addAccount(r);
-                  this.emit('user:login');
-                  observer.next('success');
-                },
-                err => {
-                  this.storage.set('has_account', false);
-                  this.addAccount({ address });
-                  this.emit('user:login');
-                  observer.next('success');
-                }
-              );
+              if (!r.message) {
+                this.storage.set('user', r);
+                this.storage.set('has_account', true);
+                this.addAccount(r);
+                this.emit('user:login');
+                observer.next('success');
+              } else {
+                this.storage.set('has_account', false);
+                this.addAccount({ address });
+                this.emit('user:login');
+                observer.next('success');
+              }
             },
-            err => {
-              observer.error(err);
-            }
+            err => observer.error(err)
           );
         },
-        err => {
-          observer.error(err);
-        }
+        err => observer.error(err)
       );
     });
   }

@@ -12,9 +12,9 @@ const User = require('../models/users');
 const Company = require('../models/companies');
 
 exports.getAccount = (req, res, next) => {
-  const address = req.params.address;
+  const email = req.params.email;
 
-  User.findOne({ address })
+  User.findOne({ email })
     .populate({
       path: 'company',
       populate: [

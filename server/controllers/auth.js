@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 const mongoose = require('mongoose');
 const utilsPassword = require('../utils/password');
-const Company = require('./../models/companies');
+const axios = require('axios');
 
 const User = require('../models/users');
 
@@ -63,6 +63,47 @@ exports.login = (req, res, next) => {
     return next();
   }
 };
+
+exports.verifyAccount = (req, res, next) => {
+  const address = req.body.address;
+  const token = req.body.token;
+  const hermes = req.body.hermes;
+
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: `AMB_TOKEN ${token}`
+  };
+
+  axios.get(`${hermes.url}/accounts/${address}`, { headers })
+  .then(resp => {
+    User.findOne({ address })
+      .populate({
+        path: 'company',
+        populate: [
+          { path: 'hermes' }
+        ]
+      })
+      .then(user => {
+        if (user) {
+          req.status = 200;
+          req.json = user;
+          return next();
+        } else {
+          throw 'No user found';
+        }
+      })
+      .catch(error => {
+        req.status = 200;
+        req.json = { message: 'No registered user' };
+        return next();
+      });
+  }).catch(error => {
+    req.status = 400;
+    req.json = { message: error };
+    return next();
+  });
+}
 
 exports.logout = (req, res, next) => {
   req.session.destroy(error => {
