@@ -9,14 +9,42 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const utilsPassword = require('../utils/password');
 
 const User = require('../models/users');
+const Company = require('../models/companies');
 
 exports.getAccount = (req, res, next) => {
   const address = req.params.address;
 
-  if (address) {
-    const query = { address };
+  User.findOne({ address })
+    .populate({
+      path: 'company',
+      populate: [
+        { path: 'hermes' }
+      ]
+    })
+    .populate('role')
+    .then(user => {
+      if (user) {
+        req.status = 200;
+        req.json = user;
+        return next();
+      } else {
+        throw 'No user found';
+      }
+    })
+    .catch(error => {
+      req.status = 400;
+      req.json = { message: error };
+      return next();
+    });
+}
 
-    User.findOne(query)
+exports.getAccounts = (req, res, next) => {
+  const address = req.session.address;
+
+  User.findOne({ address })
+  .then(user => {
+    if (user) {
+      User.find({ company: user.company })
       .populate({
         path: 'company',
         populate: [
@@ -24,126 +52,80 @@ exports.getAccount = (req, res, next) => {
         ]
       })
       .populate('role')
-      .then(user => {
-        if (user) {
-          req.status = 200;
-          req.json = user;
-          return next();
-        } else {
-          throw 'No user found';
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
-  }
-}
-
-exports.getAccounts = (req, res, next) => {
-  const company = req.params.company;
-
-  if (company) {
-    const query = { company };
-
-    User.find(query)
       .then(users => {
-        if (users) {
-          req.status = 200;
-          req.json = users;
-          return next();
-        } else {
-          throw 'No accounts found';
-        }
-      })
-      .catch(error => {
+        req.status = 200;
+        req.json = {
+          resultCount: users.length,
+          data: users
+        };
+        return next();
+      }).catch(error => {
         req.status = 400;
         req.json = { message: error };
         return next();
       });
-  } else if (!company) {
+    } else {
+      throw 'No user found';
+    }
+  })
+  .catch(error => {
     req.status = 400;
-    req.json = { message: '"company" is required' };
+    req.json = { message: error };
     return next();
-  }
-
+  });
 }
 
 exports.getSettings = (req, res, next) => {
+  const email = req.params.email;
 
-  const email = req.query.email;
-  const address = req.query.address;
-
-  const query = email ? { email } : { address }
-
-  if (query) {
-    User.findOne(query)
-      .then(response => {
-        if (response) {
-          req.status = 200;
-          req.json = response.settings;
-          return next();
-        } else {
-          throw 'No accounts found';
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!query) {
+  User.findOne({ email })
+  .then(user => {
+    if (user) {
+      req.status = 200;
+      req.json = user.settings;
+      return next();
+    } else {
+      throw 'No accounts found';
+    }
+  })
+  .catch(error => {
     req.status = 400;
-    req.json = { message: '"email or address" is required' };
+    req.json = { message: error };
     return next();
-  }
+  });
 }
 
 exports.getNotifications = (req, res, next) => {
 
 }
 
-exports.editInfo = (req, res, next) => {
+exports.edit = (req, res, next) => {
   const email = req.params.email;
-  const info = req.body;
-  const user = {}
+  const query = req.body;
+  const update = {}
 
-  for (const key in info) {
-    if (
-      key === 'full_name' || key === 'settings'
-    ) {
-      user[key] = info[key]
+  for (const key in query) {
+    if (key === 'full_name' || key === 'settings') {
+      update[key] = query[key]
     }
   }
 
-  if(email) {
-    User.findOneAndUpdate({ email }, user)
-      .then(updateResponse => {
-        if (updateResponse === null) {
-          req.status = 400;
-          req.json = { message: 'Update data failed' };
-          return next();
-        } else {
-          req.status = 200;
-          req.json = { message: 'Update data successfull' };
-          return next();
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: 'Update data failed' };
-        return next();
-      });
-    } else {
-        req.status = 400;
-        req.json = { message: '"email" is required' };
-        return next();
+  User.findOneAndUpdate({ email }, update)
+  .then(updateResponse => {
+    if (updateResponse) {
+      req.status = 200;
+      req.json = { message: 'Update data success' };
+      return next();
     }
+    req.status = 400;
+    req.json = { message: 'Update data error' };
+    return next();
+  })
+  .catch(error => {
+    req.status = 400;
+    req.json = { message: 'Update data error' };
+    return next();
+  });
 }
 
 exports.changePassword = (req, res, next) => {

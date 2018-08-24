@@ -39,6 +39,7 @@ const usersSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Roles'
     },
+    profile_image: String,
     active:
     {
         type: Boolean,
