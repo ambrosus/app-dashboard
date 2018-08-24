@@ -1,21 +1,29 @@
-import { AssetsService } from './assets.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
 
+declare let AmbrosusSDK: any;
+declare let Web3: any;
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  sdk;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService,
-    private assets: AssetsService
-  ) {}
+    private storage: StorageService
+  ) {
+    const hermes: any = this.storage.get('hermes');
+    this.sdk = new AmbrosusSDK({
+      apiEndpoint: hermes.url,
+      Web3
+    });
+  }
 
   emit(type) {
     window.dispatchEvent(new Event(type));
@@ -29,28 +37,33 @@ export class AuthService {
     return user && user.address && secret && token;
   }
 
-  getToken() {
-    const params = {
-      validUntil: 1600000000
-    };
-
-    const hermes: any = this.storage.get('hermes') || {};
-    const url = `${hermes.url}/token`;
-
-    return this.http.post(url, params);
+  getToken(secret) {
+    return this.sdk.getToken(secret);
   }
 
-  getAccount(address) {
+  getAccount(email) {
     return new Observable(observer => {
-      const url = `/api/users/${address}`;
+      const url = `/api/users/${email}`;
 
       this.http.get(url).subscribe(
-        resp => {
-          return observer.next(resp);
-        },
-        err => {
-          return observer.error(err);
-        }
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
+    });
+  }
+
+  verifyAccount(address, token, hermes) {
+    return new Observable(observer => {
+      const url = `/api/auth/verify`;
+      const body = {
+        address,
+        token,
+        hermes
+      };
+
+      this.http.post(url, body).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
       );
     });
   }
@@ -91,43 +104,27 @@ export class AuthService {
     this.storage.set('secret', secret);
 
     return new Observable(observer => {
+      const token = this.getToken(secret);
+      const hermes: any = this.storage.get('hermes');
 
-      // Hermes token request
-      this.getToken().subscribe(
-        (resp: any) => {
-          this.storage.set('token', resp.token);
-          const hermes: any = this.storage.get('hermes') || {};
-
-          // Hermes address request
-          const url = `${hermes.url}/accounts/${address}`;
-          this.http.get(url).subscribe(
-            _resp => {
-              this.storage.set('isLoggedin', true);
-
-              this.getAccount(address).subscribe(
-                (r: any) => {
-                  this.storage.set('user', r);
-                  this.storage.set('has_account', true);
-                  this.addAccount(r);
-                  this.emit('user:login');
-                  observer.next('success');
-                },
-                err => {
-                  this.storage.set('has_account', false);
-                  this.addAccount({ address });
-                  this.emit('user:login');
-                  observer.next('success');
-                }
-              );
-            },
-            err => {
-              observer.error(err);
-            }
-          );
+      this.verifyAccount(address, token, hermes).subscribe(
+        (r: any) => {
+          this.storage.set('isLoggedin', true);
+          this.storage.set('token', token);
+          if (!r.message) {
+            this.storage.set('user', r);
+            this.storage.set('has_account', true);
+            this.addAccount(r);
+            this.emit('user:login');
+            observer.next('success');
+          } else {
+            this.storage.set('has_account', false);
+            this.addAccount({ address });
+            this.emit('user:login');
+            observer.next('success');
+          }
         },
-        err => {
-          observer.error(err);
-        }
+        err => observer.error(err)
       );
     });
   }
