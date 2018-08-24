@@ -65,7 +65,10 @@ exports.login = (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-
+  req.session.destroy();
+  req.status = 200;
+  req.json = { message: 'User logout success' };
+  return next();
 }
 
 exports.signup = (req, res, next) => {
