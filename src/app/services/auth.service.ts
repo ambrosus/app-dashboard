@@ -40,7 +40,7 @@ export class AuthService {
     return this.http.post(url, params);
   }
 
-  getAccountByAddress(address) {
+  getAccount(address) {
     return new Observable(observer => {
       const url = `/api/users/${address}`;
 
@@ -104,7 +104,7 @@ export class AuthService {
             _resp => {
               this.storage.set('isLoggedin', true);
 
-              this.getAccountByAddress(address).subscribe(
+              this.getAccount(address).subscribe(
                 (r: any) => {
                   this.storage.set('user', r);
                   this.storage.set('has_account', true);

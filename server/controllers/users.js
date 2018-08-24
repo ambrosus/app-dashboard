@@ -9,11 +9,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const utilsPassword = require('../utils/password');
 
 const User = require('../models/users');
+const Company = require('../models/companies');
 
 exports.getAccount = (req, res, next) => {
-  const email = req.params.email;
+  const address = req.params.address;
 
-  User.findOne({ email })
+  User.findOne({ address })
     .populate({
       path: 'company',
       populate: [
@@ -38,32 +39,33 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const company = req.params.company;
+  const address = req.session.address;
 
-  if (company) {
-    const query = { company };
-
-    User.find(query)
+  User.findOne({ address })
+  .then(user => {
+    if (user) {
+      User.find({ company: user.company })
       .then(users => {
-        if (users) {
-          req.status = 200;
-          req.json = users;
-          return next();
-        } else {
-          throw 'No accounts found';
-        }
-      })
-      .catch(error => {
+        req.status = 200;
+        req.json = {
+          resultCount: users.length,
+          data: users
+        };
+        return next();
+      }).catch(error => {
         req.status = 400;
         req.json = { message: error };
         return next();
       });
-  } else if (!company) {
+    } else {
+      throw 'No user found';
+    }
+  })
+  .catch(error => {
     req.status = 400;
-    req.json = { message: '"company" is required' };
+    req.json = { message: error };
     return next();
-  }
-
+  });
 }
 
 exports.getSettings = (req, res, next) => {
