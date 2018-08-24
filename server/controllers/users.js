@@ -11,9 +11,9 @@ const utilsPassword = require('../utils/password');
 const User = require('../models/users');
 
 exports.getAccount = (req, res, next) => {
-  const address = req.params.address;
+  const email = req.params.email;
 
-  User.findOne({ address })
+  User.findOne({ email })
     .populate({
       path: 'company',
       populate: [
@@ -67,9 +67,9 @@ exports.getAccounts = (req, res, next) => {
 }
 
 exports.getSettings = (req, res, next) => {
-  const address = req.params.address;
+  const email = req.params.email;
 
-  User.findOne({ address })
+  User.findOne({ email })
   .then(user => {
     if (user) {
       req.status = 200;
@@ -91,7 +91,7 @@ exports.getNotifications = (req, res, next) => {
 }
 
 exports.edit = (req, res, next) => {
-  const address = req.params.address;
+  const email = req.params.email;
   const query = req.body;
   const update = {}
 
@@ -101,7 +101,7 @@ exports.edit = (req, res, next) => {
     }
   }
 
-  User.findOneAndUpdate({ address }, update)
+  User.findOneAndUpdate({ email }, update)
   .then(updateResponse => {
     if (updateResponse) {
       req.status = 200;

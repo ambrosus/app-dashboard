@@ -12,8 +12,8 @@ const UsersRoutes = express.Router();
 // Routes
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/company/:company', UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
-UsersRoutes.get('/settings/:address', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
-UsersRoutes.get('/:address', UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); });
-UsersRoutes.put('/:address', UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.get('/:email', UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.put('/:email', UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = UsersRoutes;
