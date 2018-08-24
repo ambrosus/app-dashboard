@@ -13,36 +13,28 @@ const User = require('../models/users');
 exports.getAccount = (req, res, next) => {
   const address = req.params.address;
 
-  if (address) {
-    const query = { address };
-
-    User.findOne(query)
-      .populate({
-        path: 'company',
-        populate: [
-          { path: 'hermes' }
-        ]
-      })
-      .populate('role')
-      .then(user => {
-        if (user) {
-          req.status = 200;
-          req.json = user;
-          return next();
-        } else {
-          throw 'No user found';
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
+  User.findOne({ address })
+    .populate({
+      path: 'company',
+      populate: [
+        { path: 'hermes' }
+      ]
+    })
+    .populate('role')
+    .then(user => {
+      if (user) {
+        req.status = 200;
+        req.json = user;
         return next();
-      });
-  } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
-  }
+      } else {
+        throw 'No user found';
+      }
+    })
+    .catch(error => {
+      req.status = 400;
+      req.json = { message: error };
+      return next();
+    });
 }
 
 exports.getAccounts = (req, res, next) => {
@@ -75,33 +67,23 @@ exports.getAccounts = (req, res, next) => {
 }
 
 exports.getSettings = (req, res, next) => {
+  const address = req.params.address;
 
-  const email = req.query.email;
-  const address = req.query.address;
-
-  const query = email ? { email } : { address }
-
-  if (query) {
-    User.findOne(query)
-      .then(response => {
-        if (response) {
-          req.status = 200;
-          req.json = response.settings;
-          return next();
-        } else {
-          throw 'No accounts found';
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!query) {
+  User.findOne({ address })
+  .then(user => {
+    if (user) {
+      req.status = 200;
+      req.json = user.settings;
+      return next();
+    } else {
+      throw 'No accounts found';
+    }
+  })
+  .catch(error => {
     req.status = 400;
-    req.json = { message: '"email or address" is required' };
+    req.json = { message: error };
     return next();
-  }
+  });
 }
 
 exports.getNotifications = (req, res, next) => {
@@ -109,7 +91,7 @@ exports.getNotifications = (req, res, next) => {
 }
 
 exports.edit = (req, res, next) => {
-  const email = req.params.email;
+  const address = req.params.address;
   const query = req.body;
   const update = {}
 
@@ -119,28 +101,22 @@ exports.edit = (req, res, next) => {
     }
   }
 
-  if(email) {
-    User.findOneAndUpdate({ email }, update)
-    .then(updateResponse => {
-      if (updateResponse) {
-        req.status = 200;
-        req.json = { message: 'Update data success' };
-        return next();
-      }
-      req.status = 400;
-      req.json = { message: 'Update data error' };
+  User.findOneAndUpdate({ address }, update)
+  .then(updateResponse => {
+    if (updateResponse) {
+      req.status = 200;
+      req.json = { message: 'Update data success' };
       return next();
-    })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: 'Update data error' };
-      return next();
-    });
-  } else {
+    }
     req.status = 400;
-    req.json = { message: '"email" is required' };
+    req.json = { message: 'Update data error' };
     return next();
-  }
+  })
+  .catch(error => {
+    req.status = 400;
+    req.json = { message: 'Update data error' };
+    return next();
+  });
 }
 
 exports.changePassword = (req, res, next) => {
