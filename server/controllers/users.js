@@ -45,6 +45,13 @@ exports.getAccounts = (req, res, next) => {
   .then(user => {
     if (user) {
       User.find({ company: user.company })
+      .populate({
+        path: 'company',
+        populate: [
+          { path: 'hermes' }
+        ]
+      })
+      .populate('role')
       .then(users => {
         req.status = 200;
         req.json = {
