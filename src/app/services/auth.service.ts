@@ -70,13 +70,17 @@ export class AuthService {
 
     accounts.map((account, index) => {
       if (account.address === address) {
+        this.logoutAPI();
         accounts.splice(index, 1);
         accounts.unshift(account);
-        this.storage.set('user', account);
-        this.storage.set('secret', account.secret);
         this.storage.set('accounts', accounts);
-        this.emit('user:login');
-        this.router.navigate(['/assets']);
+        this.login(address, account.secret).subscribe(
+          resp => {
+            console.log('Login success: ', resp);
+            this.router.navigate(['/assets']);
+          },
+          err => console.log('Login error: ', err)
+        );
       }
     });
   }
@@ -128,6 +132,16 @@ export class AuthService {
     });
   }
 
+  // Deletes current session
+  logoutAPI() {
+    const url = `/api/auth/logout`;
+
+    this.http.delete(url).subscribe(
+      () => console.log('User API logout success'),
+      () => console.log('User API logout error')
+    );
+  }
+
   logout() {
     const accounts: any = this.storage.get('accounts') || [];
     accounts.shift();
@@ -136,6 +150,7 @@ export class AuthService {
     if (accounts.length === 0) {
       this.logoutAll();
     } else {
+      this.logoutAPI();
       this.storage.set('user', accounts[0]);
       this.emit('user:login');
       this.router.navigate(['/assets']);
@@ -143,6 +158,7 @@ export class AuthService {
   }
 
   logoutAll() {
+    this.logoutAPI();
     this.storage.clear();
     this.emit('user:login');
     this.router.navigate(['/login']);
