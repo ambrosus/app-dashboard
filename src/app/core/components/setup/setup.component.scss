@@ -1,0 +1,52 @@
+@import 'var';
+
+.steps {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0 40px 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+  width: 33.333%;
+  margin-right: 6px;
+  border: 1px solid #ddd;
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 4px;
+  color: #777;
+  user-select: none;
+  position: relative;
+  transition: color 0.3s $t1;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: $ablue;
+    left: 0;
+    top: 0;
+    transform-origin: 0 -100%;
+    transition: transform 0.3s $t1;
+    transform: scaleX(0);
+    z-index: -1;
+  }
+
+  &.active {
+    color: #fff;
+
+    &:before {
+      transform: scaleX(1);
+    }
+  }
+}

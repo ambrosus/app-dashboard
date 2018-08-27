@@ -88,4 +88,10 @@ button,
       opacity: .5;
     }
   }
+
+  &.mute {
+    &:hover {
+      opacity: .6;
+    }
+  }
 }

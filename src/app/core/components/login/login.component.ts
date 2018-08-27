@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
     this.http.get(url).subscribe(
       (resp: any) => {
         if (resp.resultCount === 0) {
-          this.router.navigate(['/hermes']);
+          this.router.navigate(['/setup']);
         } else {
           this.storage.set('hermes', resp.data[0]);
         }

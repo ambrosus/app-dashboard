@@ -1,63 +1,52 @@
-<div class="login">
-  <div class="login__forms">
-    <div class="login__forms__wrapper" style="margin-top: 120px">
-      <h3 class="p-h-30">Login</h3>
+<div class="flex flex-direction-r justify-content-c align-items-c p-a-40" style="min-height: 100vh">
+  <div>
+    <h3 class="p-h-30">Login</h3>
 
-      <div class="tabs m-t-30" style="max-width: 350px">
-        <div class="tab_header">
-          <p class="tab_header_item active" (click)="tabOpen('email', formEmail)" #formEmail>Email</p>
-          <p class="tab_header_item" (click)="tabOpen('address', formAddress)" #formAddress>Address</p>
-        </div>
-        <div class="tab_content">
-
-          <!-- Email form -->
-          <form [formGroup]="loginForm" (ngSubmit)="loginEmail()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="email"
-            style="margin: 0;">
-            <div class="form-text m-b-20">
-              <label for="email">Email</label>
-              <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
-            </div>
-            <div class="form-text m-b-20">
-              <label for="password">Password</label>
-              <input formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
-            </div>
-            <div class="flex flex-direction-r justify-content-fe align-items-c">
-              <app-spinner *ngIf="spinner"></app-spinner>
-              <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
-            </div>
-          </form>
-
-          <!-- Address form -->
-          <form [formGroup]="addressForm" (ngSubmit)="loginAddress()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="address"
-            style="margin: 0;">
-            <div class="form-text m-b-20">
-              <label for="address">Address</label>
-              <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
-            </div>
-            <div class="form-text m-b-20">
-              <label for="secret">Secret</label>
-              <input formControlName="secret" type="password" name="secret" id="secret" spellcheck="false" appInput>
-            </div>
-            <div class="flex flex-direction-r justify-content-fe align-items-c">
-              <app-spinner *ngIf="spinner"></app-spinner>
-              <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
-            </div>
-          </form>
-        </div>
+    <div class="tabs m-t-30" style="max-width: 350px">
+      <div class="tab_header">
+        <p class="tab_header_item active" (click)="tabOpen('email', formEmail)" #formEmail>Email</p>
+        <p class="tab_header_item" (click)="tabOpen('address', formAddress)" #formAddress>Address</p>
       </div>
+      <div class="tab_content">
 
-      <h5 class="p-h-40 m-v-30" *ngIf="loginFailed" style="color: #ea7070">Login failed</h5>
-      <h5 class="p-h-40 m-v-30" *ngIf="alreadyLoggedIn" style="color: #ea7070">Already logged in with this account</h5>
+        <!-- Email form -->
+        <form [formGroup]="loginForm" (ngSubmit)="loginEmail()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="email"
+          style="margin: 0;">
+          <div class="form-text m-b-20">
+            <label for="email">Email</label>
+            <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
+          </div>
+          <div class="form-text m-b-20">
+            <label for="password">Password</label>
+            <input formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
+          </div>
+          <div class="flex flex-direction-r justify-content-fe align-items-c">
+            <app-spinner *ngIf="spinner"></app-spinner>
+            <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
+          </div>
+        </form>
 
+        <!-- Address form -->
+        <form [formGroup]="addressForm" (ngSubmit)="loginAddress()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="address"
+          style="margin: 0;">
+          <div class="form-text m-b-20">
+            <label for="address">Address</label>
+            <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
+          </div>
+          <div class="form-text m-b-20">
+            <label for="secret">Secret</label>
+            <input formControlName="secret" type="password" name="secret" id="secret" spellcheck="false" appInput>
+          </div>
+          <div class="flex flex-direction-r justify-content-fe align-items-c">
+            <app-spinner *ngIf="spinner"></app-spinner>
+            <button type="submit" class="abtn m-l-20 btn-solid-ablue">Sign in</button>
+          </div>
+        </form>
+      </div>
     </div>
 
-    <p class="center m-b-30 w-100" style="cursor: pointer;" *ngIf="loginPage">
-      <span class="color-blacks--base" routerLink="/login">Login</span> /
-      <span class="color-blacks--base" routerLink="/signup">Sign up</span>
-    </p>
-  </div>
-  <div class="login__background" *ngIf="loginPage">
-    <h1 class="d1 p-h-50 m-b-10" style="color: #fff; font-weight: 500;">Welcome to Ambrosus!</h1>
-    <h1 class="d5 p-h-50 m-b-75" style="color: #fff; font-weight: 400;">Log in to access your account.</h1>
+    <h5 class="p-h-40 m-v-30" *ngIf="loginFailed" style="color: #ea7070">Login failed</h5>
+    <h5 class="p-h-40 m-v-30" *ngIf="alreadyLoggedIn" style="color: #ea7070">Already logged in with this account</h5>
+
   </div>
 </div>
