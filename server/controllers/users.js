@@ -9,9 +9,10 @@ const utilsPassword = require('../utils/password');
 const User = require('../models/users');
 const Company = require('../models/companies');
 exports.getAccount = (req, res, next) => {
-    const address = req.params.address;
+    const email = req.params.email;
+
     User.findOne({
-            address
+            email
         })
         .populate({
             path: 'company',
