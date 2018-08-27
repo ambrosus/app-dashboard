@@ -31,6 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
+import { PasswordValidatorDirective } from './directives/passwordValidator.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule],
@@ -54,7 +55,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     NotificationComponent,
     MatDialogModule,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    PasswordValidatorDirective
   ],
   declarations: [
     InputDirective,
@@ -74,7 +76,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    PasswordValidatorDirective
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

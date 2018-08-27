@@ -9,14 +9,12 @@
         <label for="passwordConfirm">Old Password *</label>
         <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
       </div>
-      <div class="form-text m-b-20">
-        <label for="password">Password *</label>
-        <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
-          appInput>
-      </div>
-      <div *ngIf="passwordExists" class="progress password-pad">
-        <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
-        <small>Strong passwords contain combination of symbol, lowercase, uppercase letter & a number</small>
+      <div id="passwordValidator">
+        <div class="form-text m-b-20">
+          <label for="password">Password *</label>
+          <input #flags=flagArray formControlName="password" type="password" name="password" id="password" spellcheck="false"
+            appInput appPasswordValidator>
+        </div>
       </div>
       <div class="form-text m-b-20">
         <label for="passwordConfirm">Password Confirm *</label>

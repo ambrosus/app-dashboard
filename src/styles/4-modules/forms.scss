@@ -261,7 +261,7 @@
 }
 
 .password-pad {
-  margin: 20px 0px 15px 0px;
+  margin: 20px 0px 25px 0px;
 }
 
 
@@ -371,4 +371,22 @@
 
 .grey-placeholder::placeholder { /* Most modern browsers support this now. */
   color:lightgray;
+}
+
+.pwdcheck-unchecked {
+  display:inline; 
+  padding: 10px 10px 0px 0px;
+  max-width: 20px;
+  content:url("/assets/svg/checkbox-unchecked.svg");
+}
+
+.pwdcheck-checked {
+  display:inline; 
+  padding: 10px 10px 0px 0px;
+  max-width: 20px;
+  content:url("/assets/svg/checkbox-checked.svg");
+}
+
+.display-inline {
+  display: inline;
 }
