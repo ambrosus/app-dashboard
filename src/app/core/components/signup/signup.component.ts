@@ -2,7 +2,6 @@ import { Component, ViewEncapsulation, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
-import { PasswordService } from 'app/services/password.service';
 import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 
@@ -10,7 +9,6 @@ import { Router } from '@angular/router';
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
-  providers: [PasswordService],
   encapsulation: ViewEncapsulation.None
 })
 export class SignupComponent implements OnInit {
@@ -24,7 +22,6 @@ export class SignupComponent implements OnInit {
   constructor(
     private storage: StorageService,
     private http: HttpClient,
-    private passwordService: PasswordService,
     private auth: AuthService,
     private router: Router
   ) {

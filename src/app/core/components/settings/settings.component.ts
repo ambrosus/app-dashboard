@@ -4,13 +4,11 @@ import { StorageService } from 'app/services/storage.service';
 import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { PasswordService } from 'app/services/password.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  providers: [PasswordService],
   encapsulation: ViewEncapsulation.None
 })
 export class SettingsComponent implements OnInit {
@@ -38,7 +36,6 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private passwordService: PasswordService,
     private storage: StorageService,
     private auth: AuthService
   ) {
