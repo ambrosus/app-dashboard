@@ -18,7 +18,7 @@ export class AuthService {
     private router: Router,
     private storage: StorageService
   ) {
-    const hermes: any = this.storage.get('hermes');
+    const hermes = <any>this.storage.get('hermes') || <any>{};
     this.sdk = new AmbrosusSDK({
       apiEndpoint: hermes.url,
       Web3
