@@ -1,7 +1,7 @@
 import { LoginComponent } from './../login/login.component';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
@@ -14,21 +14,15 @@ import { PasswordService } from 'app/services/password.service';
   encapsulation: ViewEncapsulation.None
 })
 export class SettingsComponent implements OnInit {
-  private value: string;
-  width = 1;
-  colors: any = [
-    '#D9534F', '#DF6A4F', '#E5804F', '#EA974E', '#F0AD4E', '#D2AF51',
-    '#B5B154', '#97B456', '#7AB659', '#5CB85C', '#5CB85C'];
-  color = '#D9534F';
   passwordExists: Boolean = false;
   spinner = false;
   error;
   resetForm: FormGroup;
   resetSuccess: Boolean = false;
-  strengthObj: any;
   flags = [];
   has_account = false;
   user;
+  @ViewChild('flags') passwordValidator;
 
   ngOnInit() {
     this.settingsInit();
@@ -72,6 +66,7 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
+    this.flags = this.passwordValidator.getFlags();
     let flagCounter = 0;
     this.flags.forEach(v => v ? flagCounter++ : v);
 
@@ -106,24 +101,6 @@ export class SettingsComponent implements OnInit {
         console.log('Reset password error: ', err);
       }
     );
-  }
-
-  checkPassword(event: any) {
-    this.value = event.target.value;
-    if (this.value.length >= 1) {
-      this.passwordExists = true;
-    } else {
-      this.passwordExists = false;
-    }
-    this.strengthObj = this.passwordService.strengthCalculator(this.value);
-    this.width = this.strengthObj.width;
-    this.flags = this.strengthObj.flags;
-    this.updateBar();
-  }
-
-  updateBar() {
-    const i = Math.round(this.width / 10);
-    this.color = i > this.colors.length - 1 ? this.colors[this.colors.length - 1] : this.colors[i];
   }
 
   switchAccount(address) {
