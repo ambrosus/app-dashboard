@@ -24,19 +24,12 @@
           <label for="email">Email *</label>
           <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
         </div>
-        <div class="form-text m-b-20">
-          <label for="password">Password *</label>
-          <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
-            appInput>
-        </div>
-        <div *ngIf="passwordExists" class="progress password-pad">
-          <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
-          <p>Your strong password must: </p>
-          <div [ngClass]="strengthObj.flags[0] ? 'pwdcheck-checked' : 'pwdcheck-unchecked'"></div><p class="display-inline">Contain a lowercase letter</p><br>
-          <div [ngClass]="strengthObj.flags[1] ? 'pwdcheck-checked' : 'pwdcheck-unchecked'"></div><p class="display-inline">Contain a capital letter</p><br>
-          <div [ngClass]="strengthObj.flags[2] ? 'pwdcheck-checked' : 'pwdcheck-unchecked'"></div><p class="display-inline">Contain a number</p><br>
-          <div [ngClass]="strengthObj.flags[3] ? 'pwdcheck-checked' : 'pwdcheck-unchecked'"></div><p class="display-inline">Contain special character</p><br>
-          <div [ngClass]="strengthObj.flags[4] ? 'pwdcheck-checked' : 'pwdcheck-unchecked'"></div><p class="display-inline">Be atleast 8 characters</p><br>
+        <div id="passwordValidator">
+          <div class="form-text m-b-20">
+              <label for="password">Password *</label>
+              <input #flags=flagArray formControlName="password" type="password" name="password" id="password" spellcheck="false"
+                appInput appPasswordValidator>
+          </div>
         </div>
         <div class="form-text m-b-20">
           <label for="passwordConfirm">Password Confirm *</label>
