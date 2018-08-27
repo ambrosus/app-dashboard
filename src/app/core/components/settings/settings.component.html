@@ -15,11 +15,12 @@
                        [resizeToWidth]="150"
                        [imageQuality]="100"
                        format="png"
-                       (imageCroppedBase64)="imageCropped($event)"
-                       (imageLoaded)="imageLoaded()"
-                       (loadImageFailed)="loadImageFailed()"></image-cropper>
+                       (imageCroppedBase64)="imageCropped($event)"></image-cropper>
 
-        <div *ngIf="croppedImage" class="avatar" [style.backgroundImage]="'url('+ croppedImage +')'"></div>
+        <div *ngIf="croppedImage"
+             class="avatar"
+             [style.backgroundImage]="'url('+ croppedImage +')'"></div>
+        <button *ngIf="croppedImage" (click)="saveSettings({'profile_image': croppedImage})">Save</button>
     </div>
 
     <!-- Password reset -->

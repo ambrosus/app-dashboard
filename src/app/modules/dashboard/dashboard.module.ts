@@ -18,6 +18,7 @@ import { StorageService } from 'app/services/storage.service';
 import { ChartComponent } from './chart/chart.component';
 import { ChartistComponent } from './chart/chartist/chartist.component';
 import { AssetsService } from 'app/services/assets.service';
+import { UsersService } from '../../services/users.service';
 
 @NgModule({
   imports: [
@@ -37,6 +38,6 @@ import { AssetsService } from 'app/services/assets.service';
     ChartComponent,
     ChartistComponent
   ],
-  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService]
+  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService]
 })
-export class DashboardModule {}
+export class DashboardModule { }
