@@ -36,6 +36,11 @@ export class PasswordValidatorDirective {
   calculateStrength(event: KeyboardEvent) {
     this.p = this.el.nativeElement.value;
 
+    if (this.p.length === 0) {
+      this.pvEl[0].removeChild(this.pvEl[0].lastChild);
+      return;
+    }
+
     let _force = 0;
     const _regex = /[$-/:-?{-~!"^_`\[\]]/g; // "
     const _lowerLetters = /[a-z]+/.test(this.p);
