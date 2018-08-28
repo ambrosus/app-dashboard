@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
+declare let moment: any;
+
 @Component({
   selector: 'app-setup',
   templateUrl: './setup.component.html',
@@ -20,10 +22,11 @@ export class SetupComponent implements OnInit {
   currentStep = 1;
   prevButton = '';
   nextButton = 'Company';
+  timezones = [];
 
   constructor(private http: HttpClient,
-              private router: Router,
-              private storage: StorageService) {
+    private router: Router,
+    private storage: StorageService) {
     this.initSetupForm();
   }
 
@@ -32,7 +35,7 @@ export class SetupComponent implements OnInit {
       hermesTitle: new FormControl('', [Validators.required]),
       hermesUrl: new FormControl('', [Validators.required]),
       companyTitle: new FormControl('', [Validators.required]),
-      companyTimeZone: new FormControl(0, [Validators.required]),
+      companyTimeZone: new FormControl('', [Validators.required]),
       userFullName: new FormControl('', [Validators.required]),
       userEmail: new FormControl('', [Validators.required]),
       userPassword: new FormControl('', [Validators.required]),
@@ -55,6 +58,8 @@ export class SetupComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     );
+
+    this.timezones = moment.tz.names();
   }
 
   changeStep(type) {
@@ -81,7 +86,7 @@ export class SetupComponent implements OnInit {
           this.prevButton = 'Hermes Node';
           this.nextButton = 'User';
         }
-      }
+    }
   }
 
   checkStep() {
@@ -94,7 +99,7 @@ export class SetupComponent implements OnInit {
       case 2:
         const companyTitle = this.setupForm.get('companyTitle').value;
         const companyTimeZone = this.setupForm.get('companyTimeZone').value;
-        this.stepCompany = companyTitle !== '' && (companyTimeZone !== '' || companyTimeZone === 0);
+        this.stepCompany = companyTitle !== '' && companyTimeZone !== '';
         return this.stepCompany;
     }
   }
@@ -121,7 +126,7 @@ export class SetupComponent implements OnInit {
         return;
       }
 
-      console.log('Yes');
+      console.log(companyTimeZone);
       return;
 
       // Make a request

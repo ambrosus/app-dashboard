@@ -20,10 +20,9 @@ export class AppComponent {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
+        this.loginPage = location.pathname === '/login' || location.pathname === '/setup';
       }
     });
-
-    this.loginPage = location.pathname === '/login' || location.pathname === '/setup';
   }
 
   // Dropdown close on click outside of it

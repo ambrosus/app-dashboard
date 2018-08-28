@@ -37,6 +37,8 @@
     "connect-mongodb-session": "^2.0.3",
     "core-js": "^2.5.7",
     "express-session": "^1.15.6",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
     "mongoose": "^5.2.8",
     "ng-chartist": "^2.0.0-beta.1",
     "ng2-slim-loading-bar": "^4.0.0",

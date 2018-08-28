@@ -4,12 +4,12 @@ module.exports = (req, res, next) => {
     const address = req.body.address || req.params.address || req.query.address;
     const session = req.session;
 
-    if (!session || address !== session.address) {
+    if (!session || !session.user || address !== session.user.address) {
       throw 'Unauthorized';
     }
 
     next();
   } catch (error) {
-    res.status(401).json({ message: error });
+    return res.status(401).json({ message: error });
   }
 };

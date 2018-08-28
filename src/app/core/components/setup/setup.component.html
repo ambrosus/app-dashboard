@@ -3,12 +3,12 @@
 
   <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4">
     <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
-      <h5 class="color-ablue--base inline-block"
-        *ngIf="!(currentStep === 1)" (click)="changeStep('prev')">
+      <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
         <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> {{ prevButton }}</h5>
-      <h5 class="color-ablue--base m-l-auto inline-block" [ngClass]="{ mute: !checkStep() }"
-        *ngIf="!(currentStep === 3)" (click)="changeStep('next')">
-        {{ nextButton }} <app-svg-icon name="arrow-right" width="15px" style="margin-left: 7px"></app-svg-icon> </h5>
+      <h5 class="color-ablue--base m-l-auto inline-block" [ngClass]="{ mute: !checkStep() }" *ngIf="!(currentStep === 3)" (click)="changeStep('next')" style="user-select: none">
+        {{ nextButton }}
+        <app-svg-icon name="arrow-right" width="15px" style="margin-left: 7px"></app-svg-icon>
+      </h5>
     </div>
     <div class="steps">
       <p class="step" [ngClass]="{ active: currentStep >= 1 }">01 Hermes Node</p>
@@ -22,7 +22,7 @@
       </div>
       <div class="form-text m-b-20">
         <label for="hermesUrl">Hermes Gateway URL *</label>
-        <input formControlName="hermesUrl" type="text" id="hermesUrl" spellcheck="false" appInput>
+        <input formControlName="hermesUrl" type="url" id="hermesUrl" spellcheck="false" appInput>
       </div>
     </div>
     <div *ngIf="currentStep === 2">
@@ -32,7 +32,10 @@
       </div>
       <div class="form-text m-b-20">
         <label for="companyTimeZone">Company Time Zone *</label>
-        <input formControlName="companyTimeZone" type="number" id="companyTimeZone" spellcheck="false" appInput>
+        <input formControlName="companyTimeZone" list="timezones" id="companyTimeZone" spellcheck="false" appInput>
+        <datalist id="timezones">
+          <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+        </datalist>
       </div>
     </div>
     <div *ngIf="currentStep === 3">
@@ -42,7 +45,7 @@
       </div>
       <div class="form-text m-b-20">
         <label for="userEmail">Email *</label>
-        <input formControlName="userEmail" type="text" id="userEmail" spellcheck="false" appInput>
+        <input formControlName="userEmail" type="email" id="userEmail" spellcheck="false" appInput>
       </div>
       <div class="form-text m-b-20">
         <label for="userPassword">Password *</label>

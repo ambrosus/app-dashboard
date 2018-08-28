@@ -11,11 +11,11 @@ const mongoose = require('mongoose');
 const Hermes = require('../models/hermeses');
 
 exports.create = (req, res, next) => {
-  const title = req.body.title;
-  const url = req.body.url;
+  const title = req.body.hermesTitle;
+  const url = req.body.hermesUrl;
 
   if (title && url) {
-    Hermes.findOne({ url: url })
+    Hermes.findOne({ url })
       .then(hermes => {
         if (hermes) {
           throw 'Hermes with this url already exists';
@@ -36,35 +36,19 @@ exports.create = (req, res, next) => {
               };
               return next();
             })
-            .catch(error => {
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            });
+            .catch(error => res.status(400).json({ message: error }));
         }
       })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
+      .catch(error => res.status(400).json({ message: error }));
   } else if (!title) {
-    req.status = 400;
-    req.json = { message: '"title" is required' };
-    return next();
+    return res.status(400).json({ message: 'Hermes "title" is required' });
   } else if (!url) {
-    req.status = 400;
-    req.json = { message: '"url" is required' };
-    return next();
+    return res.status(400).json({ message: 'Hermes "url" is required' });
   }
 };
 
 exports.getAll = (req, res, next) => {
-  const query = {
-    public: true
-  }
-
-  Hermes.find(query)
+  Hermes.find({ public: true })
     .then(results => {
       req.status = 200;
       req.json = {
@@ -73,9 +57,5 @@ exports.getAll = (req, res, next) => {
       };
       return next();
     })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: error };
-      return next();
-    });
+    .catch(error => res.status(400).json({ message: error }));
 };

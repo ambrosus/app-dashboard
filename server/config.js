@@ -11,6 +11,7 @@ module.exports = {
   port: process.env.PORT || 5000,
   production: process.env.NODE_ENV ? process.env.NODE_ENV === 'production' : false,
   secret: process.env.SECRET,
+  token: process.env.TOKEN,
   email: {
     API_KEY: process.env.EMAIL_API_KEY,
   }

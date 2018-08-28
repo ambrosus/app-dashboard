@@ -6,7 +6,6 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 
-const mongoose = require('mongoose');
 const utilsPassword = require('../utils/password');
 const axios = require('axios');
 
@@ -17,9 +16,7 @@ exports.login = (req, res, next) => {
   const password = req.body.password;
 
   if (email && password) {
-    const query = { email };
-
-    User.findOne(query)
+    User.findOne({ email })
       .populate({
         path: 'company',
         populate: [
@@ -31,7 +28,7 @@ exports.login = (req, res, next) => {
           const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
 
           if (address && secret) {
-            req.session.address = address;
+            req.session.user = user;
             req.status = 200;
             req.json = {
               user,
@@ -40,27 +37,17 @@ exports.login = (req, res, next) => {
             };
             return next();
           } else {
-            req.status = 401;
-            req.json = { message: '"password" is incorrect' };
-            return next();
+            return res.status(401).json({ message: 'User "password" is incorrect' });
           }
         } else {
           throw 'No user found';
         }
       })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
+      .catch(error => res.status(400).json({ message: error }));
   } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required'  };
-    return next();
+    return res.status(400).json({ message: 'User "email" is required' });
   } else if (!password) {
-    req.status = 400;
-    req.json = { message: '"password" is required' };
-    return next();
+    return res.status(400).json({ message: 'User "password" is required' });
   }
 };
 
@@ -76,103 +63,40 @@ exports.verifyAccount = (req, res, next) => {
   };
 
   axios.get(`${hermes.url}/accounts/${address}`, { headers })
-  .then(resp => {
-    User.findOne({ address })
-      .populate({
-        path: 'company',
-        populate: [
-          { path: 'hermes' }
-        ]
-      })
-      .then(user => {
-        if (user) {
+    .then(resp => {
+      User.findOne({ address })
+        .populate({
+          path: 'company',
+          populate: [
+            { path: 'hermes' }
+          ]
+        })
+        .then(user => {
+          if (user) {
+            req.status = 200;
+            req.json = user;
+            return next();
+          } else {
+            throw 'No user found';
+          }
+        })
+        .catch(error => {
           req.status = 200;
-          req.json = user;
+          req.json = { message: 'No registered user' };
           return next();
-        } else {
-          throw 'No user found';
-        }
-      })
-      .catch(error => {
-        req.status = 200;
-        req.json = { message: 'No registered user' };
-        return next();
-      });
-  }).catch(error => {
-    req.status = 400;
-    req.json = { message: error };
-    return next();
-  });
+        });
+    })
+    .catch(error => res.status(400).json({ message: error }));
 }
 
 exports.logout = (req, res, next) => {
   req.session.destroy(error => {
     if (error) {
       console.log('User logout error: ', error);
-      req.status = 400;
-      req.json = { message: 'User logout error' };
-      return next();
+      return res.status(400).json({ message: 'User logout error' });
     }
     req.status = 200;
     req.json = { message: 'User logout success' };
     return next();
   });
-}
-
-exports.signup = (req, res, next) => {
-  const full_name = req.body.full_name;
-  const email = req.body.email;
-  const address = req.body.address;
-  const password = req.body.password;
-  const secret = req.body.secret;
-
-  if (full_name && email && address) {
-
-    User.findOne({ email })
-      .then(user => {
-        if (user) {
-          throw 'Email is already in use';
-        } else {
-          const user = new User({
-            _id: new mongoose.Types.ObjectId(),
-            full_name,
-            email,
-            address,
-            token: utilsPassword.encrypt(`${address}|||${secret}`, password)
-          });
-          user
-            .save()
-            .then(createdUser => {
-              req.status = 200;
-              req.json = { message: 'Success' };
-              return next();
-            })
-            .catch(error => {
-              console.log(error);
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            })
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!full_name) {
-    req.status = 400;
-    req.json = { message: '"full_name" is required' };
-    return next();
-  } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required' };
-    return next();
-  } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
-  }
-
 }

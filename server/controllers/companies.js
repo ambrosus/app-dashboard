@@ -15,6 +15,10 @@ const User = require('../models/users');
 const Role = require('../models/roles');
 
 exports.create = (req, res, next) => {
+
+}
+
+exports.create = (req, res, next) => {
   const address = req.body.address;
   const secret = req.body.secret;
   const full_name = req.body.full_name;
@@ -65,27 +69,27 @@ exports.create = (req, res, next) => {
 
                               // Add a role to the user
                               Role.findOne({ id: 1 })
-                              .then(role => {
-                                if (role) {
-                                  createdUser['role'] = role;
-                                  createdUser.save();
-                                } else {
-                                  const role = new Role({
-                                    _id: new mongoose.Types.ObjectId(),
-                                    title: 'admin',
-                                    id: 1
-                                  });
-                                  role.save()
-                                  .then(roleCreated => {
-                                    createdUser['role'] = roleCreated;
+                                .then(role => {
+                                  if (role) {
+                                    createdUser['role'] = role;
                                     createdUser.save();
-                                  });
-                                }
-                              }).catch(error => {
-                                req.status = 400;
-                                req.json = { message: error };
-                                return next();
-                              });
+                                  } else {
+                                    const role = new Role({
+                                      _id: new mongoose.Types.ObjectId(),
+                                      title: 'admin',
+                                      id: 1
+                                    });
+                                    role.save()
+                                      .then(roleCreated => {
+                                        createdUser['role'] = roleCreated;
+                                        createdUser.save();
+                                      });
+                                  }
+                                }).catch(error => {
+                                  req.status = 400;
+                                  req.json = { message: error };
+                                  return next();
+                                });
 
                               // Add the user as company's owner
                               createdCompany['owner'] = createdUser;
