@@ -4,7 +4,8 @@
   <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4">
     <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
       <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
-        <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> {{ prevButton }}</h5>
+        <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> {{ prevButton }}
+      </h5>
       <h5 class="color-ablue--base m-l-auto inline-block" [ngClass]="{ mute: !checkStep() }" *ngIf="!(currentStep === 3)" (click)="changeStep('next')" style="user-select: none">
         {{ nextButton }}
         <app-svg-icon name="arrow-right" width="15px" style="margin-left: 7px"></app-svg-icon>

@@ -13,27 +13,24 @@ const companiesSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  hermes:  {
+  hermes: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hermeses'
   },
-  owner:  {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users'
   },
-  active:  {
+  active: {
     type: Boolean,
     default: true
   },
-  branding:  {
+  branding: {
     dasboard: String,
     ambto: String
   },
   settings: String,
-  timeZone: {
-    type: Number,
-    default: 0
-  },
+  timeZone: String,
   createdAt: {
     type: Date,
     default: +new Date()
@@ -44,12 +41,12 @@ const companiesSchema = mongoose.Schema({
   }
 });
 
-companiesSchema.pre('update', function(next) {
+companiesSchema.pre('update', function (next) {
   this.updatedAt = +new Date();
   next();
 });
 
-companiesSchema.pre('save', function(next) {
+companiesSchema.pre('save', function (next) {
   this.updatedAt = +new Date();
   next();
 });

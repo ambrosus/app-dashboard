@@ -65,7 +65,6 @@ exports.create = (req, res, next) => {
     req.json = { message: '"address" is required' };
     return next();
   }
-
 }
 
 exports.getAccount = (req, res, next) => {
@@ -99,57 +98,57 @@ exports.getAccounts = (req, res, next) => {
   const address = req.session.address;
 
   User.findOne({ address })
-  .then(user => {
-    if (user) {
-      User.find({ company: user.company })
-      .populate({
-        path: 'company',
-        populate: [
-          { path: 'hermes' }
-        ]
-      })
-      .populate('role')
-      .then(users => {
-        req.status = 200;
-        req.json = {
-          resultCount: users.length,
-          data: users
-        };
-        return next();
-      }).catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-    } else {
-      throw 'No user found';
-    }
-  })
-  .catch(error => {
-    req.status = 400;
-    req.json = { message: error };
-    return next();
-  });
+    .then(user => {
+      if (user) {
+        User.find({ company: user.company })
+          .populate({
+            path: 'company',
+            populate: [
+              { path: 'hermes' }
+            ]
+          })
+          .populate('role')
+          .then(users => {
+            req.status = 200;
+            req.json = {
+              resultCount: users.length,
+              data: users
+            };
+            return next();
+          }).catch(error => {
+            req.status = 400;
+            req.json = { message: error };
+            return next();
+          });
+      } else {
+        throw 'No user found';
+      }
+    })
+    .catch(error => {
+      req.status = 400;
+      req.json = { message: error };
+      return next();
+    });
 }
 
 exports.getSettings = (req, res, next) => {
   const email = req.params.email;
 
   User.findOne({ email })
-  .then(user => {
-    if (user) {
-      req.status = 200;
-      req.json = user.settings;
+    .then(user => {
+      if (user) {
+        req.status = 200;
+        req.json = user.settings;
+        return next();
+      } else {
+        throw 'No accounts found';
+      }
+    })
+    .catch(error => {
+      req.status = 400;
+      req.json = { message: error };
       return next();
-    } else {
-      throw 'No accounts found';
-    }
-  })
-  .catch(error => {
-    req.status = 400;
-    req.json = { message: error };
-    return next();
-  });
+    });
 }
 
 exports.getNotifications = (req, res, next) => {
@@ -168,21 +167,21 @@ exports.edit = (req, res, next) => {
   }
 
   User.findOneAndUpdate({ email }, update)
-  .then(updateResponse => {
-    if (updateResponse) {
-      req.status = 200;
-      req.json = { message: 'Update data success' };
+    .then(updateResponse => {
+      if (updateResponse) {
+        req.status = 200;
+        req.json = { message: 'Update data success' };
+        return next();
+      }
+      req.status = 400;
+      req.json = { message: 'Update data error' };
       return next();
-    }
-    req.status = 400;
-    req.json = { message: 'Update data error' };
-    return next();
-  })
-  .catch(error => {
-    req.status = 400;
-    req.json = { message: 'Update data error' };
-    return next();
-  });
+    })
+    .catch(error => {
+      req.status = 400;
+      req.json = { message: 'Update data error' };
+      return next();
+    });
 }
 
 exports.changePassword = (req, res, next) => {

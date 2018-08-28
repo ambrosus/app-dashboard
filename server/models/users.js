@@ -33,7 +33,9 @@ const usersSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Roles'
   },
-  profile_image: String,
+  profile: {
+    image: String
+  },
   active: {
     type: Boolean,
     default: true
@@ -49,12 +51,12 @@ const usersSchema = mongoose.Schema({
   }
 });
 
-usersSchema.pre('update', function(next) {
+usersSchema.pre('update', function (next) {
   this.updatedAt = +new Date();
   next();
 });
 
-usersSchema.pre('save', function(next) {
+usersSchema.pre('save', function (next) {
   this.updatedAt = +new Date();
   next();
 });

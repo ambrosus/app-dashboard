@@ -9,13 +9,14 @@
   "indent_head_inner_html": true,
   "indent_inner_html": true,
   "wrap_attributes": "force-aligned",
-  "newline_between_rules": false,
+  "newline_between_rules": true,
   "selector_separator_newline": true,
   "space_around_combinator": true,
+  "space_after_anon_function": true,
   "css": {
-    "indent_size": 1
+    "indent_size": 2
   },
   "html": {
-    "wrap_attributes":"auto"
+    "wrap_attributes": "auto"
   }
 }

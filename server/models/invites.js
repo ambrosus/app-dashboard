@@ -37,12 +37,12 @@ const invitesSchema = mongoose.Schema({
   }
 });
 
-invitesSchema.pre('update', function(next) {
+invitesSchema.pre('update', function (next) {
   this.updatedAt = +new Date();
   next();
 });
 
-invitesSchema.pre('save', function(next) {
+invitesSchema.pre('save', function (next) {
   this.updatedAt = +new Date();
   next();
 });

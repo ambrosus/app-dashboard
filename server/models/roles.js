@@ -27,12 +27,12 @@ const rolesSchema = mongoose.Schema({
   }
 });
 
-rolesSchema.pre('update', function(next) {
+rolesSchema.pre('update', function (next) {
   this.updatedAt = +new Date();
   next();
 });
 
-rolesSchema.pre('save', function(next) {
+rolesSchema.pre('save', function (next) {
   this.updatedAt = +new Date();
   next();
 });
