@@ -1,5 +1,24 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <div class="block-center m-w-4 p-h-20" style="margin-top: 40px;">
   <h2 class="m-v-30 center">Settings</h2>
+
+  <!-- Avatar test-->
+
+  <div>
+    <input type="file" (change)="fileChangeEvent($event)" />
+
+    <image-cropper style="max-height: 400px;" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1 / 1" [resizeToWidth]="150" [imageQuality]="100" format="png" (imageCroppedBase64)="imageCropped($event)"></image-cropper>
+
+    <div *ngIf="croppedImage" class="avatar" [style.backgroundImage]="'url('+ croppedImage +')'"></div>
+    <button *ngIf="croppedImage" (click)="saveSettings({'profile_image': croppedImage})">Save</button>
+  </div>
 
   <!-- Password reset -->
   <div *ngIf="has_account">
@@ -11,8 +30,7 @@
       </div>
       <div class="form-text m-b-20">
         <label for="password">Password *</label>
-        <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false"
-          appInput>
+        <input (input)="checkPassword($event)" formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
       </div>
       <div *ngIf="passwordExists" class="progress password-pad">
         <div class="progress_bar" [ngStyle]="{'width': width + '%', 'background': color}"></div>
@@ -25,7 +43,7 @@
       <div class="flex flex-direction-r justify-content-fe align-items-c">
         <app-spinner *ngIf="spinner"></app-spinner>
         <button type="submit" class="abtn m-l-20 btn-solid-ablue">
-          Reset password for {{ user ? user.full_name || user.email : 'current account' }}
+        Reset password for {{ user ? user.full_name || user.email : 'current account' }}
         </button>
       </div>
       <div class="m-t-30 center">

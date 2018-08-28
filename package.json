@@ -40,6 +40,7 @@
     "mongoose": "^5.2.8",
     "ng-chartist": "^2.0.0-beta.1",
     "ng2-slim-loading-bar": "^4.0.0",
+    "ngx-image-cropper": "^1.0.2",
     "normalize.css": "^8.0.0",
     "qrcode": "^1.2.2",
     "rxjs": "^6.2.2",

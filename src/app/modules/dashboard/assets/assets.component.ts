@@ -1,3 +1,11 @@
+/*
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+*/
+
 import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
@@ -218,7 +226,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           } else {
             this.searchNoResultsFound = 'No results found';
           }
-        }).catch(e => {});
+        }).catch(e => { });
       })
       .catch(err => {
         this.loader = false;
@@ -266,7 +274,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   createEventsDialog() {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.assetId = this.assetsService.getSelectedAssets();
