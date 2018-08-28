@@ -16,7 +16,6 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
-import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
@@ -42,7 +41,6 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent,
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,
@@ -64,7 +62,6 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent,
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,

@@ -1,3 +1,11 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <main class="main m-t-50">
   <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">Please fill all empty fields.</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="invalidJSON" style="color: #ea7070">Your JSON is invalid, please fix it first.</h4>
@@ -7,8 +15,7 @@
   <div *ngIf="isDialog">
     <h1 *ngIf="infoEvent" style="display:inline;" class="center">Edit info event</h1>
     <h1 *ngIf="!infoEvent" style="display:inline;" class="center">Edit event</h1>
-    <img (click)="closeDialog()" style="height: 20px; width: 20px; cursor: pointer; position: relative; left: 350; bottom: 10;"
-      src="/assets/raster/close.png">
+    <img (click)="closeDialog()" style="height: 20px; width: 20px; cursor: pointer; position: relative; left: 350; bottom: 10;" src="/assets/raster/close.png">
     <hr>
   </div>
 
@@ -23,8 +30,7 @@
       <div class="m-w-6 block-center right p-a-20" [ngClass]="{error: error || invalidJSON, success: success}" *ngIf="json && !prefill">
         <label for="file" class="abtn btn-outline-ablue m-b-10" *ngIf="json">Upload JSON</label>
         <input type="file" id="file" class="srt" accept=".json" name="file" *ngIf="json" (change)="uploadJSON($event)" #file>
-        <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)"
-          #jsonInput [ngClass]="{ invalid: errorJSON }" [value]="textArea"></textarea>
+        <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)" #jsonInput [ngClass]="{ invalid: errorJSON }" [value]="textArea"></textarea>
         <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
           <app-spinner *ngIf="spinner"></app-spinner>
           <a class="abtn m-l-20 btn-solid-ablue" (click)="onJSONSave(jsonInput)">Create asset</a>
@@ -69,8 +75,7 @@
                     <div class="form-fields-coupled">
                       <div class="form-text m-b-20 m-r-20 w-40" [ngClass]="{full: i === 0}">
                         <label for="{{ i + 'imageName' }}">Image name</label>
-                        <input [attr.disabled]="i === 0 ? '': null" formControlName="imageName" type="text" id="{{ i + 'imageName' }}" spellcheck="false"
-                          appInput>
+                        <input [attr.disabled]="i === 0 ? '': null" formControlName="imageName" type="text" id="{{ i + 'imageName' }}" spellcheck="false" appInput>
                       </div>
                       <div class="form-text m-b-20 w-60">
                         <label for="{{ i + 'imageUrl' }}">Image url</label>
@@ -95,8 +100,7 @@
                     <div class="form-fields-coupled">
                       <div class="form-text m-b-20 m-r-20 w-30">
                         <label for="{{ i + 'identifier'}}">Identifier</label>
-                        <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text"
-                          id="{{ i + 'identifier'}}" spellcheck="false" appInput>
+                        <input formControlName="identifier" [appAutocompleteinput]="{control: identifierCtrl, array: identifiersAutocomplete}" type="text" id="{{ i + 'identifier'}}" spellcheck="false" appInput>
                       </div>
                       <div class="form-text m-b-20 w-70">
                         <label for="{{ i + 'identifierValue'}}">Value</label>
@@ -142,8 +146,7 @@
               </h5>
               <div class="accordion__content">
                 <div formArrayName="customDataGroups">
-                  <div *ngFor="let customDataGroupCtrl of assetForm.get('customDataGroups')['controls']; let i = index" [formGroupName]="i"
-                    class="right">
+                  <div *ngFor="let customDataGroupCtrl of assetForm.get('customDataGroups')['controls']; let i = index" [formGroupName]="i" class="right">
                     <div class="form-text m-b-20">
                       <label for="{{ i + 'groupName'}}">Group name</label>
                       <input formControlName="groupName" type="text" id="{{ i + 'groupName'}}" spellcheck="false" appInput>
@@ -151,8 +154,7 @@
                     <p class="m-t-30 m-b-20 left">Group data (key-value pairs)</p>
                     <!--start Array of key-value in a group-->
                     <div formArrayName="groupValue" class="left">
-                      <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index" [formGroupName]="j"
-                        class="right">
+                      <div *ngFor="let customDataGroupPairCtrl of customDataGroupCtrl.get('groupValue')['controls']; let j = index" [formGroupName]="j" class="right">
                         <div class="form-fields-coupled">
                           <div class="form-text m-b-20 m-r-20 w-40">
                             <label for="{{ j + 'groupItemKey'}}">Property name</label>

@@ -1,3 +1,11 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <div class="m-b-20 flex flex-direction-r justify-content-fe align-items-c">
   <div class="table__label__select color-ablue--base m-r-20">
     <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions style="padding: 3px 5px; border-radius: 5px;">
@@ -20,8 +28,7 @@
 <div class="events">
   <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
     <p>
-      <span style="color: #4f77f1;">{{ event.type || '' }}</span>
-      {{ event.name || event.type }}
+      <span style="color: #4f77f1;">{{ event.type || '' }}</span> {{ event.name || event.type }}
       <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name }}
       </span>
     </p>
@@ -33,22 +40,19 @@
   <div *ngIf="eventsActive && pagination.length !== 0">
     Showing {{ (currentEventsPage - 1) * perPage + 1 }} to
     <span *ngIf="currentEventsPage * perPage > resultCountEvents">{{ resultCountEvents }}</span>
-    <span *ngIf="currentEventsPage * perPage <= resultCountEvents">{{ currentEventsPage * perPage }}</span>
-    of {{ resultCountEvents }} events
+    <span *ngIf="currentEventsPage * perPage <= resultCountEvents">{{ currentEventsPage * perPage }}</span> of {{ resultCountEvents }} events
   </div>
   <div *ngIf="searchActive && pagination.length !== 0">
     Showing {{ (currentSearchPage - 1) * perPage + 1 }} to
     <span *ngIf="currentSearchPage * perPage > resultCountSearch">{{ resultCountSearch }}</span>
-    <span *ngIf="currentSearchPage * perPage <= resultCountSearch">{{ currentSearchPage * perPage }}</span>
-    of {{ resultCountSearch }} events
+    <span *ngIf="currentSearchPage * perPage <= resultCountSearch">{{ currentSearchPage * perPage }}</span> of {{ resultCountSearch }} events
   </div>
 </div>
 
 <!-- Pagination -->
 <div class="block-center m-w-12 m-t-10 p-h-10">
   <!-- Asset pagination -->
-  <app-pagination *ngIf="eventsActive && !searchActive" [currentPage]="currentEventsPage" [totalPages]="totalEventsPages"
-    [method]="loadEvents"></app-pagination>
+  <app-pagination *ngIf="eventsActive && !searchActive" [currentPage]="currentEventsPage" [totalPages]="totalEventsPages" [method]="loadEvents"></app-pagination>
   <!-- Search pagination -->
   <app-pagination *ngIf="searchActive" [currentPage]="currentSearchPage" [totalPages]="totalSearchPages" [method]="search"></app-pagination>
 </div>
