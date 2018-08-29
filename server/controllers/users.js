@@ -35,6 +35,7 @@ exports.create = (req, res, next) => {
           user
             .save()
             .then(created => {
+              // Register user in the hermes
 
               req.user = created;
               req.status = 200;
@@ -56,7 +57,16 @@ exports.create = (req, res, next) => {
 }
 
 exports.setOwnership = (req, res, next) => {
+  const user = req.user || req.body.user;
+  const company = req.company || req.body.company;
 
+  if (user && company) {
+
+  } else if (!user) {
+    return res.status(400).json({ message: '"user" object is required' });
+  } else if (!company) {
+    return res.status(400).json({ message: '"company" object is required' });
+  }
 }
 
 exports.getAccount = (req, res, next) => {
