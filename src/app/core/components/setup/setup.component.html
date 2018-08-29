@@ -1,7 +1,12 @@
 <div class="p-a-40" style="min-height: 100vh">
   <h1 class="center" style="margin: 30px 0 100px 0">Setup Dashboard</h1>
 
-  <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4">
+  <div class="block-center center m-w-6 m-b-50" *ngIf="success">
+    <p class="color-blacks--base" style="font-size: 14px;" innerHTML="{{ success }}"></p>
+    <h5 class="color-ablue--base m-t-20" routerLink="/login"><a>Login</a></h5>
+  </div>
+
+  <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4" *ngIf="!success">
     <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
       <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
         <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> {{ prevButton }}
@@ -55,6 +60,14 @@
       <div class="form-text m-b-20">
         <label for="userPasswordConfirm">Password Confirm *</label>
         <input formControlName="userPasswordConfirm" type="password" id="userPasswordConfirm" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userAddress">Address (optional)</label>
+        <input formControlName="userAddress" type="text" id="userAddress" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userSecret">Secret (optional)</label>
+        <input formControlName="userSecret" type="text" id="userSecret" spellcheck="false" appInput>
       </div>
     </div>
     <div class="flex flex-direction-r justify-content-fe align-items-c" *ngIf="currentStep === 3">

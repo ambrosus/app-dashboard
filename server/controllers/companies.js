@@ -12,7 +12,7 @@ const Company = require('../models/companies');
 exports.create = (req, res, next) => {
   const title = req.body.company ? req.body.company.title : null;
   const timeZone = req.body.company ? req.body.company.timeZone : null;
-  const hermes = req.body.hermes || req.json ? req.json.hermes : null;
+  const hermes = req.hermes || req.body.hermes;
 
   if (title && timeZone && hermes) {
     Company.findOne({ title })
@@ -31,16 +31,16 @@ exports.create = (req, res, next) => {
             .save()
             .then(company => {
               req.status = 200;
-              req.json = req.json ? req.json.company = company : req.json = { company };
+              req.company = company;
               return next();
-            }).catch(error => res.status(400).json({ message: error }));
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
         }
-      }).catch(error => res.status(400).json({ message: error }));
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
-    return res.status(400).json({ message: 'Company "companyTitle" is required' });
+    return res.status(400).json({ message: 'Company "title" is required' });
   } else if (!timeZone) {
-    return res.status(400).json({ message: 'Company "companyTimeZone" is required' });
+    return res.status(400).json({ message: 'Company "timeZone" is required' });
   } else if (!hermes) {
-    return res.status(400).json({ message: '"hermes" is required' });
+    return res.status(400).json({ message: '"hermes" object is required' });
   }
 }

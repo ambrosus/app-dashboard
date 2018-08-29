@@ -36,14 +36,9 @@ exports.login = (req, res, next) => {
               secret
             };
             return next();
-          } else {
-            return res.status(401).json({ message: 'User "password" is incorrect' });
-          }
-        } else {
-          throw 'No user found';
-        }
-      })
-      .catch(error => res.status(400).json({ message: error }));
+          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
+        } else { throw 'No user found'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!email) {
     return res.status(400).json({ message: 'User "email" is required' });
   } else if (!password) {
@@ -76,17 +71,14 @@ exports.verifyAccount = (req, res, next) => {
             req.status = 200;
             req.json = user;
             return next();
-          } else {
-            throw 'No user found';
-          }
+          } else { throw 'No user found'; }
         })
         .catch(error => {
           req.status = 200;
           req.json = { message: 'No registered user' };
           return next();
         });
-    })
-    .catch(error => res.status(400).json({ message: error }));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
 }
 
 exports.logout = (req, res, next) => {

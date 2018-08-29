@@ -8,13 +8,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const express = require('express');
 
 const HermesesController = require('../../controllers/hermeses');
-const checkSession = require('../../middleware/checkSession');
 
 const HermesesRoutes = express.Router();
 
 // Routes
 HermesesRoutes.route('/')
-  .post(HermesesController.create, (req, res) => { res.status(req.status).json(req.json); })
   .get(HermesesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = HermesesRoutes;

@@ -5,6 +5,8 @@ import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 declare let moment: any;
+declare let AmbrosusSDK: any;
+declare let Web3: any;
 
 @Component({
   selector: 'app-setup',
@@ -23,11 +25,14 @@ export class SetupComponent implements OnInit {
   prevButton = '';
   nextButton = 'Company';
   timezones = [];
+  web3;
+  success;
 
   constructor(private http: HttpClient,
     private router: Router,
     private storage: StorageService) {
     this.initSetupForm();
+    this.web3 = new Web3();
   }
 
   initSetupForm() {
@@ -39,7 +44,9 @@ export class SetupComponent implements OnInit {
       userFullName: new FormControl('', [Validators.required]),
       userEmail: new FormControl('', [Validators.required]),
       userPassword: new FormControl('', [Validators.required]),
-      userPasswordConfirm: new FormControl('', [Validators.required])
+      userPasswordConfirm: new FormControl('', [Validators.required]),
+      userAddress: new FormControl('', []),
+      userSecret: new FormControl('', [])
     });
   }
 
@@ -106,6 +113,7 @@ export class SetupComponent implements OnInit {
 
   setupReset() {
     this.error = null;
+    this.success = null;
   }
 
   setup() {
@@ -119,36 +127,60 @@ export class SetupComponent implements OnInit {
     const userEmail = this.setupForm.get('userEmail').value;
     const userPassword = this.setupForm.get('userPassword').value;
     const userPasswordConfirm = this.setupForm.get('userPasswordConfirm').value;
+    let userAddress = this.setupForm.get('userAddress').value;
+    let userSecret = this.setupForm.get('userSecret').value;
+
+    if (!userAddress || !userSecret) {
+      const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+      userAddress = address;
+      userSecret = privateKey;
+    }
 
     if (this.setupForm.valid) {
       if (!(userPassword === userPasswordConfirm)) {
         this.error = 'Passwords do not match';
         return;
       }
+      this.spinner = true;
 
-      console.log(companyTimeZone);
-      return;
+      const body = {
+        hermes: {
+          title: hermesTitle,
+          url: hermesUrl
+        },
+        company: {
+          title: companyTitle,
+          timeZone: companyTimeZone
+        },
+        user: {
+          full_name: userFullName,
+          email: userEmail,
+          password: userPassword,
+          address: userAddress,
+          secret: userSecret
+        }
+      };
+      const url = `/api/setup`;
 
-      // Make a request
-
-      // const body = {
-      //   title,
-      //   url
-      // };
-
-      // const _url = `/api/hermeses`;
-
-      // this.http.post(_url, body).subscribe(
-      //   (resp: any) => {
-      //     this.storage.set('hermes', resp.data);
-      //     this.router.navigate(['/login']);
-      //   },
-      //   err => {
-      //     this.spinner = false;
-      //     this.error = err.error.message ? err.error.message : 'Hermes creation error';
-      //     console.log('Hermes register error: ', err);
-      //   }
-      // );
+      this.http.post(url, body).subscribe(
+        (resp: any) => {
+          this.spinner = false;
+          this.success = `
+            Setup was successfuly done.<br>
+            Now you can login with your email and password.<br>
+            But, before you go, this is your<br>
+            <b>address: ${userAddress}</b><br> and
+            <b>secret: ${userSecret}</b>,<br> please <u>save them somewhere safe</u>,
+            as we are not storing them anywhere for security reasons.
+          `;
+          console.log('Setup success: ', resp);
+        },
+        err => {
+          this.spinner = false;
+          this.error = err.error.message ? err.error.message : 'Setup error';
+          console.log('Setup error: ', err);
+        }
+      );
     } else {
       this.error = 'All steps are required';
     }

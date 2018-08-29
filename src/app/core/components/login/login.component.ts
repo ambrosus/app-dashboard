@@ -1,5 +1,5 @@
 import { AuthService } from 'app/services/auth.service';
-import { Component, ElementRef, Renderer2, Input, OnInit} from '@angular/core';
+import { Component, ElementRef, Renderer2, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -18,9 +18,8 @@ export class LoginComponent implements OnInit {
   addressForm: FormGroup;
   loginPage = true;
 
-  error = false;
+  error;
   spinner = false;
-  loginFailed = false;
   alreadyLoggedIn = false;
 
   // email or address
@@ -80,7 +79,6 @@ export class LoginComponent implements OnInit {
 
   resetErrors() {
     this.error = false;
-    this.loginFailed = false;
     this.alreadyLoggedIn = false;
   }
 
@@ -107,13 +105,12 @@ export class LoginComponent implements OnInit {
         },
         err => {
           this.spinner = false;
-          this.error = true;
-          this.loginFailed = true;
+          this.error = err.error ? err.error.message : JSON.stringify(err);
           console.log('Login error: ', err);
         }
       );
     } else {
-      this.error = true;
+      this.error = 'All fields are required';
     }
   }
 
@@ -152,21 +149,19 @@ export class LoginComponent implements OnInit {
             },
             e => {
               this.spinner = false;
-              this.error = true;
-              this.loginFailed = true;
+              this.error = e.error ? e.error.message : JSON.stringify(e);
               console.log('Login failed: ', e);
             }
           );
         },
         err => {
           this.spinner = false;
-          this.error = true;
-          this.loginFailed = true;
+          this.error = err.error ? err.error.message : JSON.stringify(err);
           console.log('Email check failed: ', err);
         }
       );
     } else {
-      this.error = true;
+      this.error = 'All fields are required';
     }
   }
 

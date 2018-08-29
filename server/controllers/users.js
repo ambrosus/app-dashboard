@@ -6,7 +6,9 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const utilsPassword = require('../utils/password');
+const mongoose = require('mongoose');
 const config = require('../config');
+const axios = require('axios');
 
 const User = require('../models/users');
 const Company = require('../models/companies');
@@ -20,7 +22,7 @@ exports.create = (req, res, next) => {
   const password = req.body.user ? req.body.user.password : null;
   const accessLevel = req.body.user ? req.body.user.accessLevel : 1;
   const permissions = req.body.user ? req.body.user.permissions : ['create_entity'];
-  const hermes = req.body.hermes || req.json ? req.json.hermes : null;
+  const hermes = req.hermes || req.body.hermes;
 
   if (full_name && email && address && password && hermes) {
     User.findOne({ email })
@@ -40,33 +42,33 @@ exports.create = (req, res, next) => {
             .save()
             .then(user => {
               Role.findOne({ title: 'user' })
-              then(role => {
-                if (!role) { throw 'No user role'; } else {
-                  user.role = role;
-                  user.save();
+                .then(role => {
+                  if (!role) { throw 'No user role'; } else {
+                    user.role = role;
+                    user.save();
 
-                  // Register user in the hermes
-                  const headers = {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: `AMB_TOKEN ${config.token}`
-                  };
-                  const body = {
-                    address,
-                    permissions,
-                    accessLevel
+                    // Register user in the hermes
+                    const headers = {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                      Authorization: `AMB_TOKEN ${config.token}`
+                    };
+                    const body = {
+                      address,
+                      permissions,
+                      accessLevel
+                    }
+                    axios.post(`${hermes.url}/accounts`, body, { headers })
+                      .then(registered => {
+                        req.status = 200;
+                        req.user = user;
+                        return next();
+                      }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
                   }
-                  axios.post(`${hermes.url}/accounts`, body, { headers })
-                    .then(registered => {
-                      req.status = 200;
-                      req.json = req.json ? req.json.registered = registered : req.json = { registered };
-                      return next();
-                    }).catch(error => res.status(400).json({ message: error }));
-                }
-              }).catch(error => res.status(400).json({ message: error }));
-            }).catch(error => res.status(400).json({ message: error }));
+                }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
         }
-      }).catch(error => res.status(400).json({ message: error }));
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!full_name) {
     return res.status(400).json({ message: 'User "full_name" is required' });
   } else if (!email) {
@@ -83,26 +85,36 @@ exports.create = (req, res, next) => {
 }
 
 exports.setOwnership = (req, res, next) => {
-  const user = req.body.user || req.json ? req.json.user : null;
-  const company = req.body.company || req.json ? req.json.company : null;
+  const user = req.user || req.body.user;
+  const company = req.company || req.body.company;
 
   if (user && company) {
     Company.findById(company._id)
       .then(_company => {
-        User.findById(user._id)
-          .then(_user => {
-            _company.owner = _user;
-            _company.save()
-              .then(saved => {
-                _user.company = _company;
-                _user.save()
+        if (!_company) { throw 'No company found' } else {
+          User.findById(user._id)
+            .then(_user => {
+              if (!_user) { throw 'No user found' } else {
+                _company.owner = _user;
+                _company.save()
                   .then(saved => {
-                    req.status = 200;
-                    return next();
-                  }).catch(error => res.status(400).json({ message: error }));
-              }).catch(error => res.status(400).json({ message: error }));
-          }).catch(error => res.status(400).json({ message: error }));
-      }).catch(error => res.status(400).json({ message: error }));
+                    Role.findOne({ title: 'owner' })
+                      .then(role => {
+                        if (!role) { throw 'No owner role' } else {
+                          _user.company = _company;
+                          _user.role = role;
+                          _user.save()
+                            .then(saved => {
+                              req.status = 200;
+                              return next();
+                            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                        }
+                      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                  }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+              }
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!user) {
     return res.status(400).json({ message: '"user" object is required' });
   } else if (!company) {

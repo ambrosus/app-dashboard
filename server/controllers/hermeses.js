@@ -27,13 +27,13 @@ exports.create = (req, res, next) => {
 
           hermes
             .save()
-            .then(created => {
+            .then(hermes => {
               req.status = 200;
-              req.json = req.json ? req.json.hermes = hermes : req.json = { hermes };
+              req.hermes = hermes;
               return next();
-            }).catch(error => res.status(400).json({ message: error }));
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
         }
-      }).catch(error => res.status(400).json({ message: error }));
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
     return res.status(400).json({ message: 'Hermes "title" is required' });
   } else if (!url) {
@@ -50,5 +50,5 @@ exports.getAll = (req, res, next) => {
         data: results
       };
       return next();
-    }).catch(error => res.status(400).json({ message: error }));
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 };

@@ -10,8 +10,7 @@
       <div class="tab_content">
 
         <!-- Email form -->
-        <form [formGroup]="loginForm" (ngSubmit)="loginEmail()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="email"
-          style="margin: 0;">
+        <form [formGroup]="loginForm" (ngSubmit)="loginEmail()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="email" style="margin: 0;">
           <div class="form-text m-b-20">
             <label for="email">Email</label>
             <input formControlName="email" type="email" name="email" id="email" spellcheck="false" appInput>
@@ -27,8 +26,7 @@
         </form>
 
         <!-- Address form -->
-        <form [formGroup]="addressForm" (ngSubmit)="loginAddress()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="address"
-          style="margin: 0;">
+        <form [formGroup]="addressForm" (ngSubmit)="loginAddress()" class="form-group login-form" [ngClass]="{ error: error }" *ngIf="address" style="margin: 0;">
           <div class="form-text m-b-20">
             <label for="address">Address</label>
             <input formControlName="address" type="text" name="address" id="address" spellcheck="false" appInput>
@@ -45,8 +43,8 @@
       </div>
     </div>
 
-    <h5 class="p-h-40 m-v-30" *ngIf="loginFailed" style="color: #ea7070">Login failed</h5>
-    <h5 class="p-h-40 m-v-30" *ngIf="alreadyLoggedIn" style="color: #ea7070">Already logged in with this account</h5>
+    <h5 class="p-h-40 m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+    <h5 class="p-h-40 m-v-30 center" *ngIf="alreadyLoggedIn" style="color: #ea7070">Already logged in with this account</h5>
 
   </div>
 </div>
