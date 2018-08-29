@@ -7,20 +7,33 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 
+const Role = require('../../models/roles');
+
 const HermesesController = require('../../controllers/hermeses');
 const CompaniesController = require('../../controllers/companies');
 const UsersController = require('../../controllers/users');
 
 const SetupRoutes = express.Router();
 
-setupAccessAndPermissions = (req, res, next) => {
-  req.accessLevel = 10;
-  req.permissions = ['register_account', 'create_entity'];
-  return next();
+initialSetup = (req, res, next) => {
+  if (!req.body.user) { req.body.user = {} }
+  req.body.user.accessLevel = 10;
+  req.body.user.permissions = ['register_account', 'create_entity'];
+
+  const roles = [
+    { title: 'owner' },
+    { title: 'admin' },
+    { title: 'user' }
+  ];
+  Role.insertMany(roles)
+    .then(created => {
+      console.log('Initial roles created: ', created);
+      return next();
+    }).catch(error => res.status(400).json({ message: error }));
 }
 
 // Routes
-SetupRoutes.post('/', setupAccessAndPermissions, HermesesController.create, CompaniesController.create, UsersController.create, UsersController.setOwnership,
+SetupRoutes.post('/', initialSetup, HermesesController.create, CompaniesController.create, UsersController.create, UsersController.setOwnership,
   (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = SetupRoutes;

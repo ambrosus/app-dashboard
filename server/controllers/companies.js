@@ -10,9 +10,9 @@ const mongoose = require('mongoose');
 const Company = require('../models/companies');
 
 exports.create = (req, res, next) => {
-  const title = req.body.companyTitle;
-  const timeZone = req.body.companyTimeZone;
-  const hermes = req.hermes || req.body.hermes;
+  const title = req.body.company ? req.body.company.title : null;
+  const timeZone = req.body.company ? req.body.company.timeZone : null;
+  const hermes = req.body.hermes || req.json ? req.json.hermes : null;
 
   if (title && timeZone && hermes) {
     Company.findOne({ title })
@@ -29,9 +29,9 @@ exports.create = (req, res, next) => {
 
           company
             .save()
-            .then(created => {
-              req.company = created;
+            .then(company => {
               req.status = 200;
+              req.json = req.json ? req.json.company = company : req.json = { company };
               return next();
             }).catch(error => res.status(400).json({ message: error }));
         }

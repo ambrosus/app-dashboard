@@ -10,8 +10,8 @@ const mongoose = require('mongoose');
 const Hermes = require('../models/hermeses');
 
 exports.create = (req, res, next) => {
-  const title = req.body.hermesTitle;
-  const url = req.body.hermesUrl;
+  const title = req.body.hermes ? req.body.hermes.title : null;
+  const url = req.body.hermes ? req.body.hermes.url : null;
 
   if (title && url) {
     Hermes.findOne({ url })
@@ -28,12 +28,8 @@ exports.create = (req, res, next) => {
           hermes
             .save()
             .then(created => {
-              req.hermes = created;
               req.status = 200;
-              req.json = {
-                message: 'Hermes is registered',
-                data: created
-              };
+              req.json = req.json ? req.json.hermes = hermes : req.json = { hermes };
               return next();
             }).catch(error => res.status(400).json({ message: error }));
         }

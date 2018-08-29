@@ -13,10 +13,6 @@ const rolesSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  id: {
-    type: Number,
-    default: 1
-  },
   createdAt: {
     type: Date,
     default: +new Date()
