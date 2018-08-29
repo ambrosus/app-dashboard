@@ -5,7 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const utilsPassword = require('../utils/password');
 
 const User = require('../models/users');
@@ -14,11 +13,12 @@ exports.create = (req, res, next) => {
   const full_name = req.body.full_name;
   const email = req.body.email;
   const address = req.body.address;
-  const password = req.body.password;
   const secret = req.body.secret;
+  const password = req.body.password;
+  const accessLevel = req.accessLevel || req.body.accessLevel || 1;
+  const permissions = req.permissions || req.body.permissions || ['create_entity'];
 
-  if (full_name && email && address) {
-
+  if (full_name && email && address && password) {
     User.findOne({ email })
       .then(user => {
         if (user) {
@@ -31,40 +31,32 @@ exports.create = (req, res, next) => {
             address,
             token: utilsPassword.encrypt(`${address}|||${secret}`, password)
           });
+
           user
             .save()
-            .then(createdUser => {
+            .then(created => {
+
+              req.user = created;
               req.status = 200;
-              req.json = { message: 'Success' };
               return next();
-            })
-            .catch(error => {
-              console.log(error);
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            })
+            }).catch(error => res.status(400).json({ message: error }));
         }
-      })
-      .catch(error => {
-        console.log(error);
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
+      }).catch(error => res.status(400).json({ message: error }));
   } else if (!full_name) {
-    req.status = 400;
-    req.json = { message: '"full_name" is required' };
-    return next();
+    return res.status(400).json({ message: 'User "full_name" is required' });
   } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required' };
-    return next();
+    return res.status(400).json({ message: 'User "email" is required' });
   } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
+    return res.status(400).json({ message: 'User "address" is required' });
+  } else if (!secret) {
+    return res.status(400).json({ message: 'User "secret" is required' });
+  } else if (!password) {
+    return res.status(400).json({ message: 'User "password" is required' });
   }
+}
+
+exports.setOwnership = (req, res, next) => {
+
 }
 
 exports.getAccount = (req, res, next) => {

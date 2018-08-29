@@ -5,174 +5,42 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const mongoose = require('mongoose');
-const utilsPassword = require('../utils/password');
 
-const Hermes = require('../models/hermeses');
 const Company = require('../models/companies');
-const User = require('../models/users');
-const Role = require('../models/roles');
 
 exports.create = (req, res, next) => {
+  const title = req.body.companyTitle;
+  const timeZone = req.body.companyTimeZone;
+  const hermes = req.hermes || req.body.hermes;
 
-}
-
-exports.create = (req, res, next) => {
-  const address = req.body.address;
-  const secret = req.body.secret;
-  const full_name = req.body.full_name;
-  const hermes = req.body.hermes;
-  const title = req.body.title;
-  const email = req.body.email;
-  const password = req.body.password;
-
-  if (address && secret && full_name && hermes && title && email && password) {
-    // Find Hermes
-    Hermes.findById(hermes._id)
-      .then(hermes => {
-        if (hermes) {
-          // Find user
-          User.findOne({ email })
-            .then(user => {
-              if (user) {
-                throw 'Email is already in use';
-              } else {
-                // Find Company
-                Company.findOne({ title })
-                  .then(c => {
-                    if (c) {
-                      throw 'Company with this title already exists';
-                    } else {
-                      const company = new Company({
-                        _id: new mongoose.Types.ObjectId(),
-                        title,
-                        hermes
-                      });
-
-                      company
-                        .save()
-                        .then(createdCompany => {
-                          // Create the Owner
-                          const user = new User({
-                            _id: new mongoose.Types.ObjectId(),
-                            full_name,
-                            email,
-                            company: createdCompany,
-                            address,
-                            token: utilsPassword.encrypt(`${address}|||${secret}`, password)
-                          });
-
-                          user
-                            .save()
-                            .then(createdUser => {
-
-                              // Add a role to the user
-                              Role.findOne({ id: 1 })
-                                .then(role => {
-                                  if (role) {
-                                    createdUser['role'] = role;
-                                    createdUser.save();
-                                  } else {
-                                    const role = new Role({
-                                      _id: new mongoose.Types.ObjectId(),
-                                      title: 'admin',
-                                      id: 1
-                                    });
-                                    role.save()
-                                      .then(roleCreated => {
-                                        createdUser['role'] = roleCreated;
-                                        createdUser.save();
-                                      });
-                                  }
-                                }).catch(error => {
-                                  req.status = 400;
-                                  req.json = { message: error };
-                                  return next();
-                                });
-
-                              // Add the user as company's owner
-                              createdCompany['owner'] = createdUser;
-                              createdCompany
-                                .save()
-                                .then(success => {
-                                  req.status = 200;
-                                  req.json = { message: 'Success' };
-                                  return next();
-                                })
-                                .catch(error => {
-                                  console.log(error);
-                                  req.status = 400;
-                                  req.json = { message: error };
-                                  return next();
-                                });
-                            })
-                            .catch(error => {
-                              console.log(error);
-                              req.status = 400;
-                              req.json = { message: error };
-                              return next();
-                            });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                          req.status = 400;
-                          req.json = { message: error };
-                          return next();
-                        });
-                    }
-                  })
-                  .catch(error => {
-                    console.log(error);
-                    req.status = 400;
-                    req.json = { message: error };
-                    return next();
-                  });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            });
+  if (title && timeZone && hermes) {
+    Company.findOne({ title })
+      .then(company => {
+        if (company) {
+          throw 'Company with this title already exists';
         } else {
-          throw 'Hermes not found';
+          const company = new Company({
+            _id: new mongoose.Types.ObjectId(),
+            title,
+            timeZone,
+            hermes
+          });
+
+          company
+            .save()
+            .then(created => {
+              req.company = created;
+              req.status = 200;
+              return next();
+            }).catch(error => res.status(400).json({ message: error }));
         }
-      })
-      .catch(error => {
-        console.log(error);
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
-  } else if (!secret) {
-    req.status = 400;
-    req.json = { message: '"secret" is required' };
-    return next();
-  } else if (!full_name) {
-    req.status = 400;
-    req.json = { message: '"full_name" is required' };
-    return next();
-  } else if (!hermes) {
-    req.status = 400;
-    req.json = { message: '"hermes" is required' };
-    return next();
+      }).catch(error => res.status(400).json({ message: error }));
   } else if (!title) {
-    req.status = 400;
-    req.json = { message: '"title" is required' };
-    return next();
-  } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required' };
-    return next();
-  } else if (!password) {
-    req.status = 400;
-    req.json = { message: '"password" is required' };
-    return next();
+    return res.status(400).json({ message: 'Company "companyTitle" is required' });
+  } else if (!timeZone) {
+    return res.status(400).json({ message: 'Company "companyTimeZone" is required' });
+  } else if (!hermes) {
+    return res.status(400).json({ message: '"hermes" is required' });
   }
-};
+}

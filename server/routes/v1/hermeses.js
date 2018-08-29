@@ -6,9 +6,11 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const express = require('express');
+
 const HermesesController = require('../../controllers/hermeses');
-const HermesesRoutes = express.Router();
 const checkSession = require('../../middleware/checkSession');
+
+const HermesesRoutes = express.Router();
 
 // Routes
 HermesesRoutes.route('/')

@@ -11,6 +11,7 @@ const HermesesRoutes = require('./hermeses');
 const CompaniesRoutes = require('./companies');
 const AuthRoutes = require('./auth');
 const UsersRoutes = require('./users');
+const SetupRoutes = require('./setup');
 
 const APIRoutes = express.Router();
 
@@ -18,5 +19,6 @@ APIRoutes.use('/hermeses', HermesesRoutes);
 APIRoutes.use('/companies', CompaniesRoutes);
 APIRoutes.use('/auth', AuthRoutes);
 APIRoutes.use('/users', UsersRoutes);
+APIRoutes.use('/setup', SetupRoutes);
 
 module.exports = APIRoutes;
