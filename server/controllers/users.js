@@ -132,13 +132,20 @@ exports.getAccount = (req, res, next) => {
   User.findOne({ email })
     .populate({
       path: 'company',
-      populate: [{
-        path: 'hermes'
-      }]
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: {
+        path: 'hermes',
+        select: '-active -createdAt -updatedAt -__v -public'
+      }
     })
-    .populate('role')
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-active -createdAt -updatedAt -password -__v')
     .then(user => {
       if (user) {
+        console.log(user);
         req.status = 200;
         req.json = user;
         return next();

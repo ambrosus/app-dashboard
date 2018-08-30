@@ -7,15 +7,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 module.exports = (req, res, next) => {
   try {
-    const address = req.body.address || req.params.address || req.query.address;
     const session = req.session;
+    const checkRole = 3;
 
-    if (!session || !session.user || address !== session.user.address) {
-      throw 'Unauthorized';
-    }
+    if (!session || !session.user || !session.user.role || session.user.role.id !== checkRole) { throw 'Unauthorized'; }
 
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: error });
-  }
+    return next();
+  } catch (error) { return res.status(401).json({ message: error }); }
 };

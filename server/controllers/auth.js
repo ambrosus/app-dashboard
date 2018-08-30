@@ -19,10 +19,17 @@ exports.login = (req, res, next) => {
     User.findOne({ email })
       .populate({
         path: 'company',
-        populate: [
-          { path: 'hermes' }
-        ]
+        select: '-active -createdAt -updatedAt -__v -owner',
+        populate: {
+          path: 'hermes',
+          select: '-active -createdAt -updatedAt -__v -public'
+        }
       })
+      .populate({
+        path: 'role',
+        select: '-createdAt -updatedAt -__v'
+      })
+      .select('-active -createdAt -updatedAt -__v')
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
@@ -31,6 +38,7 @@ exports.login = (req, res, next) => {
             const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
 
             if (address && secret) {
+              delete user.password;
               req.session.user = user;
               req.status = 200;
               req.json = {
@@ -67,10 +75,17 @@ exports.verifyAccount = (req, res, next) => {
       User.findOne({ address })
         .populate({
           path: 'company',
-          populate: [
-            { path: 'hermes' }
-          ]
+          select: '-active -createdAt -updatedAt -__v -owner',
+          populate: {
+            path: 'hermes',
+            select: '-active -createdAt -updatedAt -__v -public'
+          }
         })
+        .populate({
+          path: 'role',
+          select: '-createdAt -updatedAt -__v'
+        })
+        .select('-active -createdAt -updatedAt -password -__v')
         .then(user => {
           if (user) {
             req.status = 200;
