@@ -118,48 +118,38 @@ export class SetupComponent implements OnInit {
 
   setup() {
     this.setupReset();
+    const body = {
+      hermes: {
+        title: this.setupForm.get('hermesTitle').value,
+        url: this.setupForm.get('hermesUrl').value
+      },
+      company: {
+        title: this.setupForm.get('companyTitle').value,
+        timeZone: this.setupForm.get('companyTimeZone').value
+      },
+      user: {
+        full_name: this.setupForm.get('userFullName').value,
+        email: this.setupForm.get('userEmail').value,
+        password: this.setupForm.get('userPassword').value,
+        passwordConfirm: this.setupForm.get('userPasswordConfirm').value,
+        address: this.setupForm.get('userAddress').value,
+        secret: this.setupForm.get('userSecret').value
+      }
+    };
 
-    const hermesTitle = this.setupForm.get('hermesTitle').value;
-    const hermesUrl = this.setupForm.get('hermesUrl').value;
-    const companyTitle = this.setupForm.get('companyTitle').value;
-    const companyTimeZone = this.setupForm.get('companyTimeZone').value;
-    const userFullName = this.setupForm.get('userFullName').value;
-    const userEmail = this.setupForm.get('userEmail').value;
-    const userPassword = this.setupForm.get('userPassword').value;
-    const userPasswordConfirm = this.setupForm.get('userPasswordConfirm').value;
-    let userAddress = this.setupForm.get('userAddress').value;
-    let userSecret = this.setupForm.get('userSecret').value;
-
-    if (!userAddress || !userSecret) {
+    if (!body.user.address || !body.user.secret) {
       const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-      userAddress = address;
-      userSecret = privateKey;
+      body.user.address = address;
+      body.user.secret = privateKey;
     }
 
     if (this.setupForm.valid) {
-      if (!(userPassword === userPasswordConfirm)) {
+      if (!(body.user.password === body.user.passwordConfirm)) {
         this.error = 'Passwords do not match';
         return;
       }
       this.spinner = true;
 
-      const body = {
-        hermes: {
-          title: hermesTitle,
-          url: hermesUrl
-        },
-        company: {
-          title: companyTitle,
-          timeZone: companyTimeZone
-        },
-        user: {
-          full_name: userFullName,
-          email: userEmail,
-          password: userPassword,
-          address: userAddress,
-          secret: userSecret
-        }
-      };
       const url = `/api/setup`;
 
       this.http.post(url, body).subscribe(
@@ -169,8 +159,8 @@ export class SetupComponent implements OnInit {
             Setup was successfuly done.<br>
             Now you can login with your email and password.<br>
             But, before you go, this is your<br>
-            <b>address: ${userAddress}</b><br> and
-            <b>secret: ${userSecret}</b>,<br> please <u>save them somewhere safe</u>,
+            <b>address: ${body.user.address}</b><br> and
+            <b>secret: ${body.user.secret}</b>,<br> please <u>save them somewhere safe</u>,
             as we are not storing them anywhere for security reasons.
           `;
           console.log('Setup success: ', resp);
