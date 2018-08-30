@@ -9,9 +9,9 @@ const User = require('../models/users');
 
 module.exports = (req, res, next) => {
   try {
-    const session = req.session;
+    const userId = req.session.user._id
 
-    User.findById(session.user._id)
+    User.findById(userId)
       .populate('role')
       .then(user => {
         if (user) {
