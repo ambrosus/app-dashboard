@@ -9,6 +9,7 @@ const utilsPassword = require('../utils/password');
 const mongoose = require('mongoose');
 const config = require('../config');
 const axios = require('axios');
+const bcrypt = require('bcrypt');
 
 const User = require('../models/users');
 const Company = require('../models/companies');
@@ -28,43 +29,48 @@ exports.create = (req, res, next) => {
     User.findOne({ email })
       .then(user => {
         if (!user) {
-          const user = new User({
-            _id: new mongoose.Types.ObjectId(),
-            full_name,
-            email,
-            address,
-            token: utilsPassword.encrypt(`${address}|||${secret}`, password)
-          });
+          bcrypt.hash(password, 10, (err, hash) => {
+            if (!err) {
+              const user = new User({
+                _id: new mongoose.Types.ObjectId(),
+                full_name,
+                email,
+                address,
+                token: utilsPassword.encrypt(`${address}|||${secret}`, password),
+                password: hash
+              });
 
-          user
-            .save()
-            .then(user => {
-              Role.findOne({ title: 'user' })
-                .then(role => {
-                  if (role) {
-                    user.role = role;
-                    user.save();
+              user
+                .save()
+                .then(user => {
+                  Role.findOne({ title: 'user' })
+                    .then(role => {
+                      if (role) {
+                        user.role = role;
+                        user.save();
 
-                    // Register user in the hermes
-                    const headers = {
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json',
-                      Authorization: `AMB_TOKEN ${config.token}`
-                    };
-                    const body = {
-                      address,
-                      permissions,
-                      accessLevel
-                    }
-                    axios.post(`${hermes.url}/accounts`, body, { headers })
-                      .then(registered => {
-                        req.status = 200;
-                        req.user = user;
-                        return next();
-                      }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
-                  } else { throw 'No user role'; }
+                        // Register user in the hermes
+                        const headers = {
+                          Accept: 'application/json',
+                          'Content-Type': 'application/json',
+                          Authorization: `AMB_TOKEN ${config.token}`
+                        };
+                        const body = {
+                          address,
+                          permissions,
+                          accessLevel
+                        }
+                        axios.post(`${hermes.url}/accounts`, body, { headers })
+                          .then(registered => {
+                            req.status = 200;
+                            req.user = user;
+                            return next();
+                          }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
+                      } else { throw 'No user role'; }
+                    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+            } else { return (console.log(err), res.status(400).json({ message: err })); }
+          });
         } else { throw 'Email is already in use'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!full_name) {

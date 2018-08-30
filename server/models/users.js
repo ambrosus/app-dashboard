@@ -18,6 +18,10 @@ const usersSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  password: {
+    type: String,
+    required: true
+  },
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Companies'
@@ -52,12 +56,12 @@ const usersSchema = mongoose.Schema({
   }
 });
 
-usersSchema.pre('update', function (next) {
+usersSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
-usersSchema.pre('save', function (next) {
+usersSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
 });
