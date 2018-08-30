@@ -218,19 +218,27 @@ exports.changePassword = (req, res, next) => {
     User.findOne({ email })
       .then(user => {
         if (user) {
-          const [address, secret] = utilsPassword.decrypt(user.token, oldPassword).split('|||');
-          if (address && secret) {
-            user.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
-            user
-              .save()
-              .then(saved => {
-                req.status = 200;
-                req.json = {
-                  message: 'Reset password success'
-                };
-                return next();
-              }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-          } else { return res.status(401).json({ message: '"password" is incorrect' }); }
+          const valid = bcrypt.compareSync(oldPassword, user.password);
+
+          if (valid) {
+            const [address, secret] = utilsPassword.decrypt(user.token, oldPassword).split('|||');
+
+            if (address && secret) {
+              user.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
+              bcrypt.hash(newPassword, 10, (err, hash) => {
+                if (!err) {
+                  user.password = hash;
+                  user
+                    .save()
+                    .then(saved => {
+                      req.status = 200;
+                      req.json = { message: 'Reset password success' };
+                      return next();
+                    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                } else { return (console.log(err), res.status(400).json({ message: err })); }
+              });
+            } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
+          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
         } else { throw 'No user found'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!email) {
