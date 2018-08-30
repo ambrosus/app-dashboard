@@ -61,14 +61,6 @@
         <label for="userPasswordConfirm">Password Confirm *</label>
         <input formControlName="userPasswordConfirm" type="password" id="userPasswordConfirm" spellcheck="false" appInput>
       </div>
-      <div class="form-text m-b-20">
-        <label for="userAddress">Address (optional)</label>
-        <input formControlName="userAddress" type="text" id="userAddress" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="userSecret">Secret (optional)</label>
-        <input formControlName="userSecret" type="text" id="userSecret" spellcheck="false" appInput>
-      </div>
     </div>
     <div class="flex flex-direction-r justify-content-fe align-items-c" *ngIf="currentStep === 3">
       <app-spinner *ngIf="spinner"></app-spinner>
