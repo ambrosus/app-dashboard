@@ -5,13 +5,20 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+const User = require('../models/users');
+
 module.exports = (req, res, next) => {
   try {
     const session = req.session;
-    const checkRole = 2;
 
-    if (!session || !session.user || !session.user.role || session.user.role.id !== checkRole) { throw 'Unauthorized'; }
+    User.findById(session.user._id)
+      .populate('role')
+      .then(user => {
+        if (user) {
+          if (session.user.role.id !== user.role.id || user.role.id !== 2) { throw 'Unauthorized'; }
 
-    return next();
+          return next();
+        } else { throw 'No user found' }
+      }).catch(error => (console.log(error), res.status(401).json({ message: error })));
   } catch (error) { return res.status(401).json({ message: error }); }
 };
