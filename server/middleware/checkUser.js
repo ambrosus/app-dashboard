@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
       .populate('role')
       .then(user => {
         if (user) {
-          if (session.user.role.id !== user.role.id || user.role.id !== 3) { throw 'Unauthorized'; }
+          if (user.role.id !== 3) { throw 'Unauthorized'; }
 
           return next();
         } else { throw 'No user found' }
