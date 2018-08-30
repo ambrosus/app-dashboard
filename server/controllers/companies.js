@@ -11,10 +11,10 @@ const Company = require('../models/companies');
 
 exports.create = (req, res, next) => {
   const title = req.body.company ? req.body.company.title : null;
-  const timeZone = req.body.company ? req.body.company.timeZone : null;
+  const timeZone = req.body.company ? req.body.company.timeZone : '';
   const hermes = req.hermes || req.body.hermes;
 
-  if (title && timeZone && hermes) {
+  if (title && hermes) {
     Company.findOne({ title })
       .then(company => {
         if (!company) {
@@ -36,8 +36,6 @@ exports.create = (req, res, next) => {
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
     return res.status(400).json({ message: 'Company "title" is required' });
-  } else if (!timeZone) {
-    return res.status(400).json({ message: 'Company "timeZone" is required' });
   } else if (!hermes) {
     return res.status(400).json({ message: '"hermes" object is required' });
   }
