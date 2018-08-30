@@ -27,9 +27,7 @@ exports.create = (req, res, next) => {
   if (full_name && email && address && password && hermes) {
     User.findOne({ email })
       .then(user => {
-        if (user) {
-          throw 'Email is already in use';
-        } else {
+        if (!user) {
           const user = new User({
             _id: new mongoose.Types.ObjectId(),
             full_name,
@@ -43,7 +41,7 @@ exports.create = (req, res, next) => {
             .then(user => {
               Role.findOne({ title: 'user' })
                 .then(role => {
-                  if (!role) { throw 'No user role'; } else {
+                  if (role) {
                     user.role = role;
                     user.save();
 
@@ -64,10 +62,10 @@ exports.create = (req, res, next) => {
                         req.user = user;
                         return next();
                       }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
-                  }
+                  } else { throw 'No user role'; }
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        }
+        } else { throw 'Email is already in use'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!full_name) {
     return res.status(400).json({ message: 'User "full_name" is required' });
@@ -91,16 +89,16 @@ exports.setOwnership = (req, res, next) => {
   if (user && company) {
     Company.findById(company._id)
       .then(_company => {
-        if (!_company) { throw 'No company found' } else {
+        if (_company) {
           User.findById(user._id)
             .then(_user => {
-              if (!_user) { throw 'No user found' } else {
+              if (_user) {
                 _company.owner = _user;
                 _company.save()
                   .then(saved => {
                     Role.findOne({ title: 'owner' })
                       .then(role => {
-                        if (!role) { throw 'No owner role' } else {
+                        if (role) {
                           _user.company = _company;
                           _user.role = role;
                           _user.save()
@@ -108,12 +106,12 @@ exports.setOwnership = (req, res, next) => {
                               req.status = 200;
                               return next();
                             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-                        }
+                        } else { throw 'No owner role'; }
                       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
                   }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-              }
+              } else { throw 'No user found'; }
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        }
+        } else { throw 'No company found'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!user) {
     return res.status(400).json({ message: '"user" object is required' });
@@ -123,35 +121,25 @@ exports.setOwnership = (req, res, next) => {
 }
 
 exports.getAccount = (req, res, next) => {
-    const email = req.params.email;
+  const email = req.params.email;
 
-    User.findOne({
-            email
-        })
-        .populate({
-            path: 'company',
-            populate: [{
-                path: 'hermes'
-            }]
-        })
-        .populate('role')
-        .then(user => {
-            if (user) {
-                req.status = 200;
-                req.json = user;
-                return next();
-            } else {
-                throw 'No user found';
-            }
-        })
-        .catch(error => {
-            req.status = 400;
-            req.json = {
-                message: error
-            };
-            return next();
-        });
+  User.findOne({ email })
+    .populate({
+      path: 'company',
+      populate: [{
+        path: 'hermes'
+      }]
+    })
+    .populate('role')
+    .then(user => {
+      if (user) {
+        req.status = 200;
+        req.json = user;
+        return next();
+      } else { throw 'No user found'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
+
 exports.getAccounts = (req, res, next) => {
   const address = req.session.address;
 
@@ -173,20 +161,9 @@ exports.getAccounts = (req, res, next) => {
               data: users
             };
             return next();
-          }).catch(error => {
-            req.status = 400;
-            req.json = { message: error };
-            return next();
-          });
-      } else {
-        throw 'No user found';
-      }
-    })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: error };
-      return next();
-    });
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      } else { throw 'No user found'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
 exports.getSettings = (req, res, next) => {
@@ -198,15 +175,8 @@ exports.getSettings = (req, res, next) => {
         req.status = 200;
         req.json = user.settings;
         return next();
-      } else {
-        throw 'No accounts found';
-      }
-    })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: error };
-      return next();
-    });
+      } else { throw 'No accounts found'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
 exports.getNotifications = (req, res, next) => {}
@@ -218,9 +188,9 @@ exports.edit = (req, res, next) => {
   const update = {}
   const nowAllowedToChange = ['email', 'company', 'address', 'token'];
   for (const key in query) {
-      if (nowAllowedToChange.indexOf(key) === -1) {
-          update[key] = query[key]
-      }
+    if (nowAllowedToChange.indexOf(key) === -1) {
+      update[key] = query[key]
+    }
   }
 
   User.findOneAndUpdate({ email }, update)
@@ -229,82 +199,39 @@ exports.edit = (req, res, next) => {
         req.status = 200;
         req.json = { message: 'Update data success' };
         return next();
-      }
-      req.status = 400;
-      req.json = { message: 'Update data error' };
-      return next();
-    })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: 'Update data error' };
-      return next();
-    });
+      } else { throw 'Update data error'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
 exports.changePassword = (req, res, next) => {
-    const email = req.body.email;
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
-    if (email && oldPassword && newPassword) {
-        User.findOne({
-                email
-            })
-            .then(user => {
-                if (user) {
-                    const [address, secret] = utilsPassword.decrypt(user.token, oldPassword).split('|||');
-                    if (address && secret) {
-                        user.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
-                        user
-                            .save()
-                            .then(saved => {
-                                req.status = 200;
-                                req.json = {
-                                    message: 'Reset password success'
-                                };
-                                return next();
-                            })
-                            .catch(error => {
-                                req.status = 400;
-                                req.json = {
-                                    message: 'Reset password failed'
-                                };
-                                return next();
-                            });
-                    } else {
-                        req.status = 401;
-                        req.json = {
-                            message: '"password" is incorrect'
-                        };
-                        return next();
-                    }
-                } else {
-                    throw 'No user found';
-                }
-            })
-            .catch(error => {
-                req.status = 400;
+  const email = req.body.email;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+
+  if (email && oldPassword && newPassword) {
+    User.findOne({ email })
+      .then(user => {
+        if (user) {
+          const [address, secret] = utilsPassword.decrypt(user.token, oldPassword).split('|||');
+          if (address && secret) {
+            user.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
+            user
+              .save()
+              .then(saved => {
+                req.status = 200;
                 req.json = {
-                    message: error
+                  message: 'Reset password success'
                 };
                 return next();
-            });
-    } else if (!email) {
-        req.status = 400;
-        req.json = {
-            message: '"email" is required'
-        };
-        return next();
-    } else if (!oldPassword) {
-        req.status = 400;
-        req.json = {
-            message: '"oldPassword" is required'
-        };
-        return next();
-    } else if (!newPassword) {
-        req.status = 400;
-        req.json = {
-            message: '"newPassword" is required'
-        };
-        return next();
-    }
+              }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+          } else { return res.status(401).json({ message: '"password" is incorrect' }); }
+        } else { throw 'No user found'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+  } else if (!email) {
+    return res.status(400).json({ message: '"email" is required' });
+  } else if (!oldPassword) {
+    return res.status(400).json({ message: '"oldPassword" is required' });
+  } else if (!newPassword) {
+    return res.status(400).json({ message: '"newPassword" is required' });
+  }
 };

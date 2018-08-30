@@ -36,7 +36,8 @@ exports.login = (req, res, next) => {
               secret
             };
             return next();
-          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
+          }
+          return res.status(401).json({ message: 'User "password" is incorrect' });
         } else { throw 'No user found'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!email) {

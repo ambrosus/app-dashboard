@@ -16,9 +16,7 @@ exports.create = (req, res, next) => {
   if (title && url) {
     Hermes.findOne({ url })
       .then(hermes => {
-        if (hermes) {
-          throw 'Hermes with this url already exists';
-        } else {
+        if (!hermes) {
           const hermes = new Hermes({
             _id: new mongoose.Types.ObjectId(),
             title,
@@ -32,7 +30,7 @@ exports.create = (req, res, next) => {
               req.hermes = hermes;
               return next();
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        }
+        } else { throw 'Hermes with this url already exists'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
     return res.status(400).json({ message: 'Hermes "title" is required' });

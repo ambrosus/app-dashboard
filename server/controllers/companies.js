@@ -17,9 +17,7 @@ exports.create = (req, res, next) => {
   if (title && timeZone && hermes) {
     Company.findOne({ title })
       .then(company => {
-        if (company) {
-          throw 'Company with this title already exists';
-        } else {
+        if (!company) {
           const company = new Company({
             _id: new mongoose.Types.ObjectId(),
             title,
@@ -34,7 +32,7 @@ exports.create = (req, res, next) => {
               req.company = company;
               return next();
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        }
+        } else { throw 'Company with this title already exists'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
     return res.status(400).json({ message: 'Company "title" is required' });
