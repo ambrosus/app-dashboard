@@ -5,21 +5,18 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const mongoose = require('mongoose');
 
 const Hermes = require('../models/hermeses');
 
 exports.create = (req, res, next) => {
-  const title = req.body.title;
-  const url = req.body.url;
+  const title = req.body.hermes ? req.body.hermes.title : null;
+  const url = req.body.hermes ? req.body.hermes.url : null;
 
   if (title && url) {
-    Hermes.findOne({ url: url })
+    Hermes.findOne({ url })
       .then(hermes => {
-        if (hermes) {
-          throw 'Hermes with this url already exists';
-        } else {
+        if (!hermes) {
           const hermes = new Hermes({
             _id: new mongoose.Types.ObjectId(),
             title,
@@ -28,43 +25,22 @@ exports.create = (req, res, next) => {
 
           hermes
             .save()
-            .then(created => {
+            .then(hermes => {
               req.status = 200;
-              req.json = {
-                message: 'Hermes is registered',
-                data: created
-              };
+              req.hermes = hermes;
               return next();
-            })
-            .catch(error => {
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            });
-        }
-      })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        } else { throw 'Hermes with this url already exists'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
-    req.status = 400;
-    req.json = { message: '"title" is required' };
-    return next();
+    return res.status(400).json({ message: 'Hermes "title" is required' });
   } else if (!url) {
-    req.status = 400;
-    req.json = { message: '"url" is required' };
-    return next();
+    return res.status(400).json({ message: 'Hermes "url" is required' });
   }
 };
 
 exports.getAll = (req, res, next) => {
-  const query = {
-    public: true
-  }
-
-  Hermes.find(query)
+  Hermes.find({ public: true })
     .then(results => {
       req.status = 200;
       req.json = {
@@ -72,10 +48,5 @@ exports.getAll = (req, res, next) => {
         data: results
       };
       return next();
-    })
-    .catch(error => {
-      req.status = 400;
-      req.json = { message: error };
-      return next();
-    });
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 };

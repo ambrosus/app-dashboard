@@ -5,7 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const mongoose = require('mongoose');
 
 const notificationsSchema = mongoose.Schema({
@@ -26,12 +25,12 @@ const notificationsSchema = mongoose.Schema({
   updatedAt: { type: Date, default: +new Date() }
 });
 
-notificationsSchema.pre('update', function(next) {
+notificationsSchema.pre('update', function (next) {
   this.updatedAt = +new Date();
   next();
 });
 
-notificationsSchema.pre('save', function(next) {
+notificationsSchema.pre('save', function (next) {
   this.updatedAt = +new Date();
   next();
 });

@@ -1,0 +1,79 @@
+<div class="p-a-40" style="min-height: 100vh">
+  <h1 class="center" style="margin: 30px 0 100px 0">Setup Dashboard</h1>
+
+  <div class="block-center center m-w-6 m-b-50" *ngIf="success">
+    <p class="color-blacks--base" style="font-size: 14px;" innerHTML="{{ success }}"></p>
+    <h5 class="color-ablue--base m-t-20" routerLink="/login"><a>Login</a></h5>
+  </div>
+
+  <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4" *ngIf="!success">
+    <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
+      <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
+        <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> {{ prevButton }}
+      </h5>
+      <h5 class="color-ablue--base m-l-auto inline-block" [ngClass]="{ mute: !checkStep() }" *ngIf="!(currentStep === 3)" (click)="changeStep('next')" style="user-select: none">
+        {{ nextButton }}
+        <app-svg-icon name="arrow-right" width="15px" style="margin-left: 7px"></app-svg-icon>
+      </h5>
+    </div>
+    <div class="steps">
+      <p class="step" [ngClass]="{ active: currentStep >= 1 }">01 Hermes Node</p>
+      <p class="step" [ngClass]="{ active: currentStep >= 2 }">02 Company</p>
+      <p class="step" [ngClass]="{ active: currentStep >= 3 }">03 User (owner)</p>
+    </div>
+    <div *ngIf="currentStep === 1">
+      <div class="form-text m-b-20">
+        <label for="hermesTitle">Hermes Title *</label>
+        <input formControlName="hermesTitle" type="text" id="hermesTitle" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="hermesUrl">Hermes Gateway URL *</label>
+        <input formControlName="hermesUrl" type="url" id="hermesUrl" spellcheck="false" appInput>
+      </div>
+    </div>
+    <div *ngIf="currentStep === 2">
+      <div class="form-text m-b-20">
+        <label for="companyTitle">Company Title *</label>
+        <input formControlName="companyTitle" type="text" id="companyTitle" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="companyTimeZone">Company Time Zone *</label>
+        <input formControlName="companyTimeZone" list="timezones" id="companyTimeZone" spellcheck="false" appInput>
+        <datalist id="timezones">
+          <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+        </datalist>
+      </div>
+    </div>
+    <div *ngIf="currentStep === 3">
+      <div class="form-text m-b-20">
+        <label for="userFullName">Full name *</label>
+        <input formControlName="userFullName" type="text" id="userFullName" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userEmail">Email *</label>
+        <input formControlName="userEmail" type="email" id="userEmail" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userPassword">Password *</label>
+        <input formControlName="userPassword" type="password" id="userPassword" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userPasswordConfirm">Password Confirm *</label>
+        <input formControlName="userPasswordConfirm" type="password" id="userPasswordConfirm" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userAddress">Address (optional)</label>
+        <input formControlName="userAddress" type="text" id="userAddress" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="userSecret">Secret (optional)</label>
+        <input formControlName="userSecret" type="text" id="userSecret" spellcheck="false" appInput>
+      </div>
+    </div>
+    <div class="flex flex-direction-r justify-content-fe align-items-c" *ngIf="currentStep === 3">
+      <app-spinner *ngIf="spinner"></app-spinner>
+      <button type="submit" class="abtn m-l-20 btn-solid-ablue" [disabled]="!setupForm.valid">Register</button>
+    </div>
+  </form>
+  <h5 class="p-h-40 m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+</div>

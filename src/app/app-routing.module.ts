@@ -9,8 +9,7 @@ import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { SettingsComponent } from './core/components/settings/settings.component';
 import { LoginComponent } from './core/components/login/login.component';
-import { SignupComponent } from './core/components/signup/signup.component';
-import { HermesregisterComponent } from './core/components/hermesregister/hermesregister.component';
+import { SetupComponent } from './core/components/setup/setup.component';
 
 const routes: Routes = [
   {
@@ -20,15 +19,9 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   },
   {
-    path: 'signup',
+    path: 'setup',
     canActivate: [AuthGuardLogin],
-    component: SignupComponent,
-    runGuardsAndResolvers: 'always'
-  },
-  {
-    path: 'hermes',
-    canActivate: [AuthGuardLogin],
-    component: HermesregisterComponent,
+    component: SetupComponent,
     runGuardsAndResolvers: 'always'
   },
   {

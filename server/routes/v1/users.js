@@ -7,11 +7,15 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 const express = require('express');
+
 const UsersController = require('../../controllers/users');
+
 const UsersRoutes = express.Router();
 
 // Routes
-UsersRoutes.get('/', UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.route('/')
+  .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
+  .post(UsersController.create, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.route('/:email')
