@@ -43,7 +43,7 @@ exports.create = (req, res, next) => {
               user
                 .save()
                 .then(user => {
-                  Role.findOne({ title: 'user' })
+                  Role.findOne({ id: 3 })
                     .then(role => {
                       if (role) {
                         user.role = role;
@@ -102,7 +102,7 @@ exports.setOwnership = (req, res, next) => {
                 _company.owner = _user;
                 _company.save()
                   .then(saved => {
-                    Role.findOne({ title: 'owner' })
+                    Role.findOne({ id: 1 })
                       .then(role => {
                         if (role) {
                           _user.company = _company;

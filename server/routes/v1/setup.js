@@ -21,9 +21,9 @@ initialSetup = (req, res, next) => {
   req.body.user.permissions = ['register_account', 'create_entity'];
 
   const roles = [
-    { title: 'owner' },
-    { title: 'admin' },
-    { title: 'user' }
+    { title: 'owner', id: 1 },
+    { title: 'admin', id: 2 },
+    { title: 'user', id: 3 }
   ];
   Role.insertMany(roles)
     .then(created => {
