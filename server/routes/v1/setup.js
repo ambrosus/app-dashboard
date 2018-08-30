@@ -26,10 +26,8 @@ initialSetup = (req, res, next) => {
     { title: 'user', id: 3 }
   ];
   Role.insertMany(roles)
-    .then(created => {
-      console.log('Initial roles created: ', created);
-      return next();
-    }).catch(error => res.status(400).json({ message: error }));
+    .then(created => { return next(); })
+    .catch(error => res.status(400).json({ message: error }));
 }
 
 // Routes

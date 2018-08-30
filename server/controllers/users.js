@@ -26,9 +26,9 @@ exports.create = (req, res, next) => {
   const hermes = req.hermes || req.body.hermes;
 
   if (full_name && email && address && password && hermes) {
-    User.findOne({ email })
-      .then(user => {
-        if (!user) {
+    User.find({ $or: [{ email }, { address }] })
+      .then(users => {
+        if (users && users.length === 0) {
           bcrypt.hash(password, 10, (err, hash) => {
             if (!err) {
               const user = new User({
@@ -71,7 +71,7 @@ exports.create = (req, res, next) => {
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             } else { return (console.log(err), res.status(400).json({ message: err })); }
           });
-        } else { throw 'Email is already in use'; }
+        } else { throw 'Email or address is already in use'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!full_name) {
     return res.status(400).json({ message: 'User "full_name" is required' });
@@ -132,13 +132,20 @@ exports.getAccount = (req, res, next) => {
   User.findOne({ email })
     .populate({
       path: 'company',
-      populate: [{
-        path: 'hermes'
-      }]
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: {
+        path: 'hermes',
+        select: '-active -createdAt -updatedAt -__v -public'
+      }
     })
-    .populate('role')
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-active -createdAt -updatedAt -password -__v')
     .then(user => {
       if (user) {
+        console.log(user);
         req.status = 200;
         req.json = user;
         return next();

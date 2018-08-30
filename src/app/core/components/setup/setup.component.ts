@@ -44,9 +44,7 @@ export class SetupComponent implements OnInit {
       userFullName: new FormControl('', [Validators.required]),
       userEmail: new FormControl('', [Validators.required]),
       userPassword: new FormControl('', [Validators.required]),
-      userPasswordConfirm: new FormControl('', [Validators.required]),
-      userAddress: new FormControl('', []),
-      userSecret: new FormControl('', [])
+      userPasswordConfirm: new FormControl('', [Validators.required])
     });
   }
 
@@ -118,7 +116,7 @@ export class SetupComponent implements OnInit {
 
   setup() {
     this.setupReset();
-    const body = {
+    const body: any = {
       hermes: {
         title: this.setupForm.get('hermesTitle').value,
         url: this.setupForm.get('hermesUrl').value
@@ -131,17 +129,13 @@ export class SetupComponent implements OnInit {
         full_name: this.setupForm.get('userFullName').value,
         email: this.setupForm.get('userEmail').value,
         password: this.setupForm.get('userPassword').value,
-        passwordConfirm: this.setupForm.get('userPasswordConfirm').value,
-        address: this.setupForm.get('userAddress').value,
-        secret: this.setupForm.get('userSecret').value
+        passwordConfirm: this.setupForm.get('userPasswordConfirm').value
       }
     };
 
-    if (!body.user.address || !body.user.secret) {
-      const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-      body.user.address = address;
-      body.user.secret = privateKey;
-    }
+    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+    body.user['address'] = address;
+    body.user['secret'] = privateKey;
 
     if (this.setupForm.valid) {
       if (!(body.user.password === body.user.passwordConfirm)) {
