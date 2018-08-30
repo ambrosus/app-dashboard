@@ -116,7 +116,7 @@ export class SetupComponent implements OnInit {
 
   setup() {
     this.setupReset();
-    const body = {
+    const body: any = {
       hermes: {
         title: this.setupForm.get('hermesTitle').value,
         url: this.setupForm.get('hermesUrl').value
@@ -129,7 +129,7 @@ export class SetupComponent implements OnInit {
         full_name: this.setupForm.get('userFullName').value,
         email: this.setupForm.get('userEmail').value,
         password: this.setupForm.get('userPassword').value,
-        passwordConfirm: this.setupForm.get('userPasswordConfirm').value,
+        passwordConfirm: this.setupForm.get('userPasswordConfirm').value
       }
     };
 
