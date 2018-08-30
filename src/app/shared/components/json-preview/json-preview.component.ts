@@ -1,3 +1,11 @@
+/*
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+*/
+
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -13,8 +21,8 @@ export class JsonPreviewComponent implements OnInit {
 
   stringify = JSON.stringify;
 
-  constructor(private dialogRef: MatDialogRef<JsonPreviewComponent>) {}
-  ngOnInit() {}
+  constructor(private dialogRef: MatDialogRef<JsonPreviewComponent>) { }
+  ngOnInit() { }
 
   syntaxHighlight() {
     const json = JSON.stringify(this.data, null, 3)

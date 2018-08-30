@@ -7,7 +7,7 @@ declare let QRCode: any;
 
 @Component({
   selector: 'app-qr-code',
-  templateUrl: './qr-code.component.html',
+  template: '',
   styleUrls: ['./qr-code.component.scss']
 })
 export class QrCodeComponent implements OnInit {
@@ -15,7 +15,7 @@ export class QrCodeComponent implements OnInit {
   @Input() size;
   @Input() logo;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) {}
+  constructor(private el: ElementRef, private renderer: Renderer2, private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) { }
 
   ngOnInit() {
     this.generateQR();

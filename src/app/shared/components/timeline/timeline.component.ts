@@ -1,3 +1,12 @@
+/*
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+*/
+
+
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -29,12 +38,12 @@ export class TimelineComponent implements OnInit {
   @Input() assetId;
   @Input() name;
 
-  constructor(private assets: AssetsService, private el: ElementRef, public dialog: MatDialog) {}
+  constructor(private assets: AssetsService, private el: ElementRef, public dialog: MatDialog) { }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.json;

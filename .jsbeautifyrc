@@ -5,6 +5,7 @@
   "wrap_line_length": 0,
   "brace_style": "collapse,preserve-inline",
   "indent_handlebars": true,
+  "space_in_paren": true,
   "indent_body_inner_html": true,
   "indent_head_inner_html": true,
   "indent_inner_html": true,
@@ -12,11 +13,12 @@
   "newline_between_rules": true,
   "selector_separator_newline": true,
   "space_around_combinator": true,
-  "space_after_anon_function": true,
   "css": {
-    "indent_size": 2
+    "indent_size": 1,
+    "space_around_combinator": true,
+    "newline_between_rules": true
   },
   "html": {
-    "wrap_attributes": "auto"
+    "wrap_attributes":"auto"
   }
 }

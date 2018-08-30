@@ -1,3 +1,11 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <header class="header">
 
   <div class="header-container wrapper">
@@ -10,8 +18,7 @@
     <ul class="header-menu" *ngIf="isLoggedin">
       <!-- Mobile menu -->
       <li class="hide-640">
-        <div class="hamburger-icon dropdown dropdown__no-arrow" (click)="overlay = !overlay; toggleMobileMenu = !toggleMobileMenu"
-          [ngClass]="{'active': toggleMobileMenu}" style="position: static;">
+        <div class="hamburger-icon dropdown dropdown__no-arrow" (click)="overlay = !overlay; toggleMobileMenu = !toggleMobileMenu" [ngClass]="{'active': toggleMobileMenu}" style="position: static;">
           <div></div>
           <div></div>
           <div></div>

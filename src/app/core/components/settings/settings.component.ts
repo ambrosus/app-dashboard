@@ -5,6 +5,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PasswordService } from 'app/services/password.service';
+import { UsersService } from '../../../services/users.service';
 
 @Component({
   selector: 'app-settings',
@@ -30,6 +31,9 @@ export class SettingsComponent implements OnInit {
   has_account = false;
   user;
 
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+
   ngOnInit() {
     this.settingsInit();
     window.addEventListener('user:login', () => {
@@ -40,19 +44,42 @@ export class SettingsComponent implements OnInit {
   settingsInit() {
     this.user = this.storage.get('user');
     this.has_account = this.user.hasOwnProperty('full_name');
+
+    console.log(this.user);
   }
 
   constructor(
     private http: HttpClient,
     private passwordService: PasswordService,
     private storage: StorageService,
-    private auth: AuthService
+    private auth: AuthService,
+    private users: UsersService
   ) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
       passwordConfirm: new FormControl(null, [Validators.required]),
     });
+  }
+
+  saveSettings(json) {
+    console.log(json);
+
+    this.users.update(this.user.email, json).subscribe(msg => {
+      console.log(msg);
+    });
+
+  }
+
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+  }
+  imageCropped(image: string) {
+    this.croppedImage = image;
+  }
+
+  saveAvatar() {
+
   }
 
   resetErrors() {

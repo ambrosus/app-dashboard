@@ -1,3 +1,11 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <main class="main">
 
   <!-- Asset header -->
@@ -8,8 +16,7 @@
         <app-qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       </div>
       <div class="m-t-10">
-        <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20"
-          target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
         <button class="abtn btn-outline-ablue m-r-10" (click)="openJsonDialog()">View JSON</button>
         <button class="abtn btn-outline-ablue" (click)="openDialog()">Edit</button>
       </div>
@@ -30,8 +37,7 @@
           <div *ngFor="let key of objectKeys(eventObject)">
             <div class="item" *ngIf="!isObject(eventObject[key])">
               <p class="item__cell__title" *ngIf="!isArray(eventObject[key])">{{ key }}: </p>
-              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key]) }"
-                [innerHtml]="isObject(eventObject[key]) ? valueJSON(stringify(eventObject[key], null, 5)) : eventObject[key]"></p>
+              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key]) }" [innerHtml]="isObject(eventObject[key]) ? valueJSON(stringify(eventObject[key], null, 5)) : eventObject[key]"></p>
             </div>
           </div>
 
@@ -42,8 +48,7 @@
 
               <div class="item" *ngFor="let k of objectKeys(eventObject[key])">
                 <p class="item__cell__title" *ngIf="!isArray(eventObject[key])">{{ k }}:</p>
-                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key][k]) }"
-                  [innerHtml]="isObject(eventObject[key][k]) ? valueJSON(stringify(eventObject[key][k], null, 5)) : eventObject[key][k]"></p>
+                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key][k]) }" [innerHtml]="isObject(eventObject[key][k]) ? valueJSON(stringify(eventObject[key][k], null, 5)) : eventObject[key][k]"></p>
               </div>
             </div>
           </div>
