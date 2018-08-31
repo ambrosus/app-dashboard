@@ -11,12 +11,13 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SetupComponent } from './components/setup/setup.component';
+import { InviteComponent } from './components/invite/invite.component';
 
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SetupComponent],
+  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SetupComponent, InviteComponent],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

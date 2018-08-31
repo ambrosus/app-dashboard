@@ -86,3 +86,27 @@ exports.getAll = (req, res, next) => {
       return next();
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
+
+exports.verify = (req, res, next) {
+  const token = req.params.token;
+  const { createdAt } = utilsPassword.decrypt(token, config.secret);
+  const validUntil = 2 * 24 * 60 * 60 * 1000;
+
+  if (createdAt) {
+    if (+new Date() - createdAt > validUntil) {
+      Invite.findOneAndRemove({ token })
+        .then(deleted => {
+          return res.status(400).json({ message: 'Token is invalid' });
+        }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    } else {
+      Invite.findOne({ token })
+        .then(invite => {
+          if (invite) {
+            req.status = 200;
+            req.json = { message: 'Token is valid' };
+            return next();
+          } else { throw 'No invite'; }
+        }).catch(error => (console.log(error), res.status(404).json({ message: error })))
+    }
+  } else { return res.status(400).json({ message: 'Token is invalid' }) }
+}

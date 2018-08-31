@@ -33,16 +33,8 @@ exports.create = (req, res, next) => {
 
   // Invite
   if (token) {
-    const { email, accessLevel, permissions, createdAt } = utilsPassword.decrypt(token, config.secret);
-    const validUntil = 2 * 24 * 60 * 60 * 1000;
-    if (createdAt) {
-      if (+new Date() - createdAt > validUntil) {
-        Invite.findOneAndRemove({ token })
-          .then(deleted => {
-            return res.status(400).json({ message: 'Token is invalid' });
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      }
-    } else { return res.status(400).json({ message: 'Token is invalid' }) }
+    const { email, accessLevel, permissions } = utilsPassword.decrypt(token, config.secret);
+    if (!email || !accessLevel || !permissions) { return res.status(400).json({ message: 'Token is invalid' }) }
   } else {
     const email = req.body.user ? req.body.user.email : null;
     const accessLevel = req.body.user ? req.body.user.accessLevel : 1;
