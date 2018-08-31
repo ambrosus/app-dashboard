@@ -20,7 +20,7 @@ const invitesSchema = mongoose.Schema({
   message: String,
   validUntil: {
     type: Date,
-    default: +new Date() + 2 * 24 * 60 * 60 * 1000
+    default: +new Date() + (2 * 24 * 60 * 60 * 1000)
   },
   token: String,
   company: {
@@ -37,12 +37,12 @@ const invitesSchema = mongoose.Schema({
   }
 });
 
-invitesSchema.pre('update', function (next) {
+invitesSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
-invitesSchema.pre('save', function (next) {
+invitesSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
 });

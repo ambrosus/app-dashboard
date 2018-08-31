@@ -7,7 +7,19 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const User = require('../models/users');
 
-module.exports = (roleId) => {
+const permissions = {
+  owner: ['sendInvites'],
+  admin: ['sendInvites'],
+  user: []
+}
+
+const roles = {
+  1: 'owner',
+  2: 'admin',
+  3: 'user'
+}
+
+module.exports = action => {
   return (req, res, next) => {
     try {
       const userId = req.session.user._id
@@ -16,7 +28,7 @@ module.exports = (roleId) => {
         .populate('role')
         .then(user => {
           if (user) {
-            if (user.role.id !== roleId) { throw 'Unauthorized'; }
+            if (permissions[roles[user.role.id]].indexOf(action) === -1) { throw 'Unauthorized'; }
 
             return next();
           } else { throw 'No user found' }
