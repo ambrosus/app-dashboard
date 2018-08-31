@@ -24,7 +24,7 @@ exports.create = (req, res, next) => {
           invites.map(invite => {
             invite['_id'] = new mongoose.Types.ObjectId();
             invite['from'] = mongoose.Types.ObjectId(user._id);
-            invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ to: invite.to, accessLevel: invite.accessLevel, permissions: invite.permissions }), config.secret);
+            invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, permissions: invite.permissions, createdAt: +new Date() }), config.secret);
 
             const url = `https://${req.hostname}/invite/${invite['token']}`;
             invite['message'] =
@@ -49,7 +49,9 @@ exports.create = (req, res, next) => {
                 .catch(error => console.log('Email send error: ', error));
             });
 
-            return res.status(200).json({ message: 'Success' });
+            req.status = 200;
+            req.json = { message: 'Success' };
+            return next();
           }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 
         } else { throw 'No company found'; }
@@ -60,4 +62,27 @@ exports.create = (req, res, next) => {
   } else if (!user) {
     return res.status(400).json({ message: '"user" is required' })
   }
+}
+
+exports.delete = (req, res, next) => {
+  const _id = req.params.id;
+
+  Invite.findByIdAndRemove(_id)
+    .then(deleted => {
+      req.status = 200;
+      req.json = { message: 'Successfuly deleted', data: deleted };
+      return next();
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+}
+
+exports.getAll = (req, res, next) => {
+  const company = req.params.company;
+
+  Invite.find({ company })
+    .select('-__v')
+    .then(invites => {
+      req.status = 200;
+      req.json = { resultCount: invites.length, data: invites };
+      return next();
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }

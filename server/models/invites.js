@@ -18,10 +18,6 @@ const invitesSchema = mongoose.Schema({
     required: true
   },
   message: String,
-  validUntil: {
-    type: Date,
-    default: +new Date() + (2 * 24 * 60 * 60 * 1000)
-  },
   token: String,
   company: {
     type: mongoose.Schema.Types.ObjectId,

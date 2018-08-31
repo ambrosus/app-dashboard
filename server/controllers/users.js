@@ -14,16 +14,40 @@ const bcrypt = require('bcrypt');
 const User = require('../models/users');
 const Company = require('../models/companies');
 const Role = require('../models/roles');
+const Invite = require('../models/invites');
+
+// Invite.findOne({ token })
+//       .then(invite => {
+//         if (invite) {
+
+//         } else { throw 'No invite'; }
+//       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 
 exports.create = (req, res, next) => {
   const full_name = req.body.user ? req.body.user.full_name : null;
-  const email = req.body.user ? req.body.user.email : null;
   const address = req.body.user ? req.body.user.address : null;
   const secret = req.body.user ? req.body.user.secret : null;
   const password = req.body.user ? req.body.user.password : null;
-  const accessLevel = req.body.user ? req.body.user.accessLevel : 1;
-  const permissions = req.body.user ? req.body.user.permissions : ['create_entity'];
   const hermes = req.hermes || req.body.hermes;
+  const token = req.query.token;
+
+  // Invite
+  if (token) {
+    const { email, accessLevel, permissions, createdAt } = utilsPassword.decrypt(token, config.secret);
+    const validUntil = 2 * 24 * 60 * 60 * 1000;
+    if (createdAt) {
+      if (+new Date() - createdAt > validUntil) {
+        Invite.findOneAndRemove({ token })
+          .then(deleted => {
+            return res.status(400).json({ message: 'Token is invalid' });
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }
+    } else { return res.status(400).json({ message: 'Token is invalid' }) }
+  } else {
+    const email = req.body.user ? req.body.user.email : null;
+    const accessLevel = req.body.user ? req.body.user.accessLevel : 1;
+    const permissions = req.body.user ? req.body.user.permissions : ['create_entity'];
+  }
 
   if (full_name && email && address && password && hermes) {
     User.find({ $or: [{ email }, { address }] })

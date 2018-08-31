@@ -14,5 +14,7 @@ const InvitesRoutes = express.Router();
 
 // Routes
 InvitesRoutes.post('/', checkRole('sendInvites'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.get('/company/:company', checkRole('sendInvites'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.delete('/:id', checkRole('sendInvites'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = InvitesRoutes;

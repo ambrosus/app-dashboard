@@ -17,7 +17,6 @@ exports.send = ({ from, to, subject, message }) => {
     subject,
     html: message
   };
-  console.log(msg);
 
   return sgMail.send(msg);
 };
