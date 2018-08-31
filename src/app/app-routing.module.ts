@@ -10,6 +10,7 @@ import { AboutComponent } from './core/components/about/about.component';
 import { SettingsComponent } from './core/components/settings/settings.component';
 import { LoginComponent } from './core/components/login/login.component';
 import { SetupComponent } from './core/components/setup/setup.component';
+import { InviteComponent } from './core/components/invite/invite.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,11 @@ const routes: Routes = [
     path: 'setup',
     canActivate: [AuthGuardLogin],
     component: SetupComponent,
+    runGuardsAndResolvers: 'always'
+  },
+  {
+    path: 'invite/:token',
+    component: InviteComponent,
     runGuardsAndResolvers: 'always'
   },
   {
@@ -51,4 +57,4 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [AuthGuard, AuthGuardChild, AuthGuardLogin]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
