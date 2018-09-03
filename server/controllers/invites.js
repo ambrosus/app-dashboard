@@ -67,9 +67,9 @@ exports.create = (req, res, next) => {
 }
 
 exports.delete = (req, res, next) => {
-  const _id = req.params.id;
+  const ids = req.body.ids || [];
 
-  Invite.findByIdAndRemove(_id)
+  Invite.deleteMany({ _id: { $in: ids } })
     .then(deleted => {
       req.status = 200;
       req.json = { message: 'Successfuly deleted', data: deleted };

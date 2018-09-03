@@ -1,0 +1,56 @@
+<h4 class="m-b-30">Invites</h4>
+
+<p *ngIf="!invites || invites.length < 1">No invites. Invite <a routerLink="/administration/users/invite">new members.</a></p>
+
+<div class="table" style="padding: 0;" *ngIf="invites && invites.length > 0">
+  <!-- Header -->
+  <!-- Select all -->
+  <div class="table__item table__item__header">
+    <label class="table__label table__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
+      <div class="relative">
+        <input type="checkbox" id="selectAll" class="table__checkbox" appOnchecked [toSelect]="'administration'" #input>
+        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+        </svg>
+      </div>
+      <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
+    </label>
+    <!-- Bulk actions -->
+    <div class="table__label table__label__heading table__label__select color-ablue--base center">
+      <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions>
+        <option value="default" disabled>Bulk actions</option>
+        <option value="delete">Delete</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table__item table__item__header header--sticky">
+    <div style="width: 130px; height: 10px; flex: 0 0 100px;"></div>
+    <p class="table__column table__column__header">Email</p>
+    <p class="table__column table__column__header">Invited on</p>
+  </div>
+</div>
+
+<div class="table m-t-20" id="table">
+
+  <!-- Items -->
+  <div class="table__item table" (click)="onSelect($event, element)" id="{{ invite._id }}" *ngFor="let invite of invites; let i = index" #element>
+    <label class="table__label" for="{{ i }}">
+      <div class="check">
+        <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+        </svg>
+      </div>
+    </label>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Email</p>
+      <p class="table__column-content">{{ invite.to }}</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Invited on</p>
+      <p class="table__column-content">{{ invite.createdAt | date:'MMM d, y, h:mm:ss a' }}</p>
+    </div>
+  </div>
+</div>

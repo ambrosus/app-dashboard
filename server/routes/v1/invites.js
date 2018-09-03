@@ -16,6 +16,6 @@ const InvitesRoutes = express.Router();
 InvitesRoutes.post('/', checkRole('sendInvites'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); });
 InvitesRoutes.get('/company/:company', checkRole('sendInvites'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
 InvitesRoutes.get('/verify/:token', InvitesController.verify, (req, res) => { res.status(req.status).json(req.json); });
-InvitesRoutes.delete('/:id', checkRole('sendInvites'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.post('/delete', checkRole('sendInvites'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = InvitesRoutes;

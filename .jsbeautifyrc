@@ -14,7 +14,7 @@
   "selector_separator_newline": true,
   "space_around_combinator": true,
   "css": {
-    "indent_size": 1,
+    "indent_size": 2,
     "space_around_combinator": true,
     "newline_between_rules": true
   },
