@@ -62,13 +62,12 @@ export class InvitesComponent implements OnInit, OnDestroy {
   }
 
   toggleId(action, id) {
+    const index = this.ids.indexOf(id);
     switch (action) {
       case 'add':
-        const exists = this.ids.indexOf(id) > -1;
-        if (!exists) { this.ids.push(id); }
+        if (index === -1) { this.ids.push(id); }
         break;
       default:
-        const index = this.ids.indexOf(id);
         if (index > -1) { this.ids.splice(index, 1); }
     }
   }
