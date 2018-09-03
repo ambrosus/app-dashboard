@@ -57,13 +57,13 @@ export class InviteComponent implements OnInit {
     });
   }
 
-  formReset() {
+  createAccountReset() {
     this.error = null;
     this.success = null;
   }
 
   createAccount() {
-    this.formReset();
+    this.createAccountReset();
     const body: any = {
       hermes: this.storage.get('hermes'),
       user: {
