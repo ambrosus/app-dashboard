@@ -1,7 +1,7 @@
 const CronJob = require('cron').CronJob;
 const Invites = require('./../models/invites');
 
-const job = new CronJob('0 */1 * * * *', () => {
+const job = new CronJob('0 */480 * * * *', () => {
     // Cron job runs every 480 minutes = Every 8 hours 
     // 3 times a day 
 	const now = Math.floor(Date.now());
