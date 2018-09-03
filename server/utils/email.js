@@ -10,12 +10,12 @@ const config = require('../config');
 
 sgMail.setApiKey(config.email.API_KEY);
 
-exports.send = ({ from, to, subject, message }) => {
+exports.send = ({ from, to, subject, html }) => {
   const msg = {
     from,
     to,
     subject,
-    html: message
+    html
   };
 
   return sgMail.send(msg);

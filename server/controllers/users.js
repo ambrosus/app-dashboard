@@ -76,7 +76,7 @@ exports.create = (req, res, next) => {
                           accessLevel
                         }
                         axios.post(`${hermes.url}/accounts`, body, { headers })
-                          .then(registered => {
+                          .then(userRegistered => {
                             if (token) {
                               Invite.findOneAndRemove({ token })
                                 .then(inviteDeleted => console.log('Invite deleted'))

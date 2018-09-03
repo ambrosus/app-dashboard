@@ -18,6 +18,7 @@ const invitesSchema = mongoose.Schema({
     required: true
   },
   message: String,
+  html: String,
   token: String,
   validUntil: {
     type: Date,
