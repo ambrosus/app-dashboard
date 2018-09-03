@@ -14,6 +14,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/users');
 const Company = require('../models/companies');
 const Role = require('../models/roles');
+const Invite = require('../models/invites');
 
 exports.create = (req, res, next) => {
   const full_name = req.body.user ? req.body.user.full_name : null;
@@ -76,6 +77,12 @@ exports.create = (req, res, next) => {
                         }
                         axios.post(`${hermes.url}/accounts`, body, { headers })
                           .then(registered => {
+                            if (token) {
+                              Invite.findOneAndRemove({ token })
+                                .then(inviteDeleted => console.log('Invite deleted'))
+                                .catch(error => console.log('Invite delete error: ', error));
+                            }
+
                             req.status = 200;
                             req.user = user;
                             return next();
