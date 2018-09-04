@@ -1,0 +1,67 @@
+<div>
+<h4 class="m-b-30">Reset password</h4>
+<div class="form-text m-b-20">
+    <label for="passwordConfirm">Old Password *</label>
+    <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
+  </div>
+  <div id="passwordValidator">
+    <div class="form-text m-b-20">
+      <label for="password">Password *</label>
+      <input #flags=flagArray formControlName="password" type="password" name="password" id="password" spellcheck="false"
+        appInput appPasswordValidator>
+    </div>
+  </div>
+  <div class="form-text m-b-20">
+    <label for="passwordConfirm">Password Confirm *</label>
+    <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
+  </div>
+  <div class="flex flex-direction-r justify-content-fe align-items-c">
+    <button type="submit" class="abtn m-l-20 btn-solid-ablue">Change Password</button>
+  </div>
+</div>
+
+<hr>
+
+<h4>Your Devices</h4>
+
+<div class="p-t-20">
+<table style="width: 100%;">
+
+    <tr>
+        <td><img src="/assets/images/smartphone.png" width="50px"></td>
+        <td>iPhone X</td>
+        <td>Last Login: 7 hours ago</td>
+        <td><button type="submit" class="abtn m-l-20 btn-solid-ablue">Logout</button></td>
+    </tr>
+
+    <tr>
+        <td><img src="/assets/images/macbook.png" width="50px"></td>
+        <td>MacBook Air</td>
+        <td>Last Login: 2 hours ago</td>
+        <td><button type="submit" class="abtn m-l-20 btn-solid-ablue" disabled>Logged Out</button></td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><button type="submit" class="abtn m-l-20 btn-solid-aorange">Logout of all devices</button></td>
+    </tr>
+
+</table>
+</div>
+
+<hr>
+
+<div>
+    <h4 style="color: red;">Danger Zone</h4>
+
+    <table>
+        <tr>
+            <td>Delete this account</td>
+            <td><button type="submit" class="abtn m-l-20 btn-solid-ared">DELETE</button></td>
+        </tr>
+    </table>
+
+</div>
+
