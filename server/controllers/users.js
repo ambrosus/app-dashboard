@@ -17,26 +17,27 @@ const Role = require('../models/roles');
 const Invite = require('../models/invites');
 
 exports.create = (req, res, next) => {
-  const full_name = req.body.user ? req.body.user.full_name : null;
-  const address = req.body.user ? req.body.user.address : null;
-  const secret = req.body.user ? req.body.user.secret : null;
-  const password = req.body.user ? req.body.user.password : null;
+  const user = req.body.user || {};
+  const full_name = user.full_name;
+  const address = user.address;
+  const secret = user.secret;
+  const password = user.password;
   const hermes = req.hermes || req.body.hermes;
-  const token = req.query.token;
-  let email = req.body.user ? req.body.user.email : null;
-  let accessLevel = req.body.user ? req.body.user.accessLevel : 1;
-  let permissions = req.body.user ? req.body.user.permissions : ['create_entity'];
+  const inviteToken = req.query.token;
+  let email = user.email;
+  let accessLevel = user.accessLevel || 1;
+  let permissions = user.permissions || ['create_entity'];
   let company = '';
 
   // invite
-  if (token) {
+  if (inviteToken) {
     try {
-      const _token = JSON.parse(utilsPassword.decrypt(token, config.secret));
+      const _token = JSON.parse(utilsPassword.decrypt(inviteToken, config.secret));
       email = _token['email'];
       accessLevel = _token['accessLevel'];
       permissions = _token['permissions'];
       company = _token['company'];
-    } catch (error) { return res.status(400).json({ message: 'Token is invalid' }); }
+    } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
 
   if (full_name && email && address && password && hermes) {
@@ -77,8 +78,8 @@ exports.create = (req, res, next) => {
                         }
                         axios.post(`${hermes.url}/accounts`, body, { headers })
                           .then(userRegistered => {
-                            if (token) {
-                              Invite.findOneAndRemove({ token })
+                            if (inviteToken) {
+                              Invite.findOneAndRemove({ token: inviteToken })
                                 .then(inviteDeleted => console.log('Invite deleted'))
                                 .catch(error => console.log('Invite delete error: ', error));
                             }
