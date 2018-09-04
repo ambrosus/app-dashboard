@@ -1,0 +1,17 @@
+<h2 class="center m-v-30">Settings</h2>
+<div class="sidebar-pages__wrapper">
+  <div class="sidebar-pages">
+    <!-- Sidebar -->
+    <aside class="sidebar-pages__sidebar">
+      <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
+        <p routerLinkActive="active" routerLink="/settings/general"><app-svg-icon name="users"></app-svg-icon>General</p>
+        <p routerLinkActive="active" routerLink="/settings/security"><app-svg-icon name="user-plus"></app-svg-icon>Security</p>
+        <p routerLinkActive="active" routerLink="/settings/notifications"><app-svg-icon name="user-plus"></app-svg-icon>Notifications</p>
+      </div>
+    </aside>
+    <!-- Main -->
+    <div class="sidebar-pages__main">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
