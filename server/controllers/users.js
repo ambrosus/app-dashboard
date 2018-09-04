@@ -43,7 +43,7 @@ exports.create = (req, res, next) => {
   if (full_name && email && address && password && hermes) {
     User.find({ $or: [{ email }, { address }] })
       .then((users = []) => {
-        if (users.length === 0) {
+        if (!users.length) {
           bcrypt.hash(password, 10, (err, hash) => {
             if (!err) {
               const user = new User({
