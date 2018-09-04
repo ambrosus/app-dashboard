@@ -8,9 +8,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 module.exports = (req, res, next) => {
   try {
     const address = req.body.address || req.params.address || req.query.address;
-    const session = req.session;
+    const sessionAddress = req.session.user.address;
 
-    if (session.user.address !== address) { throw 'Unauthorized'; }
+    if (sessionAddress !== address) { throw 'Unauthorized'; }
 
     return next();
   } catch (error) { return res.status(401).json({ message: error }); }
