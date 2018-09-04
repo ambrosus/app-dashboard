@@ -20,7 +20,7 @@ exports.create = (req, res, next) => {
   const user = req.body.user || {};
   const full_name = user.full_name;
   const address = user.address;
-  const secret = user.secret;
+  const token = user.token;
   const password = user.password;
   const hermes = req.hermes || req.body.hermes;
   const inviteToken = req.query.token;
@@ -51,7 +51,7 @@ exports.create = (req, res, next) => {
                 full_name,
                 email,
                 address,
-                token: utilsPassword.encrypt(`${address}|||${secret}`, password),
+                token,
                 password: hash,
                 company
               });
@@ -101,8 +101,8 @@ exports.create = (req, res, next) => {
     return res.status(400).json({ message: 'User "email" is required' });
   } else if (!address) {
     return res.status(400).json({ message: 'User "address" is required' });
-  } else if (!secret) {
-    return res.status(400).json({ message: 'User "secret" is required' });
+  } else if (!token) {
+    return res.status(400).json({ message: 'User "token" is required' });
   } else if (!password) {
     return res.status(400).json({ message: 'User "password" is required' });
   } else if (!password) {
