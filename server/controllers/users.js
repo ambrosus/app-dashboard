@@ -174,28 +174,31 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const address = req.session.address;
+  const user = req.session.user;
 
-  User.findOne({ address })
-    .then(user => {
-      if (user) {
-        User.find({ company: user.company })
-          .populate({
-            path: 'company',
-            populate: [
-              { path: 'hermes' }
-            ]
-          })
-          .populate('role')
-          .then(users => {
-            req.status = 200;
-            req.json = {
-              resultCount: users.length,
-              data: users
-            };
-            return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      } else { throw 'No user found'; }
+  User.find({ company: user.company })
+    .populate({
+      path: 'company',
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: {
+        path: 'hermes',
+        select: '-active -createdAt -updatedAt -__v -public'
+      }
+    })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-password -__v')
+    .then(users => {
+      if (users) {
+        req.status = 200;
+        req.json = {
+          resultCount: users.length,
+          data: users
+        };
+        return next();
+      } else { throw 'No users found'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
