@@ -5,10 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
-const mongoose = require('mongoose');
 const utilsPassword = require('../utils/password');
-const Company = require('./../models/companies');
+const axios = require('axios');
+const bcrypt = require('bcrypt');
 
 const User = require('../models/users');
 
@@ -17,111 +16,99 @@ exports.login = (req, res, next) => {
   const password = req.body.password;
 
   if (email && password) {
-    const query = { email };
-
-    User.findOne(query)
+    User.findOne({ email })
       .populate({
         path: 'company',
-        populate: [
-          { path: 'hermes' }
-        ]
-      })
-      .then(user => {
-        if (user) {
-          const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
-
-          if (address && secret) {
-            req.session.address = address;
-            req.status = 200;
-            req.json = {
-              user,
-              address,
-              secret
-            };
-            return next();
-          } else {
-            req.status = 401;
-            req.json = { message: '"password" is incorrect' };
-            return next();
-          }
-        } else {
-          throw 'No user found';
+        select: '-active -createdAt -updatedAt -__v -owner',
+        populate: {
+          path: 'hermes',
+          select: '-active -createdAt -updatedAt -__v -public'
         }
       })
-      .catch(error => {
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
+      .populate({
+        path: 'role',
+        select: '-createdAt -updatedAt -__v'
+      })
+      .select('-active -createdAt -updatedAt -__v')
+      .then(user => {
+        if (user) {
+          const valid = bcrypt.compareSync(password, user.password);
+
+          if (valid) {
+            const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
+
+            if (address && secret) {
+              delete user.password;
+              req.session.user = user;
+              req.status = 200;
+              req.json = {
+                user,
+                address,
+                secret
+              };
+              return next();
+            }
+            return res.status(401).json({ message: 'User "password" is incorrect' });
+          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
+        } else { throw 'No user found'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required'  };
-    return next();
+    return res.status(400).json({ message: 'User "email" is required' });
   } else if (!password) {
-    req.status = 400;
-    req.json = { message: '"password" is required' };
-    return next();
+    return res.status(400).json({ message: 'User "password" is required' });
   }
 };
 
-exports.logout = (req, res, next) => {
+exports.verifyAccount = (req, res, next) => {
+  const address = req.body.address;
+  const token = req.body.token;
+  const hermes = req.body.hermes;
 
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: `AMB_TOKEN ${token}`
+  };
+
+  axios.get(`${hermes.url}/accounts/${address}`, { headers })
+    .then(resp => {
+      User.findOne({ address })
+        .populate({
+          path: 'company',
+          select: '-active -createdAt -updatedAt -__v -owner',
+          populate: {
+            path: 'hermes',
+            select: '-active -createdAt -updatedAt -__v -public'
+          }
+        })
+        .populate({
+          path: 'role',
+          select: '-createdAt -updatedAt -__v'
+        })
+        .select('-active -createdAt -updatedAt -password -__v')
+        .then(user => {
+          if (user) {
+            req.status = 200;
+            req.json = user;
+            return next();
+          } else { throw 'No user found'; }
+        })
+        .catch(error => {
+          req.status = 200;
+          req.json = { message: 'No registered user' };
+          return next();
+        });
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
 }
 
-exports.signup = (req, res, next) => {
-  const full_name = req.body.full_name;
-  const email = req.body.email;
-  const address = req.body.address;
-  const password = req.body.password;
-  const secret = req.body.secret;
-
-  if (full_name && email && address) {
-
-    User.findOne({ email })
-      .then(user => {
-        if (user) {
-          throw 'Email is already in use';
-        } else {
-          const user = new User({
-            _id: new mongoose.Types.ObjectId(),
-            full_name,
-            email,
-            address,
-            token: utilsPassword.encrypt(`${address}|||${secret}`, password)
-          });
-          user
-            .save()
-            .then(createdUser => {
-              req.status = 200;
-              req.json = { message: 'Success' };
-              return next();
-            })
-            .catch(error => {
-              console.log(error);
-              req.status = 400;
-              req.json = { message: error };
-              return next();
-            })
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        req.status = 400;
-        req.json = { message: error };
-        return next();
-      });
-  } else if (!full_name) {
-    req.status = 400;
-    req.json = { message: '"full_name" is required' };
+exports.logout = (req, res, next) => {
+  req.session.destroy(error => {
+    if (error) {
+      console.log('User logout error: ', error);
+      return res.status(400).json({ message: 'User logout error' });
+    }
+    req.status = 200;
+    req.json = { message: 'User logout success' };
     return next();
-  } else if (!email) {
-    req.status = 400;
-    req.json = { message: '"email" is required' };
-    return next();
-  } else if (!address) {
-    req.status = 400;
-    req.json = { message: '"address" is required' };
-    return next();
-  }
-
+  });
 }

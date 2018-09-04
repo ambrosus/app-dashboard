@@ -8,9 +8,9 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
   navigationSub: Subscription;
   noWebWorker = false;
+  loginPage;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private router: Router) {
     if (typeof(Worker) === 'undefined') {
@@ -20,6 +20,7 @@ export class AppComponent {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
+        this.loginPage = location.pathname === '/login' || location.pathname === '/setup';
       }
     });
   }

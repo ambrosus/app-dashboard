@@ -5,12 +5,13 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const express = require('express');
-const CompaniesController = require('../../controllers/companies');
+module.exports = (req, res, next) => {
+  try {
+    const address = req.body.address || req.params.address || req.query.address;
+    const sessionAddress = req.session.user.address;
 
-const CompaniesRoutes = express.Router();
+    if (sessionAddress !== address) { throw 'Unauthorized'; }
 
-// Routes
-CompaniesRoutes.post('/', CompaniesController.create, (req, res) => { res.status(req.status).json(req.json); });
-
-module.exports = CompaniesRoutes;
+    return next();
+  } catch (error) { return res.status(401).json({ message: error }); }
+};

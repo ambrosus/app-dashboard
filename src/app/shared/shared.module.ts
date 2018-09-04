@@ -12,10 +12,10 @@ import { CommonModule } from '@angular/common';
 import { InputDirective } from 'app/shared/directives/input.directive';
 import { OncheckedDirective } from './directives/onchecked.directive';
 import { RouterModule } from '@angular/router';
+import { ImageCropperModule } from 'ngx-image-cropper';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
 import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
-import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
@@ -31,10 +31,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
-import { PasswordValidatorDirective } from './directives/passwordValidator.directive';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
   exports: [
     CommonModule,
     InputDirective,
@@ -42,7 +41,6 @@ import { PasswordValidatorDirective } from './directives/passwordValidator.direc
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent,
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,
@@ -56,7 +54,7 @@ import { PasswordValidatorDirective } from './directives/passwordValidator.direc
     MatDialogModule,
     PaginationComponent,
     CheckIfPipe,
-    PasswordValidatorDirective
+    ImageCropperModule
   ],
   declarations: [
     InputDirective,
@@ -64,7 +62,6 @@ import { PasswordValidatorDirective } from './directives/passwordValidator.direc
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
-    BreadcrumbsComponent,
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,
@@ -76,9 +73,8 @@ import { PasswordValidatorDirective } from './directives/passwordValidator.direc
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    CheckIfPipe,
-    PasswordValidatorDirective
+    CheckIfPipe
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
-export class SharedModule {}
+export class SharedModule { }

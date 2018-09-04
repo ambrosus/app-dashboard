@@ -10,14 +10,13 @@ import { HelpComponent } from './components/help/help.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
-import { SignupComponent } from './components/signup/signup.component';
-import { HermesregisterComponent } from './components/hermesregister/hermesregister.component';
+import { SetupComponent } from './components/setup/setup.component';
 
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SignupComponent, HermesregisterComponent],
+  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SetupComponent],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
