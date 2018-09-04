@@ -7,7 +7,6 @@ import { AuthGuardLogin } from 'app/services/auth-guard-login.service';
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
-import { SettingsComponent } from './core/components/settings/settings.component';
 import { LoginComponent } from './core/components/login/login.component';
 import { SetupComponent } from './core/components/setup/setup.component';
 
@@ -36,11 +35,16 @@ const routes: Routes = [
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   },
+  {
+    path: 'settings',
+    canActivateChild: [AuthGuardChild],
+    loadChildren: 'app/modules/settings/settings.module#SettingsModule',
+    runGuardsAndResolvers: 'always'
+  },
   { path: '', pathMatch: 'full', redirectTo: '/login' },
   { path: 'help', component: HelpComponent },
   { path: 'terms', component: TermsComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
   { path: '**', component: NotfoundComponent }
 ];
 
