@@ -21,6 +21,8 @@ export class InviteComponent implements OnInit {
   web3;
   success;
   token;
+  address;
+  secret;
 
   constructor(
     private route: ActivatedRoute,
@@ -93,14 +95,9 @@ export class InviteComponent implements OnInit {
       this.http.post(url, body).subscribe(
         (resp: any) => {
           this.spinner = false;
-          this.success = `
-            Setup was successfuly done.<br>
-            Now you can login with your email and password.<br>
-            But, before you go, this is your<br>
-            <b>address: ${body.user.address}</b><br> and
-            <b>secret: ${body.user.secret}</b>,<br> please <u>save them somewhere safe</u>,
-            as we are not storing them anywhere for security reasons.
-          `;
+          this.address = body.user.address;
+          this.secret = body.user.secret;
+          this.success = true;
           console.log('Setup success: ', resp);
         },
         err => {

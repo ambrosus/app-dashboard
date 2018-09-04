@@ -2,7 +2,14 @@
   <h1 class="center" style="margin: 30px 0 100px 0">Create an account</h1>
 
   <div class="block-center center m-w-6 m-b-50" *ngIf="success">
-    <p class="color-blacks--base" style="font-size: 14px;" innerHTML="{{ success }}"></p>
+    <p class="color-blacks--base" style="font-size: 14px;">
+      Setup was successfuly done.<br>
+      Now you can login with your email and password.<br>
+      But, before you go, this is your<br>
+      <b>address: {{ address }}</b><br> and
+      <b>secret: {{ secret }}</b>,<br> please <u>save them somewhere safe</u>,
+      as we are not storing them anywhere for security reasons.
+    </p>
     <h5 class="color-ablue--base m-t-20" routerLink="/login"><a>Login</a></h5>
   </div>
 
