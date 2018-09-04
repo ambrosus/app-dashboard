@@ -36,6 +36,7 @@
     "chartist": "^0.11.0",
     "connect-mongodb-session": "^2.0.3",
     "core-js": "^2.5.7",
+    "cron": "^1.4.1",
     "express-session": "^1.15.6",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
