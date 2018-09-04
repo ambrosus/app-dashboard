@@ -17,7 +17,16 @@ import { InviteComponent } from './components/invite/invite.component';
 @NgModule({
   imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, SettingsComponent, LoginComponent, SetupComponent, InviteComponent],
+  declarations: [
+    NotfoundComponent,
+    TermsComponent,
+    AboutComponent,
+    HelpComponent,
+    SettingsComponent,
+    LoginComponent,
+    SetupComponent,
+    InviteComponent
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
@@ -26,4 +35,4 @@ import { InviteComponent } from './components/invite/invite.component';
     }
   ]
 })
-export class CoreModule {}
+export class CoreModule { }

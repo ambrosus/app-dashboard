@@ -42,8 +42,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
 
   bulkActions(action) {
     switch (action.value) {
-      case 'delete':
-        // Delete invites
+      case 'revoke':
         const url = `/api/invites/delete`;
 
         this.http.post(url, { ids: this.ids }).subscribe(
