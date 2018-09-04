@@ -241,7 +241,6 @@ exports.changePassword = (req, res, next) => {
   const email = req.body.email;
   const oldPassword = req.body.oldPassword;
   const newPassword = req.body.newPassword;
-  console.log(req.body);
 
   if (email && oldPassword && newPassword) {
     User.findOne({ email })
@@ -264,7 +263,6 @@ exports.changePassword = (req, res, next) => {
             });
           }
           catch(err){
-            console.log(err);
             throw 'Incorrect password';
           }
         } else { throw 'No user found with this email address'; }
