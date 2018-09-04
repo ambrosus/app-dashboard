@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 const config = require('../config');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
-
+const Web3 = require('web3');
+const web3 = new Web3();
 const User = require('../models/users');
 const Company = require('../models/companies');
 const Role = require('../models/roles');
@@ -240,33 +241,33 @@ exports.changePassword = (req, res, next) => {
   const email = req.body.email;
   const oldPassword = req.body.oldPassword;
   const newPassword = req.body.newPassword;
+  console.log(req.body);
 
   if (email && oldPassword && newPassword) {
     User.findOne({ email })
       .then(user => {
         if (user) {
-          const valid = bcrypt.compareSync(oldPassword, user.password);
-
-          if (valid) {
-            const [address, secret] = utilsPassword.decrypt(user.token, oldPassword).split('|||');
-
-            if (address && secret) {
-              user.token = utilsPassword.encrypt(`${address}|||${secret}`, newPassword);
-              bcrypt.hash(newPassword, 10, (err, hash) => {
-                if (!err) {
-                  user.password = hash;
-                  user
-                    .save()
-                    .then(saved => {
-                      req.status = 200;
-                      req.json = { message: 'Reset password success' };
-                      return next();
-                    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-                } else { return (console.log(err), res.status(400).json({ message: err })); }
-              });
-            } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
-          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
-        } else { throw 'No user found'; }
+          try {
+            const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
+            const encData = web3.eth.accounts.encrypt(decData.privateKey, newPassword);
+            user.token = JSON.stringify(encData);
+            bcrypt.hash(newPassword, 10, (err, hash) => {
+              user.password = hash;
+              user.save()
+                .then(updateResponse => {
+                  if (updateResponse) {
+                    req.status = 200;
+                    req.json = { message: 'Password reset successful' };
+                    return next();
+                  } else { throw 'Error in updating password'; }
+                }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+            });
+          }
+          catch(err){
+            console.log(err);
+            throw 'Incorrect password';
+          }
+        } else { throw 'No user found with this email address'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!email) {
     return res.status(400).json({ message: '"email" is required' });

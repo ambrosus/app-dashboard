@@ -7,13 +7,15 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { GeneralSettingsComponent } from './components/pages/general-settings/general-settings.component';
 import { SecuritySettingsComponent } from './components/pages/security-settings/security-settings.component';
 import { NotificationSettingsComponent } from './components/pages/notification-settings/notification-settings.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CommonModule,
     SettingsRoutingModule,
     SharedModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule
   ],
   declarations: [SettingsComponent, GeneralSettingsComponent, SecuritySettingsComponent, NotificationSettingsComponent]
 })

@@ -1,24 +1,30 @@
 <div>
-<h4 class="m-b-30">Reset password</h4>
-<div class="form-text m-b-20">
-    <label for="passwordConfirm">Old Password *</label>
-    <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
-  </div>
-  <div id="passwordValidator">
-    <div class="form-text m-b-20">
-      <label for="password">Password *</label>
-      <input formControlName="password" type="password" name="password" id="password" spellcheck="false"
-        appInput>
-    </div>
-  </div>
-  <div class="form-text m-b-20">
-    <label for="passwordConfirm">Password Confirm *</label>
-    <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
-  </div>
-  <div class="flex flex-direction-r justify-content-fe align-items-c">
-    <button type="submit" class="abtn m-l-20 btn-solid-ablue">Change Password</button>
-  </div>
-</div>
+
+    <h4 class="m-b-30">Reset password</h4>
+    <form class="form-group p-a-30" [formGroup]="resetForm" (ngSubmit)="changePassword()" [ngClass]="{ error: error }">
+      <div class="form-text m-b-20">
+        <label for="passwordConfirm">Old Password *</label>
+        <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="password">Password *</label>
+        <input formControlName="password" type="password" name="password" id="password" spellcheck="false" appInput>
+      </div>
+      <div class="form-text m-b-20">
+        <label for="passwordConfirm">Password Confirm *</label>
+        <input formControlName="passwordConfirm" type="password" name="passwordConfirm" id="passwordConfirm" spellcheck="false" appInput>
+      </div>
+      <div class="flex flex-direction-r justify-content-fe align-items-c">
+        <app-spinner *ngIf="spinner"></app-spinner>
+        <button type="submit" class="abtn m-l-20 btn-solid-ablue">
+            Change Password
+        </button>
+      </div>
+      <div class="m-t-30 center">
+        <h5 *ngIf="error" style="color: #ea7070;">{{ error }}</h5>
+        <h5 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h5>
+      </div>
+    </form>
 
 <hr>
 
