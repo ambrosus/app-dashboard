@@ -6,6 +6,7 @@ import { AdministrationComponent } from './components/administration/administrat
 import { UsersComponent } from './components/users/users/users.component';
 import { AllComponent } from './components/users/all/all.component';
 import { InviteComponent } from './components/users/invite/invite.component';
+import { InvitesComponent } from './components/users/invites/invites.component';
 
 const routes: Routes = [
   {
@@ -15,7 +16,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: '/404'
+        redirectTo: 'users'
       },
       {
         path: 'company',
@@ -48,6 +49,10 @@ const routes: Routes = [
           {
             path: 'invite',
             component: InviteComponent
+          },
+          {
+            path: 'invites',
+            component: InvitesComponent
           }
         ]
       }

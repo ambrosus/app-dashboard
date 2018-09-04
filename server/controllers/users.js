@@ -14,21 +14,33 @@ const bcrypt = require('bcrypt');
 const User = require('../models/users');
 const Company = require('../models/companies');
 const Role = require('../models/roles');
+const Invite = require('../models/invites');
 
 exports.create = (req, res, next) => {
-  const full_name = req.body.user ? req.body.user.full_name : null;
-  const email = req.body.user ? req.body.user.email : null;
-  const address = req.body.user ? req.body.user.address : null;
-  const secret = req.body.user ? req.body.user.secret : null;
-  const password = req.body.user ? req.body.user.password : null;
-  const accessLevel = req.body.user ? req.body.user.accessLevel : 1;
-  const permissions = req.body.user ? req.body.user.permissions : ['create_entity'];
+  const user = req.body.user || {};
+  const { full_name, address, token, password } = user;
   const hermes = req.hermes || req.body.hermes;
+  const inviteToken = req.query.token;
+  let email = user.email;
+  let accessLevel = user.accessLevel || 1;
+  let permissions = user.permissions || ['create_entity'];
+  let company = '';
+
+  // invite
+  if (inviteToken) {
+    try {
+      const _token = JSON.parse(utilsPassword.decrypt(inviteToken, config.secret));
+      email = _token['email'];
+      accessLevel = _token['accessLevel'];
+      permissions = _token['permissions'];
+      company = _token['company'];
+    } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
+  }
 
   if (full_name && email && address && password && hermes) {
     User.find({ $or: [{ email }, { address }] })
-      .then(users => {
-        if (users && users.length === 0) {
+      .then((users = []) => {
+        if (!users.length) {
           bcrypt.hash(password, 10, (err, hash) => {
             if (!err) {
               const user = new User({
@@ -36,9 +48,11 @@ exports.create = (req, res, next) => {
                 full_name,
                 email,
                 address,
-                token: utilsPassword.encrypt(`${address}|||${secret}`, password),
+                token,
                 password: hash
               });
+
+              if (company) { user['company'] = company; }
 
               user
                 .save()
@@ -61,7 +75,13 @@ exports.create = (req, res, next) => {
                           accessLevel
                         }
                         axios.post(`${hermes.url}/accounts`, body, { headers })
-                          .then(registered => {
+                          .then(userRegistered => {
+                            if (inviteToken) {
+                              Invite.findOneAndRemove({ token: inviteToken })
+                                .then(inviteDeleted => console.log('Invite deleted'))
+                                .catch(error => console.log('Invite delete error: ', error));
+                            }
+
                             req.status = 200;
                             req.user = user;
                             return next();
@@ -79,8 +99,8 @@ exports.create = (req, res, next) => {
     return res.status(400).json({ message: 'User "email" is required' });
   } else if (!address) {
     return res.status(400).json({ message: 'User "address" is required' });
-  } else if (!secret) {
-    return res.status(400).json({ message: 'User "secret" is required' });
+  } else if (!token) {
+    return res.status(400).json({ message: 'User "token" is required' });
   } else if (!password) {
     return res.status(400).json({ message: 'User "password" is required' });
   } else if (!password) {
@@ -142,7 +162,7 @@ exports.getAccount = (req, res, next) => {
       path: 'role',
       select: '-createdAt -updatedAt -__v'
     })
-    .select('-active -createdAt -updatedAt -password -__v')
+    .select('-active -createdAt -updatedAt -__v')
     .then(user => {
       if (user) {
         console.log(user);
@@ -154,28 +174,31 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const address = req.session.address;
+  const user = req.session.user;
 
-  User.findOne({ address })
-    .then(user => {
-      if (user) {
-        User.find({ company: user.company })
-          .populate({
-            path: 'company',
-            populate: [
-              { path: 'hermes' }
-            ]
-          })
-          .populate('role')
-          .then(users => {
-            req.status = 200;
-            req.json = {
-              resultCount: users.length,
-              data: users
-            };
-            return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      } else { throw 'No user found'; }
+  User.find({ company: user.company })
+    .populate({
+      path: 'company',
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: {
+        path: 'hermes',
+        select: '-active -createdAt -updatedAt -__v -public'
+      }
+    })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-password -__v')
+    .then(users => {
+      if (users) {
+        req.status = 200;
+        req.json = {
+          resultCount: users.length,
+          data: users
+        };
+        return next();
+      } else { throw 'No users found'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
@@ -210,7 +233,7 @@ exports.edit = (req, res, next) => {
     .then(updateResponse => {
       if (updateResponse) {
         req.status = 200;
-        req.json = { message: 'Update data success' };
+        req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));

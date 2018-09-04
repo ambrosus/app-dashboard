@@ -10,12 +10,21 @@ import { HelpComponent } from './components/help/help.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SetupComponent } from './components/setup/setup.component';
+import { InviteComponent } from './components/invite/invite.component';
 
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
   exports: [AppRoutingModule],
-  declarations: [NotfoundComponent, TermsComponent, AboutComponent, HelpComponent, LoginComponent, SetupComponent],
+  declarations: [
+    NotfoundComponent,
+    TermsComponent,
+    AboutComponent,
+    HelpComponent,
+    LoginComponent,
+    SetupComponent,
+    InviteComponent
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
@@ -24,4 +33,4 @@ import { SetupComponent } from './components/setup/setup.component';
     }
   ]
 })
-export class CoreModule {}
+export class CoreModule { }

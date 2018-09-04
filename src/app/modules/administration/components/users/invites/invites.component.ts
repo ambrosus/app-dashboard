@@ -1,48 +1,62 @@
-import { Component, OnInit, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, ElementRef, Renderer2, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { StorageService } from 'app/services/storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-all',
-  templateUrl: './all.component.html',
-  styleUrls: ['./all.component.scss']
+  selector: 'app-invites',
+  templateUrl: './invites.component.html',
+  styleUrls: ['./invites.component.scss']
 })
-export class AllComponent implements OnInit, OnDestroy {
+export class InvitesComponent implements OnInit, OnDestroy {
   selectAllText = 'Select all';
-  usersSubscription: Subscription;
-  users = [];
+  invites;
   ids = [];
+  invitesSubscription: Subscription;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient) { }
+  constructor(private storage: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
-    this.getUsers();
+    this.getInvites();
   }
 
-  ngOnDestroy() {
-    if (this.usersSubscription) { this.usersSubscription.unsubscribe(); }
-  }
+  getInvites() {
+    // Get invites
+    const user: any = this.storage.get('user') || {};
+    const url = `/api/invites/company/${user.company._id}`;
 
-  getUsers() {
-    // Get users
-    const url = `/api/users`;
-
-    this.usersSubscription = this.http.get(url).subscribe(
+    this.invitesSubscription = this.http.get(url).subscribe(
       (resp: any) => {
-        console.log('Users GET: ', resp);
-        this.users = resp.data;
+        console.log('Invites GET: ', resp);
+        this.invites = resp.data;
       },
       err => {
-        console.log('Users GET error: ', err);
+        console.log('Invites GET error: ', err);
       }
     );
   }
 
+  ngOnDestroy() {
+    if (this.invitesSubscription) { this.invitesSubscription.unsubscribe(); }
+  }
+
   bulkActions(action) {
     switch (action.value) {
-      default:
+      case 'revoke':
+        const url = `/api/invites/delete`;
+
+        this.http.post(url, { ids: this.ids }).subscribe(
+          (resp: any) => {
+            console.log('Invites DELETE: ', resp);
+            this.getInvites();
+          },
+          err => {
+            console.log('Invites DELETE error: ', err);
+          }
+        );
         break;
     }
+
     action.value = 'default';
   }
 

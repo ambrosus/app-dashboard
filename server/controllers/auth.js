@@ -5,7 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const utilsPassword = require('../utils/password');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 
@@ -35,20 +34,12 @@ exports.login = (req, res, next) => {
           const valid = bcrypt.compareSync(password, user.password);
 
           if (valid) {
-            const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
+            delete user.password;
+            req.session.user = user;
+            req.status = 200;
+            req.json = user
+            return next();
 
-            if (address && secret) {
-              delete user.password;
-              req.session.user = user;
-              req.status = 200;
-              req.json = {
-                user,
-                address,
-                secret
-              };
-              return next();
-            }
-            return res.status(401).json({ message: 'User "password" is incorrect' });
           } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
         } else { throw 'No user found'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
@@ -89,6 +80,7 @@ exports.verifyAccount = (req, res, next) => {
         .then(user => {
           if (user) {
             req.status = 200;
+            req.session.user = user;
             req.json = user;
             return next();
           } else { throw 'No user found'; }

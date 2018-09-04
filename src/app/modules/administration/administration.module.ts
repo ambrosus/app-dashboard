@@ -11,6 +11,7 @@ import { AdministrationComponent } from './components/administration/administrat
 import { UsersComponent } from './components/users/users/users.component';
 import { AllComponent } from './components/users/all/all.component';
 import { InviteComponent } from './components/users/invite/invite.component';
+import { InvitesComponent } from './components/users/invites/invites.component';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { InviteComponent } from './components/users/invite/invite.component';
     RouterModule,
     ReactiveFormsModule
   ],
-  declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent]
+  declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent]
 })
 export class AdministrationModule { }

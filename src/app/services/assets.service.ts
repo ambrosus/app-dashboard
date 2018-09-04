@@ -24,9 +24,8 @@ export class AssetsService {
 
   constructor(private storage: StorageService) {
     this.initSDK();
-    window.addEventListener('user:login', () => {
+    window.addEventListener('user:refresh', () => {
       this.initSDK();
-      console.log('CONS: ', this.ambrosus);
     });
   }
 
@@ -38,7 +37,7 @@ export class AssetsService {
     this.ambrosus = new AmbrosusSDK({
       apiEndpoint: hermes.url,
       secret,
-      Web3: Web3,
+      Web3,
       headers: {
         Authorization: `AMB_TOKEN ${token}`
       }

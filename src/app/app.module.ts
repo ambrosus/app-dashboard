@@ -7,6 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -29,6 +30,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     ReactiveFormsModule,
     CoreModule,

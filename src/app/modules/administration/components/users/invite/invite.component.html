@@ -1,15 +1,23 @@
 <h4 class="m-b-40">Invite Members</h4>
 <form [formGroup]="inviteForm" (ngSubmit)="invite()" class="form-group m-w-6" style="padding: 0;">
   <div formArrayName="members">
-    <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i" class="right">
+    <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i" class="right m-b-30">
+      <div class="form-text m-b-20">
+        <label for="{{ i + 'email' }}">Email</label>
+        <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
+      </div>
       <div class="form-fields-coupled">
-        <div class="form-text m-b-20 m-r-20 w-50">
-          <label for="{{ i + 'email' }}">Email</label>
-          <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
+        <div class="form-text m-b-20 m-r-10 w-20">
+          <label for="{{ i + 'accessLevel' }}">Access Level</label>
+          <input formControlName="accessLevel" type="number" min="0" id="{{ i + 'accessLevel' }}" spellcheck="false" appInput>
         </div>
-        <div class="form-text m-b-20 w-50">
-          <label for="{{ i + 'name' }}">Full name</label>
-          <input formControlName="name" type="text" id="{{ i + 'name' }}" spellcheck="false" appInput>
+        <div class="form-text m-b-20 w-80">
+          <label for="permissions">Permissions</label>
+          <select formControlName="permissions" id="permissions">
+            <option value="create_entity" selected>create_entity</option>
+            <option value="create_entity,register_account">create_entity, register_account</option>
+            <option value="register_account">register_account</option>
+          </select>
         </div>
         <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&#8855;</a>
       </div>
@@ -26,5 +34,5 @@
     <button [disabled]="!inviteForm.valid" type="submit" class="abtn m-l-20 btn-outline-ablue">Send invites</button>
   </div>
 </form>
-<h5 class="m-v-20" *ngIf="errorInvite" style="color: #ea7070">All fields required</h5>
-<h5 class="m-v-20" *ngIf="successInvite" style="color: #57b846">Success</h5>
+<h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+<h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>
