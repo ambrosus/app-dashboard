@@ -162,7 +162,7 @@ exports.getAccount = (req, res, next) => {
       path: 'role',
       select: '-createdAt -updatedAt -__v'
     })
-    .select('-active -createdAt -updatedAt -password -__v')
+    .select('-active -createdAt -updatedAt -__v')
     .then(user => {
       if (user) {
         console.log(user);
@@ -233,7 +233,7 @@ exports.edit = (req, res, next) => {
     .then(updateResponse => {
       if (updateResponse) {
         req.status = 200;
-        req.json = { message: 'Update data success' };
+        req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));

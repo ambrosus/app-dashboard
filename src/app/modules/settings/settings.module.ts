@@ -7,6 +7,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { GeneralSettingsComponent } from './components/pages/general-settings/general-settings.component';
 import { SecuritySettingsComponent } from './components/pages/security-settings/security-settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ImageCropperModule } from 'ngx-image-cropper';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     SettingsRoutingModule,
     SharedModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ImageCropperModule
   ],
   declarations: [SettingsComponent, GeneralSettingsComponent, SecuritySettingsComponent]
 })

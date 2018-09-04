@@ -80,6 +80,7 @@ exports.verifyAccount = (req, res, next) => {
         .then(user => {
           if (user) {
             req.status = 200;
+            req.session.user = user;
             req.json = user;
             return next();
           } else { throw 'No user found'; }

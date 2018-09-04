@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from 'app/services/auth.service';
 
 declare let moment: any;
 
@@ -17,8 +18,12 @@ export class GeneralSettingsComponent implements OnInit {
   spinner = false;
   user;
   timezones = [];
+  showCropper;
 
-  constructor(private storage: StorageService, private http: HttpClient) { }
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+
+  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) { }
 
   ngOnInit() {
     this.editProfileForm = new FormGroup({
@@ -30,16 +35,32 @@ export class GeneralSettingsComponent implements OnInit {
     this.timezones = moment.tz.names();
   }
 
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(image: string) {
+    this.croppedImage = image;
+  }
+
+  emit(type) {
+    window.dispatchEvent(new Event(type));
+  }
+
   prefillEditProfile() {
     this.user = this.storage.get('user') || {};
 
     this.editProfileForm.get('full_name').setValue(this.user.full_name);
-    this.editProfileForm.get('timeZone').setValue(this.user.settings ? this.user.settings.timeZone || '' : '');
+    const settings = this.user.settings ? JSON.parse(this.user.settings) : {};
+    this.editProfileForm.get('timeZone').setValue(settings.timeZone || '');
+    this.croppedImage = this.user.profile.image || '';
   }
 
   resetForm() {
     this.error = false;
     this.success = false;
+    this.showCropper = false;
   }
 
   editProfile() {
@@ -48,18 +69,25 @@ export class GeneralSettingsComponent implements OnInit {
       full_name: this.editProfileForm.get('full_name').value,
       settings: JSON.stringify({ timeZone: this.editProfileForm.get('timeZone').value }),
       profile: {
-        image: ''
+        image: this.croppedImage
       }
     };
 
     if (this.editProfileForm.valid) {
       this.spinner = true;
 
-      const url = `/api/users/${this.user.email}`;
-      this.http.post(url, body).subscribe(
+      const url = `/api/users/${this.user.email}?address=${this.user.address}`;
+      this.http.put(url, body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = true;
+          this.auth.getAccount(this.user.email).subscribe(
+            user => {
+              this.storage.set('user', user);
+              this.emit('user:refresh');
+            },
+            err => console.log('Get account error: ', err)
+          );
           console.log('Edit profile: ', resp);
         },
         err => {
