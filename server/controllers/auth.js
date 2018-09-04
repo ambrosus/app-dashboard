@@ -35,20 +35,12 @@ exports.login = (req, res, next) => {
           const valid = bcrypt.compareSync(password, user.password);
 
           if (valid) {
-            const [address, secret] = utilsPassword.decrypt(user.token, password).split('|||');
+            delete user.password;
+            req.session.user = user;
+            req.status = 200;
+            req.json = user
+            return next();
 
-            if (address && secret) {
-              delete user.password;
-              req.session.user = user;
-              req.status = 200;
-              req.json = {
-                user,
-                address,
-                secret
-              };
-              return next();
-            }
-            return res.status(401).json({ message: 'User "password" is incorrect' });
           } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
         } else { throw 'No user found'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));

@@ -134,8 +134,6 @@ export class SetupComponent implements OnInit {
     };
 
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    body.user['address'] = address;
-    body.user['secret'] = privateKey;
 
     if (this.setupForm.valid) {
       if (!(body.user.password === body.user.passwordConfirm)) {
@@ -145,6 +143,8 @@ export class SetupComponent implements OnInit {
       this.spinner = true;
 
       const url = `/api/setup`;
+      body.user['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
+      body.user['address'] = address;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
