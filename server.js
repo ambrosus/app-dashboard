@@ -6,6 +6,7 @@ const config = require('./server/config');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const invitationCron = require('./server/cron/invitation-cron');
 
 const APIRoutes = require('./server/routes/v1');
 
