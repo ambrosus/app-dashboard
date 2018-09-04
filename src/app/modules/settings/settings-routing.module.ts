@@ -12,7 +12,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        pathMatch: 'general'
+        pathMatch: 'full',
+        redirectTo: '/settings/general'
       },
       {
         path: 'general',
