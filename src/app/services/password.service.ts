@@ -12,7 +12,6 @@ export class PasswordService {
   width: Number;
   value: String;
   strengthObj = {};
-
   constructor() {}
 
   strengthCalculator(p: string) {
