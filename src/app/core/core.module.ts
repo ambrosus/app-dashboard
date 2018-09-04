@@ -21,7 +21,6 @@ import { InviteComponent } from './components/invite/invite.component';
     TermsComponent,
     AboutComponent,
     HelpComponent,
-    SettingsComponent,
     LoginComponent,
     SetupComponent,
     InviteComponent

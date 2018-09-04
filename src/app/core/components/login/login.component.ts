@@ -6,6 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
+
 declare let Web3: any;
 
 @Component({
@@ -142,7 +143,7 @@ export class LoginComponent implements OnInit {
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
-          const token = resp.token;
+          const token = JSON.parse(resp.token);
           const { address, privateKey } = this.web3.eth.accounts.decrypt(token, body.password);
 
           this.auth.login(address, privateKey).subscribe(

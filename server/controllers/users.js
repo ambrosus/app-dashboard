@@ -18,10 +18,7 @@ const Invite = require('../models/invites');
 
 exports.create = (req, res, next) => {
   const user = req.body.user || {};
-  const full_name = user.full_name;
-  const address = user.address;
-  const token = user.token;
-  const password = user.password;
+  const { full_name, address, token, password } = user;
   const hermes = req.hermes || req.body.hermes;
   const inviteToken = req.query.token;
   let email = user.email;
@@ -52,9 +49,10 @@ exports.create = (req, res, next) => {
                 email,
                 address,
                 token,
-                password: hash,
-                company
+                password: hash
               });
+
+              if (company) { user['company'] = company; }
 
               user
                 .save()

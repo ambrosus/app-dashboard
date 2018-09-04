@@ -83,6 +83,8 @@ export class InviteComponent implements OnInit {
       body.user['secret'] = privateKey;
     }
 
+    this.secret = body.user.secret;
+
     if (this.createAccountForm.valid) {
       if (!(body.user.password === body.user.passwordConfirm)) {
         this.error = 'Passwords do not match';
@@ -98,7 +100,6 @@ export class InviteComponent implements OnInit {
         (resp: any) => {
           this.spinner = false;
           this.address = body.user.address;
-          this.secret = body.user.secret;
           this.success = true;
           console.log('Setup success: ', resp);
         },
