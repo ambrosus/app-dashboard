@@ -6,6 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
+declare let Web3: any;
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
   // email or address
   email = true;
   address = false;
+  web3;
 
   @Input() isDialog;
 
@@ -37,6 +39,7 @@ export class LoginComponent implements OnInit {
     private renderer: Renderer2,
     public dialog: MatDialog
   ) {
+    this.web3 = new Web3();
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required])
@@ -139,10 +142,10 @@ export class LoginComponent implements OnInit {
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
-          const address = resp.address;
-          const secret = resp.secret;
+          const token = resp.token;
+          const { address, privateKey } = this.web3.eth.accounts.decrypt(token, body.password);
 
-          this.auth.login(address, secret).subscribe(
+          this.auth.login(address, privateKey).subscribe(
             r => {
               this.spinner = false;
               this.router.navigate(['/assets']);

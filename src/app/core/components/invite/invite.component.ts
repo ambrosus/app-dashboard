@@ -91,6 +91,8 @@ export class InviteComponent implements OnInit {
       this.spinner = true;
 
       const url = `/api/users?token=${this.token}`;
+      body.user['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(body.user.secret, body.user.password));
+      delete body.user.secret;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
