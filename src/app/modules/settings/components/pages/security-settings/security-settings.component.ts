@@ -9,6 +9,9 @@ import { StorageService } from './../../../../../services/storage.service';
 })
 export class SecuritySettingsComponent implements OnInit {
 
+  sessions;
+  spinner: Boolean = true;
+
   constructor(private http: HttpClient, private storage: StorageService) { }
 
   ngOnInit() {
@@ -16,6 +19,19 @@ export class SecuritySettingsComponent implements OnInit {
     this.http.get(`/api/auth/sessions/${email}`).subscribe(
       resp => {
         console.log(resp);
+        this.sessions = resp;
+        this.spinner = false;
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  logoutSession(sessionId) {
+    this.http.delete(`/api/auth/session/${sessionId}`).subscribe(
+      resp => {
+        this.ngOnInit();
       },
       err => {
         console.log(err);
