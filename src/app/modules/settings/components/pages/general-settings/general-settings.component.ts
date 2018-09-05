@@ -90,11 +90,15 @@ export class GeneralSettingsComponent implements OnInit {
               this.storage.set('user', user);
               this.emit('user:refresh');
             },
-            err => console.log('Get account error: ', err)
+            err => {
+              if (err.status === 401) { this.auth.logout(); }
+              console.log('Get account error: ', err);
+            }
           );
           console.log('Edit profile: ', resp);
         },
         err => {
+          if (err.status === 401) { this.auth.logout(); }
           this.spinner = false;
           this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
           console.log('Edit profile error: ', err);

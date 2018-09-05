@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-all',
@@ -13,7 +14,7 @@ export class AllComponent implements OnInit, OnDestroy {
   users = [];
   ids = [];
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient) { }
+  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient, private auth: AuthService) { }
 
   ngOnInit() {
     this.getUsers();
@@ -33,6 +34,7 @@ export class AllComponent implements OnInit, OnDestroy {
         this.users = resp.data;
       },
       err => {
+        if (err.status === 401) { this.auth.logout(); }
         console.log('Users GET error: ', err);
       }
     );
