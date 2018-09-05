@@ -37,7 +37,7 @@ exports.login = (req, res, next) => {
 
           if (valid) {
             delete user.password;
-            req.session.user = { email: user.email, address: user.address };
+            req.session.user = user;
             req.session.deviceInfo = deviceInfo;
             req.status = 200;
             req.json = user
@@ -83,7 +83,7 @@ exports.verifyAccount = (req, res, next) => {
         .then(user => {
           if (user) {
             req.status = 200;
-            req.session.user = { email: user.email, address: user.address };;
+            req.session.user = user;
             req.json = user;
             return next();
           } else { throw 'No user found'; }
