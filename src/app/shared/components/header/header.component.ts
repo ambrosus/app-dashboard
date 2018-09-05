@@ -44,7 +44,11 @@ export class HeaderComponent implements OnInit {
   headerInit() {
     this.user = this.storage.get('user') || {};
     this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
-    this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
+
+    if (this.user && this.user.profile && this.user.profile.image) {
+      this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
+    }
+
     this.isLoggedin = <any>this.storage.get('isLoggedin');
     this.users = this.storage.get('accounts') || [];
     this.dialog.closeAll();
