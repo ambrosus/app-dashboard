@@ -16,7 +16,6 @@ export class SecuritySettingsComponent implements OnInit {
   spinner: Boolean = true;
   resetForm: FormGroup;
   resetSuccess: Boolean = false;
-  spinner: Boolean = false;
   error;
 
   constructor(
