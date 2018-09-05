@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
 
+declare let moment: any;
 declare let AmbrosusSDK: any;
 declare let Web3: any;
 
@@ -38,7 +39,8 @@ export class AuthService {
   }
 
   getToken(secret) {
-    return this.sdk.getToken(secret);
+    const validUntil = moment().add(5, 'days').format();
+    return this.sdk.getToken(secret, validUntil);
   }
 
   getAccount(email) {
@@ -115,12 +117,12 @@ export class AuthService {
             this.storage.set('user', r);
             this.storage.set('has_account', true);
             this.addAccount(r);
-            this.emit('user:login');
+            this.emit('user:refresh');
             observer.next('success');
           } else {
             this.storage.set('has_account', false);
             this.addAccount({ address });
-            this.emit('user:login');
+            this.emit('user:refresh');
             observer.next('success');
           }
         },
@@ -149,7 +151,7 @@ export class AuthService {
     } else {
       this.logoutAPI();
       this.storage.set('user', accounts[0]);
-      this.emit('user:login');
+      this.emit('user:refresh');
       this.router.navigate(['/assets']);
     }
   }
@@ -157,7 +159,7 @@ export class AuthService {
   logoutAll() {
     this.logoutAPI();
     this.storage.clear();
-    this.emit('user:login');
+    this.emit('user:refresh');
     this.router.navigate(['/login']);
   }
 }

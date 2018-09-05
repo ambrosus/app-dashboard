@@ -43,13 +43,13 @@ export class EventComponent implements OnInit, OnDestroy {
     private router: Router,
     private administration: AdministrationService,
     public dialog: MatDialog
-  ) {}
+  ) { }
 
   downloadQR(el: any) {
     const data = el.el.nativeElement.children[0].src;
     const filename = `QR_code_${this.event.content.idData.assetId}_${
       this.event.eventId
-    }.png`;
+      }.png`;
     if (window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveBlob(data, filename);
     } else {
@@ -64,7 +64,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   hasInfoEvent() {
     const event = this.event || null;
-    return event ? this.event.content.data.some(obj => obj.type === 'ambrosus.asset.info') : false;
+    return event && event.content && event.content.data ? this.event.content.data.some(obj => obj.type === 'ambrosus.asset.info') : false;
   }
 
   ngOnInit() {
@@ -123,7 +123,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openJsonDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.jsonEvent;
@@ -136,7 +136,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openAssetEditDialog() {
     const dialogRef = this.dialog.open(AssetAddComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
@@ -151,7 +151,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openEditDialog(): void {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;

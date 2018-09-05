@@ -1,6 +1,8 @@
-<h4 class="m-b-30">All users</h4>
+<h4 class="m-b-30">Invites</h4>
 
-<div class="table" style="padding: 0;" *ngIf="users.length">
+<p *ngIf="!invites || invites.length < 1">No invites. Invite <a routerLink="/administration/users/invite">new members.</a></p>
+
+<div class="table" style="padding: 0;" *ngIf="invites && invites.length > 0">
   <!-- Header -->
   <!-- Select all -->
   <div class="table__item table__item__header">
@@ -15,23 +17,23 @@
     <div class="table__label table__label__heading table__label__select color-ablue--base center">
       <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions>
         <option value="default" disabled>Bulk actions</option>
-        <!-- <option value="revoke">Revoke</option> -->
+        <option value="revoke">Revoke</option>
       </select>
     </div>
   </div>
 
   <div class="table__item table__item__header header--sticky">
     <div style="width: 130px; height: 10px; flex: 0 0 100px;"></div>
-    <p class="table__column table__column__header">Full name</p>
-    <p class="table__column table__column__header">Email</p>
-    <p class="table__column table__column__header">Role</p>
+    <p class="table__column table__column__header">From</p>
+    <p class="table__column table__column__header">To</p>
+    <p class="table__column table__column__header">Invited on</p>
   </div>
 </div>
 
 <div class="table m-t-20" id="table">
 
   <!-- Items -->
-  <div class="table__item table" *ngFor="let user of users; let i = index" (click)="onSelect($event, element)" id="{{ user._id }}" #element>
+  <div class="table__item table" (click)="onSelect($event, element)" id="{{ invite._id }}" *ngFor="let invite of invites; let i = index" #element>
     <label class="table__label" for="{{ i }}">
       <div class="check">
         <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
@@ -39,18 +41,18 @@
     </label>
 
     <div class="table__column">
-      <p class="table__column-title hide-1024">Full name</p>
-      <p class="table__column-content">{{ user.full_name }}</p>
+      <p class="table__column-title hide-1024">From</p>
+      <p class="table__column-content">{{ invite.from.full_name }}</p>
     </div>
 
     <div class="table__column">
-      <p class="table__column-title hide-1024">Email</p>
-      <p class="table__column-content">{{ user.email }}</p>
+      <p class="table__column-title hide-1024">To</p>
+      <p class="table__column-content">{{ invite.to }}</p>
     </div>
 
     <div class="table__column">
-      <p class="table__column-title hide-1024">Role</p>
-      <p class="table__column-content">{{ user.role.title }}</p>
+      <p class="table__column-title hide-1024">Invited on</p>
+      <p class="table__column-content">{{ invite.createdAt | date:'MMM d, y, h:mm:ss a' }}</p>
     </div>
   </div>
 </div>

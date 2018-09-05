@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-invite',
@@ -9,11 +11,11 @@ import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 export class InviteComponent implements OnInit {
   inviteForm: FormGroup;
   spinner = false;
-  errorInvite = false;
-  successInvite = false;
+  error;
+  success;
   message = false;
 
-  constructor() {
+  constructor(private http: HttpClient, private storage: StorageService) {
     this.initInviteForm();
   }
 
@@ -22,11 +24,13 @@ export class InviteComponent implements OnInit {
       members: new FormArray([
         new FormGroup({
           email: new FormControl('', [Validators.required]),
-          name: new FormControl('', [])
+          accessLevel: new FormControl(1, []),
+          permissions: new FormControl('create_entity', [])
         }),
         new FormGroup({
           email: new FormControl('', [Validators.required]),
-          name: new FormControl('', [])
+          accessLevel: new FormControl(1, []),
+          permissions: new FormControl('create_entity', [])
         })
       ]),
       message: new FormControl('', [])
@@ -45,49 +49,61 @@ export class InviteComponent implements OnInit {
     (<FormArray>this.inviteForm.get('members')).push(
       new FormGroup({
         email: new FormControl('', [Validators.required]),
-        name: new FormControl('', [])
+        accessLevel: new FormControl(1, []),
+        permissions: new FormControl('create_entity', [])
       })
     );
   }
 
   errorsResetInvite() {
-    this.errorInvite = false;
+    this.error = false;
+    this.success = false;
   }
 
   invite() {
     this.errorsResetInvite();
-    const members = this.inviteForm.get('members')['controls'];
+    const body = {
+      invites: this.generateInviteObject(),
+      user: this.storage.get('user')
+    };
 
-    if (this.inviteForm.valid && members.length > 0) {
+    if (this.inviteForm.valid && body.invites.length > 0) {
       this.spinner = true;
       console.log(this.generateInviteObject());
 
-      setTimeout(() => {
-        this.spinner = false;
-        this.successInvite = true;
+      // Send invites
+      const url = `/api/invites`;
 
-        setTimeout(() => {
-          this.successInvite = false;
-        }, 1500);
-      }, 1500);
+      this.http.post(url, body).subscribe(
+        (resp: any) => {
+          this.spinner = false;
+          this.success = 'Invites sent';
+        },
+        err => {
+          console.log('Invites error: ', err);
+          this.error = 'Invites failed';
+        }
+      );
     } else {
-      this.errorInvite = true;
+      this.error = 'Need at least one invite';
     }
   }
 
   generateInviteObject() {
-    const invites = {
-      message: this.inviteForm.get('message').value
-    };
+    const message = this.inviteForm.get('message').value;
+    const invites = [];
 
     // Invitees
     const members = this.inviteForm.get('members')['controls'];
     if (members.length > 0) {
-      invites['members'] = [];
       members.map((member) => {
-        invites['members'].push({
-          email: member.get('email').value,
-          name: member.get('name').value
+        const permissions = member.get('permissions').value.split(',');
+
+        invites.push({
+          to: member.get('email').value,
+          accessLevel: member.get('accessLevel').value,
+          permissions,
+          message
         });
       });
     }

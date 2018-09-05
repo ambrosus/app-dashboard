@@ -5,13 +5,12 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
-
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
 import { LoginComponent } from 'app/core/components/login/login.component';
 import { MatDialog } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-header',
@@ -25,17 +24,19 @@ export class HeaderComponent implements OnInit {
   overlay = false;
   users;
   user;
+  profile_image;
   addAccount;
 
   constructor(
     private auth: AuthService,
     private storage: StorageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
     this.headerInit();
-    window.addEventListener('user:login', () => {
+    window.addEventListener('user:refresh', () => {
       this.headerInit();
     });
   }
@@ -43,6 +44,11 @@ export class HeaderComponent implements OnInit {
   headerInit() {
     this.user = this.storage.get('user') || {};
     this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
+
+    if (this.user && this.user.profile && this.user.profile.image) {
+      this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
+    }
+
     this.isLoggedin = <any>this.storage.get('isLoggedin');
     this.users = this.storage.get('accounts') || [];
     this.dialog.closeAll();

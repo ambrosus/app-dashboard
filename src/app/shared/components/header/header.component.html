@@ -15,7 +15,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </a>
     </div>
 
-    <ul class="header-menu" *ngIf="isLoggedin">
+    <ul class="header-menu" *ngIf="isLoggedin && user">
       <!-- Mobile menu -->
       <li class="hide-640">
         <div class="hamburger-icon dropdown dropdown__no-arrow" (click)="overlay = !overlay; toggleMobileMenu = !toggleMobileMenu" [ngClass]="{'active': toggleMobileMenu}" style="position: static;">
@@ -43,7 +43,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
       <!-- Desktop menu -->
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        <app-svg-icon name="user" width="15px" height="15px" style="padding-right: 5px"></app-svg-icon>
+        <div class="avatar" *ngIf="user.full_name || (user.profile && user.profile.image)" [style.backgroundImage]="profile_image">
+          <span *ngIf="!(user.profile && user.profile.image)">{{ user.full_name.charAt(0) }}</span>
+        </div>
         {{ greeting }}
         <ul class="dropdown-menu">
           <li *ngFor="let user of users; let i = index" [ngClass]="{ active:  i === 0 }" (click)="switchAccount(user.address)">
@@ -80,7 +82,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           </span>
         </div>
 
-        <div *ngIf="(user | checkIf: 'user.role.id') && user.role.id === 1" routerLink="/administration/users/all" class="header-submenu__item" routerLinkActive="active">
+        <div *ngIf="(user | checkIf: 'user.role.id') && user.role.id === 1" routerLink="/administration" class="header-submenu__item" routerLinkActive="active">
           <span class="header-menu__item p-v-10">
             <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
             <span class="hide-all display-480-inline-block">Administration</span>

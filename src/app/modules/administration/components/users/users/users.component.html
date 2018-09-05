@@ -4,8 +4,15 @@
     <!-- Sidebar -->
     <aside class="sidebar-pages__sidebar">
       <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
-        <p routerLink="all"><app-svg-icon name="users"></app-svg-icon>All users</p>
-        <p routerLink="invite"><app-svg-icon name="user-plus"></app-svg-icon>Invite members</p>
+        <a routerLink="all" routerLinkActive="active">
+          <app-svg-icon name="users" class="m-r-20"></app-svg-icon>All users
+        </a>
+        <a routerLink="invite" routerLinkActive="active">
+          <app-svg-icon name="user-plus" class="m-r-20"></app-svg-icon>Invite members
+        </a>
+        <a routerLink="invites" routerLinkActive="active">
+          <app-svg-icon name="user-check" class="m-r-20"></app-svg-icon>Invites
+        </a>
       </div>
     </aside>
     <!-- Main -->

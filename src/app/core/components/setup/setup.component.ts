@@ -23,10 +23,12 @@ export class SetupComponent implements OnInit {
   stepUser;
   currentStep = 1;
   prevButton = '';
-  nextButton = 'Company';
+  nextButton = '';
   timezones = [];
   web3;
   success;
+  address;
+  secret;
 
   constructor(private http: HttpClient,
     private router: Router,
@@ -72,24 +74,18 @@ export class SetupComponent implements OnInit {
       case 1:
         if (type && this.stepHermes) {
           this.currentStep++;
-          this.prevButton = 'Hermes Node';
-          this.nextButton = 'User';
         }
         break;
       case 2:
         if (type === 'prev') {
           this.currentStep--;
-          this.nextButton = 'Company';
         } else if (this.stepCompany) {
           this.currentStep++;
-          this.prevButton = 'Company';
         }
         break;
       case 3:
         if (type) {
           this.currentStep--;
-          this.prevButton = 'Hermes Node';
-          this.nextButton = 'User';
         }
     }
   }
@@ -134,8 +130,6 @@ export class SetupComponent implements OnInit {
     };
 
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    body.user['address'] = address;
-    body.user['secret'] = privateKey;
 
     if (this.setupForm.valid) {
       if (!(body.user.password === body.user.passwordConfirm)) {
@@ -145,18 +139,15 @@ export class SetupComponent implements OnInit {
       this.spinner = true;
 
       const url = `/api/setup`;
+      body.user['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
+      body.user['address'] = address;
 
       this.http.post(url, body).subscribe(
         (resp: any) => {
+          this.address = address;
+          this.secret = privateKey;
           this.spinner = false;
-          this.success = `
-            Setup was successfuly done.<br>
-            Now you can login with your email and password.<br>
-            But, before you go, this is your<br>
-            <b>address: ${body.user.address}</b><br> and
-            <b>secret: ${body.user.secret}</b>,<br> please <u>save them somewhere safe</u>,
-            as we are not storing them anywhere for security reasons.
-          `;
+          this.success = true;
           console.log('Setup success: ', resp);
         },
         err => {

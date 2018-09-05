@@ -1,4 +1,3 @@
-
 .table {
   display: flex;
   flex-direction: column;
@@ -23,6 +22,17 @@
     background: rgba(80, 120, 241, 0.1);
     margin-right: 8px;
     cursor: pointer;
+    position: relative;
+  }
+
+  & .check {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: rgba(80, 120, 241, 0.1);
+    margin-right: 8px;
+    cursor: pointer;
+    position: relative;
   }
 
   & .checkbox-icon {
@@ -91,7 +101,7 @@
     flex-wrap: wrap;
     padding-bottom: 5px;
     box-shadow: none;
-    z-index: 2;
+    z-index: 3;
 
     &.sticky {
       position: fixed;

@@ -203,7 +203,7 @@ export class AssetAddComponent implements OnInit {
 
     const reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       const text = reader.result;
       that.textArea = text;
     };
@@ -375,7 +375,7 @@ export class AssetAddComponent implements OnInit {
     asset['content']['idData'] = {};
     asset['content']['idData']['assetId'] = assetId;
     asset['content']['idData']['createdBy'] = <any>this.storage.get('user')['address'];
-    asset['content']['idData']['accessLevel'] = 0;
+    asset['content']['idData']['accessLevel'] = 1;
     asset['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
 
     // asset.content.data
