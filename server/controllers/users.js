@@ -163,7 +163,7 @@ exports.getAccount = (req, res, next) => {
       path: 'role',
       select: '-createdAt -updatedAt -__v'
     })
-    .select('-active -createdAt -updatedAt -password -__v')
+    .select('-active -createdAt -updatedAt -__v')
     .then(user => {
       if (user) {
         console.log(user);
@@ -175,28 +175,31 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const address = req.session.address;
+  const user = req.session.user;
 
-  User.findOne({ address })
-    .then(user => {
-      if (user) {
-        User.find({ company: user.company })
-          .populate({
-            path: 'company',
-            populate: [
-              { path: 'hermes' }
-            ]
-          })
-          .populate('role')
-          .then(users => {
-            req.status = 200;
-            req.json = {
-              resultCount: users.length,
-              data: users
-            };
-            return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      } else { throw 'No user found'; }
+  User.find({ company: user.company })
+    .populate({
+      path: 'company',
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: {
+        path: 'hermes',
+        select: '-active -createdAt -updatedAt -__v -public'
+      }
+    })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-password -__v')
+    .then(users => {
+      if (users) {
+        req.status = 200;
+        req.json = {
+          resultCount: users.length,
+          data: users
+        };
+        return next();
+      } else { throw 'No users found'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
@@ -231,7 +234,7 @@ exports.edit = (req, res, next) => {
     .then(updateResponse => {
       if (updateResponse) {
         req.status = 200;
-        req.json = { message: 'Update data success' };
+        req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));

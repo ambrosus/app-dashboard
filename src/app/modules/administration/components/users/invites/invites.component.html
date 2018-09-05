@@ -8,7 +8,7 @@
   <div class="table__item table__item__header">
     <label class="table__label table__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
       <div class="relative">
-        <input type="checkbox" id="selectAll" class="table__checkbox" appOnchecked [toSelect]="'administration'" #input>
+        <input type="checkbox" id="selectAll" class="table__checkbox" appOnchecked #input>
         <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
       </div>
       <span class="capitalize color-ablue--base">{{ selectAllText }}</span>

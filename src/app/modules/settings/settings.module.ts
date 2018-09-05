@@ -6,6 +6,8 @@ import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './components/settings/settings.component';
 import { GeneralSettingsComponent } from './components/pages/general-settings/general-settings.component';
 import { SecuritySettingsComponent } from './components/pages/security-settings/security-settings.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ImageCropperModule } from 'ngx-image-cropper';
 import { NotificationSettingsComponent } from './components/pages/notification-settings/notification-settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -15,8 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     SettingsRoutingModule,
     SharedModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ImageCropperModule,
   ],
-  declarations: [SettingsComponent, GeneralSettingsComponent, SecuritySettingsComponent, NotificationSettingsComponent]
+  declarations: [SettingsComponent, GeneralSettingsComponent, SecuritySettingsComponent]
 })
 export class SettingsModule { }

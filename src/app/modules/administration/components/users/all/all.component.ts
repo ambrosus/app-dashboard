@@ -1,46 +1,60 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
-import { AdministrationService } from 'app/services/administration.service';
+import { Component, OnInit, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-all',
   templateUrl: './all.component.html',
   styleUrls: ['./all.component.scss']
 })
-export class AllComponent implements OnInit {
+export class AllComponent implements OnInit, OnDestroy {
   selectAllText = 'Select all';
-  members = [
-    {
-      full_name: 'Roman Šabanov',
-      email: 'roman@test.com',
-      role: 'Team leader',
-      _id: '123'
-    },
-    {
-      full_name: 'Lazar Eric',
-      email: 'lazar@test.com',
-      role: 'Employee',
-      _id: '1234'
-    },
-    {
-      full_name: 'Meet Dave',
-      email: 'meet@test.com',
-      role: 'Employee',
-      _id: '1235'
-    }
-  ];
+  usersSubscription: Subscription;
+  users = [];
+  ids = [];
 
-  constructor(private el: ElementRef, private administration: AdministrationService) { }
+  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient) { }
 
   ngOnInit() {
+    this.getUsers();
+  }
+
+  ngOnDestroy() {
+    if (this.usersSubscription) { this.usersSubscription.unsubscribe(); }
+  }
+
+  getUsers() {
+    // Get users
+    const url = `/api/users`;
+
+    this.usersSubscription = this.http.get(url).subscribe(
+      (resp: any) => {
+        console.log('Users GET: ', resp);
+        this.users = resp.data;
+      },
+      err => {
+        console.log('Users GET error: ', err);
+      }
+    );
   }
 
   bulkActions(action) {
     switch (action.value) {
-      case 'createEvent':
+      default:
         break;
     }
-
     action.value = 'default';
+  }
+
+  toggleId(action, id) {
+    const index = this.ids.indexOf(id);
+    switch (action) {
+      case 'add':
+        if (index === -1) { this.ids.push(id); }
+        break;
+      default:
+        if (index > -1) { this.ids.splice(index, 1); }
+    }
   }
 
   onSelectAll(e, input) {
@@ -49,19 +63,22 @@ export class AllComponent implements OnInit {
     if (input.checked) {
       this.selectAllText = 'Unselect all';
       table.map((item) => {
-        const checkbox = item.children[0].children[0].children[0];
-        checkbox.checked = true;
-        this.administration.selectUser(checkbox.name);
+        this.renderer.addClass(item, 'checkbox--checked');
+        this.toggleId('add', item.id);
       });
-      this.administration.toggleSelect.next('true');
     } else {
       this.selectAllText = 'Select all';
       table.map((item) => {
-        const checkbox = item.children[0].children[0].children[0];
-        checkbox.checked = false;
+        this.renderer.removeClass(item, 'checkbox--checked');
+        this.toggleId('remove', item.id);
       });
-      this.administration.unselectUsers();
-      this.administration.toggleSelect.next('true');
     }
+  }
+
+  onSelect(e, item) {
+    const active = item.classList.contains('checkbox--checked');
+    const action = active ? 'removeClass' : 'addClass';
+    this.renderer[action](item, 'checkbox--checked');
+    if (active) { this.toggleId('remove', item.id); } else { this.toggleId('add', item.id); }
   }
 }

@@ -117,12 +117,12 @@ export class AuthService {
             this.storage.set('user', r);
             this.storage.set('has_account', true);
             this.addAccount(r);
-            this.emit('user:login');
+            this.emit('user:refresh');
             observer.next('success');
           } else {
             this.storage.set('has_account', false);
             this.addAccount({ address });
-            this.emit('user:login');
+            this.emit('user:refresh');
             observer.next('success');
           }
         },
@@ -151,7 +151,7 @@ export class AuthService {
     } else {
       this.logoutAPI();
       this.storage.set('user', accounts[0]);
-      this.emit('user:login');
+      this.emit('user:refresh');
       this.router.navigate(['/assets']);
     }
   }
@@ -159,7 +159,7 @@ export class AuthService {
   logoutAll() {
     this.logoutAPI();
     this.storage.clear();
-    this.emit('user:login');
+    this.emit('user:refresh');
     this.router.navigate(['/login']);
   }
 }
