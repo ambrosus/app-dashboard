@@ -2,6 +2,9 @@ import { Component, OnInit, ElementRef, OnDestroy, Renderer2 } from '@angular/co
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
+import { StorageService } from 'app/services/storage.service';
+
+declare let moment: any;
 
 @Component({
   selector: 'app-all',
@@ -13,11 +16,13 @@ export class AllComponent implements OnInit, OnDestroy {
   usersSubscription: Subscription;
   users = [];
   ids = [];
+  user;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient, private auth: AuthService) { }
+  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient, private auth: AuthService, private storage: StorageService) { }
 
   ngOnInit() {
     this.getUsers();
+    this.user = this.storage.get('user') || {};
   }
 
   ngOnDestroy() {
@@ -31,7 +36,10 @@ export class AllComponent implements OnInit, OnDestroy {
     this.usersSubscription = this.http.get(url).subscribe(
       (resp: any) => {
         console.log('Users GET: ', resp);
-        this.users = resp.data;
+        this.users = resp.data.map(user => {
+          user.lastLogin = moment(user.lastLogin).tz(this.user.company.timeZone).fromNow();
+          return user;
+        });
       },
       err => {
         if (err.status === 401) { this.auth.logout(); }

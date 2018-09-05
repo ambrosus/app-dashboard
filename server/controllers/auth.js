@@ -34,6 +34,8 @@ exports.login = (req, res, next) => {
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
+          user.lastLogin = +new Date();
+          user.save();
 
           if (valid) {
             delete user.password;
