@@ -15,5 +15,6 @@ const AuthRoutes = express.Router();
 AuthRoutes.post('/login', AuthController.login, (req, res) => { res.status(req.status).json(req.json); });
 AuthRoutes.post('/verify', AuthController.verifyAccount, (req, res) => { res.status(req.status).json(req.json); });
 AuthRoutes.delete('/logout', AuthController.logout, (req, res) => { res.status(req.status).json(req.json); });
+AuthRoutes.get('/sessions/:email', AuthController.sessions, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = AuthRoutes;

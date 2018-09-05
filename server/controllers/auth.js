@@ -7,6 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const axios = require('axios');
 const bcrypt = require('bcrypt');
+const MongoClient = require('mongodb').MongoClient;
 
 const User = require('../models/users');
 
@@ -102,4 +103,28 @@ exports.logout = (req, res, next) => {
     req.json = { message: 'User logout success' };
     return next();
   });
+}
+
+exports.sessions = (req, res, next) => {
+  const email = req.params.email;
+  MongoClient.connect('mongodb://localhost:27017', function (err, client) {
+    if (err) throw err;
+
+    var db = client.db('dash');
+
+    db.collection('sessions').find().toArray(function(err, results) {
+      if (err) throw err;
+      const sessionArray = [];
+      results.forEach(result => {
+        if (result.session && result.session.user) {
+          if (result.session.user.email === email) {
+            sessionArray.push(result);
+          }
+        }
+      });
+      res.json(sessionArray);
+      return next();
+      db.close();
+    });
+  }); 
 }
