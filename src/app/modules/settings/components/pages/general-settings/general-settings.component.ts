@@ -50,11 +50,15 @@ export class GeneralSettingsComponent implements OnInit {
 
   prefillEditProfile() {
     this.user = this.storage.get('user') || {};
-
     this.editProfileForm.get('full_name').setValue(this.user.full_name);
     const settings = this.user.settings ? JSON.parse(this.user.settings) : {};
     this.editProfileForm.get('timeZone').setValue(settings.timeZone || '');
-    this.croppedImage = this.user.profile.image || '';
+
+    try {
+      this.croppedImage = this.user.profile.image;
+    } catch (e) {
+      this.croppedImage = '';
+    }
   }
 
   resetForm() {
