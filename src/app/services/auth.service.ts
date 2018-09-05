@@ -111,16 +111,13 @@ export class AuthService {
 
       this.verifyAccount(address, token, hermes).subscribe(
         (r: any) => {
-          this.storage.set('isLoggedin', true);
           this.storage.set('token', token);
           if (!r.message) {
             this.storage.set('user', r);
-            this.storage.set('has_account', true);
             this.addAccount(r);
             this.emit('user:refresh');
             observer.next('success');
           } else {
-            this.storage.set('has_account', false);
             this.addAccount({ address });
             this.emit('user:refresh');
             observer.next('success');

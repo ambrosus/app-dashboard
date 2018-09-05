@@ -19,7 +19,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent implements OnInit {
-  isLoggedin = false;
+  isLoggedin;
   greeting = 'Hi, welcome!';
   overlay = false;
   users;
@@ -49,7 +49,7 @@ export class HeaderComponent implements OnInit {
       this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
     }
 
-    this.isLoggedin = <any>this.storage.get('isLoggedin');
+    this.isLoggedin = this.auth.isLoggedIn();
     this.users = this.storage.get('accounts') || [];
     this.dialog.closeAll();
   }
