@@ -14,9 +14,9 @@
         <div class="form-text m-b-20 w-80">
           <label for="permissions">Permissions</label>
           <select formControlName="permissions" id="permissions">
-            <option value="create_entity" selected>create_entity</option>
-            <option value="create_entity,register_account">create_entity, register_account</option>
-            <option value="register_account">register_account</option>
+            <option value="create_entity" selected>Get/create assets, events</option>
+            <option value="register_account">Register new users</option>
+            <option value="create_entity,register_account">All permissions</option>
           </select>
         </div>
         <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&#8855;</a>
@@ -24,8 +24,8 @@
     </div>
     <a class="color-ablue--base" (click)="addMember()">+ Add another</a>
   </div>
-  <p class="m-t-20 color-blacks--base" (click)="message = !message" style="cursor: default; user-select: none;">Compose a custom message to your members.</p>
-  <div class="form-textarea m-t-40 m-b-20" *ngIf="message">
+  <p class="m-t-20 color-blacks--base" style="cursor: default; user-select: none;">Compose a custom message to your members.</p>
+  <div class="form-textarea m-t-40 m-b-20">
     <label for="url">Message</label>
     <textarea formControlName="message" name="message" id="message"></textarea>
   </div>
