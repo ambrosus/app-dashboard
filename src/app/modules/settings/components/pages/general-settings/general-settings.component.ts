@@ -96,7 +96,7 @@ export class GeneralSettingsComponent implements OnInit {
         },
         err => {
           this.spinner = false;
-          this.error = err.error.message ? err.error.message : 'Edit profile error';
+          this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
           console.log('Edit profile error: ', err);
         }
       );
