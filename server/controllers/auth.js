@@ -14,6 +14,7 @@ const User = require('../models/users');
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const deviceInfo = req.body.deviceInfo;
 
   if (email && password) {
     User.findOne({ email })
@@ -37,6 +38,7 @@ exports.login = (req, res, next) => {
           if (valid) {
             delete user.password;
             req.session.user = user;
+            req.session.deviceInfo = deviceInfo; 
             req.status = 200;
             req.json = user
             return next();

@@ -6,6 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 declare let Web3: any;
 
@@ -13,6 +14,7 @@ declare let Web3: any;
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  providers: [DeviceDetectorService],
   encapsulation: ViewEncapsulation.None
 })
 export class LoginComponent implements OnInit {
@@ -28,6 +30,7 @@ export class LoginComponent implements OnInit {
   email = true;
   address = false;
   web3;
+  deviceInfo;
 
   @Input() isDialog;
 
@@ -38,7 +41,8 @@ export class LoginComponent implements OnInit {
     private http: HttpClient,
     private el: ElementRef,
     private renderer: Renderer2,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private deviceService: DeviceDetectorService
   ) {
     this.web3 = new Web3();
     this.loginForm = new FormGroup({
@@ -50,6 +54,7 @@ export class LoginComponent implements OnInit {
       secret: new FormControl(null, [Validators.required])
     });
     this.loginPage = location.pathname.includes('/login');
+    this.deviceInfo = this.deviceService.getDeviceInfo();
   }
 
   ngOnInit() {
@@ -133,10 +138,12 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.resetErrors();
       this.spinner = true;
+      const deviceInfo = this.deviceInfo;
 
       const body = {
         email,
-        password
+        password,
+        deviceInfo
       };
 
       const url = `/api/auth/login`;

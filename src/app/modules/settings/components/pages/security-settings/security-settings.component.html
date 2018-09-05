@@ -24,16 +24,28 @@
 
 <h4>Your Devices</h4>
 
-<div class="p-t-20">
-<table style="width: 100%;">
+<div class="p-t-20" *ngIf="spinner">
+    <app-spinner></app-spinner>
+</div>
 
-    <tr *ngFor = "let session of sessions">
-        <td><img src="/assets/images/macbook.png" width="50px"></td>
-        <td>Apple MacBook Air</td>
-        <td><a class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
+<div class="p-t-20" *ngIf="!spinner">
+  <table style="width: 100%;">
+
+    <tr>
+      <th></th>
+      <th>Operating System</th>
+      <th>Browser</th>
+      <th></th>
     </tr>
 
-</table>
+    <tr *ngFor="let session of sessions">
+      <td><img src="/assets/images/macbook.png" width="50px"></td>
+      <td>{{session.session.deviceInfo.os_version | uppercase}}</td>
+      <td>{{session.session.deviceInfo.browser | uppercase}}</td>
+      <td><a class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
+    </tr>
+
+  </table>
 </div>
 
 <hr>
