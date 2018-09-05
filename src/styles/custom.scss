@@ -1,5 +1,4 @@
 // Custom styles
-
 .wrapper {
   max-width: 1100px;
   width: 100%;
@@ -7,14 +6,19 @@
   position: relative;
 }
 
-
-.avatar{
-  position: relative;
-  height: 100px;
-  width: 100px;
-  background-color: #f6f8fe;
-  border: 1px solid #d4d6da;
+.avatar {
+  position: absolute;
+  height: 32px;
+  width: 32px;
+  background-color: #fcbc58;
+  border: 1px solid #fff;
   border-radius: 100%;
   background-size: 100%;
   background-position: center center;
+  left: -42px;
+  top: 3px;
+  text-align: center;
+  line-height: 29px;
+  font-size: 16px;
+  font-weight: 500;
 }

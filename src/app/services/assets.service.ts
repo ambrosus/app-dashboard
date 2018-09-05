@@ -24,7 +24,7 @@ export class AssetsService {
 
   constructor(private storage: StorageService) {
     this.initSDK();
-    window.addEventListener('user:login', () => {
+    window.addEventListener('user:refresh', () => {
       this.initSDK();
     });
   }
