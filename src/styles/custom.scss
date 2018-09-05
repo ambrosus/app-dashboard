@@ -7,7 +7,7 @@
 }
 
 .avatar {
-  position: absolute;
+  position: relative;
   height: 32px;
   width: 32px;
   background-color: #fcbc58;
@@ -15,8 +15,6 @@
   border-radius: 100%;
   background-size: 100%;
   background-position: center center;
-  left: -42px;
-  top: 3px;
   text-align: center;
   line-height: 29px;
   font-size: 16px;

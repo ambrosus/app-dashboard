@@ -16,32 +16,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
 
     <ul class="header-menu" *ngIf="isLoggedin && user">
-      <!-- Mobile menu -->
-      <li class="hide-640">
-        <div class="hamburger-icon dropdown dropdown__no-arrow" (click)="overlay = !overlay; toggleMobileMenu = !toggleMobileMenu" [ngClass]="{'active': toggleMobileMenu}" style="position: static;">
-          <div></div>
-          <div></div>
-          <div></div>
-          <!-- Menu -->
-          <nav class="menu-mobile">
-            <p class="menu-mobile__item" *ngFor="let user of users; let i = index" (click)="switchAccount(user.address)" [ngClass]="{ current:  i === 0 }">
-              <span *ngIf="!user.full_name && !user.email">{{ user.address }}</span>
-              <span class="color-blacks--base" *ngIf="user.full_name">{{ user.full_name }} </span>
-              <span *ngIf="user.email">- {{ user.email }}</span>
-              <span *ngIf="user | checkIf: 'user.company.title'">, {{ user.company.title }}</span>
-            </p>
-            <p class="menu-mobile__item separator color-ablue--base" (click)="addAccountDialog()">
-              Add account
-            </p>
-            <p class="menu-mobile__item color-ared--base" (click)="logoutAll()">
-              Log out of all accounts
-            </p>
-          </nav>
-        </div>
-      </li>
-      <!-- end Mobile menu -->
 
-      <!-- Desktop menu -->
+      <li class="header-menu__item">
+        <a routerLink="/settings" routerLinkActive="active">
+          <app-svg-icon name="cog" class="p-r-10" width="20px" height="20px"></app-svg-icon>
+        </a>
+      </li>
+
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         <div class="avatar" *ngIf="user.full_name || (user.profile && user.profile.image)" [style.backgroundImage]="profile_image">
           <span *ngIf="!(user.profile && user.profile.image)">{{ user.full_name.charAt(0) }}</span>
@@ -86,13 +67,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <span class="header-menu__item p-v-10">
             <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
             <span class="hide-all display-480-inline-block">Administration</span>
-          </span>
-        </div>
-
-        <div routerLink="/settings" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Settings</span>
           </span>
         </div>
 
