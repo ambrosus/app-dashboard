@@ -7,12 +7,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const axios = require('axios');
 const bcrypt = require('bcrypt');
+const MongoClient = require('mongodb').MongoClient;
 
 const User = require('../models/users');
 
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const deviceInfo = req.body.deviceInfo;
 
   if (email && password) {
     User.findOne({ email })
@@ -36,6 +38,7 @@ exports.login = (req, res, next) => {
           if (valid) {
             delete user.password;
             req.session.user = user;
+            req.session.deviceInfo = deviceInfo; 
             req.status = 200;
             req.json = user
             return next();
@@ -103,4 +106,45 @@ exports.logout = (req, res, next) => {
     req.json = { message: 'User logout success' };
     return next();
   });
+}
+
+exports.sessions = (req, res, next) => {
+  const email = req.params.email;
+  MongoClient.connect('mongodb://localhost:27017', function (err, client) {
+    if (err) throw err;
+
+    var db = client.db('dash');
+
+    db.collection('sessions').find().toArray(function(err, results) {
+      if (err) throw err;
+      const sessionArray = [];
+      results.forEach(result => {
+        if (result.session && result.session.user) {
+          if (result.session.user.email === email) {
+            sessionArray.push(result);
+          }
+        }
+      });
+      res.json(sessionArray);
+      db.close();
+      return next();
+    });
+  }); 
+}
+
+exports.session = (req, res, next) => {
+  const sessionId = req.params.sessionId;
+  MongoClient.connect('mongodb://localhost:27017', function (err, client) {
+    if (err) throw err;
+
+    var db = client.db('dash');
+
+    db.collection('sessions').deleteOne({ _id: sessionId }, function(err, obj) {
+      if (err) throw err;
+      res.status = 200;
+      res.json('Success');
+      db.close();
+      return next();
+    });
+  }); 
 }

@@ -28,28 +28,25 @@
 
 <h4>Your Devices</h4>
 
-<div class="p-t-20">
+<div class="p-t-20" *ngIf="spinner">
+    <app-spinner></app-spinner>
+</div>
+
+<div class="p-t-20" *ngIf="!spinner">
   <table style="width: 100%;">
 
     <tr>
-      <td><img src="/assets/images/smartphone.png" width="50px"></td>
-      <td>iPhone X</td>
-      <td>Last Login: 7 hours ago</td>
-      <td><button type="submit" class="abtn m-l-20 btn-solid-ablue">Logout</button></td>
+      <th></th>
+      <th>Operating System</th>
+      <th>Browser</th>
+      <!-- <th></th> -->
     </tr>
 
-    <tr>
+    <tr *ngFor="let session of sessions">
       <td><img src="/assets/images/macbook.png" width="50px"></td>
-      <td>MacBook Air</td>
-      <td>Last Login: 2 hours ago</td>
-      <td><button type="submit" class="abtn m-l-20 btn-solid-ablue" disabled>Logged Out</button></td>
-    </tr>
-
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td><button type="submit" class="abtn m-l-20 btn-solid-aorange">Logout of all devices</button></td>
+      <td>{{session.session.deviceInfo.os_version | uppercase}}</td>
+      <td>{{session.session.deviceInfo.browser | uppercase}}</td>
+      <!-- <td><a class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td> -->
     </tr>
 
   </table>

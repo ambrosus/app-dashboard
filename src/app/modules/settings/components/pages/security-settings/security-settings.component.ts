@@ -4,6 +4,7 @@ import { UsersService } from 'app/services/users.service';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
 
+
 @Component({
   selector: 'app-security-settings',
   templateUrl: './security-settings.component.html',
@@ -11,6 +12,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SecuritySettingsComponent implements OnInit {
 
+  sessions;
+  spinner: Boolean = true;
   resetForm: FormGroup;
   resetSuccess: Boolean = false;
   spinner: Boolean = false;
@@ -28,7 +31,30 @@ export class SecuritySettingsComponent implements OnInit {
     });
   }
 
+
   ngOnInit() {
+    const email = this.storage.get('user')['email'];
+    this.http.get(`/api/auth/sessions/${email}`).subscribe(
+      resp => {
+        console.log(resp);
+        this.sessions = resp;
+        this.spinner = false;
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  logoutSession(sessionId) {
+    this.http.delete(`/api/auth/session/${sessionId}`).subscribe(
+      resp => {
+        this.ngOnInit();
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
   changePassword() {
