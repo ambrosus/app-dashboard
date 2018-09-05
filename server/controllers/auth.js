@@ -37,8 +37,8 @@ exports.login = (req, res, next) => {
 
           if (valid) {
             delete user.password;
-            req.session.user = user;
-            req.session.deviceInfo = deviceInfo; 
+            req.session.user = { email: user.email, address: user.address };
+            req.session.deviceInfo = deviceInfo;
             req.status = 200;
             req.json = user
             return next();
@@ -83,7 +83,7 @@ exports.verifyAccount = (req, res, next) => {
         .then(user => {
           if (user) {
             req.status = 200;
-            req.session.user = user;
+            req.session.user = { email: user.email, address: user.address };;
             req.json = user;
             return next();
           } else { throw 'No user found'; }
@@ -108,32 +108,45 @@ exports.logout = (req, res, next) => {
   });
 }
 
-exports.sessions = (req, res, next) => {
-  const email = req.params.email;
-  let collection = mongoose.connection.db.collection('sessions');
-  collection.find().toArray(function(err, results) {
-    if (err) throw err;
-    const sessionArray = [];
-    results.forEach(result => {
-      if (result.session && result.session.user) {
-        if (result.session.user.email === email) {
-          sessionArray.push(result);
-        }
-      }
-    });
-    res.json(sessionArray);
-    return next();
+exports.getActiveSessions = (req, res, next) => {
+  const email = req.session.user.email;
+
+  let sessionsCollection = mongoose.connection.db.collection('sessions');
+  sessionsCollection.find({ "session.user.email": email }).toArray((err, sessions) => {
+
+    if (!err) {
+
+      sessions = sessions.filter(session => {
+        session.current = session.session.cookie.expires.toString() == req.session.cookie._expires.toString();
+        return session;
+      });
+
+      req.status = 200;
+      req.json = sessions;
+      return next();
+    } else {
+      req.status = 400;
+      req.json = { 'message': "No sessions were found." }
+      return next();
+    }
+
   });
 }
 
-exports.session = (req, res, next) => {
+exports.deleteSession = (req, res, next) => {
   const sessionId = req.params.sessionId;
   let collection = mongoose.connection.db.collection('sessions');
 
   collection.deleteOne({ _id: sessionId }, function(err, obj) {
-    if (err) throw err;
-    res.status = 200;
-    res.json('Success');
-    return next();
+    if (!err) {
+      req.status = 200;
+      req.json = { message: "Success" };
+      return next();
+    } else {
+      req.status = 400;
+      req.json = { message: "Session was not found." };
+      return next();
+    }
+
   });
 }

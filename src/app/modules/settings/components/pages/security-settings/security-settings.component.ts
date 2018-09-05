@@ -1,3 +1,11 @@
+/*
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+*/
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
@@ -32,7 +40,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
   getSessions() {
     const email = this.storage.get('user')['email'];
-    const url = `/api/auth/sessions/${email}`;
+    const url = `/api/auth/sessions`;
 
     this.getSessionsSub = this.http.get(url).subscribe(
       resp => {
@@ -44,7 +52,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   }
 
   logoutSession(sessionId) {
-    const url = `/api/auth/session/${sessionId}`;
+    const url = `/api/auth/sessions/${sessionId}`;
 
     this.logoutSessionSub = this.http.delete(url).subscribe(
       resp => this.getSessions(),

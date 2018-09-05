@@ -45,9 +45,12 @@
 
       <tr *ngFor="let session of sessions">
         <td><img src="/assets/images/macbook.png" width="50px"></td>
-        <td>{{session.session.deviceInfo.os_version | uppercase}}</td>
+        <td>
+          <div>{{session.session.deviceInfo.os_version | uppercase}}</div>
+          <div *ngIf="session.current">(current)</div>
+        </td>
         <td>{{session.session.deviceInfo.browser | uppercase}}</td>
-        <td><a class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
+        <td><a *ngIf="!session.current" class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
       </tr>
 
     </table>

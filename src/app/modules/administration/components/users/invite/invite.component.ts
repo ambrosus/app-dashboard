@@ -13,7 +13,6 @@ export class InviteComponent implements OnInit {
   spinner = false;
   error;
   success;
-  message = false;
 
   constructor(private http: HttpClient, private storage: StorageService) {
     this.initInviteForm();
@@ -23,14 +22,9 @@ export class InviteComponent implements OnInit {
     this.inviteForm = new FormGroup({
       members: new FormArray([
         new FormGroup({
-          email: new FormControl('', [Validators.required]),
+          email: new FormControl('', []),
           accessLevel: new FormControl(1, []),
-          permissions: new FormControl('create_entity', [])
-        }),
-        new FormGroup({
-          email: new FormControl('', [Validators.required]),
-          accessLevel: new FormControl(1, []),
-          permissions: new FormControl('create_entity', [])
+          permissions: new FormControl('', [])
         })
       ]),
       message: new FormControl('', [])
@@ -48,9 +42,9 @@ export class InviteComponent implements OnInit {
   addMember() {
     (<FormArray>this.inviteForm.get('members')).push(
       new FormGroup({
-        email: new FormControl('', [Validators.required]),
+        email: new FormControl('', []),
         accessLevel: new FormControl(1, []),
-        permissions: new FormControl('create_entity', [])
+        permissions: new FormControl('', [])
       })
     );
   }
@@ -98,13 +92,15 @@ export class InviteComponent implements OnInit {
     if (members.length > 0) {
       members.map((member) => {
         const permissions = member.get('permissions').value.split(',');
-
-        invites.push({
-          to: member.get('email').value,
-          accessLevel: member.get('accessLevel').value,
-          permissions,
-          message
-        });
+        const to = member.get('email').value;
+        if (to) {
+          invites.push({
+            to: member.get('email').value,
+            accessLevel: member.get('accessLevel').value,
+            permissions,
+            message
+          });
+        }
       });
     }
 
