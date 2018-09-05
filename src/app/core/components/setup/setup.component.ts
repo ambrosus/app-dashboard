@@ -23,7 +23,7 @@ export class SetupComponent implements OnInit {
   stepUser;
   currentStep = 1;
   prevButton = '';
-  nextButton = 'Company';
+  nextButton = '';
   timezones = [];
   web3;
   success;
@@ -74,24 +74,18 @@ export class SetupComponent implements OnInit {
       case 1:
         if (type && this.stepHermes) {
           this.currentStep++;
-          this.prevButton = 'Hermes Node';
-          this.nextButton = 'User';
         }
         break;
       case 2:
         if (type === 'prev') {
           this.currentStep--;
-          this.nextButton = 'Company';
         } else if (this.stepCompany) {
           this.currentStep++;
-          this.prevButton = 'Company';
         }
         break;
       case 3:
         if (type) {
           this.currentStep--;
-          this.prevButton = 'Hermes Node';
-          this.nextButton = 'User';
         }
     }
   }
