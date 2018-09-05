@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const axios = require('axios');
 const bcrypt = require('bcrypt');
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
 
 const User = require('../models/users');
 
@@ -110,41 +110,30 @@ exports.logout = (req, res, next) => {
 
 exports.sessions = (req, res, next) => {
   const email = req.params.email;
-  MongoClient.connect('mongodb://localhost:27017', function (err, client) {
+  let collection = mongoose.connection.db.collection('sessions');
+  collection.find().toArray(function(err, results) {
     if (err) throw err;
-
-    var db = client.db('dash');
-
-    db.collection('sessions').find().toArray(function(err, results) {
-      if (err) throw err;
-      const sessionArray = [];
-      results.forEach(result => {
-        if (result.session && result.session.user) {
-          if (result.session.user.email === email) {
-            sessionArray.push(result);
-          }
+    const sessionArray = [];
+    results.forEach(result => {
+      if (result.session && result.session.user) {
+        if (result.session.user.email === email) {
+          sessionArray.push(result);
         }
-      });
-      res.json(sessionArray);
-      db.close();
-      return next();
+      }
     });
-  }); 
+    res.json(sessionArray);
+    return next();
+  });
 }
 
 exports.session = (req, res, next) => {
   const sessionId = req.params.sessionId;
-  MongoClient.connect('mongodb://localhost:27017', function (err, client) {
+  let collection = mongoose.connection.db.collection('sessions');
+
+  collection.deleteOne({ _id: sessionId }, function(err, obj) {
     if (err) throw err;
-
-    var db = client.db('dash');
-
-    db.collection('sessions').deleteOne({ _id: sessionId }, function(err, obj) {
-      if (err) throw err;
-      res.status = 200;
-      res.json('Success');
-      db.close();
-      return next();
-    });
-  }); 
+    res.status = 200;
+    res.json('Success');
+    return next();
+  });
 }
