@@ -46,6 +46,10 @@ const usersSchema = mongoose.Schema({
     default: true
   },
   settings: String,
+  lastLogin: {
+    type: Date,
+    default: +new Date()
+  },
   createdAt: {
     type: Date,
     default: +new Date()
@@ -58,11 +62,13 @@ const usersSchema = mongoose.Schema({
 
 usersSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
+  this.lastLogin = +new Date();
   next();
 });
 
 usersSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
+  this.lastLogin = +new Date();
   next();
 });
 

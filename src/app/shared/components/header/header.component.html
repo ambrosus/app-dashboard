@@ -25,7 +25,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         <div class="avatar" *ngIf="user.full_name || (user.profile && user.profile.image)" [style.backgroundImage]="profile_image">
-          <span *ngIf="!(user.profile && user.profile.image)">{{ user.full_name.charAt(0) }}</span>
+          <span *ngIf="!profile_image">{{ user.full_name.charAt(0) }}</span>
         </div>
         {{ greeting }}
         <ul class="dropdown-menu">

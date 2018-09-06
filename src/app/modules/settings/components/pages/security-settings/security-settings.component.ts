@@ -5,12 +5,12 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-security-settings',
@@ -27,7 +27,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   logoutSessionSub: Subscription;
   logoutDevicesSub: Subscription;
 
-  constructor(private http: HttpClient, private storage: StorageService) {
+  constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
@@ -48,7 +48,10 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         console.log('GET sessions: ', resp);
         this.sessions = resp;
       },
-      err => console.log('GET sessions error: ', err)
+      err => {
+        if (err.status === 401) { this.auth.logout(); }
+        console.log('GET sessions error: ', err);
+      }
     );
   }
 
@@ -57,7 +60,10 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
     this.logoutSessionSub = this.http.delete(url).subscribe(
       resp => this.getSessions(),
-      err => console.log('DELETE session error: ', err)
+      err => {
+        if (err.status === 401) { this.auth.logout(); }
+        console.log('DELETE session error: ', err);
+      }
     );
   }
 
@@ -94,6 +100,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         this.resetSuccess = true;
       },
       err => {
+        if (err.status === 401) { this.auth.logout(); }
         this.spinner = false;
         this.error = err.error.message;
         console.log('Reset password error: ', err);
