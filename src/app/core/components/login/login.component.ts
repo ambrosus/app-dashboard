@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
     private http: HttpClient,
     private el: ElementRef,
     private renderer: Renderer2,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {
     this.web3 = new Web3();
     this.loginForm = new FormGroup({
