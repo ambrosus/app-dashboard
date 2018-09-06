@@ -7,16 +7,14 @@
         <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
       </div>
       <div class="form-fields-coupled">
-        <div class="form-text m-b-20 m-r-10 w-20">
+        <div class="form-text m-b-20 m-r-10 w-50">
           <label for="{{ i + 'accessLevel' }}">Access Level</label>
           <input formControlName="accessLevel" type="number" min="0" id="{{ i + 'accessLevel' }}" spellcheck="false" appInput>
         </div>
-        <div class="form-text m-b-20 w-80">
-          <label for="permissions">Permissions</label>
-          <select formControlName="permissions" id="permissions">
-            <option value="create_entity" selected>Get/create assets, events</option>
-            <option value="register_account">Register new users</option>
-            <option value="create_entity,register_account">All permissions</option>
+        <div class="form-text m-b-20 w-50">
+          <label for="role">Role</label>
+          <select formControlName="role" id="role">
+            <option *ngFor="let role of roles" value="{{ stringify(role) }}">{{ role.title }}</option>
           </select>
         </div>
         <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&#8855;</a>
