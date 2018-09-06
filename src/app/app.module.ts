@@ -41,7 +41,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
-    DeviceDetectorService
+    DeviceDetectorService,
   ],
   bootstrap: [AppComponent]
 })

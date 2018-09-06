@@ -137,7 +137,7 @@ export class LoginComponent implements OnInit {
 
       const body = {
         email,
-        password
+        password,
       };
 
       const url = `/api/auth/login`;
