@@ -53,6 +53,11 @@
         <td><a *ngIf="!session.current" class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
       </tr>
 
+      <tr *ngIf="sessions.length > 1">
+        <td></td><td></td><td></td>
+        <td><a class="abtn m-l-20 btn-solid-aorange" (click)="logoutOfAllDevices()">Logout of all devices</a></td>
+      </tr>
+
     </table>
   </div>
 </div>

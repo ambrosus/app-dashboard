@@ -25,6 +25,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   error;
   getSessionsSub: Subscription;
   logoutSessionSub: Subscription;
+  logoutDevicesSub: Subscription;
 
   constructor(private http: HttpClient, private storage: StorageService) {
     this.resetForm = new FormGroup({
@@ -63,6 +64,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.getSessionsSub) { this.getSessionsSub.unsubscribe(); }
     if (this.logoutSessionSub) { this.logoutSessionSub.unsubscribe(); }
+    if (this.logoutDevicesSub) { this.logoutDevicesSub.unsubscribe(); }
   }
 
   changePassword() {
@@ -102,5 +104,13 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   resetErrors() {
     this.error = false;
     this.resetSuccess = false;
+  }
+
+  logoutOfAllDevices() {
+    const url = `/api/auth/logoutofallsessions/`;
+    this.logoutDevicesSub = this.http.delete(url).subscribe(
+      resp => this.getSessions(),
+      err => console.log('DELETE session error: ', err)
+    );
   }
 }
