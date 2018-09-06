@@ -175,9 +175,9 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const user = req.session.user;
+  const company = req.session.user.company || '';
 
-  User.find({ company: user.company })
+  User.find({ company })
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
@@ -264,8 +264,7 @@ exports.changePassword = (req, res, next) => {
                   } else { throw 'Error in updating password'; }
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             });
-          }
-          catch(err){
+          } catch (err) {
             throw 'Incorrect password';
           }
         } else { throw 'No user found with this email address'; }
