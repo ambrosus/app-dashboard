@@ -64,7 +64,7 @@ export class AuthService {
         address,
         token,
         hermes,
-        deviceInfo
+        deviceInfo,
       };
 
       this.http.post(url, body).subscribe(

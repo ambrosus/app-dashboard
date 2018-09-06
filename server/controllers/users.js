@@ -175,7 +175,7 @@ exports.getAccount = (req, res, next) => {
 }
 
 exports.getAccounts = (req, res, next) => {
-  const company = req.session.user ? req.session.user.company : '';
+  const company = req.session.user.company || '';
 
   User.find({ company })
     .populate({
