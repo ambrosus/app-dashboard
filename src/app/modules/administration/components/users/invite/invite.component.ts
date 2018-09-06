@@ -126,7 +126,7 @@ export class InviteComponent implements OnInit, OnDestroy {
             to: member.get('email').value,
             accessLevel: member.get('accessLevel').value,
             role,
-            message
+            message,
           });
         }
       });
