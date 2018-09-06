@@ -17,6 +17,6 @@ AuthRoutes.post('/verify', AuthController.verifyAccount, (req, res) => { res.sta
 AuthRoutes.delete('/logout', AuthController.logout, (req, res) => { res.status(req.status).json(req.json); });
 AuthRoutes.get('/sessions', AuthController.getActiveSessions, (req, res) => { res.status(req.status).json(req.json); });
 AuthRoutes.delete('/sessions/:sessionId', AuthController.deleteSession, (req, res) => { res.status(req.status).json(req.json); });
-AuthRoutes.delete('/logoutofallsessions', AuthController.logOutOfAllSessions, (req, res) => { res.status(req.status).json(req.json); });
+AuthRoutes.delete('/sessions', AuthController.deleteSessions, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = AuthRoutes;

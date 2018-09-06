@@ -151,7 +151,7 @@ exports.deleteSession = (req, res, next) => {
   });
 }
 
-exports.logOutOfAllSessions = (req, res, next) => {
+exports.deleteSessions = (req, res, next) => {
   const email = req.session.user.email;
 
   let sessionsCollection = mongoose.connection.db.collection('sessions');
@@ -161,24 +161,20 @@ exports.logOutOfAllSessions = (req, res, next) => {
     if (!err) {
 
       sessions = sessions.filter(session => {
-        session = session.session.cookie.expires.toString() != req.session.cookie._expires.toString();
-        return session;
+        if (session.session.cookie.expires.toString() != req.session.cookie._expires.toString()) {
+          sessionsCollection.deleteOne({ _id: session._id }, function(err, obj) {
+            if (!err) {
+              req.status = 200;
+              req.json = { message: "Success" };
+              return next();
+            } else {
+              req.status = 400;
+              req.json = { message: "Error in deleting sessions." };
+              return next();
+            }
+          });
+        }
       });
-
-      sessions.forEach(session => {
-        sessionsCollection.deleteOne({ _id: session._id }, function(err, obj) {
-          if (!err) {
-            req.status = 200;
-            req.json = { message: "Success" };
-            return next();
-          } else {
-            req.status = 400;
-            req.json = { message: "Error in deleting sessions." };
-            return next();
-          }
-        });
-      })
-
     } else {
       req.status = 400;
       req.json = { 'message': "No sessions were found." }

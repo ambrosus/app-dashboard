@@ -107,7 +107,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   }
 
   logoutOfAllDevices() {
-    const url = `/api/auth/logoutofallsessions/`;
+    const url = `/api/auth/sessions/`;
     this.logoutDevicesSub = this.http.delete(url).subscribe(
       resp => this.getSessions(),
       err => console.log('DELETE session error: ', err)
