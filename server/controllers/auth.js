@@ -34,6 +34,8 @@ exports.login = (req, res, next) => {
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
+          user.lastLogin = +new Date();
+          user.save();
 
           if (valid) {
             delete user.password;
@@ -109,13 +111,12 @@ exports.logout = (req, res, next) => {
 }
 
 exports.getActiveSessions = (req, res, next) => {
-  const email = req.session.user.email;
+  const email = req.session.user ? req.session.user.email : '';
 
   let sessionsCollection = mongoose.connection.db.collection('sessions');
   sessionsCollection.find({ "session.user.email": email }).toArray((err, sessions) => {
 
-    if (!err) {
-
+    if (!err || !sessions.length) {
       sessions = sessions.filter(session => {
         session.current = session.session.cookie.expires.toString() == req.session.cookie._expires.toString();
         return session;
@@ -125,7 +126,7 @@ exports.getActiveSessions = (req, res, next) => {
       req.json = sessions;
       return next();
     } else {
-      req.status = 400;
+      req.status = 401;
       req.json = { 'message': "No sessions were found." }
       return next();
     }

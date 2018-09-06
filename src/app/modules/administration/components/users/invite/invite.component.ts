@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-invite',
@@ -14,7 +15,7 @@ export class InviteComponent implements OnInit {
   error;
   success;
 
-  constructor(private http: HttpClient, private storage: StorageService) {
+  constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
     this.initInviteForm();
   }
 
@@ -74,6 +75,7 @@ export class InviteComponent implements OnInit {
           this.success = 'Invites sent';
         },
         err => {
+          if (err.status === 401) { this.auth.logout(); }
           console.log('Invites error: ', err);
           this.error = 'Invites failed';
         }

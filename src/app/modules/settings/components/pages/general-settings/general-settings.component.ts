@@ -51,8 +51,11 @@ export class GeneralSettingsComponent implements OnInit {
   prefillEditProfile() {
     this.user = this.storage.get('user') || {};
     this.editProfileForm.get('full_name').setValue(this.user.full_name);
-    const settings = this.user.settings ? JSON.parse(this.user.settings) : {};
-    this.editProfileForm.get('timeZone').setValue(settings.timeZone || '');
+    let timeZone = '';
+    try {
+      timeZone = JSON.parse(this.user.settings)['timeZone'];
+    } catch (err) { timeZone = this.storage.get('user')['company']['timeZone']; }
+    this.editProfileForm.get('timeZone').setValue(timeZone);
 
     try {
       this.croppedImage = this.user.profile.image;
@@ -90,11 +93,15 @@ export class GeneralSettingsComponent implements OnInit {
               this.storage.set('user', user);
               this.emit('user:refresh');
             },
-            err => console.log('Get account error: ', err)
+            err => {
+              if (err.status === 401) { this.auth.logout(); }
+              console.log('Get account error: ', err);
+            }
           );
           console.log('Edit profile: ', resp);
         },
         err => {
+          if (err.status === 401) { this.auth.logout(); }
           this.spinner = false;
           this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
           console.log('Edit profile error: ', err);

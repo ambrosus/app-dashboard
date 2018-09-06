@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, Renderer2, OnDestroy } from '@angular/co
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-invites',
@@ -14,7 +15,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
   ids = [];
   invitesSubscription: Subscription;
 
-  constructor(private storage: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2) { }
+  constructor(private storage: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2, private auth: AuthService) { }
 
   ngOnInit() {
     this.getInvites();
@@ -31,6 +32,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
         this.invites = resp.data;
       },
       err => {
+        if (err.status === 401) { this.auth.logout(); }
         console.log('Invites GET error: ', err);
       }
     );
@@ -51,6 +53,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
             this.getInvites();
           },
           err => {
+            if (err.status === 401) { this.auth.logout(); }
             console.log('Invites DELETE error: ', err);
           }
         );
