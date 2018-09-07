@@ -16,9 +16,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
             Getting started <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li>What is Dashboard</li>
-            <li>How it works</li>
-            <li>Dashboard setup</li>
+            <li routerLink="/help/Getting started/What is Dashboard">What is Dashboard</li>
+            <li routerLink="/help/Getting started/How it works">How it works</li>
+            <li routerLink="/help/Getting started/Dashboard setup">Dashboard setup</li>
           </ul>
           <p class="sidebar-pages__sidebar__item__title" appAccordion>
             Administration <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
@@ -59,10 +59,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </aside>
       <!-- Main -->
       <div class="sidebar-pages__main">
-        <article *ngFor="let item of help" [id]="slug(item.title)">
-          <h3 id="item1">{{ item.title }}</h3>
-          <p class="m-t-10 m-b-30">{{ item.lesson }}</p>
-        </article>
+        <h4 class="color-ablue--base" *ngIf="!content">Choose one of the topics</h4>
+        <article *ngIf="content" [innerHTML]="sanitizeHTML(content || '')"></article>
       </div>
     </div>
   </div>
