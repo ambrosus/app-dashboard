@@ -1,6 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const server = 'http://localhost:5000';
+// const server = 'http://localhost:5000';
+process.env['SECRET'] = 'random';
+const server = require('../server');
 
 chai.use(chaiHttp);
 const expect = chai.expect;

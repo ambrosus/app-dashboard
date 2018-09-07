@@ -8,7 +8,7 @@
     "build": "ng build --prod --aot",
     "dev": "ng serve --aot --proxy-config proxy-conf.json",
     "test": "ng test",
-    "server-test": "nyc mocha",
+    "server-test": "nyc mocha --exit",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "ng build --prod --output-path=dist --aot"
