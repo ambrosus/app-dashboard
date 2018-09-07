@@ -13,6 +13,7 @@
   "newline_between_rules": false,
   "selector_separator_newline": true,
   "space_around_combinator": true,
+  "end_with_comma": true,
   "css": {
     "indent_size": 2,
     "space_around_combinator": true,

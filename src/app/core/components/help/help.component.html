@@ -5,28 +5,65 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-
 <div class="main">
-    <h2 class="center m-v-30">Help</h2>
-    <div class="sidebar-pages__wrapper">
-        <div class="sidebar-pages">
-            <!-- Sidebar -->
-            <aside class="sidebar-pages__sidebar">
-                <div class="sidebar-pages__sidebar__item"
-                     appSticky
-                     [addClass]="'fixed'">
-                    <p (click)="scroll(slug(item.title))"
-                       *ngFor="let item of help">{{ item.title }}</p>
-                </div>
-            </aside>
-            <!-- Main -->
-            <div class="sidebar-pages__main">
-                <article *ngFor="let item of help"
-                         [id]="slug(item.title)">
-                    <h3 id="item1">{{ item.title }}</h3>
-                    <p class="m-t-10 m-b-30">{{ item.lesson }}</p>
-                </article>
-            </div>
+  <h2 class="center m-v-50">Help</h2>
+  <div class="sidebar-pages__wrapper">
+    <div class="sidebar-pages">
+      <!-- Sidebar -->
+      <aside class="sidebar-pages__sidebar">
+        <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
+          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+            Getting started <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+          </p>
+          <ul class="sidebar-pages__sidebar__item__menu">
+            <li>What is Dashboard</li>
+            <li>How it works</li>
+            <li>Dashboard setup</li>
+          </ul>
+          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+            Administration <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+          </p>
+          <ul class="sidebar-pages__sidebar__item__menu">
+            <li>User invites</li>
+            <li>Managing users</li>
+          </ul>
+          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+            User <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+          </p>
+          <ul class="sidebar-pages__sidebar__item__menu">
+            <li>Creating an account</li>
+            <li>Editing profile</li>
+            <li>Password change</li>
+            <li>Security</li>
+          </ul>
+          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+            Assets <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+          </p>
+          <ul class="sidebar-pages__sidebar__item__menu">
+            <li>What are assets</li>
+            <li>Create an asset</li>
+            <li>View assets/asset</li>
+            <li>Search assets</li>
+          </ul>
+          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+            Events <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+          </p>
+          <ul class="sidebar-pages__sidebar__item__menu">
+            <li>What are events</li>
+            <li>Create an event</li>
+            <li>Edit event</li>
+            <li>View events/event</li>
+            <li>Search events</li>
+          </ul>
         </div>
+      </aside>
+      <!-- Main -->
+      <div class="sidebar-pages__main">
+        <article *ngFor="let item of help" [id]="slug(item.title)">
+          <h3 id="item1">{{ item.title }}</h3>
+          <p class="m-t-10 m-b-30">{{ item.lesson }}</p>
+        </article>
+      </div>
     </div>
+  </div>
 </div>
