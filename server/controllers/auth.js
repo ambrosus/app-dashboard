@@ -24,7 +24,6 @@ const User = require('../models/users');
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const deviceInfo = req.body.deviceInfo;
 
   if (email && password) {
     User.findOne({ email })
@@ -44,11 +43,12 @@ exports.login = (req, res, next) => {
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
+          user.lastLogin = +new Date();
+          user.save();
 
           if (valid) {
             delete user.password;
-            req.session.user = { email: user.email, address: user.address };
-            req.session.deviceInfo = deviceInfo;
+            req.session.user = { _id: user._id, address: user.address, company: user.company };
             req.status = 200;
             req.json = user
             return next();
@@ -76,6 +76,7 @@ exports.verifyAccount = (req, res, next) => {
   const address = req.body.address;
   const token = req.body.token;
   const hermes = req.body.hermes;
+  const deviceInfo = req.body.deviceInfo;
 
   const headers = {
     Accept: 'application/json',
@@ -102,7 +103,8 @@ exports.verifyAccount = (req, res, next) => {
         .then(user => {
           if (user) {
             req.status = 200;
-            req.session.user = { email: user.email, address: user.address };;
+            req.session.user = { _id: user._id, address: user.address, company: user.company };
+            req.session.deviceInfo = deviceInfo;
             req.json = user;
             return next();
           } else { throw 'No user found'; }
@@ -145,13 +147,12 @@ exports.logout = (req, res, next) => {
  * @returns array of sessions with status code 200 on success
  */
 exports.getActiveSessions = (req, res, next) => {
-  const email = req.session.user.email;
+  const userId = req.session.user ? req.session.user._id : '';
 
   let sessionsCollection = mongoose.connection.db.collection('sessions');
-  sessionsCollection.find({ "session.user.email": email }).toArray((err, sessions) => {
+  sessionsCollection.find({ "session.user._id": userId }).toArray((err, sessions) => {
 
-    if (!err) {
-
+    if (!err || !sessions.length) {
       sessions = sessions.filter(session => {
         session.current = session.session.cookie.expires.toString() == req.session.cookie._expires.toString();
         return session;
@@ -161,7 +162,7 @@ exports.getActiveSessions = (req, res, next) => {
       req.json = sessions;
       return next();
     } else {
-      req.status = 400;
+      req.status = 401;
       req.json = { 'message': "No sessions were found." }
       return next();
     }

@@ -15,8 +15,8 @@ const app = express();
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
-.then(connected => console.log('MongoDB connected'))
-.catch(error => console.log('Mongodb connection error: ', error));
+  .then(connected => console.log('MongoDB connected'))
+  .catch(error => console.log('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({

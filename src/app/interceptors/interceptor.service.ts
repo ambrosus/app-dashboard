@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
-import { environment } from 'environments/environment';
+import {
+  HttpEvent,
+  HttpInterceptor,
+  HttpHandler,
+  HttpRequest,
+  HttpResponse,
+  HttpHeaders
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { AuthService } from 'app/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InterceptorService implements HttpInterceptor {
-  constructor(private storage: StorageService) {}
+  constructor(private storage: StorageService, private auth: AuthService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.storage.get('token');
@@ -36,6 +44,14 @@ export class InterceptorService implements HttpInterceptor {
       });
     }
 
-    return next.handle(request);
+    return next.handle(request).pipe(
+      tap(
+        event => { },
+        error => {
+          if (error.status === 401 && error.url.indexOf('/api/') > -1) {
+            this.auth.logout();
+          }
+        }
+      ));
   }
 }
