@@ -11,7 +11,7 @@ const job = new CronJob('0 */480 * * * *', () => {
       invites.forEach(invite => {
         if (moment().diff(invite.validUntil) < 0) {
           Invites.findByIdAndRemove(invite._id)
-            .then(deleted => console.log('Invite expired: ', deleted))
+            .then(deleted => console.log('Invite expired, deleted'))
             .catch(error => console.log('Invite delete error: ', error));
         }
       });

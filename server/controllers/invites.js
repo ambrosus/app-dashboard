@@ -26,7 +26,7 @@ exports.create = (req, res, next) => {
           invites.map(invite => {
             invite['_id'] = new mongoose.Types.ObjectId();
             invite['from'] = mongoose.Types.ObjectId(user._id);
-            invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, permissions: invite.permissions, createdAt: +new Date(), company: user.company._id }), config.secret);
+            invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, role: invite.role, createdAt: +new Date(), company: user.company._id }), config.secret);
 
             const url = `https://${req.get('host')}/invite/${invite['token']}`;
             const message = invite['message'] ? `<p style="text-align: left;width: 100%; color: #000; margin-bottom: 25px;">${invite['message']}</p>` : '<!-- Message -->';

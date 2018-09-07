@@ -1,9 +1,11 @@
 import { AuthGuardChild } from './services/auth-guard-child.service';
+import { AuthGuardChildAdmin } from './services/auth-guard-child-admin.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { AuthGuardLogin } from 'app/services/auth-guard-login.service';
+
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
@@ -37,7 +39,7 @@ const routes: Routes = [
   },
   {
     path: 'administration',
-    canActivateChild: [AuthGuardChild],
+    canActivateChild: [AuthGuardChildAdmin],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   },
@@ -59,6 +61,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthGuardChild, AuthGuardLogin]
+  providers: [AuthGuard, AuthGuardChild, AuthGuardChildAdmin, AuthGuardLogin]
 })
 export class AppRoutingModule { }

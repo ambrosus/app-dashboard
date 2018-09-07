@@ -12,6 +12,7 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
+
 const User = require('../models/users');
 const Company = require('../models/companies');
 const Role = require('../models/roles');
@@ -26,6 +27,7 @@ exports.create = (req, res, next) => {
   let accessLevel = user.accessLevel || 1;
   let permissions = user.permissions || ['create_entity'];
   let company = '';
+  let role = '';
 
   // invite
   if (inviteToken) {
@@ -33,8 +35,9 @@ exports.create = (req, res, next) => {
       const _token = JSON.parse(utilsPassword.decrypt(inviteToken, config.secret));
       email = _token['email'];
       accessLevel = _token['accessLevel'];
-      permissions = _token['permissions'];
       company = _token['company'];
+      role = _token['role']['_id'];
+      if (_token['role']['title'] === 'admin') { permissions = ['register_account', 'create_entity'] }
     } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
 
@@ -58,7 +61,9 @@ exports.create = (req, res, next) => {
               user
                 .save()
                 .then(user => {
-                  Role.findOne({ id: 3 })
+                  const query = role ? { _id: role } : { id: 3 };
+
+                  Role.findOne(query)
                     .then(role => {
                       if (role) {
                         user.role = role;
@@ -74,7 +79,7 @@ exports.create = (req, res, next) => {
                           address,
                           permissions,
                           accessLevel
-                        }
+                        };
                         axios.post(`${hermes.url}/accounts`, body, { headers })
                           .then(userRegistered => {
                             if (inviteToken) {
@@ -277,3 +282,18 @@ exports.changePassword = (req, res, next) => {
     return res.status(400).json({ message: '"newPassword" is required' });
   }
 };
+
+exports.getRoles = (req, res, next) => {
+  Role.find({ title: { $ne: 'owner' } })
+    .select('-createdAt -updatedAt -__v')
+    .then(roles => {
+      if (roles) {
+        req.status = 200;
+        req.json = {
+          resultCount: roles.length,
+          data: roles
+        };
+        return next();
+      } else { throw 'No roles found'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+}
