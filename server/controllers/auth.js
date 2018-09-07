@@ -11,6 +11,16 @@ const mongoose = require('mongoose');
 
 const User = require('../models/users');
 
+/**
+ * Logs in user
+ * Stores user email, user address & deviceInfo on successful login
+ *
+ * @name login
+ * @route {POST} api/auth/login
+ * @bodyparam email, password, deviceInfo
+ * @returns Status code 400 on failure
+ * @returns user Object on success with status code 200
+ */
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -53,6 +63,15 @@ exports.login = (req, res, next) => {
   }
 };
 
+/**
+ * Verifies a user by calling the API (hermes.url/accounts/address)
+ *
+ * @name verify
+ * @route {POST} api/auth/verify
+ * @bodyparam address, token, hermes
+ * @returns Status code 400 on failure
+ * @returns user Object on success with status code 200
+ */
 exports.verifyAccount = (req, res, next) => {
   const address = req.body.address;
   const token = req.body.token;
@@ -96,6 +115,14 @@ exports.verifyAccount = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
 }
 
+/**
+ * Logs out a user by destroying the session
+ *
+ * @name logout
+ * @route {DELETE} api/auth/logout
+ * @returns Status code 400 on failure
+ * @returns success message with status code 200 on success
+ */
 exports.logout = (req, res, next) => {
   req.session.destroy(error => {
     if (error) {
@@ -108,6 +135,15 @@ exports.logout = (req, res, next) => {
   });
 }
 
+/**
+ * Get all active sessions for a user
+ * Look up logged in user's email address in the session
+ *
+ * @name getActiveSessions
+ * @route {GET} api/auth/sessions
+ * @returns Status code 400 on failure
+ * @returns array of sessions with status code 200 on success
+ */
 exports.getActiveSessions = (req, res, next) => {
   const email = req.session.user.email;
 
@@ -133,6 +169,14 @@ exports.getActiveSessions = (req, res, next) => {
   });
 }
 
+/**
+ * Destroy all the sessions except the current one
+ *
+ * @name deleteSession
+ * @route {DELETE} api/auth/sessions/:sessionId
+ * @returns Status code 400 on failure
+ * @returns success message with status code 200 on success
+ */
 exports.deleteSession = (req, res, next) => {
   const sessionId = req.params.sessionId;
   let collection = mongoose.connection.db.collection('sessions');
