@@ -26,7 +26,6 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   getSessionsSub: Subscription;
   logoutSessionSub: Subscription;
   logoutDevicesSub: Subscription;
-  currentSession;
 
   constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
     this.resetForm = new FormGroup({
@@ -48,17 +47,12 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
       resp => {
         console.log('GET sessions: ', resp);
         this.sessions = resp;
-        this.getCurrentSession(this.sessions);
       },
       err => {
         if (err.status === 401) { this.auth.logout(); }
         console.log('GET sessions error: ', err);
       }
     );
-  }
-
-  getCurrentSession(sessionArray) {
-    this.currentSession = sessionArray.filter(session => session.current === true);
   }
 
   logoutSession(sessionId) {
@@ -120,7 +114,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   }
 
   logoutOfAllDevices() {
-    const url = `/api/auth/sessions/${this.currentSession[0]._id}`;
+    const url = `/api/auth/sessions/`;
     this.logoutDevicesSub = this.http.delete(url).subscribe(
       resp => this.getSessions(),
       err => console.log('DELETE session error: ', err)
