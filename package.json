@@ -70,6 +70,7 @@
     "codelyzer": "~4.2.1",
     "cors": "^2.8.4",
     "chai": "^4.1.2",
+    "chai-http": "4.2.0",
     "express": "^4.16.3",
     "http": "0.0.0",
     "jasmine-core": "~2.99.1",
