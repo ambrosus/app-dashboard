@@ -151,3 +151,30 @@ exports.deleteSession = (req, res, next) => {
 
   });
 }
+
+exports.deleteSessions = (req, res, next) => {
+  const userId = req.session.user._id;
+
+  let sessionsCollection = mongoose.connection.db.collection('sessions');
+
+  sessionsCollection.find({ "session.user._id": userId }).toArray((err, sessions) => {
+    const currentSession = sessions.filter(session => {
+      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) {
+        return session;
+      }
+    });
+
+    sessionsCollection.deleteMany({ 'session.user._id': userId, _id: { $ne: currentSession[0]._id }}, (err, response) => {
+      if (!err) {
+        req.status = 200;
+        req.json = { message: "Success" };
+        return next();
+      } else {
+        req.status = 400;
+        req.json = { message: "Error in deleting sessions." };
+        return next();
+      }
+    });
+
+  })
+}
