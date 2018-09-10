@@ -12,53 +12,53 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <!-- Sidebar -->
       <aside class="sidebar-pages__sidebar">
         <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
-          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+          <p class="sidebar-pages__sidebar__item__title" id="getting-started" appAccordion>
             Getting started <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li routerLink="/help/Getting started/What is Dashboard">What is Dashboard</li>
-            <li routerLink="/help/Getting started/How it works">How it works</li>
-            <li routerLink="/help/Getting started/Dashboard setup">Dashboard setup</li>
+            <li routerLink="/help/Getting started/What is Dashboard" id="what-is-dashboard">What is Dashboard</li>
+            <li routerLink="/help/Getting started/How it works" id="how-it-works">How it works</li>
+            <li routerLink="/help/Getting started/Dashboard setup" id="dashboard-setup">Dashboard setup</li>
           </ul>
-          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+          <p class="sidebar-pages__sidebar__item__title" id="administration" appAccordion>
             Administration <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li>User invites</li>
-            <li>Managing users</li>
+            <li routerLink="/help/Administration/User invites" id="users-invites">User invites</li>
+            <li routerLink="/help/Administration/Managing users" id="managing-users">Managing users</li>
           </ul>
-          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+          <p class="sidebar-pages__sidebar__item__title" id="user" appAccordion>
             User <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li>Creating an account</li>
-            <li>Editing profile</li>
-            <li>Password change</li>
-            <li>Security</li>
+            <li routerLink="/help/User/Creating an account" id="creating-an-account">Creating an account</li>
+            <li routerLink="/help/User/Editing profile" id="editing-profile">Editing profile</li>
+            <li routerLink="/help/User/Password change" id="password-change">Password change</li>
+            <li routerLink="/help/User/Security" id="security">Security</li>
           </ul>
-          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+          <p class="sidebar-pages__sidebar__item__title" id="assets" appAccordion>
             Assets <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li>What are assets</li>
-            <li>Create an asset</li>
-            <li>View assets/asset</li>
-            <li>Search assets</li>
+            <li routerLink="/help/Assets/What are assets" id="what-are-assets">What are assets</li>
+            <li routerLink="/help/Assets/Create an asset" id="create-an-asset">Create an asset</li>
+            <li routerLink="/help/Assets/View assets" id="View assets">View assets</li>
+            <li routerLink="/help/Assets/Search assets" id="search-assets">Search assets</li>
           </ul>
-          <p class="sidebar-pages__sidebar__item__title" appAccordion>
+          <p class="sidebar-pages__sidebar__item__title" id="events" appAccordion>
             Events <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
           </p>
           <ul class="sidebar-pages__sidebar__item__menu">
-            <li>What are events</li>
-            <li>Create an event</li>
-            <li>Edit event</li>
-            <li>View events/event</li>
-            <li>Search events</li>
+            <li routerLink="/help/Events/What are events" id="what-are-events">What are events</li>
+            <li routerLink="/help/Events/Create an event" id="create-an-event">Create an event</li>
+            <li routerLink="/help/Events/Edit event" id="edit-event">Edit event</li>
+            <li routerLink="/help/Events/View events" id="view-events">View events</li>
+            <li routerLink="/help/Events/Search events" id="search-events">Search events</li>
           </ul>
         </div>
       </aside>
       <!-- Main -->
-      <div class="sidebar-pages__main">
+      <div class="sidebar-pages__main help">
         <h4 class="color-ablue--base" *ngIf="!content">Choose one of the topics</h4>
         <article *ngIf="content" [innerHTML]="sanitizeHTML(content || '')"></article>
       </div>

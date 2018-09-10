@@ -95,10 +95,14 @@
         & > li {
           transition: background-color .2s $t1;
           padding: 10px 10px 10px 25px;
-          background: #f7f9fd;
+          background-color: #ebf0fa;
+
+          &.active {
+            background-color: #d6e0f5;
+          }
 
           &:hover {
-            background-color: #ebf0fa;
+            background-color: #d6e0f5;
           }
         }
 

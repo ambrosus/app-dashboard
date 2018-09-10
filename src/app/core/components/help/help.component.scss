@@ -1,1 +1,45 @@
 @import 'var';
+
+.help {
+  font-size: 16px;
+  color: $black;
+  line-height: 1.5;
+
+  & h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-bottom: 20px;
+  }
+
+  & q {
+    display: inline-block;
+    font-size: 1.4em;
+    font-weight: 500;
+    font-style: italic;
+    color: $grey;
+    margin-bottom: 25px;
+  }
+
+  & p {
+    font-size: 16px;
+    color: $black;
+    line-height: 1.5;
+    margin-bottom: 30px;
+
+    & + p {
+      margin-bottom: 15px;
+    }
+  }
+
+  & ul {
+    margin-bottom: 15px;
+
+    & li {
+      list-style-type: circle;
+      list-style-position: inside;
+    }
+  }
+}
