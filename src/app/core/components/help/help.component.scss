@@ -27,7 +27,7 @@
     font-size: 16px;
     color: $black;
     line-height: 1.5;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 
     & + p {
       margin-bottom: 15px;
@@ -39,6 +39,14 @@
 
     & li {
       list-style-type: circle;
+      list-style-position: inside;
+    }
+  }
+
+  & ol {
+    margin-bottom: 15px;
+
+    & li {
       list-style-position: inside;
     }
   }
