@@ -1,0 +1,52 @@
+<div class="flex flex-direction-r justify-content-c align-items-c p-a-40" style="min-height: 100vh">
+  <div>
+    <h3 class="p-h-30">Create Role</h3>
+    <hr>
+
+    <div class="m-t-30" style="max-width: 350px">
+      <div class="tab_content">
+
+        <!-- Create Role form -->
+          <div class="form-text m-b-20">
+            <label >Role Name </label>
+            <input type="text">
+          </div>
+
+          <div class="m-b-20">
+            <h5>Dashboard Permissions</h5>
+          </div>
+          <div class="m-b-20">
+              <div class="check" style="display:inline;">
+                <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
+              </div>
+              <div class="m-l-10" style="display:inline;">
+                Create Entity
+              </div>
+          </div>
+          <div class="m-b-30">
+              <div class="check" style="display:inline;">
+                <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
+              </div>
+              <div class="m-l-10" style="display:inline;">
+                Register Account
+              </div>
+          </div>
+
+          <div class="form-text m-b-20">
+            <label >Access Level </label>
+            <input type="number">
+          </div>
+
+          <div class="flex flex-direction-r justify-content-fe align-items-c">
+            <app-spinner *ngIf="spinner"></app-spinner>
+            <button (click)="closeDialog()" class="abtn m-l-20 btn-solid-ared">Cancel</button>
+            <button class="abtn m-l-20 btn-solid-ablue">Create</button>
+          </div>
+      </div>
+    </div>
+
+    <h5 class="p-h-40 m-v-30 center" *ngIf="error" style="color: #ea7070">Show response errors here</h5>
+
+  </div>
+</div>
+  

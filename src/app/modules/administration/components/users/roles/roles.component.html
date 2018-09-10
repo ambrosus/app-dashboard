@@ -1,0 +1,63 @@
+<h4 class="m-b-30">Roles</h4>
+
+<div class="table" style="padding: 0;">
+  <!-- Header -->
+  <!-- Select all -->
+  <div class="table__item table__item__header">
+    <label class="table__label table__label__heading" for="selectAll">
+      <div class="relative">
+        <input type="checkbox" class="table__checkbox">
+        <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
+      </div>
+      <span class="capitalize color-ablue--base">Select All</span>
+    </label>
+    <!-- Bulk actions -->
+    <div class="table__label table__label__heading table__label__select color-ablue--base center">
+      <select>
+        <option value="default" disabled>Bulk actions</option>
+      </select>
+    </div>
+    <button class="abtn btn-outline-ablue m-l-auto" (click)="createRoleDialog()">Create New Role</button>
+  </div>
+
+  <div class="table__item table__item__header header--sticky">
+    <div style="width: 130px; height: 10px; flex: 0 0 100px;"></div>
+    <p class="table__column table__column__header">Role</p>
+    <p class="table__column table__column__header">Permissions</p>
+    <p class="table__column table__column__header">Access Level</p>
+    <p class="table__column table__column__header">Edit Role</p>
+  </div>
+</div>
+
+<div class="table m-t-20" id="table">
+
+  <!-- Items -->
+  <div class="table__item table">
+    <label class="table__label" for="{{ i }}">
+      <div class="check">
+        <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
+      </div>
+    </label>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Role</p>
+      <p class="table__column-content">Super Admin</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Permissions</p>
+      <p class="table__column-content">Create Entity, Register Account</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Access Level</p>
+      <p class="table__column-content">5</p>
+    </div>
+
+    <div class="table__column">
+      <p class="table__column-title hide-1024">Edit Role</p>
+      <p class="table__column-content"><button class="abtn btn-outline-aorange" (click)="createRoleDialog()">EDIT</button></p>
+    </div>
+
+  </div>
+</div>
