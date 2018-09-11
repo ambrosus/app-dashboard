@@ -9,6 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class AddRoleDialogComponent implements OnInit {
 
   spinner: Boolean = false;
+  createPromise;
 
   constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>) { }
 
@@ -17,6 +18,12 @@ export class AddRoleDialogComponent implements OnInit {
 
   closeDialog() {
     this.dialogRef.close();
+  }
+
+  create(){
+    this.createPromise = new Promise((resolve, reject) => {
+      setTimeout(reject, 2000);
+    });
   }
 
 }
