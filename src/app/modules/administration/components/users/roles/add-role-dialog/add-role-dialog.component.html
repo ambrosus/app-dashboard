@@ -38,7 +38,6 @@
           </div>
 
           <div class="flex flex-direction-r justify-content-fe align-items-c">
-            <app-spinner *ngIf="spinner"></app-spinner>
             <button (click)="closeDialog()" class="abtn m-l-20 btn-solid-ared">Cancel</button>
             <button class="abtn m-l-20 btn-solid-ablue" (click)="create()" [promiseBtn]="createPromise">Create</button>
           </div>
