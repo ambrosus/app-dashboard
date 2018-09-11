@@ -17,6 +17,15 @@ const Company = require('../models/companies');
 const Role = require('../models/roles');
 const Invite = require('../models/invites');
 
+/**
+ * Create a new user.
+ *
+ * @name createUser
+ * @route {POST} api/users/create
+ * @bodyparam user: {email, accessLevel, permissions}, hermes
+ * @returns Status code 400 on failure
+ * @returns user Object on success with status code 200
+ */
 exports.create = (req, res, next) => {
   const user = req.body.user || {};
   const { full_name, address, token, password } = user;
@@ -109,6 +118,15 @@ exports.create = (req, res, next) => {
   }
 }
 
+/**
+ * Sets company ownership
+ *
+ * @name setOwnership
+ * @route {POST} api/setup
+ * @bodyparam user, company
+ * @returns Status code 400 on failure
+ * @returns Status code 200 on success
+ */
 exports.setOwnership = (req, res, next) => {
   const user = req.user || req.body.user;
   const company = req.company || req.body.company;
@@ -147,6 +165,14 @@ exports.setOwnership = (req, res, next) => {
   }
 }
 
+/**
+ * Get account details based on email address
+ *
+ * @name getAccount
+ * @route {GET} api/users/
+ * @returns Status code 400 on failure
+ * @returns user Object on success with status code 200
+ */
 exports.getAccount = (req, res, next) => {
   const email = req.params.email;
 
@@ -174,6 +200,14 @@ exports.getAccount = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
+/**
+ * Get list of accounts based on the user's company
+ *
+ * @name getCompanyAccounts
+ * @route {GET} api/users/
+ * @returns Status code 400 on failure
+ * @returns users Object & number of users (count) on success with status code 200
+ */
 exports.getAccounts = (req, res, next) => {
   const user = req.session.user;
 
@@ -203,6 +237,15 @@ exports.getAccounts = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
+/**
+ * Get settings of a particular user (query using email address)
+ *
+ * @name getSettings
+ * @route {GET} /settings/:email
+ * @queryparam email
+ * @returns Status code 400 on failure
+ * @returns userSettings (user.settings) Object on success with status code 200
+ */
 exports.getSettings = (req, res, next) => {
   const email = req.params.email;
 
@@ -218,6 +261,16 @@ exports.getSettings = (req, res, next) => {
 
 exports.getNotifications = (req, res, next) => {}
 
+/**
+ * Update user details using the user email address
+ *
+ * @name editUserDetails
+ * @route {PUT} /users/:email
+ * @queryparam email
+ * @bodyparam userDetails: any
+ * @returns Status code 400 on failure
+ * @returns updateResponse Object on success with status code 200
+ */
 exports.edit = (req, res, next) => {
   const email = req.params.email;
   const query = req.body;
@@ -240,6 +293,15 @@ exports.edit = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
+/**
+ * Change password of a user using their email address
+ *
+ * @name changePassword
+ * @route {PUT} /users/password
+ * @bodyparam email, oldPassword, newPassword
+ * @returns Status code 400 on failure
+ * @returns Password success message on success with status code 200
+ */
 exports.changePassword = (req, res, next) => {
   const email = req.body.email;
   const oldPassword = req.body.oldPassword;
