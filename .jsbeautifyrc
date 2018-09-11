@@ -20,6 +20,11 @@
     "newline_between_rules": true
   },
   "html": {
-    "wrap_attributes": "auto"
+    "wrap_attributes": "auto",
+    "content_unformatted": [
+      "pre",
+      "textarea",
+      "code"
+    ]
   }
 }

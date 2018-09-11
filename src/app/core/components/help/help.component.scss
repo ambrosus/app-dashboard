@@ -12,6 +12,7 @@
   h5,
   h6 {
     margin-bottom: 20px;
+    padding-top: 10px;
   }
 
   & q {
@@ -23,11 +24,28 @@
     margin-bottom: 25px;
   }
 
+  & img {
+    margin: 25px 0;
+    box-shadow: 0px 7px 55px 5px rgba(80, 120, 241, 0.1);
+  }
+
+  & code {
+    padding: 25px;
+    font-size: 14px;
+    background-color: #fff;
+    color: $black;
+    display: block;
+    margin: 15px 0;
+    white-space: pre;
+    box-shadow: 0px 7px 55px 5px rgba(80, 120, 241, 0.1);
+  }
+
   & p {
     font-size: 16px;
     color: $black;
     line-height: 1.5;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    padding-top: 10px;
 
     & + p {
       margin-bottom: 15px;
@@ -40,6 +58,16 @@
     & li {
       list-style-type: circle;
       list-style-position: inside;
+      font-size: 15px;
+
+      & > ul {
+        padding-left: 20px;
+        margin: 15px 0;
+
+        & > li {
+          list-style-type: disc;
+        }
+      }
     }
   }
 
@@ -48,6 +76,10 @@
 
     & li {
       list-style-position: inside;
+
+      & > ul {
+        padding-left: 20px;
+      }
     }
   }
 }

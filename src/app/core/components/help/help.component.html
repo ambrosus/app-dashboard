@@ -60,7 +60,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <!-- Main -->
       <div class="sidebar-pages__main help">
         <h4 class="color-ablue--base" *ngIf="!content">Choose one of the topics</h4>
-        <article *ngIf="content" [innerHTML]="sanitizeHTML(content || '')"></article>
+        <article *ngIf="content" [innerHTML]="content || ''"></article>
       </div>
     </div>
   </div>

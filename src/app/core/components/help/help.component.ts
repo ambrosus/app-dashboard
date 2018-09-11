@@ -30,7 +30,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         const _url = `/assets/help/pages/${this.category}/${this.question}.html`;
         this.contentSub = this.http.get(_url, { responseType: 'text' }).subscribe(
           page => {
-            this.content = page;
+            this.content = this.sanitizeHTML(page);
 
             try {
               let questions = this.el.nativeElement.querySelectorAll('.sidebar-pages__sidebar__item__menu li');
