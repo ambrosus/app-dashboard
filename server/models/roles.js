@@ -13,6 +13,14 @@ const rolesSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  permissionsArray: {
+    type: [String],
+    required: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users'
+  },
   id: {
     type: Number,
     required: true
