@@ -18,7 +18,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
-import { DeviceDetectorModule } from 'ngx-device-detector';
+import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector';
 
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -39,6 +39,9 @@ import { FooterComponent } from './shared/components/footer/footer.component';
     SharedModule,
     DeviceDetectorModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+  ],
+  providers: [
+    DeviceDetectorService,
   ],
   bootstrap: [AppComponent]
 })

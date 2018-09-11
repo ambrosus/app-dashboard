@@ -21,6 +21,7 @@ UsersRoutes.route('/')
   .post(UsersController.create, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.get('/roles', checkRole('getRoles'), UsersController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.route('/:email')
   .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
   .put(checkAddress, UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });

@@ -1,9 +1,8 @@
-import { Component, OnInit, ElementRef, ViewEncapsulation } from '@angular/core';
-
-interface Help {
-  title: string;
-  lesson: string;
-}
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-help',
@@ -11,56 +10,56 @@ interface Help {
   styleUrls: ['./help.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class HelpComponent implements OnInit {
-  help: Help[] = [
-    {
-      title: 'Item 1',
-      lesson: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-      dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
-      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
-      passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`
-    },
-    {
-      title: 'Item 2',
-      lesson: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-      dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
-      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
-      passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`
-    },
-    {
-      title: 'Item 3',
-      lesson: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-      dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
-      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
-      passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`
-    },
-    {
-      title: 'Item 4',
-      lesson: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
-      dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
-      specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining
-      essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
-      passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`
-    }
-  ];
+export class HelpComponent implements OnInit, OnDestroy {
+  routeSub: Subscription;
+  contentSub: Subscription;
+  category;
+  question;
+  content: any;
 
-  constructor(private el: ElementRef) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2) { }
 
-  ngOnInit() {}
+  sanitizeHTML = this.sanitizer.bypassSecurityTrustHtml;
+
+  ngOnInit() {
+    this.routeSub = this.route.url.subscribe(url => {
+      if (url.length >= 2) {
+        this.category = url[0].path.replace(/%20/g, ' ');
+        this.question = url[1].path.replace(/%20/g, ' ');
+
+        const _url = `/assets/help/pages/${this.category}/${this.question}.html`;
+        this.contentSub = this.http.get(_url, { responseType: 'text' }).subscribe(
+          page => {
+            this.content = this.sanitizeHTML(page);
+
+            try {
+              let questions = this.el.nativeElement.querySelectorAll('.sidebar-pages__sidebar__item__menu li');
+              questions = Array.from(questions);
+              questions.map(q => this.renderer.removeClass(q, 'active'));
+
+              const title = this.el.nativeElement.querySelector(`#${this.slug(this.category)}`);
+              const content = title.nextElementSibling;
+              const question = this.el.nativeElement.querySelector(`#${this.slug(this.question)}`);
+              this.renderer.addClass(title, 'active');
+              this.renderer.addClass(content, 'active');
+              this.renderer.addClass(question, 'active');
+            } catch (err) { }
+          },
+          error => this.content = ''
+        );
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.routeSub) { this.routeSub.unsubscribe(); }
+    if (this.contentSub) { this.contentSub.unsubscribe(); }
+  }
 
   slug(text) {
     return text
       .toLowerCase()
       .replace(/ /g, '-')
       .replace(/[^\w-]+/g, '');
-  }
-
-  scroll(element: String) {
-    const id = `#${element}`;
-    const el = this.el.nativeElement.querySelector(id);
-    el.scrollIntoView();
   }
 }
