@@ -353,12 +353,10 @@ exports.changePassword = (req, res, next) => {
 exports.assignRole = (req, res, next) => {
   const update = {};
   const email = req.body.email;
-  update.role = req.body.role;
+  const role = req.body.role;
 
-  if (!role) {
-    throw 'Role ObjectID is required to assign role to a user'
-  } else {
-
+  if (email && role) {
+    update.role = role;
     User.findOneAndUpdate({ email }, update)
       .then(updateResponse => {
         if (updateResponse) {
@@ -367,6 +365,10 @@ exports.assignRole = (req, res, next) => {
           return next();
         } else { throw 'Update data error'; }
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+  } else if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  } else if (!role) {
+    return res.status(400).json({ message: 'Role ObjectID is required' });
   }
 
 };
@@ -383,25 +385,32 @@ exports.assignRole = (req, res, next) => {
 exports.editRole = (req, res, next) => {
   const update = {};
   const email = req.body.email;
-  update.role = req.body.role;
+  const role = req.body.role;
 
-  User.findOne({ email })
-    .populate({
-      path: 'role',
-      select: '-createdAt -updatedAt -__v'
-    })
-    .then(user => {
-      if (user.role.title === 'owner') {
-        throw 'Cannot edit role for owner';
-      } else {
-        User.findOneAndUpdate({ email }, update)
-          .then(updateResponse => {
-            if (updateResponse) {
-              req.status = 200;
-              req.json = { message: 'Role edited successfully', data: updateResponse }
-              return next();
-            } else { throw 'Role edit error'; }
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+  if (email && role) {
+    update.role = role;
+    User.findOne({ email })
+      .populate({
+        path: 'role',
+        select: '-createdAt -updatedAt -__v'
+      })
+      .then(user => {
+        if (user.role.title === 'owner') {
+          throw 'Cannot edit role for owner';
+        } else {
+          User.findOneAndUpdate({ email }, update)
+            .then(updateResponse => {
+              if (updateResponse) {
+                req.status = 200;
+                req.json = { message: 'Role edited successfully', data: updateResponse }
+                return next();
+              } else { throw 'Role edit error'; }
+            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    } else if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    } else if (!role) {
+      return res.status(400).json({ message: 'Role ObjectID is required' });
+    }
 };
