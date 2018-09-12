@@ -1,3 +1,5 @@
+@import 'var';
+
 .sidebar-pages {
   width: 100%;
   max-width: 1200px;
@@ -57,6 +59,8 @@
       padding: 12px 35px 12px 15px;
       color: $black;
       font-size: 13px;
+      display: inline-block;
+      width: 100%;
 
       &:hover {
         padding-left: 20px;

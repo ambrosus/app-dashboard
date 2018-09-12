@@ -33,6 +33,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -58,7 +59,8 @@ import { HeaderComponent } from './components/header/header.component';
     CheckIfPipe,
     ImageCropperModule,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    SidebarComponent
   ],
   declarations: [
     InputDirective,
@@ -79,7 +81,8 @@ import { HeaderComponent } from './components/header/header.component';
     PaginationComponent,
     CheckIfPipe,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    SidebarComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

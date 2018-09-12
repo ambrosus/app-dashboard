@@ -16,48 +16,48 @@ export class HelpComponent implements OnInit, OnDestroy {
   category;
   question;
   content: any;
-  topics = [
+  sidebar = [
     {
       title: 'Getting started',
-      questions: [
-        'What is Dashboard',
-        'How it works',
-        'Dashboard setup'
-      ],
+      menu: [
+        { title: 'What is Dashboard', link: '/help/Getting started/What is Dashboard' },
+        { title: 'How it works', link: '/help/Getting started/How it works' },
+        { title: 'Dashboard setup', link: '/help/Getting started/Dashboard setup' }
+      ]
     },
     {
       title: 'Administration',
-      questions: [
-        'User invites',
-        'Managing users'
-      ],
+      menu: [
+        { title: 'User invites', link: '/help/Administration/User invites' },
+        { title: 'Managing users', link: '/help/Administration/Managing users' }
+      ]
     },
     {
       title: 'User',
-      questions: [
-        'Creating an account',
-        'Editing profile',
-        'Password change',
-        'Security'
+      menu: [
+        { title: 'Creating an account', link: '/help/User/Creating an account' },
+        { title: 'Editing profile', link: '/help/User/Editing profile' },
+        { title: 'Password change', link: '/help/User/Password change' },
+        { title: 'Security', link: '/help/User/Security' }
       ]
     },
     {
       title: 'Assets',
-      questions: [
-        'What are assets',
-        'Create an asset',
-        'View assets',
-        'Search assets'
+      menu: [
+        { title: 'What are assets', link: '/help/Assets/What are assets' },
+        { title: 'Create an asset', link: '/help/Assets/Create an asset' },
+        { title: 'View assets', link: '/help/Assets/View assets' },
+        { title: 'Search assets', link: '/help/Assets/Search assets' }
       ]
     },
     {
       title: 'Events',
-      questions: [
-        'What are events',
-        'Create an event',
-        'Edit event',
-        'View events',
-        'Search events'
+      menu: [
+        { title: 'What are events', link: '/help/Events/What are events' },
+        { title: 'Create an event', link: '/help/Events/Create an event' },
+        { title: 'Edit event', link: '/help/Events/Edit event' },
+        { title: 'View events', link: '/help/Events/View events' },
+        { title: 'Search events', link: '/help/Events/Search events' }
       ]
     }
   ];
@@ -83,16 +83,10 @@ export class HelpComponent implements OnInit, OnDestroy {
             this.content = this.sanitizeHTML(page);
 
             try {
-              let questions = this.el.nativeElement.querySelectorAll('.sidebar-pages__sidebar__item__menu li');
-              questions = Array.from(questions);
-              questions.map(q => this.renderer.removeClass(q, 'active'));
-
               const title = this.el.nativeElement.querySelector(`#${this.slug(this.category)}`);
               const content = title.nextElementSibling;
-              const question = this.el.nativeElement.querySelector(`#${this.slug(this.question)}`);
               this.renderer.addClass(title, 'active');
               this.renderer.addClass(content, 'active');
-              this.renderer.addClass(question, 'active');
             } catch (err) { }
           },
           error => this.content = ''

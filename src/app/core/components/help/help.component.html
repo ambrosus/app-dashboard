@@ -10,19 +10,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <div class="sidebar-pages">
     <!-- Sidebar -->
     <aside>
-      <div class="sidebar-pages__sidebar" appSticky [addClass]="'fixed'">
-        <div class="sidebar-pages__item" *ngFor="let topic of topics">
-          <p class="sidebar-pages__item__title" id="slug(topic.title)" appAccordion>
-            {{ topic.title }}
-            <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
-          </p>
-          <ul class="sidebar-pages__item__menu">
-            <li *ngFor="let question of topic.questions">
-              <a routerLink="/help/{{ topic.title }}/{{ question }}" id="slug(question)">{{ question }}</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <app-sidebar [items]="sidebar"></app-sidebar>
     </aside>
     <!-- Main -->
     <main class="help">
