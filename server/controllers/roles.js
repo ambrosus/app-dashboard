@@ -5,6 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+const mongoose = require('mongoose');
 const Role = require('../models/roles');
 
 /**
@@ -20,18 +21,19 @@ const Role = require('../models/roles');
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const Role = new Role();
+  const role = new Role();
 
-  Role.title = req.body.title;
-  Role.id = req.body.id;
-  Role.permissionsArray = req.body.permissionsArray;
-  Role.createdBy = req.session.user._id;
+  role._id = new mongoose.Types.ObjectId(),
+  role.title = req.body.title;
+  role.id = req.body.id;
+  role.permissionsArray = req.body.permissionsArray;
+  // role.createdBy = req.session.user._id;
 
-  if (Role.title && Role.id && Role.permissions && Role.createdBy) {
-    Role.save()
+  if (role.title && role.id && role.permissionsArray) {
+    role.save()
       .then(saveResponse => {
         req.status = 200;
-        req.json = { message: 'New role save successfully' };
+        req.json = { message: 'New role saved successfully' };
         return next();
       })
       .catch(error => (console.log(error), res.status(400).json({ message: error })));
