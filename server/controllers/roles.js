@@ -37,6 +37,12 @@ exports.create = (req, res, next) => {
         return next();
       })
       .catch(error => (console.log(error), res.status(400).json({ message: error })));
+  } else if (!title) {
+    return res.status(400).json({ message: 'Role "title" is required' });
+  } else if (!id) {
+    return res.status(400).json({ message: 'Role "id" is required' });
+  } else if (!permissionsArray) {
+    return res.status(400).json({ message: 'Role "permissionsArray" is required' });
   }
 
 };
@@ -64,6 +70,10 @@ exports.editPermissions = (req, res, next) => {
           return next();
         }
       })
+  } else if (!_id) {
+    return res.status(400).json({ message: 'Role "_id" is required' });
+  } else if (!update.permissionsArray) {
+    return res.status(400).json({ message: 'Role "permissionsArray" is required' });
   }
 
 };
