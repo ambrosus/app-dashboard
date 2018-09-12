@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
+    "start-dev": "nodemon server.js",
     "build": "ng build --prod --aot",
     "dev": "ng serve --aot --proxy-config proxy-conf.json",
     "test": "ng test",
@@ -79,6 +80,7 @@
     "karma-coverage-istanbul-reporter": "~1.4.2",
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "nodemon": "^1.18.4",
     "path": "^0.12.7",
     "protractor": "^5.4.0",
     "ts-node": "~5.0.1",
