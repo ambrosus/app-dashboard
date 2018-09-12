@@ -341,6 +341,67 @@ exports.changePassword = (req, res, next) => {
   }
 };
 
-exports.assignRole = (req, res, next) => {};
+/**
+ * Assign roles (role ObjectID) to users using their email address
+ *
+ * @name assignRole
+ * @route {POST} api/users/role
+ * @bodyparam email, role (Mongoose objectID)
+ * @returns Status code 400 on failure
+ * @returns Save success message on success with status code 200
+ */
+exports.assignRole = (req, res, next) => {
+  const update = {};
+  const email = req.body.email;
+  update.role = req.body.role;
+  
+  if (!role) {
+    throw 'Role ObjectID is required to assign role to a user'
+  } else {
 
-exports.editRole = (req, res, next) => {};
+    User.findOneAndUpdate({ email }, update)
+      .then(updateResponse => {
+        if (updateResponse) {
+          req.status = 200;
+          req.json = { message: 'Role updated successfully', data: updateResponse };
+          return next();
+        } else { throw 'Update data error'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));   
+  }
+
+};
+
+/**
+ * Allows users to edit existing roles to other users using their email address
+ *
+ * @name editRole
+ * @route {PUT} api/users/role
+ * @bodyparam email, role (Mongoose objectID)
+ * @returns Status code 400 on failure
+ * @returns Save success message on success with status code 200
+ */
+exports.editRole = (req, res, next) => {
+  const update = {};
+  const email = req.body.email;
+  update.role = req.body.role;
+
+  User.findOne({ email })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .then(user => {
+      if (user.role.title === 'owner') {
+        throw 'Cannot edit role for owner';
+      } else {
+        User.findOneAndUpdate({ email }, update)
+          .then(updateResponse => {
+            if (updateResponse) {
+              req.status = 200;
+              req.json= { message: 'Role edited successfully', data: updateResponse }
+              return next();
+            } else { throw 'Role edit error'; }
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+};
