@@ -12,7 +12,7 @@ const RolesController = require('../../controllers/roles');
 const RolesRoutes = express.Router();
 
 // Routes
-RolesRoutes.route('/')
-  .post(RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.post('/', RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.put('/permissions', RolesController.editPermissions, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = RolesRoutes;
