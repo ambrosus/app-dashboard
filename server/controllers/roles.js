@@ -23,13 +23,16 @@ const Role = require('../models/roles');
 exports.create = (req, res, next) => {
   const role = new Role();
 
-  role._id = new mongoose.Types.ObjectId(),
-  role.title = req.body.title;
-  role.id = req.body.id;
-  role.permissionsArray = req.body.permissionsArray;
-  // role.createdBy = req.session.user._id;
+  const title = req.body.title;
+  const id = req.body.id;
+  const permissionsArray = req.body.permissionsArray;
 
-  if (role.title && role.id && role.permissionsArray) {
+  if (title && id && permissionsArray) {
+    role._id = new mongoose.Types.ObjectId(),
+    role.title = req.body.title;
+    role.id = req.body.id;
+    role.permissionsArray = req.body.permissionsArray;
+    role.createdBy = req.session.user._id;
     role.save()
       .then(saveResponse => {
         req.status = 200;
