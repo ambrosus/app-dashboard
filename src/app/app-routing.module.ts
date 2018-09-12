@@ -50,7 +50,14 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   },
   { path: '', pathMatch: 'full', redirectTo: '/login' },
-  { path: 'help', component: HelpComponent },
+  {
+    path: 'help', children: [
+      {
+        path: '**',
+        component: HelpComponent
+      }
+    ]
+  },
   { path: 'terms', component: TermsComponent },
   { path: 'about', component: AboutComponent },
   { path: '**', component: NotfoundComponent }

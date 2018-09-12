@@ -1,0 +1,19 @@
+<div class="sidebar-pages__sidebar" appSticky [addClass]="'fixed'">
+  <div class="sidebar-pages__item" *ngFor="let item of items">
+    <a *ngIf="!item.menu" class="sidebar-pages__item__title" [routerLink]="item.link" routerLinkActive="active" [id]="slug(item.title)">
+      <app-svg-icon *ngIf="item.icon" [name]="item.icon" class="m-r-10"></app-svg-icon> {{ item.title }}
+    </a>
+    <p *ngIf="item.menu" class="sidebar-pages__item__title" [id]="slug(item.title)" appAccordion>
+      {{ item.title }}
+      <app-svg-icon class="arrow" name="arrow-right" height="12px"></app-svg-icon>
+    </p>
+    <ul *ngIf="item.menu" class="sidebar-pages__item__menu">
+      <li *ngFor="let menuItem of item.menu">
+        <a [routerLink]="menuItem.link" routerLinkActive="active" [id]="slug(menuItem.title)">
+          <app-svg-icon *ngIf="menuItem.icon" [name]="menuItem.icon" class="m-r-10"></app-svg-icon>
+          {{ menuItem.title }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

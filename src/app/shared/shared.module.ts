@@ -31,6 +31,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -54,7 +57,10 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     MatDialogModule,
     PaginationComponent,
     CheckIfPipe,
-    ImageCropperModule
+    ImageCropperModule,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   declarations: [
     InputDirective,
@@ -73,7 +79,10 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
