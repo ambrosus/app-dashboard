@@ -9,6 +9,15 @@ const mongoose = require('mongoose');
 
 const Hermes = require('../models/hermeses');
 
+/**
+ * Register a hermese node
+ *
+ * @name createHermeses
+ * @route {POST} api/setup/
+ * @bodyparam hermes: { title, url }
+ * @returns Status code 400 on failure
+ * @returns hermes Object on success with status code 200
+ */
 exports.create = (req, res, next) => {
   const title = req.body.hermes ? req.body.hermes.title : null;
   const url = req.body.hermes ? req.body.hermes.url : null;
@@ -39,6 +48,14 @@ exports.create = (req, res, next) => {
   }
 };
 
+/**
+ * Get all hermeses
+ *
+ * @name getAllHermeses
+ * @route {GET} api/hermeses/
+ * @returns Status code 400 on failure
+ * @returns array of hermeses & number of hermeses (length) on success with status code 200
+ */
 exports.getAll = (req, res, next) => {
   Hermes.find({ public: true })
     .then(results => {
