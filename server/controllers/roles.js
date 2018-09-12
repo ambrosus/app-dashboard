@@ -14,3 +14,6 @@ exports.create = (req, res, next) => {
     req.json = { message: 'Create roles successful' };
     next();
 };
+
+exports.editRole = (req, res, next) => { };
+

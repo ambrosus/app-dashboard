@@ -340,3 +340,7 @@ exports.changePassword = (req, res, next) => {
     return res.status(400).json({ message: '"newPassword" is required' });
   }
 };
+
+exports.assignRole = (req, res, next) => {};
+
+exports.editRole = (req, res, next) => {};
