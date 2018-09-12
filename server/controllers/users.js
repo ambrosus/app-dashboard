@@ -326,7 +326,7 @@ exports.changePassword = (req, res, next) => {
                   } else { throw 'Error in updating password'; }
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             });
-          }
+          } 
           catch(err){
             throw 'Incorrect password';
           }
@@ -354,7 +354,7 @@ exports.assignRole = (req, res, next) => {
   const update = {};
   const email = req.body.email;
   update.role = req.body.role;
-  
+
   if (!role) {
     throw 'Role ObjectID is required to assign role to a user'
   } else {
@@ -366,7 +366,7 @@ exports.assignRole = (req, res, next) => {
           req.json = { message: 'Role updated successfully', data: updateResponse };
           return next();
         } else { throw 'Update data error'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));   
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   }
 
 };
@@ -398,7 +398,7 @@ exports.editRole = (req, res, next) => {
           .then(updateResponse => {
             if (updateResponse) {
               req.status = 200;
-              req.json= { message: 'Role edited successfully', data: updateResponse }
+              req.json = { message: 'Role edited successfully', data: updateResponse }
               return next();
             } else { throw 'Role edit error'; }
           }).catch(error => (console.log(error), res.status(400).json({ message: error })));

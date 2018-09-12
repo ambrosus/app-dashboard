@@ -20,22 +20,22 @@ const Role = require('../models/roles');
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
-    const Role = new Role();
+  const Role = new Role();
 
-    Role.title = req.body.title;
-    Role.id = req.body.id;
-    Role.permissionsArray = req.body.permissionsArray;
-    Role.createdBy = req.session.user._id;
+  Role.title = req.body.title;
+  Role.id = req.body.id;
+  Role.permissionsArray = req.body.permissionsArray;
+  Role.createdBy = req.session.user._id;
 
-    if (Role.title && Role.id && Role.permissions && Role.createdBy) {
-        Role.save()
-        .then(saveResponse => {
-            req.status = 200;
-            req.json = { message: 'New role save successfully' };
-            return next();
-        })
-        .catch(error => (console.log(error), res.status(400).json({ message: error })));
-    }
+  if (Role.title && Role.id && Role.permissions && Role.createdBy) {
+    Role.save()
+      .then(saveResponse => {
+        req.status = 200;
+        req.json = { message: 'New role save successfully' };
+        return next();
+      })
+      .catch(error => (console.log(error), res.status(400).json({ message: error })));
+  }
 
 };
 
@@ -49,20 +49,19 @@ exports.create = (req, res, next) => {
  * @returns Permissions updated message on success with status code 200
  */
 exports.editPermissions = (req, res, next) => {
-    const update = {};
-    const _id = req.body._id;
-    update.permissionsArray = req.body.permissionsArray;
+  const update = {};
+  const _id = req.body._id;
+  update.permissionsArray = req.body.permissionsArray;
 
-
-    if (_id && update.permissionsArray) {
-        Role.findOneAndUpdate({ _id }, update)
-          .then(updateResponse => {
-              if (updateResponse) {
-                  req.status = 200;
-                  req.json = { message: 'Permissions updated successfully' }
-                  return next();
-              }
-          })
-    }
+  if (_id && update.permissionsArray) {
+    Role.findOneAndUpdate({ _id }, update)
+      .then(updateResponse => {
+        if (updateResponse) {
+          req.status = 200;
+          req.json = { message: 'Permissions updated successfully' }
+          return next();
+        }
+      })
+  }
 
 };
