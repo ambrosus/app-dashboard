@@ -54,7 +54,7 @@ export class GeneralSettingsComponent implements OnInit {
     let timeZone = '';
     try {
       timeZone = JSON.parse(this.user.settings)['timeZone'];
-    } catch (err) { timeZone = this.storage.get('user')['company']['timeZone']; }
+    } catch (err) { timeZone = JSON.parse(this.storage.get('user')['company']['settings'])['timeZone']; }
     this.editProfileForm.get('timeZone').setValue(timeZone);
 
     try {

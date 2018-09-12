@@ -1,10 +1,10 @@
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdministrationService } from 'app/services/administration.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { EventAddComponent } from './../event-add/event-add.component';
+import { StorageService } from 'app/services/storage.service';
 
 declare let QRCode: any;
 
@@ -21,6 +21,7 @@ export class AssetComponent implements OnInit {
   jsonEvents;
   json = false;
   events;
+  user;
   previewAppUrl;
 
   objectKeys = Object.keys;
@@ -38,9 +39,9 @@ export class AssetComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private assetService: AssetsService,
-    private administration: AdministrationService,
-    public dialog: MatDialog
-  ) {}
+    public dialog: MatDialog,
+    private storage: StorageService
+  ) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -51,7 +52,13 @@ export class AssetComponent implements OnInit {
       this.assetId = params.assetid;
     });
 
-    this.previewAppUrl = this.administration.previewAppUrl;
+    this.user = this.storage.get('user');
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.user.company.settings);
+    } catch (e) { }
+
+    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
   }
 
   downloadQR(el: any) {
@@ -76,7 +83,7 @@ export class AssetComponent implements OnInit {
 
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -91,7 +98,7 @@ export class AssetComponent implements OnInit {
   openJsonDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.jsonEvents;

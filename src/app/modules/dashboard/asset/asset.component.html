@@ -5,7 +5,7 @@
     <div class="view-header">
       <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       <div>
-        <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="{{ previewAppUrl }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on {{ previewAppUrl.replace('https://', '') }}</a>
       </div>
       <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEventDialog()">Add Event</button>
     </div>
@@ -19,8 +19,7 @@
       <div class="layout-split__col1" *ngIf="asset | checkIf: 'asset.info'">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
           Asset details
-          <app-svg-icon *ngIf="asset | checkIf: 'asset.info.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId"
-            [queryParams]="{edit: 'true'}"></app-svg-icon>
+          <app-svg-icon *ngIf="asset | checkIf: 'asset.info.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
         </h3>
 
         <div>

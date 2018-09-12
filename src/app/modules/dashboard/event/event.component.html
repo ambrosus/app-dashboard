@@ -16,7 +16,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         <app-qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       </div>
       <div class="m-t-10">
-        <a href="https://{{ hostLink }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="{{ previewAppUrl }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on {{ previewAppUrl.replace('https://', '') }}</a>
         <button class="abtn btn-outline-ablue m-r-10" (click)="openJsonDialog()">View JSON</button>
         <button class="abtn btn-outline-ablue" (click)="openDialog()">Edit</button>
       </div>

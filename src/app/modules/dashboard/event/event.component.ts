@@ -2,10 +2,10 @@ import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdministrationService } from 'app/services/administration.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-event',
@@ -14,7 +14,6 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
   encapsulation: ViewEncapsulation.None
 })
 export class EventComponent implements OnInit, OnDestroy {
-  hostLink = 'amb.to';
   json = false;
   event;
   jsonEvent = [];
@@ -23,7 +22,7 @@ export class EventComponent implements OnInit, OnDestroy {
   eventId;
   infoEvent = false;
   previewAppUrl;
-
+  user;
 
   objectKeys = Object.keys;
   stringify = JSON.stringify;
@@ -41,8 +40,8 @@ export class EventComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private assetService: AssetsService,
     private router: Router,
-    private administration: AdministrationService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private storage: StorageService
   ) { }
 
   downloadQR(el: any) {
@@ -106,7 +105,13 @@ export class EventComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.previewAppUrl = this.administration.previewAppUrl;
+    this.user = this.storage.get('user');
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.user.company.settings);
+    } catch (e) { }
+
+    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
   }
 
   openDialog() {

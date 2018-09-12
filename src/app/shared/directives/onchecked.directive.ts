@@ -1,6 +1,5 @@
 import { Directive, ElementRef, HostListener, Renderer2, Input } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
-import { AdministrationService } from 'app/services/administration.service';
 
 @Directive({
   selector: '[appOnchecked]'
@@ -9,14 +8,10 @@ export class OncheckedDirective {
 
   @Input() toSelect;
 
-  constructor(private el: ElementRef, private renderer: Renderer2,
-    private assets: AssetsService, private administration: AdministrationService) {
-      window.addEventListener('on:checked', () => {
-        this.checkboxClicked();
-      });
-      this.administration.toggleSelect.subscribe(resp => {
-        this.checkboxClicked();
-      });
+  constructor(private el: ElementRef, private renderer: Renderer2, private assets: AssetsService) {
+    window.addEventListener('on:checked', () => {
+      this.checkboxClicked();
+    });
   }
 
   @HostListener('change')
@@ -31,9 +26,6 @@ export class OncheckedDirective {
       this.renderer.addClass(secondParent, 'checkbox--checked');
       if (secondParent.classList.contains('table__item')) {
         switch (this.toSelect) {
-          case 'administration':
-            this.administration.selectUser(this.el.nativeElement.name);
-            break;
           default:
             this.assets.selectAsset(this.el.nativeElement.name);
             break;
@@ -43,9 +35,6 @@ export class OncheckedDirective {
       this.renderer.removeClass(secondParent, 'checkbox--checked');
       if (secondParent.classList.contains('table__item')) {
         switch (this.toSelect) {
-          case 'administration':
-            this.administration.unselectUser(this.el.nativeElement.name);
-            break;
           default:
             this.assets.unselectAsset(this.el.nativeElement.name);
             break;
