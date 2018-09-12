@@ -9,6 +9,15 @@ const mongoose = require('mongoose');
 
 const Company = require('../models/companies');
 
+/**
+ * Create a new company.
+ *
+ * @name createCompany
+ * @route {POST} api/companies/create
+ * @bodyparam company: { title, timeZone }, hermes
+ * @returns Status code 400 on failure
+ * @returns company Object on success with status code 200
+ */
 exports.create = (req, res, next) => {
   const title = req.body.company ? req.body.company.title : null;
   const timeZone = req.body.company ? req.body.company.timeZone : '';
