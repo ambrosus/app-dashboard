@@ -31,7 +31,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
-import { FooterPublicComponent } from './components/footer-public/footer-public.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -56,7 +57,8 @@ import { FooterPublicComponent } from './components/footer-public/footer-public.
     PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
-    FooterPublicComponent
+    FooterComponent,
+    HeaderComponent
   ],
   declarations: [
     InputDirective,
@@ -76,7 +78,8 @@ import { FooterPublicComponent } from './components/footer-public/footer-public.
     NotificationComponent,
     PaginationComponent,
     CheckIfPipe,
-    FooterPublicComponent
+    FooterComponent,
+    HeaderComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

@@ -20,14 +20,9 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector';
 
-import { HeaderComponent } from './shared/components/header/header.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
-
 @NgModule({
   declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,

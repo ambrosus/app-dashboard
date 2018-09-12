@@ -16,6 +16,51 @@ export class HelpComponent implements OnInit, OnDestroy {
   category;
   question;
   content: any;
+  topics = [
+    {
+      title: 'Getting started',
+      questions: [
+        'What is Dashboard',
+        'How it works',
+        'Dashboard setup'
+      ],
+    },
+    {
+      title: 'Administration',
+      questions: [
+        'User invites',
+        'Managing users'
+      ],
+    },
+    {
+      title: 'User',
+      questions: [
+        'Creating an account',
+        'Editing profile',
+        'Password change',
+        'Security'
+      ]
+    },
+    {
+      title: 'Assets',
+      questions: [
+        'What are assets',
+        'Create an asset',
+        'View assets',
+        'Search assets'
+      ]
+    },
+    {
+      title: 'Events',
+      questions: [
+        'What are events',
+        'Create an event',
+        'Edit event',
+        'View events',
+        'Search events'
+      ]
+    }
+  ];
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2) { }
 
@@ -24,8 +69,13 @@ export class HelpComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeSub = this.route.url.subscribe(url => {
       if (url.length >= 2) {
-        this.category = url[0].path.replace(/%20/g, ' ');
-        this.question = url[1].path.replace(/%20/g, ' ');
+        try {
+          this.category = decodeURIComponent(url[0].path);
+          this.question = decodeURIComponent(url[1].path);
+        } catch (e) {
+          this.category = url[0].path;
+          this.question = url[1].path;
+        }
 
         const _url = `/assets/help/pages/${this.category}/${this.question}.html`;
         this.contentSub = this.http.get(_url, { responseType: 'text' }).subscribe(

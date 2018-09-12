@@ -5,7 +5,7 @@
   color: $black;
   line-height: 1.5;
 
-  & h1,
+  h1,
   h2,
   h3,
   h4,
@@ -15,7 +15,7 @@
     padding-top: 10px;
   }
 
-  & q {
+  q {
     display: inline-block;
     font-size: 1.4em;
     font-weight: 500;
@@ -24,12 +24,12 @@
     margin-bottom: 25px;
   }
 
-  & img {
+  img {
     margin: 25px 0;
     box-shadow: 0px 7px 55px 5px rgba(80, 120, 241, 0.1);
   }
 
-  & code {
+  code {
     padding: 25px;
     font-size: 14px;
     background-color: #fff;
@@ -40,44 +40,44 @@
     box-shadow: 0px 7px 55px 5px rgba(80, 120, 241, 0.1);
   }
 
-  & p {
+  p {
     font-size: 16px;
     color: $black;
     line-height: 1.5;
     margin-bottom: 20px;
     padding-top: 10px;
 
-    & + p {
+    + p {
       margin-bottom: 15px;
     }
   }
 
-  & ul {
+  ul {
     margin-bottom: 15px;
 
-    & li {
+    li {
       list-style-type: circle;
       list-style-position: inside;
       font-size: 15px;
 
-      & > ul {
+      > ul {
         padding-left: 20px;
         margin: 15px 0;
 
-        & > li {
+        > li {
           list-style-type: disc;
         }
       }
     }
   }
 
-  & ol {
+  ol {
     margin-bottom: 15px;
 
-    & li {
+    li {
       list-style-position: inside;
 
-      & > ul {
+      > ul {
         padding-left: 20px;
       }
     }
