@@ -377,7 +377,7 @@ exports.assignRole = (req, res, next) => {
  * Allows users to edit existing roles to other users using their email address
  *
  * @name editRole
- * @route {PUT} api/users/role
+ * @route {POST} api/users/role
  * @bodyparam email, role (Mongoose objectID)
  * @returns Status code 400 on failure
  * @returns Save success message on success with status code 200

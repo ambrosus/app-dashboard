@@ -12,7 +12,7 @@ const Role = require('../models/roles');
  * This route allows you to create a new Role and add a set of permissions to them
  *
  * @name createRole
- * @route {POST} api/roles/
+ * @route {POST} api/roles
  * @bodyparam 
  *      - title (e.g: { title: 'owner' }), 
  *      - permissionsArray (e.g: { permissionsArray: "string1, string2" }),
