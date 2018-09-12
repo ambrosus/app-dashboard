@@ -54,14 +54,14 @@ exports.create = (req, res, next) => {
  * User can edit the permissionsArray for a particular role ID 
  *
  * @name editPermissions
- * @route {PUT} api/roles/permissions
+ * @route {PUT} api/roles/:id
  * @bodyparam roleID, permissionsArray (e.g: { permissionsArray: "string1, string2" })
  * @returns Status code 400 on failure
  * @returns Permissions updated message on success with status code 200
  */
 exports.editPermissions = (req, res, next) => {
   const update = {};
-  const _id = req.body._id;
+  const _id = req.params.id;
   update.permissionsArray = req.body.permissionsArray;
 
   if (_id && update.permissionsArray) {
