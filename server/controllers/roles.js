@@ -24,14 +24,12 @@ exports.create = (req, res, next) => {
   const role = new Role();
 
   const title = req.body.title;
-  const id = req.body.id;
-  const permissionsArray = req.body.permissionsArray;
+  const permissions = req.body.permissions;
 
-  if (title && id && permissionsArray) {
+  if (title && permissions) {
     role._id = new mongoose.Types.ObjectId(),
     role.title = req.body.title;
-    role.id = req.body.id;
-    role.permissionsArray = req.body.permissionsArray;
+    role.permissions = req.body.permissions;
     role.createdBy = req.session.user._id;
     role.save()
       .then(saveResponse => {
