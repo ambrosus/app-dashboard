@@ -1,81 +1,99 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+
 <div class="wrapper">
-<div class="card">
-  <h1 class="card__title center">Setup Dashboard</h1>
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Setup Dashboard</h2>
+      <p class="card__body">Description to explain the important part of this process. Maybe add a second sentence to test
+        the length.<p>
+    </div>
 
-  <div class="block-center center m-w-6 m-b-50" *ngIf="success">
-    <p class="card__body">
-      Setup was successfuly done.<br>
-      Now you can login with your email and password.<br>
-      But, before you go, this is your<br>
-      <b>address: {{ address }}</b><br> and
-      <b>secret: {{ secret }}</b>,<br> please <u>save them somewhere safe</u>,
-      as we are not storing them anywhere for security reasons.
-    </p>
-    <h5 class="color-ablue--base m-t-20" routerLink="/login"><a>Login</a></h5>
-  </div>
+    <div *ngIf="success">
+      <p class="card__body"> Setup was successfuly done. Now you can login with your email and password.</p>
+      <p class="card__body">But, before you go, this is your <b>address: {{ address }}</b> and <b>secret: {{ secret }}</b> save them somewhere safe, as we are not storing them anywhere for security reasons.</p>
 
-  <form [formGroup]="setupForm" (ngSubmit)="setup()" class="block-center m-w-4" *ngIf="!success">
+      <a routerLink="/login">Login</a>
+    </div>
+
     <div class="steps">
-      <p class="step" [ngClass]="{ active: currentStep >= 1 }">01 Hermes Node</p>
+      <ul>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 1, 'step--completed': currentStep > 1 }"><span class="step__balloon"></span>Hermes Node</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 2, 'step--completed': currentStep > 2 }"><span class="step__balloon"></span>Company</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 3, 'step--completed': currentStep > 3 }"><span class="step__balloon"></span>Account</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 4, 'step--completed': currentStep > 4 }"><span class="step__balloon"></span>Submit</li>
+      </ul>
+      <!--       <p class="step" >01 Hermes Node</p>
       <p class="step" [ngClass]="{ active: currentStep >= 2 }">02 Company</p>
-      <p class="step" [ngClass]="{ active: currentStep >= 3 }">03 User (owner)</p>
+      <p class="step" [ngClass]="{ active: currentStep >= 3 }">03 User (owner)</p> -->
     </div>
-    <div *ngIf="currentStep === 1">
-      <div class="form-text m-b-20">
-        <label for="hermesTitle">Hermes Title *</label>
-        <input formControlName="hermesTitle" type="text" id="hermesTitle" spellcheck="false" appInput>
+
+    <form [formGroup]="setupForm" (ngSubmit)="setup()" *ngIf="!success">
+
+      <div *ngIf="currentStep === 1" [ngClass]="stepClass()">
+        <label>Hermes Title
+          <input formControlName="hermesTitle" type="text" spellcheck="false">
+        </label>
+
+        <label>Hermes Gateway URL
+          <input formControlName="hermesUrl" type="url" spellcheck="false">
+        </label>
       </div>
-      <div class="form-text m-b-20">
-        <label for="hermesUrl">Hermes Gateway URL *</label>
-        <input formControlName="hermesUrl" type="url" id="hermesUrl" spellcheck="false" appInput>
+
+      <div *ngIf="currentStep === 2">
+
+        <label>Company Title
+          <input formControlName="companyTitle" type="text" spellcheck="false">
+        </label>
+
+        <label>Company Time Zone
+          <input formControlName="companyTimeZone" list="timezones" spellcheck="false">
+          <datalist id="timezones">
+            <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+          </datalist>
+        </label>
+
       </div>
-    </div>
-    <div *ngIf="currentStep === 2">
-      <div class="form-text m-b-20">
-        <label for="companyTitle">Company Title *</label>
-        <input formControlName="companyTitle" type="text" id="companyTitle" spellcheck="false" appInput>
+
+      <div *ngIf="currentStep === 3">
+
+        <label>Full name
+          <input formControlName="userFullName" type="text" spellcheck="false">
+        </label>
+
+        <label>Email
+          <input formControlName="userEmail" type="email" spellcheck="false">
+        </label>
+
+        <label>Password
+          <input formControlName="userPassword" type="password" spellcheck="false">
+        </label>
+
+        <label>Password Confirm
+          <input formControlName="userPasswordConfirm" type="password" spellcheck="false">
+        </label>
+
       </div>
-      <div class="form-text m-b-20">
-        <label for="companyTimeZone">Company Time Zone *</label>
-        <input formControlName="companyTimeZone" list="timezones" id="companyTimeZone" spellcheck="false" appInput>
-        <datalist id="timezones">
-          <option *ngFor="let timezone of timezones" value="{{ timezone }}">
-        </datalist>
+
+      <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
+        <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
+          <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> Previous
+        </h5>
+        <button class="button button--blue" [ngClass]="{ mute: !checkStep() }" *ngIf="!(currentStep === 3)" (click)="changeStep('next')" style="user-select: none">
+          Continue
+        </button>
       </div>
-    </div>
-    <div *ngIf="currentStep === 3">
-      <div class="form-text m-b-20">
-        <label for="userFullName">Full name *</label>
-        <input formControlName="userFullName" type="text" id="userFullName" spellcheck="false" appInput>
+      <div class="flex flex-direction-r justify-content-fe align-items-c" *ngIf="currentStep === 3">
+        <app-spinner *ngIf="spinner"></app-spinner>
+        <button type="submit" class="abtn m-l-20 btn-solid-ablue" [disabled]="!setupForm.valid">Register</button>
       </div>
-      <div class="form-text m-b-20">
-        <label for="userEmail">Email *</label>
-        <input formControlName="userEmail" type="email" id="userEmail" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="userPassword">Password *</label>
-        <input formControlName="userPassword" type="password" id="userPassword" spellcheck="false" appInput>
-      </div>
-      <div class="form-text m-b-20">
-        <label for="userPasswordConfirm">Password Confirm *</label>
-        <input formControlName="userPasswordConfirm" type="password" id="userPasswordConfirm" spellcheck="false" appInput>
-      </div>
-    </div>
-    <div class="flex flex-direction-r justify-content-fs align-items-c m-b-20" style="cursor: default;">
-      <h5 class="color-ablue--base inline-block" *ngIf="!(currentStep === 1)" (click)="changeStep('prev')" style="user-select: none">
-        <app-svg-icon name="arrow-left" width="15px" style="margin-right: 7px"></app-svg-icon> Previous
-      </h5>
-      <h5 class="color-ablue--base m-l-auto inline-block" [ngClass]="{ mute: !checkStep() }" *ngIf="!(currentStep === 3)" (click)="changeStep('next')" style="user-select: none">
-        Next
-        <app-svg-icon name="arrow-right" width="15px" style="margin-left: 7px"></app-svg-icon>
-      </h5>
-    </div>
-    <div class="flex flex-direction-r justify-content-fe align-items-c" *ngIf="currentStep === 3">
-      <app-spinner *ngIf="spinner"></app-spinner>
-      <button type="submit" class="abtn m-l-20 btn-solid-ablue" [disabled]="!setupForm.valid">Register</button>
-    </div>
-  </form>
-  <h5 class="p-h-40 m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-</div>
+    </form>
+    <h5 class="p-h-40 m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+  </div>
 
 </div>

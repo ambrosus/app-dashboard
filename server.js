@@ -34,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+
 const maxAge = 2 * 24 * 60 * 60 * 1000; // 2 days
 const sess = {
   secret: config.secret,

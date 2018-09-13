@@ -6,7 +6,6 @@
   }
 
   body {
-    font-family: $font-family--print;
     font-size: pt(16);
     background: #fff !important;
     color: #000;
@@ -43,7 +42,6 @@
     h4,
     h5,
     h6 {
-      font-family: $font-family--tertiary;
       margin: 0.4cm 0;
     }
 
@@ -78,7 +76,7 @@
     }
 
     & a {
-      font-family: $font-family--print;
+      
       font-size: pt(18);
       text-decoration: underline;
       color: #444;
