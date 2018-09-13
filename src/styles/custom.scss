@@ -104,3 +104,57 @@ label {
   font-size: 16px;
   font-weight: 500;
 }
+
+button .btn-spinner {
+  font-family:sans-serif;
+  font-weight:100;
+  -webkit-animation:1.25s linear infinite three-quarters;
+  animation:1.25s linear infinite three-quarters;
+  border:3px solid white;
+  border-right-color:transparent;
+  border-radius:100%;
+  box-sizing:border-box;
+  display:inline-block;
+  position:relative;
+  vertical-align:middle;
+  overflow:hidden;
+  text-indent:-9999px;
+  width:18px;height:18px
+}
+
+button .btn-spinner:not(:required) {
+  margin-left:-22px;
+  opacity:0;
+  transition:.4s margin ease-out,.2s opacity ease-out
+}
+
+button.is-loading .btn-spinner{
+  transition:.2s margin ease-in,.4s opacity ease-in;
+  margin-left:20px;opacity:1
+}
+
+.btn{
+  text-align:left
+}
+
+@-webkit-keyframes three-quarters {
+	0% {
+		-webkit-transform: rotate(0);
+		transform: rotate(0)
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg)
+	}
+}
+
+@keyframes three-quarters {
+	0% {
+		-webkit-transform: rotate(0);
+		transform: rotate(0)
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg)
+	}
+}

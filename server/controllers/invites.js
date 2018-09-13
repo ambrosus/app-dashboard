@@ -15,6 +15,16 @@ const slug = require('slug')
 const Invite = require('../models/invites');
 const Company = require('../models/companies');
 
+/**
+ * Create a new invite
+ * Sends invitation emails
+ *
+ * @name createInvite
+ * @route {POST} api/invites
+ * @bodyparam invites, user
+ * @returns Status code 400 on failure
+ * @returns success message on success with status code 200
+ */
 exports.create = (req, res, next) => {
   const invites = req.body.invites;
   const user = req.body.user;
@@ -59,6 +69,16 @@ exports.create = (req, res, next) => {
   }
 }
 
+
+/**
+ * Delete multiple invites
+ *
+ * @name deleteInvites
+ * @route {POST} api/invites/delete
+ * @bodyparam ids
+ * @returns Status code 400 on failure
+ * @returns success message with data object on success with status code 200
+ */
 exports.delete = (req, res, next) => {
   const ids = req.body.ids || [];
   const userId = req.session.user._id;
@@ -71,6 +91,15 @@ exports.delete = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
+/**
+ * Get all invites for a company
+ *
+ * @name getAllInvites
+ * @route {GET} api/invites/company/:company
+ * @queryparams company
+ * @returns Status code 400 on failure
+ * @returns array of invites & number of invites (length) on success with status code 200
+ */
 exports.getAll = (req, res, next) => {
   const company = req.params.company;
 
@@ -84,6 +113,15 @@ exports.getAll = (req, res, next) => {
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
+/**
+ * Verify an invite
+ *
+ * @name verifyInvite
+ * @route {GET} api/invites/verify/:token
+ * @queryparams token
+ * @returns Status code 400 on failure
+ * @returns success message on success with status code 200
+ */
 exports.verify = (req, res, next) => {
   const token = req.params.token;
   let createdAt;
