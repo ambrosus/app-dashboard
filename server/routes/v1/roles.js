@@ -12,7 +12,8 @@ const RolesController = require('../../controllers/roles');
 const RolesRoutes = express.Router();
 
 // Routes
-RolesRoutes.post('/', RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.post('/', RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
 RolesRoutes.put('/:id', RolesController.editPermissions, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.get('/', RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = RolesRoutes;

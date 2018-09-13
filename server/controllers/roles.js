@@ -80,3 +80,24 @@ exports.editPermissions = (req, res, next) => {
   }
 
 };
+
+/**
+ * Fetch all Roles that exists in the Roles collection
+ *
+ * @name getRoles
+ * @route {GET} api/roles
+ * @returns Status code 400 on failure
+ * @returns Roles array on success with status code 200
+ */
+exports.getRoles = (req, res, next) => {
+  Role.find()
+    .then(roles => {
+      if (roles) {
+        req.status = 200;
+        req.json = roles;
+        return next();
+      } else {
+        return res.status(400).json({ message: 'No roles found' });
+      }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+};
