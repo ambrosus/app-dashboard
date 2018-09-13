@@ -13,17 +13,13 @@ const rolesSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  permissionsArray: {
+  permissions: {
     type: String,
     required: true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users'
-  },
-  id: {
-    type: Number,
-    required: true
   },
   createdAt: {
     type: Date,
