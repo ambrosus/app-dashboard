@@ -4,8 +4,7 @@
   "main": "server.js",
   "scripts": {
     "ng": "ng",
-    "start": "node server.js",
-    "start-dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "build": "ng build --prod --aot",
     "dev": "ng serve --aot --proxy-config proxy-conf.json",
     "test": "ng test",
