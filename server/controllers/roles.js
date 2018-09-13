@@ -15,7 +15,7 @@ const Role = require('../models/roles');
  * @route {POST} api/roles
  * @bodyparam 
  *      - title (e.g: { title: 'owner' }), 
- *      - permissionsArray (e.g: { permissionsArray: "string1, string2" }),
+ *      - permissions (e.g: { permissions: "string1, string2" }),
  *      - id: Number
  * @returns Status code 400 on failure
  * @returns New role saved successfully message on success with status code 200
@@ -42,27 +42,27 @@ exports.create = (req, res, next) => {
     return res.status(400).json({ message: 'Role "title" is required' });
   } else if (!id) {
     return res.status(400).json({ message: 'Role "id" is required' });
-  } else if (!permissionsArray) {
-    return res.status(400).json({ message: 'Role "permissionsArray" is required' });
+  } else if (!permissions) {
+    return res.status(400).json({ message: 'Role "permissions" is required' });
   }
 
 };
 
 /**
- * User can edit the permissionsArray for a particular role ID 
+ * User can edit the permissions for a particular role ID 
  *
  * @name editPermissions
  * @route {PUT} api/roles/:id
- * @bodyparam roleID, permissionsArray (e.g: { permissionsArray: "string1, string2" })
+ * @bodyparam roleID, permissions (e.g: { permissions: "string1, string2" })
  * @returns Status code 400 on failure
  * @returns Permissions updated message on success with status code 200
  */
 exports.editPermissions = (req, res, next) => {
   const update = {};
   const _id = req.params.id;
-  update.permissionsArray = req.body.permissionsArray;
+  update.permissions = req.body.permissions;
 
-  if (_id && update.permissionsArray) {
+  if (_id && update.permissions) {
     Role.findOneAndUpdate({ _id }, update)
       .then(updateResponse => {
         if (updateResponse) {
@@ -73,8 +73,8 @@ exports.editPermissions = (req, res, next) => {
       })
   } else if (!_id) {
     return res.status(400).json({ message: 'Role "_id" is required' });
-  } else if (!update.permissionsArray) {
-    return res.status(400).json({ message: 'Role "permissionsArray" is required' });
+  } else if (!update.permissions) {
+    return res.status(400).json({ message: 'Role "permissions" is required' });
   }
 
 };
