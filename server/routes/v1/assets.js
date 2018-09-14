@@ -15,6 +15,6 @@ const AssetsRoutes = express.Router();
 AssetsRoutes.route('/')
   .post(AssetsController.create, (req, res) => { res.status(req.status).json(req.json); })
   .get(AssetsController.find, (req, res) => { res.status(req.status).json(req.json); });
-AssetsRoutes.get('/:assetId', InvitesController.get, (req, res) => { res.status(req.status).json(req.json); });
+AssetsRoutes.get('/:assetId', AssetsController.get, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = AssetsRoutes;

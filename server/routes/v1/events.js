@@ -15,6 +15,6 @@ const EventsRoutes = express.Router();
 EventsRoutes.route('/')
   .post(EventsController.create, (req, res) => { res.status(req.status).json(req.json); })
   .get(EventsController.find, (req, res) => { res.status(req.status).json(req.json); });
-EventsRoutes.get('/:eventId', InvitesController.get, (req, res) => { res.status(req.status).json(req.json); });
+EventsRoutes.get('/:eventId', EventsController.get, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = EventsRoutes;
