@@ -13,29 +13,30 @@ exports.create = (req, res, next) => {
   // Event object with signature, eventId and assetId
   // already generated client side
   const event = req.body.event;
-  const hermes = req.body.hermes;
+  const company = req.session.user.company;
 
-  if (event && hermes) {
+  if (event) {
+    Company.findById(company._id)
+      .populate('hermes')
+      .then(company => {
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        };
 
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    };
+        axios.post(`${company.hermes.url}/events`, event, { headers })
+          .then(eventCreated => {
+            // Todo:
+            // 1. Cache created event in the db
+            // 2. Increment events created statistic on user and organization models
 
-    axios.post(`${hermes.url}/events`, event, { headers })
-      .then(eventCreated => {
-        // Todo:
-        // 1. Cache created event in the db
-        // 2. Increment events created statistic on user and organization models
-
-        req.status = 200;
-        req.user = user;
-        return next();
-      }).catch(error => (console.log(error), res.status(400).json({ message: 'Event creation failed', error })));
+            req.status = 200;
+            req.user = user;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Event creation failed', error })));
+      }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
   } else if (!event) {
     return res.status(400).json({ message: '"event" object is required' })
-  } else if (!hermes) {
-    return res.status(400).json({ message: '"hermes" object is required' })
   }
 }
 

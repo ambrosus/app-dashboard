@@ -13,28 +13,30 @@ exports.create = (req, res, next) => {
   // Asset object with signature and assetId
   // already generated client side
   const asset = req.body.asset;
-  const hermes = req.body.hermes;
+  const company = req.session.user.company;
 
-  if (asset && hermes) {
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    };
+  if (asset) {
+    Company.findById(company._id)
+      .populate('hermes')
+      .then(company => {
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        };
 
-    axios.post(`${hermes.url}/assets`, asset, { headers })
-      .then(assetCreated => {
-        // Todo:
-        // 1. Cache created asset in the db
-        // 2. Increment assets created statistic on user and organization models
+        axios.post(`${company.hermes.url}/assets`, asset, { headers })
+          .then(assetCreated => {
+            // Todo:
+            // 1. Cache created asset in the db
+            // 2. Increment assets created statistic on user and organization models
 
-        req.status = 200;
-        req.json = assetCreated;
-        return next();
-      }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset creation failed', error })));
+            req.status = 200;
+            req.json = assetCreated;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset creation failed', error })));
+      }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
   } else if (!asset) {
     return res.status(400).json({ message: '"asset" object is required' })
-  } else if (!hermes) {
-    return res.status(400).json({ message: '"hermes" object is required' })
   }
 }
 

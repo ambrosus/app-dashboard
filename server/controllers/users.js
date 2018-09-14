@@ -326,8 +326,7 @@ exports.changePassword = (req, res, next) => {
                   } else { throw 'Error in updating password'; }
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             });
-          }
-          catch(err){
+          } catch (err) {
             throw 'Incorrect password';
           }
         } else { throw 'No user found with this email address'; }
