@@ -7,37 +7,40 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const User = require('../models/users');
 const Company = require('../models/companies');
+const mongoose = require('mongoose');
 
 module.exports = action => {
   return (req, res, next) => {
     try {
       const userId = req.session.user._id
-      
-      getUserObj(userId).then(userObj => {
-        checkOwnership(userObj).then(response => {
-          return next();
-        }).catch(error => {
-          // We know that this user is not an ownwer, 
-          // We will check if the user has role
-          // And if the role has the specific permission requested in the route
+      getUserObj(userId)
+        .then(userObj => {
+          checkOwnership(userObj)
+            .then(response => {
+              if (response === 1) {
+                return next();
+              } else if (response === 0) {
+                // We know that this user is not an ownwer, 
+                // We will check if the user has role
+                // And if the role has the specific permission requested in the route
 
-          if (user && user.role && user.role.permissions) {
-            let authorizedFlag = 0;
-            user.role.permissions
-              .forEach(permission => {
-                if (permission === action) {
-                  authorizedFlag = 1;
-                }
-              });
-            if (authorizedFlag !== 1) { throw 'Unauthorized'; };
+                if (userObj && userObj.role && userObj.role.permissions) {
+                  let authorizedFlag = 0;
+                  userObj.role.permissions
+                    .forEach(permission => {
+                      if (permission === action) {
+                        authorizedFlag = 1;
+                      }
+                    });
+                  if (authorizedFlag !== 1) { throw 'Unauthorized'; };
 
-            return next();
+                  return next();
 
-          } else { throw 'Unauthorized'; }
+                } else { throw 'Unauthorized'; }
 
-        })
-      }).catch(error => { throw 'No user found' });
-
+              }
+            }).catch(error => { console.log('error: ' + error); return res.status(401).json({ message: error }); });
+        }).catch(error => { throw 'No user found' });
     } catch (error) { return res.status(401).json({ message: error }); }
   }
 };
@@ -48,22 +51,24 @@ getUserObj = userId => {
       .populate('role')
       .then(userObj => {
         resolve(userObj);
-      }).catch(error => { console.log('getUserObj error: ' + error); reject(error) });
+      }).catch(error => { console.log('getUserObj error: ' + error);
+        reject(error) });
   })
 }
 
 checkOwnership = userObject => {
   return new Promise((resolve, reject) => {
     if (userObject.company) {
-      const query = { company: userObject.company }
-      Company.findOne({query})
+      const _id = mongoose.Types.ObjectId(userObject.company);
+      Company.findById({ _id })
         .then(companyResponse => {
-          if (companyResponse.owner === userObject._id) {
-            resolve('Authorized');
+          if (companyResponse.owner.equals(userObject._id)) {
+            resolve(1);
           } else {
-            reject('Not an owner');
+            resolve(0);
           }
-        }).catch(error => { console.log('checkOwnership error: ' + error); reject(error) });
+        }).catch(error => { console.log('checkOwnership error: ' + error);
+          reject(error) });
     } else { reject('No companyId inside user object') }
   })
 }
