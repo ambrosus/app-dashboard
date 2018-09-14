@@ -6,14 +6,15 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const express = require('express');
+const checkPermission = require('./../../middleware/checkPermission');
 
 const RolesController = require('../../controllers/roles');
 
 const RolesRoutes = express.Router();
 
 // Routes
-RolesRoutes.post('/', RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
-RolesRoutes.put('/:id', RolesController.editPermissions, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.post('/', checkPermission('createRole'), RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
+RolesRoutes.put('/:id', checkPermission('changeRole'), RolesController.editPermissions, (req, res) => { res.status(req.status).json(req.json); });
 RolesRoutes.get('/', RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = RolesRoutes;
