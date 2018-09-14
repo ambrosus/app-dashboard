@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
 const User = require('../models/users');
+const Company = require('../models/companies');
 
 /**
  * Logs in user
@@ -30,11 +31,7 @@ exports.login = (req, res, next) => {
     User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner',
-        populate: {
-          path: 'hermes',
-          select: '-active -createdAt -updatedAt -__v -public'
-        }
+        select: '-active -createdAt -updatedAt -__v -owner'
       })
       .populate({
         path: 'role',
@@ -77,44 +74,44 @@ exports.login = (req, res, next) => {
 exports.verifyAccount = (req, res, next) => {
   const address = req.body.address;
   const token = req.body.token;
-  const hermes = req.body.hermes;
+  const company = req.session.user.company;
 
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    Authorization: `AMB_TOKEN ${token}`
-  };
+  Company.findById(company._id)
+    .populate('hermes')
+    .then(company => {
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `AMB_TOKEN ${token}`
+      };
 
-  axios.get(`${hermes.url}/accounts/${address}`, { headers })
-    .then(resp => {
-      User.findOne({ address })
-        .populate({
-          path: 'company',
-          select: '-active -createdAt -updatedAt -__v -owner',
-          populate: {
-            path: 'hermes',
-            select: '-active -createdAt -updatedAt -__v -public'
-          }
-        })
-        .populate({
-          path: 'role',
-          select: '-createdAt -updatedAt -__v'
-        })
-        .select('-active -createdAt -updatedAt -password -__v')
-        .then(user => {
-          if (user) {
-            req.status = 200;
-            req.session.user = user;
-            req.json = user;
-            return next();
-          } else { throw 'No user found'; }
-        })
-        .catch(error => {
-          req.status = 200;
-          req.json = { message: 'No registered user' };
-          return next();
-        });
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
+      axios.get(`${company.hermes.url}/accounts/${address}`, { headers })
+        .then(resp => {
+          User.findOne({ address })
+            .populate({
+              path: 'company',
+              select: '-active -createdAt -updatedAt -__v -owner'
+            })
+            .populate({
+              path: 'role',
+              select: '-createdAt -updatedAt -__v'
+            })
+            .select('-active -createdAt -updatedAt -password -__v')
+            .then(user => {
+              if (user) {
+                req.status = 200;
+                req.session.user = user;
+                req.json = user;
+                return next();
+              } else { throw 'No user found'; }
+            })
+            .catch(error => {
+              req.status = 200;
+              req.json = { message: 'No registered user' };
+              return next();
+            });
+        }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
 
 /**
@@ -161,12 +158,7 @@ exports.getActiveSessions = (req, res, next) => {
       req.status = 200;
       req.json = sessions;
       return next();
-    } else {
-      req.status = 401;
-      req.json = { 'message': "No sessions were found." }
-      return next();
-    }
-
+    } else { return res.status(401).json({ message: 'No sessions were found' }); }
   });
 }
 
@@ -187,11 +179,6 @@ exports.deleteSession = (req, res, next) => {
       req.status = 200;
       req.json = { message: "Success" };
       return next();
-    } else {
-      req.status = 400;
-      req.json = { message: "Session was not found." };
-      return next();
-    }
-
+    } else { return res.status(400).json({ message: 'Session was not found' }); }
   });
 }
