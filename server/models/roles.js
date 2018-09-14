@@ -14,7 +14,7 @@ const rolesSchema = mongoose.Schema({
     required: true
   },
   permissions: {
-    type: String,
+    type: [String],
     required: true
   },
   createdBy: {
