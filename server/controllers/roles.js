@@ -53,7 +53,7 @@ exports.create = (req, res, next) => {
  *
  * @name editPermissions
  * @route {PUT} api/roles/:id
- * @bodyparam roleID, permissions (e.g: { permissions: "string1, string2" })
+ * @bodyparam roleID, permissions (e.g: { "permissions": ["invites", "roles"] })
  * @returns Status code 400 on failure
  * @returns Permissions updated message on success with status code 200
  */

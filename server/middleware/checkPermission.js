@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 module.exports = action => {
   return (req, res, next) => {
     try {
-      const userId = req.session.user._id
+      const userId = req.session.user._id;
       getUserObj(userId)
         .then(userObj => {
           checkOwnership(userObj)
