@@ -5,28 +5,17 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-
 <div class="main">
-    <h2 class="center m-v-30">Help</h2>
-    <div class="sidebar-pages__wrapper">
-        <div class="sidebar-pages">
-            <!-- Sidebar -->
-            <aside class="sidebar-pages__sidebar">
-                <div class="sidebar-pages__sidebar__item"
-                     appSticky
-                     [addClass]="'fixed'">
-                    <p (click)="scroll(slug(item.title))"
-                       *ngFor="let item of help">{{ item.title }}</p>
-                </div>
-            </aside>
-            <!-- Main -->
-            <div class="sidebar-pages__main">
-                <article *ngFor="let item of help"
-                         [id]="slug(item.title)">
-                    <h3 id="item1">{{ item.title }}</h3>
-                    <p class="m-t-10 m-b-30">{{ item.lesson }}</p>
-                </article>
-            </div>
-        </div>
-    </div>
+  <h1 class="center m-v-50">Help / FAQ</h1>
+  <div class="sidebar-pages">
+    <!-- Sidebar -->
+    <aside>
+      <app-sidebar [items]="sidebar"></app-sidebar>
+    </aside>
+    <!-- Main -->
+    <main class="help">
+      <h4 class="color-ablue--base" *ngIf="!content">Choose one of the topics</h4>
+      <article *ngIf="content" [innerHTML]="content || ''"></article>
+    </main>
+  </div>
 </div>

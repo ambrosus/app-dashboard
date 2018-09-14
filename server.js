@@ -6,7 +6,7 @@ const config = require('./server/config');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
-const invitationCron = require('./server/cron/invitation-cron');
+const invitationsCron = require('./server/cron/invitation-cron');
 
 const APIRoutes = require('./server/routes/v1');
 
@@ -15,8 +15,13 @@ const app = express();
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
-.then(connected => console.log('MongoDB connected'))
-.catch(error => console.log('Mongodb connection error: ', error));
+  .then(connected => {
+    console.log('MongoDB connected')
+    invitationsCron.start();
+  })
+  .catch(error => console.log('Mongodb connection error: ', error));
+
+console.log(config.db);
 
 // Session store
 const store = new MongoDBStore({

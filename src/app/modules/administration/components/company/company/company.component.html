@@ -1,15 +1,11 @@
 <h2 class="center m-v-30">Company</h2>
-<div class="sidebar-pages__wrapper">
-  <div class="sidebar-pages">
-    <!-- Sidebar -->
-    <aside class="sidebar-pages__sidebar">
-      <div class="sidebar-pages__sidebar__item" appSticky [addClass]="'fixed'">
-        <p routerLink="settings">Settings</p>
-      </div>
-    </aside>
-    <!-- Main -->
-    <div class="sidebar-pages__main">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
+<div class="sidebar-pages">
+  <!-- Sidebar -->
+  <aside>
+    <app-sidebar [items]="sidebar"></app-sidebar>
+  </aside>
+  <!-- Main -->
+  <main>
+    <router-outlet></router-outlet>
+  </main>
 </div>

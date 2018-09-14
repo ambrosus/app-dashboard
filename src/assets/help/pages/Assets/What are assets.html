@@ -1,0 +1,24 @@
+<h1>What are assets</h1>
+
+<blockquote>
+  Assets are primary elements moving through a supply chain. The are the nouns of the system. They can represent an ingredient, product, package of products or any other type of container.
+</blockquote>
+
+<p>Each asset represents a specific entity (ingredient, product..), and in Hermes Node it's represented as set of specific details.</p>
+<p>Example:</p>
+<code>
+  {
+    "assetId": "0xc5cfd04.....30755ed65",
+      "content": {
+      "signature": "0x30755ed65396facf86c53e6...65c5cfd04be400",
+      "idData": {
+        "createdBy": "0x162a44701727a31f457a53801cd181cd38eb5bbd",
+        "timestamp": 1503424923,
+        "sequenceNumber": 3
+      }
+    }
+  }
+</code>
+
+<p>Each asset, can have multiple events describing the assets current state, location, etc. (produced, shipped, sold)</p>
+<p>Read more about <a href="/help/Events/Create an event">events here</a>.</p>
