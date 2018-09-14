@@ -7,6 +7,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const axios = require('axios');
 
+const Company = require('../models/companies');
+
 exports.create = (req, res, next) => {
   // Event object with signature, eventId and assetId
   // already generated client side
@@ -40,24 +42,28 @@ exports.create = (req, res, next) => {
 exports.get = (req, res, next) => {
   const eventId = req.params.eventId;
   const token = req.query.token;
-  const hermes = req.session.user.company.hermes;
+  const company = req.session.user.company;
 
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    Authorization: `AMB_TOKEN ${token}`
-  };
+  Company.findById(company._id)
+    .populate('hermes')
+    .then(company => {
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `AMB_TOKEN ${token}`
+      };
 
-  axios.get(`${hermes.url}/events/${eventId}`, { headers })
-    .then(event => {
-      // Todo:
-      // 1. Cache the event
+      axios.get(`${company.hermes.url}/events/${eventId}`, { headers })
+        .then(event => {
+          // Todo:
+          // 1. Cache the event
 
-      req.status = 200;
-      req.json = event;
-      return next();
-    })
-    .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
+          req.status = 200;
+          req.json = event;
+          return next();
+        })
+        .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
 
 exports.find = (req, res, next) => {
@@ -69,30 +75,34 @@ exports.find = (req, res, next) => {
   const toTimestamp = req.query.toTimestamp;
   const data = req.query.data;
   const token = req.query.token;
-  const hermes = req.session.user.company.hermes;
+  const company = req.session.user.company;
 
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    Authorization: `AMB_TOKEN ${token}`
-  };
-  const url = `${hermes.url}/assets/?`;
-  if (assetId) { url += `assetId=${assetId}&` }
-  if (page) { url += `page=${page}&` }
-  if (perPage) { url += `perPage=${perPage}&` }
-  if (createdBy) { url += `createdBy=${createdBy}&` }
-  if (fromTimestamp) { url += `fromTimestamp=${fromTimestamp}&` }
-  if (toTimestamp) { url += `toTimestamp=${toTimestamp}&` }
-  if (data) { url += `data=${data}` }
+  Company.findById(company._id)
+    .populate('hermes')
+    .then(company => {
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `AMB_TOKEN ${token}`
+      };
+      const url = `${company.hermes.url}/events?`;
+      if (assetId) { url += `assetId=${assetId}&` }
+      if (page) { url += `page=${page}&` }
+      if (perPage) { url += `perPage=${perPage}&` }
+      if (createdBy) { url += `createdBy=${createdBy}&` }
+      if (fromTimestamp) { url += `fromTimestamp=${fromTimestamp}&` }
+      if (toTimestamp) { url += `toTimestamp=${toTimestamp}&` }
+      if (data) { url += `data=${data}` }
 
-  axios.get(url, { headers })
-    .then(events => {
-      // Todo:
-      // 1. Cache events
+      axios.get(url, { headers })
+        .then(events => {
+          // Todo:
+          // 1. Cache events
 
-      req.status = 200;
-      req.json = events;
-      return next();
-    })
-    .catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
+          req.status = 200;
+          req.json = events;
+          return next();
+        })
+        .catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
