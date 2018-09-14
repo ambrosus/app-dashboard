@@ -49,12 +49,12 @@ exports.get = (req, res, next) => {
   };
 
   axios.get(`${hermes.url}/events/${eventId}`, { headers })
-    .then(resp => {
+    .then(event => {
       // Todo:
       // 1. Cache the event
 
       req.status = 200;
-      req.json = resp;
+      req.json = event;
       return next();
     })
     .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
