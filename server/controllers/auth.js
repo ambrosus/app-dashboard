@@ -70,12 +70,10 @@ exports.login = (req, res, next) => {
  * @returns user Object on success with status code 200
  */
 exports.verifyAccount = (req, res, next) => {
-  const address = req.body.address;
-  const token = req.body.token;
-  const deviceInfo = req.body.deviceInfo;
-  const company = req.session.user.company;
+  const { address, token, deviceInfo } = req.body;
+  const companyId = req.session.user.company._id;
 
-  Company.findById(company._id)
+  Company.findById(companyId)
     .populate('hermes')
     .then(company => {
       const headers = {

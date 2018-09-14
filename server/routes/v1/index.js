@@ -14,7 +14,6 @@ const UsersRoutes = require('./users');
 const SetupRoutes = require('./setup');
 const InvitesRoutes = require('./invites');
 const AssetsRoutes = require('./assets');
-const EventsRoutes = require('./events');
 
 const APIRoutes = express.Router();
 
@@ -25,6 +24,5 @@ APIRoutes.use('/users', UsersRoutes);
 APIRoutes.use('/invites', InvitesRoutes);
 APIRoutes.use('/setup', SetupRoutes);
 APIRoutes.use('/assets', AssetsRoutes);
-APIRoutes.use('/events', EventsRoutes);
 
 module.exports = APIRoutes;

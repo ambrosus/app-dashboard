@@ -50,7 +50,7 @@ const usersSchema = mongoose.Schema({
     type: Date,
     default: +new Date()
   },
-  lastRequest: {
+  assetsCachedAt: {
     type: Date,
     default: +new Date()
   },
