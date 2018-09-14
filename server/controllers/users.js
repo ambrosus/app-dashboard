@@ -375,18 +375,7 @@ exports.editRole = (req, res, next) => {
         select: '-createdAt -updatedAt -__v'
       })
       .then(user => {
-        let ownerFlag = 0;
-        user.role.permissions
-          .replace(/\s/g,'')
-          .split(',')
-          .forEach(permission => {
-            if (permission === 'owner') {
-              ownerFlag = 1;
-            }
-          });
-        if (ownerFlag === 1) {
-          throw 'Cannot edit role for owner';
-        } else {
+        if (user) {
           User.findOneAndUpdate({ email }, update)
             .then(updateResponse => {
               if (updateResponse) {
@@ -395,7 +384,7 @@ exports.editRole = (req, res, next) => {
                 return next();
               } else { throw 'Role edit error'; }
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-          }
+        } else { throw 'No user found' };
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
     } else if (!email) {
       return res.status(400).json({ message: 'Email is required' });
