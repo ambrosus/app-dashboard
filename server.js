@@ -15,8 +15,8 @@ const app = express();
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
-.then(connected => console.log('MongoDB connected'))
-.catch(error => console.log('Mongodb connection error: ', error));
+  .then(connected => console.log('MongoDB connected'))
+  .catch(error => console.log('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({
@@ -33,6 +33,8 @@ store.on('error', error => console.log('MongoDB Session Store connection error: 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+
 
 const maxAge = 2 * 24 * 60 * 60 * 1000; // 2 days
 const sess = {

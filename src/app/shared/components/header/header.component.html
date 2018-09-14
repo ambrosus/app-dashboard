@@ -15,6 +15,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </a>
     </div>
 
+    <a routerLink="/login" *ngIf="!isLoggedin">Login</a>
+
     <ul class="header-menu" *ngIf="isLoggedin && user">
 
       <li class="header-menu__item">
@@ -63,10 +65,17 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           </span>
         </div>
 
-        <div *ngIf="(user | checkIf: 'user.role.id') && user.role.id === 1" routerLink="/administration" class="header-submenu__item" routerLinkActive="active">
+        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/users" class="header-submenu__item" routerLinkActive="active">
           <span class="header-menu__item p-v-10">
             <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Administration</span>
+            <span class="hide-all display-480-inline-block">Users</span>
+          </span>
+        </div>
+
+        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/company" class="header-submenu__item" routerLinkActive="active">
+          <span class="header-menu__item p-v-10">
+            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
+            <span class="hide-all display-480-inline-block">Company</span>
           </span>
         </div>
 

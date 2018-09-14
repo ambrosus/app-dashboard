@@ -27,7 +27,6 @@
               "src/manifest.json"
             ],
             "styles": [
-              "node_modules/normalize.css/normalize.css",
               "node_modules/sanitize.css/sanitize.css",
               "node_modules/chartist/dist/chartist.css",
               "node_modules/animate.css/animate.min.css",
@@ -101,7 +100,7 @@
               "src/manifest.json"
             ],
             "styles": [
-              "node_modules/normalize.css/normalize.css",
+              "node_modules/sanitize.css/sanitize.css",
               "node_modules/chartist/dist/chartist.css",
               "src/styles/style.scss"
             ],

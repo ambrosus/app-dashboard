@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 declare let moment: any;
 declare let AmbrosusSDK: any;
@@ -17,7 +18,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private deviceService: DeviceDetectorService
   ) {
     const hermes = <any>this.storage.get('hermes') || <any>{};
     this.sdk = new AmbrosusSDK({
@@ -57,10 +59,12 @@ export class AuthService {
   verifyAccount(address, token, hermes) {
     return new Observable(observer => {
       const url = `/api/auth/verify`;
+      const deviceInfo = this.deviceService.getDeviceInfo();
       const body = {
         address,
         token,
-        hermes
+        hermes,
+        deviceInfo,
       };
 
       this.http.post(url, body).subscribe(

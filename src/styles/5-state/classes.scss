@@ -1,40 +1,28 @@
 // Classes
 
-// Font family
-.font-family--primary {
-  font-family: $font-family--primary;
-}
-.font-family--secondary {
-  font-family: $font-family--secondary;
-}
-.font-family--tertiary {
-  font-family: $font-family--tertiary;
-}
-.font-family--print {
-  font-family: $font-family--print;
-}
+
 
 // Font weight
 .font-weight--thin {
-  font-weight: $font-weight--thin;
+  font-weight: 100
 }
 .font-weight--light {
-  font-weight: $font-weight--light;
+  font-weight: 300
 }
 .font-weight--regular {
-  font-weight: $font-weight--regular;
+  font-weight: 400
 }
 .font-weight--medium {
-  font-weight: $font-weight--medium;
+  font-weight: 500
 }
 .font-weight--semi-bold {
-  font-weight: $font-weight--semi-bold;
+  font-weight: 600
 }
 .font-weight--bold {
-  font-weight: $font-weight--bold;
+  font-weight: 700
 }
 .font-weight--black {
-  font-weight: $font-weight--black;
+  font-weight: 800
 }
 
 // Text align

@@ -1,0 +1,46 @@
+<h1>Creating an account</h1>
+
+<p>The only way for users to create accounts within the dashboard, is user needs to be first invited by dashboard's owner or admin.</p>
+
+<ul>
+  <li>Once dashboard's owner or admin sends an invite, user will receive an email.</li>
+  <li>By clicking a link in the email, user is redirected to create an account page.</li>
+  <li>On create an account page, user needs to provide:
+    <ul>
+      <li>Full name</li>
+      <li>Password</li>
+      <li>Address and Secret (optional)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>If user already has address and secret, and if that address isn't already in use by another account within the dashboard, it can be used for creating a new account.</p>
+<p>Otherwise, user gets newly generated address and secret, which for security reasons aren't stored anywhere, and should be saved in a safe place by a user.</p>
+<p>User can login with email and password, without a need (but with an option) to login with address and secret.</p>
+
+<img src="/assets/help/images/administration-invite-email.png" alt="Administration invite email">
+<img src="/assets/help/images/administration-invite-register.png" alt="Administration invite register">
+
+<h4>How login works</h4>
+
+<p>Two options, login with:</p>
+<ol>
+  <li>Email and password</li>
+  <li>Address and secret</li>
+</ol>
+
+<blockquote>
+  <b>Address</b> and <b>secret</b> are key-value pair generated and registered within a specific Hermes node, ie. Ambrosus Test Hermes (https://gateway-test.ambrosus.com).
+  Having address and secret that are registered within Hermes, provides the holder with an ability to create/view certain amount of assets and events.
+</blockquote>
+
+<p>Login process:</p>
+<ol>
+  <li>If using email and password, check whether account exists.</li>
+  <li>If it does and if password is correct, browser receives encrypted token of users secret, and it's decrypted with provided password inside of the browser (client side), so secret is never sent over the internet, it always stays in it's raw form client side only.</li>
+  <li>Furthermore, there's validation (server side), whether users account (address and secret) are registered within specific Hermes Node, if yes, user can login.</li>
+  <li>Entire login process is very much secure.</li>
+</ol>
+
+<img src="/assets/help/images/login-email.png" alt="Login email">
+<img src="/assets/help/images/login-address.png" alt="Login address">
