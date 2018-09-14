@@ -79,12 +79,13 @@ app-setup {
         height: 18px;
         display: inline-block;
         border-radius: 100%;
-        background: #f8f9fc;
+      background: #f8f9fc;
         border: 1px solid #ddd;
       }
 
       &--active {
         color: #121e3e;
+        font-weight: 600;
 
         .step__balloon {
           background: #e1f4ef;
@@ -93,7 +94,7 @@ app-setup {
       }
 
       &--completed {
-        color: #121e3e;
+        @extend .step--active;
 
         .step__balloon {
           background: #24d17e;
