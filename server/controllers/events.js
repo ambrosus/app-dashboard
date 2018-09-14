@@ -13,10 +13,10 @@ exports.create = (req, res, next) => {
   // Event object with signature, eventId and assetId
   // already generated client side
   const event = req.body.event;
-  const company = req.session.user.company;
+  const companyId = req.session.user.company._id;
 
   if (event) {
-    Company.findById(company._id)
+    Company.findById(companyId)
       .populate('hermes')
       .then(company => {
         const headers = {
@@ -43,9 +43,9 @@ exports.create = (req, res, next) => {
 exports.get = (req, res, next) => {
   const eventId = req.params.eventId;
   const token = req.query.token;
-  const company = req.session.user.company;
+  const companyId = req.session.user.company._id;
 
-  Company.findById(company._id)
+  Company.findById(companyId)
     .populate('hermes')
     .then(company => {
       const headers = {
@@ -68,17 +68,10 @@ exports.get = (req, res, next) => {
 }
 
 exports.find = (req, res, next) => {
-  const assetId = req.query.assetId;
-  const page = req.query.page;
-  const perPage = req.query.perPage;
-  const createdBy = req.query.createdBy;
-  const fromTimestamp = req.query.fromTimestamp;
-  const toTimestamp = req.query.toTimestamp;
-  const data = req.query.data;
-  const token = req.query.token;
-  const company = req.session.user.company;
+  const { assetId, page, perPage, createdBy, fromTimestamp, toTimestamp, data, token } = req.query;
+  const companyId = req.session.user.company._id;
 
-  Company.findById(company._id)
+  Company.findById(companyId)
     .populate('hermes')
     .then(company => {
       const headers = {

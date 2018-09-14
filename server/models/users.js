@@ -50,6 +50,10 @@ const usersSchema = mongoose.Schema({
     type: Date,
     default: +new Date()
   },
+  lastRequest: {
+    type: Date,
+    default: +new Date()
+  },
   createdAt: {
     type: Date,
     default: +new Date()

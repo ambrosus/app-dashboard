@@ -13,10 +13,10 @@ exports.create = (req, res, next) => {
   // Asset object with signature and assetId
   // already generated client side
   const asset = req.body.asset;
-  const company = req.session.user.company;
+  const companyId = req.session.user.company._id;
 
   if (asset) {
-    Company.findById(company._id)
+    Company.findById(companyId)
       .populate('hermes')
       .then(company => {
         const headers = {
@@ -43,9 +43,9 @@ exports.create = (req, res, next) => {
 exports.get = (req, res, next) => {
   const assetId = req.params.assetId;
   const token = req.query.token;
-  const company = req.session.user.company;
+  const companyId = req.session.user.company._id;
 
-  Company.findById(company._id)
+  Company.findById(companyId)
     .populate('hermes')
     .then(company => {
       const headers = {
@@ -68,15 +68,10 @@ exports.get = (req, res, next) => {
 }
 
 exports.find = (req, res, next) => {
-  const page = req.query.page;
-  const perPage = req.query.perPage;
-  const createdBy = req.query.createdBy;
-  const fromTimestamp = req.query.fromTimestamp;
-  const toTimestamp = req.query.toTimestamp;
-  const token = req.query.token;
-  const company = req.session.user.company;
+  const { page, perPage, createdBy, fromTimestamp, toTimestamp, token } = req.query;
+  const companyId = req.session.user.company._id;
 
-  Company.findById(company._id)
+  Company.findById(companyId)
     .populate('hermes')
     .then(company => {
       const headers = {
