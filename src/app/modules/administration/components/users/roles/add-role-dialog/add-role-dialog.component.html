@@ -3,9 +3,9 @@
     <h3 class="p-h-30">Create Role</h3>
     <hr>
 
-    <div class="m-t-30" style="max-width: 350px">
+    <div class="m-t-30">
       <div class="tab_content">
-        <form [formGroup]="roleForm" (ngSubmit)="addRole()">
+        <form [formGroup]="roleForm" (ngSubmit)="create()">
           <!-- Create Role form -->
           <div class="form-text m-b-20">
             <label>Role Title</label>
@@ -24,7 +24,7 @@
               <div class="table__item table" *ngFor="let permission of permissionsArray; let i = index">
                 <label class="table__label" for="{{ i }}">
                   <div class="relative">
-                    <input type="checkbox"  id="{{ i }}" (click)="selectPermission(i)" appOnchecked class="table__checkbox" name="{{i}}">
+                    <input type="checkbox" id="{{ i }}" (click)="selectPermission(permission.value)" appOnchecked class="table__checkbox" name="{{permission.value}}">
                     <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                       <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
                     </svg>
@@ -40,15 +40,15 @@
             </div>
           </div>
 
-          <div class="flex flex-direction-r justify-content-fe align-items-c">
-            <button (click)="closeDialog()" class="abtn btn-solid-ared">Cancel</button>
-            <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
-          </div>
+          <button (click)="closeDialog()" class="abtn btn-solid-ared">Cancel</button>
+          <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
+
         </form>
       </div>
     </div>
 
-    <h5 class="p-h-40 m-v-30 center" style="color: #ea7070">Show response errors here</h5>
-
+    <p *ngIf="error" class="center p-t-20" style="color: #ea7070">{{error}}</p>
+    <p *ngIf="!error && successMessage" class="center p-t-20" style="color: #57b846;">{{successMessage}}</p>
   </div>
+
 </div>
