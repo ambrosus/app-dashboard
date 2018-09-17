@@ -52,7 +52,7 @@ exports.create = (req, res, next) => {
  *
  * @name editPermissions
  * @route {PUT} api/roles/:id
- * @bodyparam roleID, permissions (e.g: { "permissions": ["invites", "roles"] })
+ * @bodyparam permissions (e.g: { "permissions": ["invites", "roles"] })
  * @returns Status code 400 on failure
  * @returns Permissions updated message on success with status code 200
  */
@@ -60,13 +60,14 @@ exports.editPermissions = (req, res, next) => {
   const update = {};
   const _id = req.params.id;
   update.permissions = req.body.permissions;
+  update.title = req.body.title;
 
-  if (_id && update.permissions) {
+  if (_id && update.permissions && update.title) {
     Role.findOneAndUpdate({ _id }, update)
       .then(updateResponse => {
         if (updateResponse) {
           req.status = 200;
-          req.json = { message: 'Permissions updated successfully' }
+          req.json = { message: 'Role updated successfully' }
           return next();
         }
       })
