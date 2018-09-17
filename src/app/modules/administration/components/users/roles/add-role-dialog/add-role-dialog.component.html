@@ -1,15 +1,16 @@
 <div class="flex flex-direction-r justify-content-c align-items-c p-a-40" style="min-height: 100vh">
   <div>
-    <h3 class="p-h-30">Create Role</h3>
+    <h3 *ngIf="!isEdit" class="p-h-30">Create Role</h3>
+    <h3 *ngIf="isEdit" class="p-h-30">Edit Role</h3>
     <hr>
 
     <div class="m-t-30">
       <div class="tab_content">
-        <form [formGroup]="roleForm" (ngSubmit)="create()">
+        <form (ngSubmit)="create()">
           <!-- Create Role form -->
           <div class="form-text m-b-20">
             <label>Role Title</label>
-            <input formControlName="title" placeholder="Example: Admin, Manager, etc. " type="text">
+            <input [(ngModel)]="title" name="title" placeholder="Example: Admin, Manager, etc. " type="text">
           </div>
 
           <div class="m-b-20">
@@ -21,10 +22,10 @@
             <div class="table m-t-20 p-h-30" id="table">
 
               <!-- Items -->
-              <div class="table__item table" *ngFor="let permission of permissionsArray; let i = index">
+              <div class="table__item table" *ngFor="let permission of permissionsArray; let i = index" [ngClass]="checkPermission(permission.value) ? 'checkbox--checked' : ''">
                 <label class="table__label" for="{{ i }}">
                   <div class="relative">
-                    <input type="checkbox" id="{{ i }}" (click)="selectPermission(permission.value)" appOnchecked class="table__checkbox" name="{{permission.value}}">
+                    <input type="checkbox" id="{{ i }}" (click)="selectPermission(permission.value)" class="table__checkbox" name="{{permission.value}}">
                     <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                       <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
                     </svg>
@@ -40,8 +41,9 @@
             </div>
           </div>
 
-          <button (click)="closeDialog()" class="abtn btn-solid-ared">Cancel</button>
-          <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
+          <a (click)="closeDialog()" #ngNoForm class="abtn btn-solid-ared">Close</a>
+          <button *ngIf="!isEdit" class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
+          <button *ngIf="isEdit" class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Edit Role</button>
 
         </form>
       </div>

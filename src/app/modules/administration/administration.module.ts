@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 
 import { AdministrationRoutingModule } from './administration-routing.module';
@@ -28,7 +28,8 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
       disableBtn: true,
       btnLoadingClass: 'is-loading',
       handleCurrentBtnOnly: false,
-    })
+    }),
+    FormsModule
   ],
   declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, AddRoleDialogComponent],
   entryComponents: [AddRoleDialogComponent]

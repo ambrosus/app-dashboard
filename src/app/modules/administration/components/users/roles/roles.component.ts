@@ -29,14 +29,19 @@ export class RolesComponent implements OnInit {
     );
   }
 
-  createRoleDialog() {
+  createRoleDialog(_id) {
     const dialogRef = this.dialog.open(AddRoleDialogComponent, {
       width: '600px',
       position: { right: '0'}
     });
+    if (_id) {
+      const instance = dialogRef.componentInstance;
+      instance.roleObj = this.roles.filter(a => a._id === _id);
+    }
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
+      this.ngOnInit();
     });
   }
 
