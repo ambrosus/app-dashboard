@@ -5,42 +5,34 @@
 
     <div class="m-t-30" style="max-width: 350px">
       <div class="tab_content">
-
-        <!-- Create Role form -->
+        <form [formGroup]="roleForm" (ngSubmit)="addRole()">
+          <!-- Create Role form -->
           <div class="form-text m-b-20">
-            <label >Role Name </label>
-            <input type="text">
+            <label>Role Title</label>
+            <input formControlName="title" placeholder="Example: Admin, Manager, etc. " type="text">
           </div>
 
           <div class="m-b-20">
             <h5>Dashboard Permissions</h5>
           </div>
-          <div class="m-b-20">
-              <div class="check" style="display:inline;">
-                <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
-              </div>
-              <div class="m-l-10" style="display:inline;">
-                Create Entity
-              </div>
-          </div>
-          <div class="m-b-30">
-              <div class="check" style="display:inline;">
-                <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
-              </div>
-              <div class="m-l-10" style="display:inline;">
-                Register Account
-              </div>
+          <div class="m-b-20 checkbox1">
+            <input type="checkbox" id="{{ i }}" class="checkbox1__checkbox" name="somename">
+            <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+            </svg>
+            <span style="display:inline;">ABC</span>
           </div>
 
           <div class="form-text m-b-20">
-            <label >Access Level </label>
+            <label>Access Level </label>
             <input type="number">
           </div>
 
           <div class="flex flex-direction-r justify-content-fe align-items-c">
             <button (click)="closeDialog()" class="abtn m-l-20 btn-solid-ared">Cancel</button>
-            <button class="abtn m-l-20 btn-solid-ablue" (click)="create()" [promiseBtn]="createPromise">Create</button>
+            <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
           </div>
+        </form>
       </div>
     </div>
 
@@ -48,4 +40,3 @@
 
   </div>
 </div>
-  

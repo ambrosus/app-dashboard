@@ -379,3 +379,48 @@
  /* Most modern browsers support this now. */
  color: lightgray;
 }
+
+.checkbox1 {
+  position: relative;
+
+  & input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: rgba(80, 120, 241, 0.1);
+    margin-right: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  & .check {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: rgba(80, 120, 241, 0.1);
+    margin-right: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  & .checkbox-icon {
+    display: none;
+    height: 1em;
+    position: absolute;
+    left: 3px;
+    top: 4px;
+    cursor: pointer;
+  }
+
+  & img {
+    height: 25px;
+  }
+
+  @include max-1024 {
+    max-height: 45px;
+  }
+
+  @include min-1024 {
+    flex-direction: column;
+  }
+}

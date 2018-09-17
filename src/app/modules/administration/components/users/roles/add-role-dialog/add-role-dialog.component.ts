@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-add-role-dialog',
@@ -9,9 +10,17 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class AddRoleDialogComponent implements OnInit {
 
   spinner: Boolean = false;
+  roleForm: FormGroup;
   createPromise;
+  title: string;
+  permissions: string;
 
-  constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>) { }
+  constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>) {
+    this.roleForm = new FormGroup({
+      title: new FormControl(null, [Validators.required]),
+      permissions: new FormControl(null, [Validators.required])
+    });
+  }
 
   ngOnInit() {
   }
@@ -24,6 +33,10 @@ export class AddRoleDialogComponent implements OnInit {
     this.createPromise = new Promise((resolve, reject) => {
       setTimeout(reject, 2000);
     });
+  }
+
+  addRole() {
+    console.log('Add Role');
   }
 
 }
