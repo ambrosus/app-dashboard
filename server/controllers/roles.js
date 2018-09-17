@@ -16,7 +16,6 @@ const Role = require('../models/roles');
  * @bodyparam 
  *      - title (e.g: { title: 'owner' }), 
  *      - permissions (e.g: { permissions: "string1, string2" }),
- *      - id: Number
  * @returns Status code 400 on failure
  * @returns New role saved successfully message on success with status code 200
  */
