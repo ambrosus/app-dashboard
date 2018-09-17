@@ -3,11 +3,11 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-add-role-dialog',
-  templateUrl: './add-role-dialog.component.html',
-  styleUrls: ['./add-role-dialog.component.scss']
+  selector: 'app-role-dialog',
+  templateUrl: './role-dialog.component.html',
+  styleUrls: ['./role-dialog.component.scss']
 })
-export class AddRoleDialogComponent implements OnInit {
+export class RoleDialogComponent implements OnInit {
 
   spinner: Boolean = false;
   createPromise;
@@ -26,7 +26,7 @@ export class AddRoleDialogComponent implements OnInit {
 
   @Input() roleObj;
 
-  constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>, private http: HttpClient) { }
+  constructor(private dialogRef: MatDialogRef<RoleDialogComponent>, private http: HttpClient) { }
 
   ngOnInit() {
     if (this.roleObj) { this.getRoleById(this.roleObj[0]); this.isEdit = true; }

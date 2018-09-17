@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog} from '@angular/material';
-import { AddRoleDialogComponent } from './add-role-dialog/add-role-dialog.component';
+import { RoleDialogComponent } from './role-dialog/role-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
@@ -30,7 +30,7 @@ export class RolesComponent implements OnInit {
   }
 
   createRoleDialog(_id) {
-    const dialogRef = this.dialog.open(AddRoleDialogComponent, {
+    const dialogRef = this.dialog.open(RoleDialogComponent, {
       width: '600px',
       position: { right: '0'}
     });

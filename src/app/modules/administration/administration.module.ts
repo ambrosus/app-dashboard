@@ -13,7 +13,7 @@ import { AllComponent } from './components/users/all/all.component';
 import { InviteComponent } from './components/users/invite/invite.component';
 import { InvitesComponent } from './components/users/invites/invites.component';
 import { RolesComponent } from './components/users/roles/roles.component';
-import { AddRoleDialogComponent } from './components/users/roles/add-role-dialog/add-role-dialog.component';
+import { RoleDialogComponent } from './components/users/roles/role-dialog/role-dialog.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
 
 @NgModule({
@@ -31,7 +31,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
     }),
     FormsModule
   ],
-  declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, AddRoleDialogComponent],
-  entryComponents: [AddRoleDialogComponent]
+  declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, RoleDialogComponent],
+  entryComponents: [RoleDialogComponent]
 })
 export class AdministrationModule { }
