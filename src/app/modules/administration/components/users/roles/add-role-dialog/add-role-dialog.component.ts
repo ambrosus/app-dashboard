@@ -15,6 +15,11 @@ export class AddRoleDialogComponent implements OnInit {
   title: string;
   permissions: string;
 
+  permissionsArray = [
+    { id: '1', name: 'Invites', value: 'invites' },
+    { id: '2', name: 'Users', value: 'users' }
+  ]
+
   constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>) {
     this.roleForm = new FormGroup({
       title: new FormControl(null, [Validators.required]),
@@ -37,6 +42,10 @@ export class AddRoleDialogComponent implements OnInit {
 
   addRole() {
     console.log('Add Role');
+  }
+
+  selectPermission(id) {
+    console.log(id);
   }
 
 }

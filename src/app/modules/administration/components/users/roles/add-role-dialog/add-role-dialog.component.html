@@ -15,21 +15,33 @@
           <div class="m-b-20">
             <h5>Dashboard Permissions</h5>
           </div>
-          <div class="m-b-20 checkbox1">
-            <input type="checkbox" id="{{ i }}" class="checkbox1__checkbox" name="somename">
-            <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
-            </svg>
-            <span style="display:inline;">ABC</span>
-          </div>
 
-          <div class="form-text m-b-20">
-            <label>Access Level </label>
-            <input type="number">
+          <div class="m-b-20">
+
+            <div class="table m-t-20 p-h-30" id="table">
+
+              <!-- Items -->
+              <div class="table__item table" *ngFor="let permission of permissionsArray; let i = index">
+                <label class="table__label" for="{{ i }}">
+                  <div class="relative">
+                    <input type="checkbox"  id="{{ i }}" (click)="selectPermission(i)" appOnchecked class="table__checkbox" name="{{i}}">
+                    <svg class="checkbox-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                      <path fill="#5078f1" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
+                    </svg>
+                  </div>
+                </label>
+
+                <div class="table__column">
+                  <p class="table__column-title hide-1024">{{permission.name}}</p>
+                  <p class="table__column-content">{{permission.name}}</p>
+                </div>
+
+              </div>
+            </div>
           </div>
 
           <div class="flex flex-direction-r justify-content-fe align-items-c">
-            <button (click)="closeDialog()" class="abtn m-l-20 btn-solid-ared">Cancel</button>
+            <button (click)="closeDialog()" class="abtn btn-solid-ared">Cancel</button>
             <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">Create</button>
           </div>
         </form>
