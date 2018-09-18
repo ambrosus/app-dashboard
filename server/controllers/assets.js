@@ -228,33 +228,6 @@ exports.createAsset = (req, res, next) => {
   }
 }
 
-exports.getEvent = (req, res, next) => {
-  const eventId = req.params.eventId;
-  const token = req.query.token;
-  const companyId = req.session.user.company._id;
-
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `AMB_TOKEN ${token}`
-      };
-
-      axios.get(`${company.hermes.url}/events/${eventId}`, { headers })
-        .then(event => {
-          // Todo:
-          // 1. Cache the event
-
-          req.status = 200;
-          req.json = event;
-          return next();
-        })
-        .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
-}
-
 exports.createEvent = (req, res, next) => {
   // Event object with signature, eventId and assetId
   // already generated client side
@@ -284,4 +257,31 @@ exports.createEvent = (req, res, next) => {
   } else if (!event) {
     return res.status(400).json({ message: '"event" object is required' })
   }
+}
+
+exports.getEvent = (req, res, next) => {
+  const eventId = req.params.eventId;
+  const token = req.query.token;
+  const companyId = req.session.user.company._id;
+
+  Company.findById(companyId)
+    .populate('hermes')
+    .then(company => {
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `AMB_TOKEN ${token}`
+      };
+
+      axios.get(`${company.hermes.url}/events/${eventId}`, { headers })
+        .then(event => {
+          // Todo:
+          // 1. Cache the event
+
+          req.status = 200;
+          req.json = event;
+          return next();
+        })
+        .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
