@@ -48,8 +48,8 @@ companiesSchema.pre('update', function (next) {
 });
 
 companiesSchema.pre('save', function (next) {
-  this.updatedAt = +new Date();
-  next();
+  if (!this.hermes) { next(new Error('"hermes" object is required').toString()); } 
+  else { this.updatedAt = +new Date(); next(); }
 });
 
 module.exports = mongoose.model('Companies', companiesSchema);

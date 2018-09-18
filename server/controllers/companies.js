@@ -23,26 +23,20 @@ exports.create = (req, res, next) => {
   const timeZone = req.body.company ? req.body.company.timeZone : '';
   const hermes = req.hermes || req.body.hermes;
 
-  if (title && hermes) {
-    const company = new Company({
-      _id: new mongoose.Types.ObjectId(),
-      title,
-      timeZone,
-      hermes
+  const company = new Company({
+    _id: new mongoose.Types.ObjectId(),
+    title,
+    timeZone,
+    hermes
+  });
+  company
+    .save()
+    .then(company => {
+      req.status = 200;
+      req.company = company;
+      return next();
+    }).catch(error => {
+      if (error.code === 11000) { res.status(400).json({ message: 'Company with this title already exists' }); }
+      else { console.log(error), res.status(400).json({ message: error }); }
     });
-    company
-      .save()
-      .then(company => {
-        req.status = 200;
-        req.company = company;
-        return next();
-      }).catch(error => {
-        if (error.code === 11000) { res.status(400).json({ message: 'Company with this title already exists' }); }
-        else { console.log(error), res.status(400).json({ message: error }); }
-      });
-  } else if (!title) {
-    return res.status(400).json({ message: 'Company "title" is required' });
-  } else if (!hermes) {
-    return res.status(400).json({ message: '"hermes" object is required' });
-  }
-}
+};
