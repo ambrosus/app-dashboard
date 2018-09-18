@@ -71,58 +71,60 @@ exports.getAssets = (req, res, next) => {
 }
 
 exports.updateCachedAssets = (req, res, next) => {
-  const { token } = req.query;
+  const { token, cached } = req.query;
   const hermesURL = req.session.user.company.hermes.url;
   const assets = req.json.assets || [];
 
-  // Get 1 latest event and 1 info event
-  const getAssetEventsAndUpdate = new Promise((req, res) => {
-    assets.forEach((asset, index, array) => {
-      url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
-      // url += `data[type]=pattern(ambrosus.asset.*)`;
+  if (!cached) {
+    // Get 1 latest event and 1 info event
+    const getAssetEventsAndUpdate = new Promise((req, res) => {
+      assets.forEach((asset, index, array) => {
+        url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
+        // url += `data[type]=pattern(ambrosus.asset.*)`;
 
-      // Get latest event
-      get(url, token)
-        .then(resp => {
-          asset.updatedAt = resp.results[0].content.idData.timestamp;
-          asset.latestEvent = resp.results.reduce((latest, event) => {
-            const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
-            return event.content.data.find(obj => {
-              const type = obj.type.split('.');
-              obj.type = type[type.length - 1].toLowerCase();
-              return isLatest(obj.type);
-            });
-          }, {});
-          try { asset.latestEvent = JSON.stringify(asset.latestEvent); } catch (e) { console.log(e); }
+        // Get latest event
+        get(url, token)
+          .then(resp => {
+            asset.updatedAt = resp.results[0].content.idData.timestamp;
+            asset.latestEvent = resp.results.reduce((latest, event) => {
+              const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
+              return event.content.data.find(obj => {
+                const type = obj.type.split('.');
+                obj.type = type[type.length - 1].toLowerCase();
+                return isLatest(obj.type);
+              });
+            }, {});
+            try { asset.latestEvent = JSON.stringify(asset.latestEvent); } catch (e) { console.log(e); }
 
-          // Get info event
-          url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
-          url += `data[type]=ambrosus.asset.info`;
-          get(url, token)
-            .then(resp => {
-              try {
-                asset.infoEvent = JSON.stringify(resp.results[0].content.data.find(obj => obj.type === 'ambrosus.asset.info'));
-              } catch (e) { console.log(e); }
+            // Get info event
+            url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
+            url += `data[type]=ambrosus.asset.info`;
+            get(url, token)
+              .then(resp => {
+                try {
+                  asset.infoEvent = JSON.stringify(resp.results[0].content.data.find(obj => obj.type === 'ambrosus.asset.info'));
+                } catch (e) { console.log(e); }
 
-              // Update the asset
-              Asset.findByIdAndUpdate(asset._id, asset)
-                .then(assetUpdated => {
-                  if (index === array.length - 1) { res(); }
-                }).catch(error => {
-                  console.log('Asset update error: ', error);
-                  if (index === array.length - 1) { res(); }
-                });
-            }).catch(error => (console.log('Asset info event GET error: ', error)));
-        }).catch(error => (console.log('Asset events GET error: ', error)));
+                // Update the asset
+                Asset.findByIdAndUpdate(asset._id, asset)
+                  .then(assetUpdated => {
+                    if (index === array.length - 1) { res(); }
+                  }).catch(error => {
+                    console.log('Asset update error: ', error);
+                    if (index === array.length - 1) { res(); }
+                  });
+              }).catch(error => (console.log('Asset info event GET error: ', error)));
+          }).catch(error => (console.log('Asset events GET error: ', error)));
+      });
     });
-  });
 
-  // Return a response
-  getAssetEventsAndUpdate.then(() => {
-    req.status = 200;
-    req.json = assets;
-    return next();
-  });
+    // Return a response
+    getAssetEventsAndUpdate.then(() => {
+      req.status = 200;
+      req.json = assets;
+      return next();
+    });
+  } else { next(); }
 }
 
 exports.createAsset = (req, res, next) => {
