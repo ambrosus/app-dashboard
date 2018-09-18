@@ -71,6 +71,8 @@ exports.getAssets = (req, res, next) => {
 }
 
 exports.updateCachedAssets = (req, res, next) => {
+  const { token } = req.query;
+  const hermesURL = req.session.user.company.hermes.url;
   const assets = req.json.assets || [];
 
   // Get 1 latest event and 1 info event
