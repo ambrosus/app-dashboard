@@ -11,7 +11,8 @@ const companiesSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   title: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
