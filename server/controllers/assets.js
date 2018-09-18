@@ -144,7 +144,7 @@ exports.createEvent = (req, res, next) => {
  * 2. Calls next();
  *
  * @name getEvent
- * @route { GET } api/assets/:assetId
+ * @route { GET } api/assets/:assetId/events/:eventId
  * @param { String } token - for getting public and private assets/events
  * @param { String } eventId
  * @param { Object } session - logged in user session
