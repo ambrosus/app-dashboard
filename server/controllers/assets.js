@@ -8,77 +8,119 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const axios = require('axios');
 
 const Asset = require('../models/assets');
-const User = require('../models/users');
+
+const get = (url, token) => {
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
+  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  return axios.get(url, { headers });
+}
 
 exports.getAssets = (req, res, next) => {
-  const { page, perPage, createdBy, fromTimestamp, toTimestamp, token, cached } = req.query;
-  const userId = req.session.user._id;
-  const query = {};
+  const { page, perPage, token, cached } = req.query;
+  const hermesURL = req.session.user.company.hermes.url;
 
   if (cached) {
-    Asset.paginate(query, { page, limit: perPage, sort: '-updatedAt' })
+    Asset.paginate({}, { page, limit: perPage, sort: '-updatedAt' })
       .then(assets => {
         req.status = 200;
         req.json = assets;
         return next();
       }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
   } else {
-    User.findById(userId)
-      .populate({
-        path: 'company',
-        populate: { path: 'hermes' }
-      })
-      .populate({ path: 'role' })
-      .then(user => {
-        const headers = {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        };
-        if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
-
-        const url = `${user.company.hermes.url}/assets?`;
-        url += `fromTimestamp=${user.assetsCachedAt}`
+    Asset.paginate({}, { limit: 1 })
+      .then(assets => {
+        let url = `${hermesURL}/assets?`;
+        url += `fromTimestamp=${assets[0].updatedAt}`;
 
         // GET assets from Hermes
-        axios.get(url, { headers })
+        get(url, token)
           .then(assets => {
 
             // Insert assets to db
             const insertAssets = new Promise((res, rej) => {
-              assets.results.forEach((_asset, index, array) => {
-                const asset = new Asset({
+              assets.results.forEach((asset, index, array) => {
+                const _asset = new Asset({
                   _id: new mongoose.Types.ObjectId(),
-                  assetId: _asset.assetId,
-                  createdBy: _asset.content.idData.createdBy,
-                  timestamp: _asset.content.idData.timestamp
+                  assetId: asset.assetId,
+                  createdBy: asset.content.idData.createdBy,
+                  updatedAt: asset.content.idData.timestamp,
+                  createdAt: asset.content.idData.timestamp
                 });
 
-                asset.save()
-                  .then(inserted => {
-                    if (index === array.length - 1) { res(); }
-                  }).catch(error => (console.log('Asset creation error: ', error)));
+                _asset.save()
+                  .then(inserted => { if (index === array.length - 1) { res(); } })
+                  .catch(error => (console.log('Asset creation error: ', error)));
               });
             });
 
             // GET cached assets
             insertAssets.then(() => {
-              Asset.paginate(query, { page, limit: perPage, sort: '-updatedAt' })
+              Asset.paginate({}, { page, limit: perPage, sort: '-updatedAt' })
                 .then(assets => {
-
-                  // GET all asset events from Hermes
-                  const getAllAssetEvents = new Promise((req, res) => {
-
-                  });
-
-                  // Update all assets, update user's last request and return a response
-                  getAllAssetEvents.then(() => {
-
-                  });
+                  req.status = 200;
+                  req.json = { assets: assets.docs };
+                  next();
                 }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
             });
           }).catch(error => (console.log(error), res.status(400).json({ message: 'Assets GET error', error })));
-      }).catch(error => (console.log(error), res.status(400).json({ message: 'User GET error', error })));
+      }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Asset GET error', error })));
   }
+}
+
+exports.updateCachedAssets = (req, res, next) => {
+  const assets = req.json.assets || [];
+
+  // Get 1 latest event and 1 info event
+  const getAssetEventsAndUpdate = new Promise((req, res) => {
+    assets.forEach((asset, index, array) => {
+      url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=${500}`;
+      // url += `data[type]=pattern(ambrosus.asset.*)`;
+
+      // Get latest event
+      get(url, token)
+        .then(resp => {
+          asset.updatedAt = resp.results[0].content.idData.timestamp;
+          asset.latestEvent = resp.results.reduce((latest, event) => {
+            const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
+            return event.content.data.find(obj => {
+              const type = obj.type.split('.');
+              obj.type = type[type.length - 1].toLowerCase();
+              return isLatest(obj.type);
+            });
+          }, {});
+          try { asset.latestEvent = JSON.stringify(asset.latestEvent); } catch (e) { console.log(e); }
+
+          // Get info event
+          url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=${1}&`;
+          url += `data[type]=ambrosus.asset.info`;
+          get(url, token)
+            .then(resp => {
+              try {
+                asset.infoEvent = JSON.stringify(resp.results[0].content.data.find(obj => obj.type === 'ambrosus.asset.info'));
+              } catch (e) { console.log(e); }
+
+              // Update the asset
+              Asset.findByIdAndUpdate(asset._id, asset)
+                .then(assetUpdated => {
+                  if (index === array.length - 1) { res(); }
+                }).catch(error => {
+                  console.log('Asset update error: ', error);
+                  if (index === array.length - 1) { res(); }
+                });
+            }).catch(error => (console.log('Asset info event GET error: ', error)));
+        }).catch(error => (console.log('Asset events GET error: ', error)));
+    });
+  });
+
+  // Return a response
+  getAssetEventsAndUpdate.then(() => {
+    req.status = 200;
+    req.json = assets;
+    return next();
+  });
 }
 
 exports.createAsset = (req, res, next) => {

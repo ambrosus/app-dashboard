@@ -12,28 +12,12 @@ const assetsSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   assetId: String,
   createdBy: String,
-  info: String,
+  infoEvent: String,
   latestEvent: String,
-  createdAt: {
-    type: Date,
-    default: +new Date()
-  },
-  updatedAt: {
-    type: Date,
-    default: +new Date()
-  }
+  createdAt: Date,
+  updatedAt: Date
 });
 
 assetsSchema.plugin(mongoosePaginate);
-
-assetsSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-assetsSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
 
 module.exports = mongoose.model('Assets', assetsSchema);
