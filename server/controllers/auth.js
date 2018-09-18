@@ -30,7 +30,8 @@ exports.login = (req, res, next) => {
     User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner'
+        select: '-active -createdAt -updatedAt -__v -owner',
+        populate: { path: 'hermes' }
       })
       .populate({
         path: 'role',
