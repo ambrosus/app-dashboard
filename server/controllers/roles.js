@@ -11,8 +11,8 @@ const Role = require('../models/roles');
 /**
  * This route allows you to create a new Role and add a set of permissions to them
  *
- * @name createRole
- * @route {POST} api/roles
+ * @name createOrEditRole
+ * @route {PUT} api/roles
  * @bodyparam 
  *      - title (e.g: { title: 'owner' }), 
  *      - permissions (e.g: { permissions: "string1, string2" }),
@@ -20,16 +20,28 @@ const Role = require('../models/roles');
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const role = new Role();
-
+  const _id = req.body._id;
   const title = req.body.title;
   const permissions = req.body.permissions;
 
-  if (title && permissions) {
-    role._id = new mongoose.Types.ObjectId(),
-    role.title = req.body.title;
-    role.permissions = req.body.permissions;
-    role.createdBy = req.session.user._id;
+  if (_id && title && permissions) {
+
+    Role.findOneAndUpdate({ _id }, {title: title, permissions: permissions})
+      .then(updateResponse => {
+        if (updateResponse) {
+          req.status = 200;
+          req.json = { message: 'Permissions updated successfully' }
+          return next();
+        }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+
+  } else if (!_id && title && permissions) {
+    const role = new Role({
+      _id: new mongoose.Types.ObjectId(),
+      title,
+      permissions,
+      createdBy: req.session.user._id
+    });
     role.save()
       .then(saveResponse => {
         req.status = 200;
@@ -39,8 +51,6 @@ exports.create = (req, res, next) => {
       .catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!title) {
     return res.status(400).json({ message: 'Role "title" is required' });
-  } else if (!id) {
-    return res.status(400).json({ message: 'Role "id" is required' });
   } else if (!permissions) {
     return res.status(400).json({ message: 'Role "permissions" is required' });
   }
@@ -48,6 +58,7 @@ exports.create = (req, res, next) => {
 };
 
 /**
+<<<<<<< HEAD
  * User can edit the permissions for a particular role ID 
  *
  * @name editPermissions
@@ -80,6 +91,8 @@ exports.editPermissions = (req, res, next) => {
 };
 
 /**
+=======
+>>>>>>> origin/roles-api
  * Fetch all Roles that exists in the Roles collection
  *
  * @name getRoles
