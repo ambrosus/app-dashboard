@@ -58,41 +58,6 @@ exports.create = (req, res, next) => {
 };
 
 /**
-<<<<<<< HEAD
- * User can edit the permissions for a particular role ID 
- *
- * @name editPermissions
- * @route {PUT} api/roles/:id
- * @bodyparam permissions (e.g: { "permissions": ["invites", "roles"] })
- * @returns Status code 400 on failure
- * @returns Permissions updated message on success with status code 200
- */
-exports.editPermissions = (req, res, next) => {
-  const update = {};
-  const _id = req.params.id;
-  update.permissions = req.body.permissions;
-  update.title = req.body.title;
-
-  if (_id && update.permissions && update.title) {
-    Role.findOneAndUpdate({ _id }, update)
-      .then(updateResponse => {
-        if (updateResponse) {
-          req.status = 200;
-          req.json = { message: 'Role updated successfully' }
-          return next();
-        }
-      })
-  } else if (!_id) {
-    return res.status(400).json({ message: 'Role "_id" is required' });
-  } else if (!update.permissions) {
-    return res.status(400).json({ message: 'Role "permissions" is required' });
-  }
-
-};
-
-/**
-=======
->>>>>>> origin/roles-api
  * Fetch all Roles that exists in the Roles collection
  *
  * @name getRoles
