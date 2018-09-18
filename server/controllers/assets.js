@@ -61,7 +61,7 @@ exports.getAssets = (req, res, next) => {
               Asset.paginate({}, { page, limit: perPage, sort: '-updatedAt' })
                 .then(assets => {
                   req.status = 200;
-                  req.json = { assets: assets.docs };
+                  req.json = assets;
                   next();
                 }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
             });
@@ -78,7 +78,7 @@ exports.updateCachedAssets = (req, res, next) => {
   if (!cached) {
     // Get 1 latest event and 1 info event
     const getAssetEventsAndUpdate = new Promise((req, res) => {
-      assets.forEach((asset, index, array) => {
+      assets.docs.forEach((asset, index, array) => {
         url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
         // url += `data[type]=pattern(ambrosus.asset.*)`;
 
@@ -118,12 +118,7 @@ exports.updateCachedAssets = (req, res, next) => {
       });
     });
 
-    // Return a response
-    getAssetEventsAndUpdate.then(() => {
-      req.status = 200;
-      req.json = assets;
-      return next();
-    });
+    getAssetEventsAndUpdate.then(() => next());
   } else { next(); }
 }
 
