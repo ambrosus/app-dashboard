@@ -43,43 +43,37 @@ export class RoleDialogComponent implements OnInit {
 
   create() {
     this.error = null;
-    this.successMessage = null;
+    this.successMessage = null; 
 
     this.createPromise = new Promise((resolve, reject) => {
       if (this.selectedPermissions.length === 0) { this.error = 'Please select at least one permission'; reject(); } 
       else if (!this.title) { this.error = 'Please fill the role title'; reject(); } 
       else if (!this.isEdit) {
-        const url = `/api/roles`;
         const body = { title: this.title, permissions: this.selectedPermissions };
-        this.http.post(url, body).subscribe(
-          (resp: any) => {
-            this.successMessage = 'New role created successfully!';
-            resolve();
-          },
-          err => {
-            reject();
-            this.error = err.error ? err.error.message : JSON.stringify(err);
-            console.log('Role save failed: ', err);
-        });
-
+        this.putRole(body).then(response => resolve()).catch(error => reject()); 
       } else if (this.isEdit) {
-        console.log('GHA');
-        const url = `/api/roles/${this.roleObj[0]._id}`;
-        const body = { title: this.title, permissions: this.selectedPermissions };
-        this.http.put(url, body).subscribe(
-          (resp: any) => {
-            this.successMessage = 'Permissions edited successfully!';
-            resolve();
-          },
-          err => {
-            reject();
-            this.error = err.error ? err.error.message : JSON.stringify(err);
-            console.log('Role save failed: ', err);
-        });
+        const body = { _id: this.roleObj[0]._id, title: this.title, permissions: this.selectedPermissions };
+        this.putRole(body).then(response => resolve()).catch(error => reject());
       }
-    });
 
+    });
   }
+
+  putRole(body) {
+    const url = `/api/roles`;
+    return new Promise((resolve, reject) => {
+      this.http.put(url, body).subscribe(
+        (resp: any) => {
+          this.successMessage = 'Saved successfully';
+          resolve();
+        },
+        err => {
+          reject();
+          this.error = err.error ? err.error.message : JSON.stringify(err);
+          console.log('Role save failed: ', err);
+      });
+    });
+  }  
 
   selectPermission(value) {
     if (this.selectedPermissions.indexOf(value) > -1) { this.selectedPermissions = this.selectedPermissions.filter(a => a !== value); } 
