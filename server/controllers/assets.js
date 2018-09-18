@@ -78,7 +78,7 @@ exports.updateCachedAssets = (req, res, next) => {
   // Get 1 latest event and 1 info event
   const getAssetEventsAndUpdate = new Promise((req, res) => {
     assets.forEach((asset, index, array) => {
-      url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=${500}`;
+      url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
       // url += `data[type]=pattern(ambrosus.asset.*)`;
 
       // Get latest event
@@ -96,7 +96,7 @@ exports.updateCachedAssets = (req, res, next) => {
           try { asset.latestEvent = JSON.stringify(asset.latestEvent); } catch (e) { console.log(e); }
 
           // Get info event
-          url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=${1}&`;
+          url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
           url += `data[type]=ambrosus.asset.info`;
           get(url, token)
             .then(resp => {
