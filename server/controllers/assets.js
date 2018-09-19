@@ -138,6 +138,15 @@ exports.updateCachedAssets = (req, res, next) => {
   getAssetEventsAndUpdate.then(() => next());
 }
 
+const get = (url, token) => {
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
+  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  return axios.get(url, { headers });
+}
+
 exports.createAsset = (req, res, next) => {
   // Asset object with signature and assetId
   // already generated client side
@@ -227,31 +236,31 @@ exports.createEvent = (req, res, next) => {
   }
 }
 
+/**
+ * 1. Gets event from Hermes
+ * 2. Calls next();
+ *
+ * @name getEvent
+ * @route { GET } api/assets/:assetId/events/:eventId
+ * @param { String } token - for getting public and private assets/events
+ * @param { String } eventId
+ * @param { Object } session - logged in user session
+ * @returns 400 on error
+ * @returns 200 and next() on success
+ */
 exports.getEvent = (req, res, next) => {
+  const { token } = req.query;
   const eventId = req.params.eventId;
-  const token = req.query.token;
-  const companyId = req.session.user.company._id;
+  const hermesURL = req.session.user.company.hermes.url;
 
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `AMB_TOKEN ${token}`
-      };
+  const url = `${hermesURL}/events/${eventId}`;
 
-      axios.get(`${company.hermes.url}/events/${eventId}`, { headers })
-        .then(event => {
-          // Todo:
-          // 1. Cache the event
-
-          req.status = 200;
-          req.json = event;
-          return next();
-        })
-        .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
+  get(url, token)
+    .then(event => {
+      req.status = 200;
+      req.json = event;
+      return next();
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
 }
 
 exports.getEvents = (req, res, next) => {
