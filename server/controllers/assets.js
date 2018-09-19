@@ -8,6 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const axios = require('axios');
 
 const Asset = require('../models/assets');
+const assetsUtils = require('../utils/assets');
 
 const get = (url, token) => {
   const headers = {
@@ -29,8 +30,8 @@ const get = (url, token) => {
  * @param { String } perPage - assets perPage to get
  * @param { String } token - for getting public and private assets/events
  * @param { Object } session - logged in user session
- * @returns Status code 400 on error
- * @returns Puts paginated result into req.json and calls next();
+ * @returns 400 on error
+ * @returns 200 and next() on success
  */
 exports.getAssets = (req, res, next) => {
   const { page, perPage, token } = req.query;
@@ -87,7 +88,7 @@ exports.getAssets = (req, res, next) => {
  * @param { String } token - for getting public and private assets/events
  * @param { Object } session - logged in user session
  * @param { Object } req.json.assets - Assets (pagination result) previous method forwaded
- * @returns Calls next();
+ * @returns 200 and next() on success
  */
 exports.updateCachedAssets = (req, res, next) => {
   const { token } = req.query;
@@ -138,6 +139,64 @@ exports.updateCachedAssets = (req, res, next) => {
   getAssetEventsAndUpdate.then(() => next());
 }
 
+/**
+ * 1. Gets cached asset
+ * 2. Calls next();
+ *
+ * @name getAsset
+ * @route { GET } api/assets/:assetId
+ * @param { String } assetId
+ * @returns 400 on error
+ * @returns 200 and next() on success
+ */
+exports.getAsset = (req, res, next) => {
+  const assetId = req.params.assetId;
+
+  // Returns cached asset
+  Asset.findOne({ assetId })
+    .then(asset => {
+      if (asset) {
+        req.status = 200;
+        req.json = asset;
+        return next();
+      } else { throw 'No asset'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
+}
+
+/**
+ * 1. Gets pagination based number of events from Hermes
+ * 2. Transforms events
+ * 3. Calls next();
+ *
+ * @name getEvents
+ * @route { GET } api/assets/:assetId/events/
+ * @param { String } page - pagination page to get
+ * @param { String } perPage - assets perPage to get
+ * @param { String } data - data for Hermes events query
+ * @param { String } token - for getting public and private assets/events
+ * @param { Object } session - logged in user session
+ * @returns 400 on error
+ * @returns 200 and next() on success
+ */
+exports.getEvents = (req, res, next) => {
+  const { page, perPage, data, token } = req.query;
+  const assetId = req.query.assetId || req.params.assetId;
+  const hermesURL = req.session.user.company.hermes.url;
+
+  const url = `${hermesURL}/events?`;
+  url += `assetId=${assetId}&`;
+  url += `page=${page || 0}&`;
+  url += `perPage=${perPage || 15}&`;
+  if (data) { url += data; }
+
+  get(url, token)
+    .then(events => {
+      req.status = 200;
+      req.json = assetsUtils.parseEvents(events);
+      return next();
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
+}
+
 exports.createAsset = (req, res, next) => {
   // Asset object with signature and assetId
   // already generated client side
@@ -167,33 +226,6 @@ exports.createAsset = (req, res, next) => {
   } else if (!asset) {
     return res.status(400).json({ message: '"asset" object is required' })
   }
-}
-
-exports.getAsset = (req, res, next) => {
-  const assetId = req.params.assetId;
-  const token = req.query.token;
-  const companyId = req.session.user.company._id;
-
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `AMB_TOKEN ${token}`
-      };
-
-      axios.get(`${company.hermes.url}/assets/${assetId}`, { headers })
-        .then(asset => {
-          // Todo:
-          // 1. Cache the asset
-
-          req.status = 200;
-          req.json = asset;
-          return next();
-        })
-        .catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
 
 exports.createEvent = (req, res, next) => {
@@ -251,40 +283,5 @@ exports.getEvent = (req, res, next) => {
           return next();
         })
         .catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
-}
-
-exports.getEvents = (req, res, next) => {
-  const { page, perPage, createdBy, fromTimestamp, toTimestamp, data, token } = req.query;
-  const assetId = req.query.assetId || req.params.assetId;
-  const companyId = req.session.user.company._id;
-
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `AMB_TOKEN ${token}`
-      };
-      const url = `${company.hermes.url}/events?`;
-      if (assetId) { url += `assetId=${assetId}&` }
-      if (page) { url += `page=${page}&` }
-      if (perPage) { url += `perPage=${perPage}&` }
-      if (createdBy) { url += `createdBy=${createdBy}&` }
-      if (fromTimestamp) { url += `fromTimestamp=${fromTimestamp}&` }
-      if (toTimestamp) { url += `toTimestamp=${toTimestamp}&` }
-      if (data) { url += `data=${data}` }
-
-      axios.get(url, { headers })
-        .then(events => {
-          // Todo:
-          // 1. Cache events
-
-          req.status = 200;
-          req.json = events;
-          return next();
-        })
-        .catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
