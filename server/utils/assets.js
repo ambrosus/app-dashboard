@@ -48,22 +48,20 @@ exports.parseEvents = e => {
 }
 
 exports.findEvent = (eventType, events) => {
-  if (type === 'latest') {
-    return events.reduce((latest, event) => {
-      const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
-      return event.content.data.find(obj => {
-        const type = obj.type.split('.');
-        obj.type = type[type.length - 1].toLowerCase();
-        return isLatest(obj.type);
-      });
-    }, {});
-  } else {
-    return events.reduce((event, currentEvent) => {
-      return currentEvent.content.data.find(obj => {
-        const type = obj.type.split('.');
-        obj.type = type[type.length - 1].toLowerCase();
-        return obj.type === eventType;
-      });
-    }, {});
-  }
+  let e = {};
+  events.find(event => {
+    const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
+    return event.content.data.find(obj => {
+      const type = obj.type.split('.');
+      obj.type = type[type.length - 1].toLowerCase();
+      e = obj;
+      switch (eventType) {
+        case 'latest':
+          return isLatest(obj.type);
+        default:
+          return obj.type === eventType;
+      }
+    });
+  });
+  return e;
 }

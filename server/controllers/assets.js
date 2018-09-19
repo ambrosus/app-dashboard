@@ -48,7 +48,7 @@ exports.getAssets = (req, res, next) => {
 
   Asset.paginate({}, { limit: 1 })
     .then(assets => {
-      let url = `${hermesURL}/assets?`;
+      let url = `${hermesURL}/assets?perPage=500&`;
       url += `fromTimestamp=${assets[0].updatedAt}`;
 
       // GET assets from Hermes
@@ -224,13 +224,14 @@ exports.getEvent = (req, res, next) => {
 }
 
 /**
- * 1. Gets event from Hermes
- * 2. Calls next();
+ * 1. Gets signed asset object
+ * 2. Creates an asset in Hermes
+ * 3. Calls next();
  *
- * @name getEvent
- * @route { GET } api/assets/:assetId/events/:eventId
- * @param { String } token - for getting public and private assets/events
- * @param { String } eventId
+ * @name createAsset
+ * @route { POST } api/assets/
+ * @param { String } token - for creating public and private assets/events
+ * @param { Object } asset
  * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
@@ -238,11 +239,9 @@ exports.getEvent = (req, res, next) => {
 exports.createAsset = (req, res, next) => {
   const { token } = req.query;
   const asset = req.body.asset;
-  const events = req.body.events;
   const hermesURL = req.session.user.company.hermes.url;
 
   if (asset && Array.isArray(events)) {
-
     // Create an asset
     const createAsset = new Promise((res, rej) => {
       const url = `${hermesURL}/assets`;
@@ -252,50 +251,11 @@ exports.createAsset = (req, res, next) => {
         }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset create error', error })));
     });
 
-    // Create events
+    // Return next()
     createAsset.then(() => {
-      const createEvents = new Promise((res, rej) => {
-        events.forEach((event, index, array) => {
-          const url = `${hermesURL}/assets/${event.content.idData.assetId}/events`;
-          create(url, event, token)
-            .then(eventCreated => {
-              if (index === array.length - 1) { res(); }
-            }).catch(error => {
-              console.log('Event create error: ', error);
-              if (index === array.length - 1) { res(); }
-            });
-        });
-      });
-
-      // Insert cached asset to db
-      createEvents.then(() => {
-        let infoEvent = '';
-        let latestEvent = '';
-        try { infoEvent = JSON.stringify(assetsUtils.findEvent('info', events)); } catch (e) { console.log(e); }
-        try { latestEvent = JSON.stringify(assetsUtils.findEvent('latest', events)); } catch (e) { console.log(e); }
-
-        const _asset = new Asset({
-          _id: new mongoose.Types.ObjectId(),
-          assetId: asset.assetId,
-          createdBy: asset.content.idData.createdBy,
-          infoEvent,
-          latestEvent,
-          updatedAt: asset.content.idData.timestamp,
-          createdAt: asset.content.idData.timestamp
-        });
-
-        _asset.save()
-          .then(inserted => {
-            req.status = 201;
-            req.json = { message: 'Success', data: inserted };
-            return next();
-          }).catch(error => {
-            console.log('Cached asset creation error: ', error);
-            req.status = 200;
-            req.json = { message: 'Hermes asset created, but cached asset creation failed' };
-            return next();
-          });
-      });
+      req.status = 200;
+      req.json = { asset };
+      return next();
     });
   } else if (!asset) {
     return res.status(400).json({ message: '"asset" object is required' })
@@ -304,33 +264,76 @@ exports.createAsset = (req, res, next) => {
   }
 }
 
+/**
+ * 1. Gets array of signed event objects
+ * 2. Loops and creates each event in Hermes
+ * 3. On success, updates cached asset in dash db
+ * 4. Calls next();
+ *
+ * @name createEvent
+ * @route { POST } api/assets/:assetId/events/
+ * @param { String } token - for creating public and private assets/events
+ * @param { Object[] } events
+ * @param { Object } session - logged in user session
+ * @returns 400 on error
+ * @returns 200 and next() on success
+ */
 exports.createEvent = (req, res, next) => {
-  // Event object with signature, eventId and assetId
-  // already generated client side
-  const event = req.body.event;
-  const companyId = req.session.user.company._id;
+  const { token } = req.query;
+  const events = req.body.events;
+  const hermesURL = req.session.user.company.hermes.url;
 
-  if (event) {
-    Company.findById(companyId)
-      .populate('hermes')
-      .then(company => {
-        const headers = {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        };
+  if (Array.isArray(events) && events.length > 0) {
 
-        axios.post(`${company.hermes.url}/events`, event, { headers })
+    const createEvents = new Promise((res, rej) => {
+      events.forEach((event, index, array) => {
+        const url = `${hermesURL}/assets/${event.content.idData.assetId}/events`;
+        create(url, event, token)
           .then(eventCreated => {
-            // Todo:
-            // 1. Cache created event in the db
-            // 2. Increment events created statistic on user and organization models
+            if (index === array.length - 1) { res(); }
+          }).catch(error => {
+            console.log('Event create error: ', error);
+            if (index === array.length - 1) { res(); }
+          });
+      });
+    });
 
-            req.status = 200;
-            req.user = user;
-            return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Event creation failed', error })));
-      }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
-  } else if (!event) {
-    return res.status(400).json({ message: '"event" object is required' })
-  }
+    // Insert/update cached asset in db
+    createEvents.then(() => {
+      let infoEvent = '';
+      let latestEvent = '';
+      try { infoEvent = JSON.stringify(assetsUtils.findEvent('info', events)); } catch (e) { console.log(e); }
+      try { latestEvent = JSON.stringify(assetsUtils.findEvent('latest', events)); } catch (e) { console.log(e); }
+
+      Asset.findOne({ assetId })
+        .then(asset => {
+          if (asset) {
+            if (infoEvent) { asset['infoEvent'] = infoEvent; }
+            if (latestEvent) { asset['latestEvent'] = latestEvent; }
+          } else {
+            const asset = new Asset({
+              _id: new mongoose.Types.ObjectId(),
+              assetId: events[0].content.idData.assetId,
+              createdBy: events[0].content.idData.createdBy,
+              infoEvent,
+              latestEvent,
+              updatedAt: events[0].content.idData.timestamp,
+              createdAt: events[0].content.idData.timestamp
+            });
+          }
+
+          asset.save()
+            .then(saved => {
+              req.status = 200;
+              req.json = { message: 'Success', data: saved };
+              return next();
+            }).catch(error => {
+              console.log('Cached asset creation/update error: ', error);
+              req.status = 200;
+              req.json = { message: 'Hermes events created, but cached asset creation/update failed' };
+              return next();
+            });
+        }).catch(error => (console.log(error), res.status(400).json({ error })));
+    });
+  } else { return next(); }
 }
