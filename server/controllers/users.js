@@ -67,36 +67,28 @@ exports.create = (req, res, next) => {
               user
                 .save()
                 .then(user => {
-                  Role.findOne({ id: 3 })
-                    .then(role => {
-                      if (role) {
-                        user.role = role;
-                        user.save();
+                  // Register user in the hermes
+                  const headers = {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `AMB_TOKEN ${config.token}`
+                  };
+                  const body = {
+                    address,
+                    permissions,
+                    accessLevel
+                  }
+                  axios.post(`${hermes.url}/accounts`, body, { headers })
+                    .then(userRegistered => {
+                      if (inviteToken) {
+                        Invite.findOneAndRemove({ token: inviteToken })
+                          .then(inviteDeleted => console.log('Invite deleted'))
+                          .catch(error => console.log('Invite delete error: ', error));
+                      }
 
-                        // Register user in the hermes
-                        const headers = {
-                          Accept: 'application/json',
-                          'Content-Type': 'application/json',
-                          Authorization: `AMB_TOKEN ${config.token}`
-                        };
-                        const body = {
-                          address,
-                          permissions,
-                          accessLevel
-                        }
-                        axios.post(`${hermes.url}/accounts`, body, { headers })
-                          .then(userRegistered => {
-                            if (inviteToken) {
-                              Invite.findOneAndRemove({ token: inviteToken })
-                                .then(inviteDeleted => console.log('Invite deleted'))
-                                .catch(error => console.log('Invite delete error: ', error));
-                            }
-
-                            req.status = 200;
-                            req.user = user;
-                            return next();
-                          }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
-                      } else { throw 'No user role'; }
+                      req.status = 200;
+                      req.user = user;
+                      return next();
                     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             } else { return (console.log(err), res.status(400).json({ message: err })); }
@@ -141,18 +133,8 @@ exports.setOwnership = (req, res, next) => {
                 _company.owner = _user;
                 _company.save()
                   .then(saved => {
-                    Role.findOne({ id: 1 })
-                      .then(role => {
-                        if (role) {
-                          _user.company = _company;
-                          _user.role = role;
-                          _user.save()
-                            .then(saved => {
-                              req.status = 200;
-                              return next();
-                            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-                        } else { throw 'No owner role'; }
-                      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                    req.status = 200;
+                    return next();
                   }).catch(error => (console.log(error), res.status(400).json({ message: error })));
               } else { throw 'No user found'; }
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
@@ -326,7 +308,7 @@ exports.changePassword = (req, res, next) => {
                   } else { throw 'Error in updating password'; }
                 }).catch(error => (console.log(error), res.status(400).json({ message: error })));
             });
-          }
+          } 
           catch(err){
             throw 'Incorrect password';
           }
@@ -339,4 +321,34 @@ exports.changePassword = (req, res, next) => {
   } else if (!newPassword) {
     return res.status(400).json({ message: '"newPassword" is required' });
   }
+};
+
+/**
+ * Assign roles (role ObjectID) to users using their email address
+ *
+ * @name assignRole
+ * @route {POST} api/users/role
+ * @bodyparam email, role (Mongoose objectID)
+ * @returns Status code 400 on failure
+ * @returns Save success message on success with status code 200
+ */
+exports.assignRole = (req, res, next) => {
+  const email = req.body.email;
+  const role = req.body.role;
+
+  if (email && role) {
+    User.findOneAndUpdate({ email }, { role })
+      .then(updateResponse => {
+        if (updateResponse) {
+          req.status = 200;
+          req.json = { message: 'Role updated successfully', data: updateResponse };
+          return next();
+        } else { throw 'Update data error'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+  } else if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  } else if (!role) {
+    return res.status(400).json({ message: 'Role ObjectID is required' });
+  }
+
 };

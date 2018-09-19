@@ -9,7 +9,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const express = require('express');
 
 const checkAddress = require('../../middleware/checkAddress');
-const checkRole = require('../../middleware/checkRole');
+const checkPermission = require('../../middleware/checkPermission');
 
 const UsersController = require('../../controllers/users');
 
@@ -17,12 +17,13 @@ const UsersRoutes = express.Router();
 
 // Routes
 UsersRoutes.route('/')
-  .get(checkRole('getAccounts'), UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
+  .get(checkPermission('accounts'), UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
   .post(UsersController.create, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
 UsersRoutes.route('/:email')
   .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
   .put(checkAddress, UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
+UsersRoutes.route(checkPermission('invites'), '/role').post(UsersController.assignRole, (req, res) => { res.status(req.status).json(req.json); })
 
 module.exports = UsersRoutes;

@@ -13,9 +13,13 @@ const rolesSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  id: {
-    type: Number,
+  permissions: {
+    type: [String],
     required: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users'
   },
   createdAt: {
     type: Date,
