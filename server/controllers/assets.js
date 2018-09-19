@@ -56,7 +56,7 @@ exports.getAssets = (req, res, next) => {
         .then(assets => {
 
           // Insert assets to db
-          const insertAssets = new Promise((res, rej) => {
+          const insertAssets = new Promise((resolve, reject) => {
             assets.results.forEach((asset, index, array) => {
               const _asset = new Asset({
                 _id: new mongoose.Types.ObjectId(),
@@ -67,8 +67,11 @@ exports.getAssets = (req, res, next) => {
               });
 
               _asset.save()
-                .then(inserted => { if (index === array.length - 1) { res(); } })
-                .catch(error => (console.log('Asset creation error: ', error)));
+                .then(inserted => { if (index === array.length - 1) { resolve(); } })
+                .catch(error => {
+                  console.log('Cached asset creation error: ', error);
+                  if (index === array.length - 1) { resolve(); }
+                });
             });
           });
 
@@ -105,7 +108,7 @@ exports.updateCachedAssets = (req, res, next) => {
   const assets = req.json.assets || [];
 
   // Get all events and choose latestEvent, and get latest info event
-  const getAssetEventsAndUpdate = new Promise((req, res) => {
+  const getAssetEventsAndUpdate = new Promise((resolve, reject) => {
     assets.docs.forEach((asset, index, array) => {
       url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
 
@@ -113,22 +116,21 @@ exports.updateCachedAssets = (req, res, next) => {
       get(url, token)
         .then(resp => {
           asset.updatedAt = resp.results[0].content.idData.timestamp;
-          try { asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', resp.results)); } catch (e) { console.log(e); }
+          asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', resp.results));
 
           // Get info event
           url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
           url += `data[type]=ambrosus.asset.info`;
           get(url, token)
             .then(resp => {
-              try { asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', resp.results)); } catch (e) { console.log(e); }
+              asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', resp.results));
 
               // Update the asset
               Asset.findByIdAndUpdate(asset._id, asset)
-                .then(assetUpdated => {
-                  if (index === array.length - 1) { res(); }
-                }).catch(error => {
+                .then(assetUpdated => { if (index === array.length - 1) { resolve(); } })
+                .catch(error => {
                   console.log('Asset update error: ', error);
-                  if (index === array.length - 1) { res(); }
+                  if (index === array.length - 1) { resolve(); }
                 });
             }).catch(error => (console.log('Asset info event GET error: ', error)));
         }).catch(error => (console.log('Asset events GET error: ', error)));
@@ -241,34 +243,36 @@ exports.createAsset = (req, res, next) => {
   const asset = req.body.asset;
   const hermesURL = req.session.user.company.hermes.url;
 
-  if (asset && Array.isArray(events)) {
+  if (asset) {
     // Create an asset
-    const createAsset = new Promise((res, rej) => {
-      const url = `${hermesURL}/assets`;
-      create(url, asset, token)
-        .then(assetCreated => {
-          res();
-        }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset create error', error })));
-    });
+    const url = `${hermesURL}/assets`;
+    create(url, asset, token)
+      .then(assetCreated => {
+        const _asset = new Asset({
+          _id: new mongoose.Types.ObjectId(),
+          assetId: assetCreated.assetId,
+          createdBy: assetCreated.content.idData.createdBy,
+          updatedAt: assetCreated.content.idData.timestamp,
+          createdAt: assetCreated.content.idData.timestamp
+        });
 
-    // Return next()
-    createAsset.then(() => {
-      req.status = 200;
-      req.json = { asset };
-      return next();
-    });
+        _asset.save()
+          .then(inserted => {
+            req.status = 200;
+            const assets = { docs: [inserted] };
+            req.json = assets;
+            return next();
+          }).catch(error => (console.log('Cached asset creation error: ', error), next()));
+      });
   } else if (!asset) {
     return res.status(400).json({ message: '"asset" object is required' })
-  } else if (!events) {
-    return res.status(400).json({ message: '"events" has to be an array of event objects' })
   }
 }
 
 /**
  * 1. Gets array of signed event objects
  * 2. Loops and creates each event in Hermes
- * 3. On success, updates cached asset in dash db
- * 4. Calls next();
+ * 3. Calls next();
  *
  * @name createEvent
  * @route { POST } api/assets/:assetId/events/
@@ -285,55 +289,19 @@ exports.createEvent = (req, res, next) => {
 
   if (Array.isArray(events) && events.length > 0) {
 
-    const createEvents = new Promise((res, rej) => {
+    const createEvents = new Promise((resolve, reject) => {
       events.forEach((event, index, array) => {
         const url = `${hermesURL}/assets/${event.content.idData.assetId}/events`;
         create(url, event, token)
           .then(eventCreated => {
-            if (index === array.length - 1) { res(); }
+            if (index === array.length - 1) { resolve(); }
           }).catch(error => {
             console.log('Event create error: ', error);
-            if (index === array.length - 1) { res(); }
+            if (index === array.length - 1) { resolve(); }
           });
       });
     });
 
-    // Insert/update cached asset in db
-    createEvents.then(() => {
-      let infoEvent = '';
-      let latestEvent = '';
-      try { infoEvent = JSON.stringify(assetsUtils.findEvent('info', events)); } catch (e) { console.log(e); }
-      try { latestEvent = JSON.stringify(assetsUtils.findEvent('latest', events)); } catch (e) { console.log(e); }
-
-      Asset.findOne({ assetId })
-        .then(asset => {
-          if (asset) {
-            if (infoEvent) { asset['infoEvent'] = infoEvent; }
-            if (latestEvent) { asset['latestEvent'] = latestEvent; }
-          } else {
-            const asset = new Asset({
-              _id: new mongoose.Types.ObjectId(),
-              assetId: events[0].content.idData.assetId,
-              createdBy: events[0].content.idData.createdBy,
-              infoEvent,
-              latestEvent,
-              updatedAt: events[0].content.idData.timestamp,
-              createdAt: events[0].content.idData.timestamp
-            });
-          }
-
-          asset.save()
-            .then(saved => {
-              req.status = 200;
-              req.json = { message: 'Success', data: saved };
-              return next();
-            }).catch(error => {
-              console.log('Cached asset creation/update error: ', error);
-              req.status = 200;
-              req.json = { message: 'Hermes events created, but cached asset creation/update failed' };
-              return next();
-            });
-        }).catch(error => (console.log(error), res.status(400).json({ error })));
-    });
+    createEvents.then(() => (req.status = 200, next()));
   } else { return next(); }
 }

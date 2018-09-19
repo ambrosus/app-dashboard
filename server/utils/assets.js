@@ -8,6 +8,8 @@ sortEventsByTimestamp = (a, b) => {
   return 0;
 }
 
+isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
+
 exports.parseEvents = e => {
   const events = e.results.reduce((_events, { content, eventId }) => {
     const timestamp = content.idData.timestamp;
@@ -50,16 +52,15 @@ exports.parseEvents = e => {
 exports.findEvent = (eventType, events) => {
   let e = {};
   events.find(event => {
-    const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
     return event.content.data.find(obj => {
       const type = obj.type.split('.');
       obj.type = type[type.length - 1].toLowerCase();
-      e = obj;
       switch (eventType) {
         case 'latest':
-          return isLatest(obj.type);
+          if (isLatest(obj.type)) { e = obj; return true; }
+          break;
         default:
-          return obj.type === eventType;
+          if (obj.type === eventType) { e = obj; return true; }
       }
     });
   });
