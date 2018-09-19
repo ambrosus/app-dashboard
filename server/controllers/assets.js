@@ -80,7 +80,7 @@ exports.getAssets = (req, res, next) => {
             Asset.paginate({}, { page, limit: perPage, sort: '-createdAt' })
               .then(assets => {
                 req.status = 200;
-                req.json = assets;
+                req.json = { assets };
                 next();
               }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
           });
@@ -105,39 +105,45 @@ exports.getAssets = (req, res, next) => {
 exports.updateCachedAssets = (req, res, next) => {
   const { token } = req.query;
   const hermesURL = req.session.user.company.hermes.url;
-  const assets = req.json.assets || [];
+  const assets = req.json.assets;
 
-  // Get all events and choose latestEvent, and get latest info event
-  const getAssetEventsAndUpdate = new Promise((resolve, reject) => {
-    assets.docs.forEach((asset, index, array) => {
-      url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
+  if (assets) {
+    // Get all events and choose latestEvent, and get latest info event
+    const getAssetEventsAndUpdate = new Promise((resolve, reject) => {
+      assets.docs.forEach((asset, index, array) => {
+        url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
 
-      // Get all events and choose latestEvent
-      get(url, token)
-        .then(resp => {
-          asset.updatedAt = resp.results[0].content.idData.timestamp;
-          asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', resp.results));
+        // Get all events and choose latestEvent
+        get(url, token)
+          .then(resp => {
+            asset.updatedAt = resp.results[0].content.idData.timestamp;
+            asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', resp.results));
 
-          // Get info event
-          url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
-          url += `data[type]=ambrosus.asset.info`;
-          get(url, token)
-            .then(resp => {
-              asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', resp.results));
+            // Get info event
+            url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
+            url += `data[type]=ambrosus.asset.info`;
+            get(url, token)
+              .then(resp => {
+                asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', resp.results));
 
-              // Update the asset
-              Asset.findByIdAndUpdate(asset._id, asset)
-                .then(assetUpdated => { if (index === array.length - 1) { resolve(); } })
-                .catch(error => {
-                  console.log('Asset update error: ', error);
-                  if (index === array.length - 1) { resolve(); }
-                });
-            }).catch(error => (console.log('Asset info event GET error: ', error)));
-        }).catch(error => (console.log('Asset events GET error: ', error)));
+                // Update the asset
+                Asset.findByIdAndUpdate(asset._id, asset)
+                  .then(assetUpdated => { if (index === array.length - 1) { resolve(); } })
+                  .catch(error => {
+                    console.log('Asset update error: ', error);
+                    if (index === array.length - 1) { resolve(); }
+                  });
+              }).catch(error => (console.log('Asset info event GET error: ', error)));
+          }).catch(error => (console.log('Asset events GET error: ', error)));
+      });
     });
-  });
 
-  getAssetEventsAndUpdate.then(() => next());
+    getAssetEventsAndUpdate.then(() => next());
+  } else {
+    req.status = 400;
+    req.json['message'] = '"assets" object is required to update cached assets';
+    return next();
+  }
 }
 
 /**
@@ -259,8 +265,7 @@ exports.createAsset = (req, res, next) => {
         _asset.save()
           .then(inserted => {
             req.status = 200;
-            const assets = { docs: [inserted] };
-            req.json = assets;
+            req.json = { assets: { docs: [inserted] } };
             return next();
           }).catch(error => (console.log('Cached asset creation error: ', error), next()));
       });
