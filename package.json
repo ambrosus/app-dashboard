@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "node server.js",
     "build": "ng build --prod --aot",
-    "dev": "ng serve --aot --proxy-config proxy-conf.json",
+    "dev": "ng serve --aot --proxy-config proxy-config.json",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

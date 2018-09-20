@@ -1,8 +1,8 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 
-declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 @Injectable()
@@ -21,21 +21,20 @@ export class AssetsService {
   editInfoEventJSON;
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
+  hermes;
 
   constructor(private storage: StorageService) {
     this.initSDK();
-    window.addEventListener('user:refresh', () => {
-      this.initSDK();
-    });
+    window.addEventListener('user:refresh', () => this.initSDK());
   }
 
   initSDK() {
-    const hermes = <any>this.storage.get('hermes') || <any>{};
+    this.hermes = <any>this.storage.get('hermes') || <any>{};
     const secret = this.storage.get('secret');
     const token = this.storage.get('token');
 
     this.ambrosus = new AmbrosusSDK({
-      apiEndpoint: hermes.url,
+      apiEndpoint: this.hermes.url,
       secret,
       Web3,
       headers: {
@@ -43,6 +42,19 @@ export class AssetsService {
       }
     });
   }
+
+  getAssets() {
+  }
+
+
+
+
+
+
+
+
+
+
 
   // GET asset and GET event
 
