@@ -82,7 +82,7 @@ exports.getAssets = (req, res, next) => {
               .then(assets => {
                 req.status = 200;
                 req.json = { assets };
-                next();
+                return next();
               }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
           });
         }).catch(error => (console.log(error), res.status(400).json({ message: 'Assets GET error', error })));
@@ -172,36 +172,61 @@ exports.getAsset = (req, res, next) => {
 }
 
 /**
+ * Used for searching assets and events
  * 1. Gets pagination based number of events from Hermes
- * 2. Transforms events
- * 3. Calls next();
+ * 2. If searching assets (assets=true), extracts unique assetIds
+ *    and returns cached assets.
+ * 3. If searching events, transforms events for timeline
+ * 4. Calls next();
  *
  * @name getEvents
  * @route { GET } api/assets/:assetId/events/
+ * @param { String } createdBy
+ * @param { String } assetId
+ * @param { String } assets - boolean, pass to search assets
  * @param { String } page - pagination page to get
  * @param { String } perPage - assets perPage to get
  * @param { String } data - data for Hermes events query
+ * @param { String } identifier - identifier for Hermes events query
  * @param { String } token - for getting public and private assets/events
  * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
 exports.getEvents = (req, res, next) => {
-  const { page, perPage, data, token } = req.query;
-  const assetId = req.query.assetId || req.params.assetId;
+  const { createdBy, identifier, data, assetId, page, perPage, assets } = req.query;
   const hermesURL = req.session.user.company.hermes.url;
 
   const url = `${hermesURL}/events?`;
-  url += `assetId=${assetId}&`;
   url += `page=${page || 0}&`;
   url += `perPage=${perPage || 15}&`;
-  if (data) { url += data; }
+  if (createdBy) { url += `${createdBy}&`; }
+  if (identifier) { url += `${identifier}&`; }
+  if (data) { url += `${data}&`; }
+  if (assetId) { url += `${assetId}&`; }
 
   get(url, token)
     .then(events => {
-      req.status = 200;
-      req.json = assetsUtils.parseEvents(events);
-      return next();
+      if (assets) {
+        // Extract unique assetIds
+        const assetIds = events.results.reduce((_assetIds, event) => {
+          try { const _assetId = event.content.idData.assetId; } catch (e) { const _assetId = ''; }
+          if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
+        }, []);
+
+        // Find cached assets
+        Asset.paginate({ assetId: { $in: assetIds } }, { limit: perPage, sort: '-createdAt' })
+          .then(_assets => {
+            req.status = 200;
+            req.json = { assets: _assets, resultCount: events.resultCount };
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
+      } else {
+        // Timeline array of events
+        req.status = 200;
+        req.json = assetsUtils.parseEvents(events);
+        return next();
+      }
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
 }
 
