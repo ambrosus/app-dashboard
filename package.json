@@ -50,6 +50,8 @@
     "ngx-image-cropper": "^1.0.2",
     "normalize.css": "^8.0.0",
     "qrcode": "^1.2.2",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
     "rxjs": "^6.2.2",
     "rxjs-compat": "^6.2.2",
     "sanitize.css": "^6.0.0",

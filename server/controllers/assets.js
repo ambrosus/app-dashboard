@@ -6,6 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const axios = require('axios');
+const mongoose = require('mongoose');
 
 const Asset = require('../models/assets');
 const assetsUtils = require('../utils/assets');
@@ -16,7 +17,11 @@ const get = (url, token) => {
     'Content-Type': 'application/json'
   };
   if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
-  return axios.get(url, { headers });
+  return new Promise((resolve, reject) => {
+    axios.get(url, { headers, data: null })
+      .then(resp => resolve(resp.data))
+      .catch(error => reject(error));
+  });
 }
 
 const create = (url, body, token) => {
@@ -45,26 +50,25 @@ const create = (url, body, token) => {
 exports.getAssets = (req, res, next) => {
   const { page, perPage, token } = req.query;
   const user = req.session.user;
-  const hermesURL = user.company.hermes.url;
 
-  Asset.paginate({}, { limit: 1 })
-    .then(assets => {
-      let url = `${hermesURL}/assets?createdBy=${user.address}&perPage=500&`;
-      url += `fromTimestamp=${assets[0].updatedAt}`;
+  Asset.paginate({ createdBy: user.address }, { page: 1, limit: 1 })
+    .then(as => {
+      let url = `${user.hermes.url}/assets?createdBy=${user.address}&perPage=500&`;
+      if (as.docs.length > 0) { url += `fromTimestamp=${new Date(as.docs[0].updatedAt).getTime()}`; }
 
       // GET assets from Hermes
       get(url, token)
-        .then(assets => {
-
+        .then(_assets => {
           // Insert assets to db
           const insertAssets = new Promise((resolve, reject) => {
-            assets.results.forEach((asset, index, array) => {
+            if (_assets.results.length === 0) { resolve(); }
+            _assets.results.forEach((asset, index, array) => {
               const _asset = new Asset({
                 _id: new mongoose.Types.ObjectId(),
                 assetId: asset.assetId,
                 createdBy: asset.content.idData.createdBy,
-                updatedAt: asset.content.idData.timestamp,
-                createdAt: asset.content.idData.timestamp
+                updatedAt: new Date(),
+                createdAt: asset.content.idData.timestamp * 1000
               });
 
               _asset.save()
@@ -78,7 +82,7 @@ exports.getAssets = (req, res, next) => {
 
           // GET cached assets
           insertAssets.then(() => {
-            Asset.paginate({}, { page, limit: perPage, sort: '-createdAt' })
+            Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' })
               .then(assets => {
                 req.status = 200;
                 req.json = { assets };
@@ -105,27 +109,26 @@ exports.getAssets = (req, res, next) => {
  */
 exports.updateCachedAssets = (req, res, next) => {
   const { token } = req.query;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
   const assets = req.json.assets;
 
   if (assets) {
     // Get all events and choose latestEvent, and get latest info event
     const getAssetEventsAndUpdate = new Promise((resolve, reject) => {
       assets.docs.forEach((asset, index, array) => {
-        url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=500`;
+        url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=500`;
 
         // Get all events and choose latestEvent
         get(url, token)
-          .then(resp => {
-            asset.updatedAt = resp.results[0].content.idData.timestamp;
-            asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', resp.results));
+          .then(events => {
+            asset.latestEvent = JSON.stringify(assetsUtils.findEvent('latest', events.results));
 
             // Get info event
-            url = `${hermesURL}/events?assetId=${asset.assetId}&perPage=1&`;
+            url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&`;
             url += `data[type]=ambrosus.asset.info`;
             get(url, token)
-              .then(resp => {
-                asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', resp.results));
+              .then(infoEvents => {
+                asset.infoEvent = JSON.stringify(assetsUtils.findEvent('info', infoEvents.results));
 
                 // Update the asset
                 Asset.findByIdAndUpdate(asset._id, asset)
@@ -195,12 +198,12 @@ exports.getAsset = (req, res, next) => {
  */
 exports.getEvents = (req, res, next) => {
   const { createdBy, identifier, data, assetId, page, perPage, assets } = req.query;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
 
-  const url = `${hermesURL}/events?`;
+  const url = `${user.hermes.url}/events?`;
   url += `page=${page || 0}&`;
   url += `perPage=${perPage || 15}&`;
-  if (createdBy) { url += `${createdBy}&`; }
+  if (createdBy) { url += `${createdBy}&`; } else { url += `createdBy=${user.address}&`; }
   if (identifier) { url += `${identifier}&`; }
   if (data) { url += `${data}&`; }
   if (assetId) { url += `${assetId}&`; }
@@ -215,7 +218,7 @@ exports.getEvents = (req, res, next) => {
         }, []);
 
         // Find cached assets
-        Asset.paginate({ assetId: { $in: assetIds } }, { limit: perPage, sort: '-createdAt' })
+        Asset.paginate({ assetId: { $in: assetIds } }, { limit: 1000, sort: '-createdAt' })
           .then(_assets => {
             req.status = 200;
             req.json = { assets: _assets, resultCount: events.resultCount };
@@ -245,9 +248,9 @@ exports.getEvents = (req, res, next) => {
 exports.getEvent = (req, res, next) => {
   const { token } = req.query;
   const eventId = req.params.eventId;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
 
-  const url = `${hermesURL}/events/${eventId}`;
+  const url = `${user.hermes.url}/events/${eventId}`;
 
   get(url, token)
     .then(event => {
@@ -273,19 +276,19 @@ exports.getEvent = (req, res, next) => {
 exports.createAsset = (req, res, next) => {
   const { token } = req.query;
   const asset = req.body.asset;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
 
   if (asset) {
     // Create an asset
-    const url = `${hermesURL}/assets`;
+    const url = `${user.hermes.url}/assets`;
     create(url, asset, token)
       .then(assetCreated => {
         const _asset = new Asset({
           _id: new mongoose.Types.ObjectId(),
           assetId: assetCreated.assetId,
           createdBy: assetCreated.content.idData.createdBy,
-          updatedAt: assetCreated.content.idData.timestamp,
-          createdAt: assetCreated.content.idData.timestamp
+          updatedAt: (assetCreated.content.idData.timestamp * 1000) + 5000,
+          createdAt: assetCreated.content.idData.timestamp * 1000
         });
 
         _asset.save()
@@ -316,13 +319,13 @@ exports.createAsset = (req, res, next) => {
 exports.createEvent = (req, res, next) => {
   const { token } = req.query;
   const events = req.body.events;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
 
   if (Array.isArray(events) && events.length > 0) {
 
     const createEvents = new Promise((resolve, reject) => {
       events.forEach((event, index, array) => {
-        const url = `${hermesURL}/assets/${event.content.idData.assetId}/events`;
+        const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
         create(url, event, token)
           .then(eventCreated => {
             if (index === array.length - 1) { resolve(); }

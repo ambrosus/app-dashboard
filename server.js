@@ -18,10 +18,7 @@ mongoose.connect(config.db, { useNewUrlParser: true })
   .then(connected => {
     console.log('MongoDB connected')
     invitationsCron.start();
-  })
-  .catch(error => console.log('Mongodb connection error: ', error));
-
-console.log(config.db);
+  }).catch(error => console.log('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({

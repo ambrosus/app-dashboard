@@ -1,6 +1,7 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 
 declare let Web3: any;
@@ -23,7 +24,7 @@ export class AssetsService {
   infoEventFailed = new Subject();
   hermes;
 
-  constructor(private storage: StorageService) {
+  constructor(private storage: StorageService, private http: HttpClient) {
     this.initSDK();
     window.addEventListener('user:refresh', () => this.initSDK());
   }
@@ -43,7 +44,16 @@ export class AssetsService {
     });
   }
 
-  getAssets() {
+  getAssets(options) {
+    return new Observable(observer => {
+      let url = `/api/assets?`;
+      Object.keys(options).map(key => url += `${key}=${options[key]}&`);
+
+      this.http.get(url).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
+    });
   }
 
 

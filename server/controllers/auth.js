@@ -46,7 +46,7 @@ exports.login = (req, res, next) => {
 
           if (valid) {
             delete user.password;
-            req.session.user = { _id: user._id, address: user.address, company: user.company };
+            req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
             req.status = 200;
             req.json = user
             return next();
@@ -88,7 +88,8 @@ exports.verifyAccount = (req, res, next) => {
           User.findOne({ address })
             .populate({
               path: 'company',
-              select: '-active -createdAt -updatedAt -__v -owner'
+              select: '-active -createdAt -updatedAt -__v -owner',
+              populate: { path: 'hermes' }
             })
             .populate({
               path: 'role',
@@ -98,7 +99,7 @@ exports.verifyAccount = (req, res, next) => {
             .then(user => {
               if (user) {
                 req.status = 200;
-                req.session.user = { _id: user._id, address: user.address, company: user.company };
+                req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
                 req.session.deviceInfo = deviceInfo;
                 req.json = user;
                 return next();

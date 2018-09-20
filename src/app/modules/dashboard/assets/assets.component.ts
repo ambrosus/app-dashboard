@@ -5,15 +5,14 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
-import { AuthService } from 'app/services/auth.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-assets',
@@ -22,23 +21,18 @@ import { EventAddComponent } from './../event-add/event-add.component';
   encapsulation: ViewEncapsulation.None
 })
 export class AssetsComponent implements OnInit, OnDestroy {
-  navigationSubscription;
+  navigationSubscription: Subscription;
+  assetsSubscription: Subscription;
+  assets: any[] = [];
 
   toggleDropdown: false;
-
-  assets = {
-    assets: [],
-    resultCount: 0
-  };
   accounts = [];
   accountSelected;
-  perPage = 15;
   noEvents = false;
   error = false;
   selectAllText = 'Select all';
   loader = false;
   createEvents = false;
-  assetSub: Subscription;
   // Search
   searchPlaceholder = 'ie. Green apple';
   searchResultsFound;
@@ -57,24 +51,71 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   constructor(
     private assetsService: AssetsService,
+    private auth: AuthService,
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
     private storage: StorageService,
-    private auth: AuthService,
     public dialog: MatDialog
   ) {
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) {
-        this.pageLoad();
-      }
+    this.assetsSubscription = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd) { this.pageLoad(); }
     });
+  }
+
+  ngOnInit() {
+    // Bind this for pagination
+    this.loadAssets = this.loadAssets.bind(this);
+    this.search = this.search.bind(this);
+
+    this.accountSelected = <any>this.storage.get('user')['address'];
+  }
+
+  ngOnDestroy() {
+    if (this.assetsSubscription) { this.assetsSubscription.unsubscribe(); }
+    if (this.navigationSubscription) { this.navigationSubscription.unsubscribe(); }
+    this.accountSelected = null;
+    this.assetsService.unselectAssets();
   }
 
   pageLoad() {
     this.ngOnInit();
     this.loadAssets();
     this.el.nativeElement.querySelector('#search').value = '';
+  }
+
+  loadAssets(page = 1, perPage = 15) {
+    this.resetLoadAssets();
+    this.loader = true;
+    const token = this.auth.getToken();
+    this.assetsSubscription = this.assetsService.getAssets({ page, perPage, token }).subscribe(
+      ({ assets }) => {
+        this.loader = false;
+        this.assets = assets.docs;
+        this.resultCountAsset = assets.total;
+        this.totalAssetPages = Math.ceil(assets.total / perPage);
+      },
+      err => {
+        this.loader = false;
+        console.log('Assets GET failed: ', err);
+      }
+    );
+  }
+
+  JSONparse(value) {
+    try {
+      return JSON.parse(value);
+    } catch (e) { return false; }
+  }
+
+  resetLoadAssets() {
+    this.assetsActive = true;
+    this.searchActive = false;
+    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
+    this.selectAllText = 'Select all';
+    this.assetsService.unselectAssets();
+    this.assets = [];
+    this.searchNoResultsFound = null;
   }
 
   bulkActions(action) {
@@ -91,74 +132,16 @@ export class AssetsComponent implements OnInit, OnDestroy {
     action.value = 'default';
   }
 
-  ngOnInit() {
-    // Bind this for pagination
-    this.loadAssets = this.loadAssets.bind(this);
-    this.search = this.search.bind(this);
-
-    this.accountSelected = <any>this.storage.get('user')['address'];
-  }
-
-  ngOnDestroy() {
-    this.assetSub.unsubscribe();
-    this.navigationSubscription.unsubscribe();
-    this.accountSelected = null;
-    this.assetsService.unselectAssets();
-  }
-
-  rowsPerPage(select) {
-    this.perPage = select.value;
-    if (this.assetsActive) {
-      this.loadAssets(this.currentAssetPage - 1);
-    } else {
-      this.search(this.currentSearchPage - 1);
-    }
-  }
-
-  resetLoadAssets() {
-    this.assetsActive = true;
-    this.searchActive = false;
-    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
-    this.selectAllText = 'Select all';
-    this.assetsService.unselectAssets();
-    this.assets = {
-      assets: [],
-      resultCount: 0
-    };
-    this.searchNoResultsFound = null;
-  }
-
-  loadAssets(page = 0, perPage = this.perPage) {
-    this.resetLoadAssets();
-    this.loader = true;
-    const address = this.accountSelected;
-    this.assetSub = this.assetsService.getAssetsInfo(page, perPage, address).subscribe(
-      (resp: any) => {
-        this.loader = false;
-        this.assets = resp;
-        this.resultCountAsset = resp.resultCount;
-        this.totalAssetPages = Math.ceil(resp.resultCount / perPage);
-      },
-      err => {
-        this.loader = false;
-        console.log('AssetsInfo get failed: ', err);
-      }
-    );
-  }
-
   resetSearch() {
     this.searchActive = true;
     this.assetsActive = false;
     this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
     this.selectAllText = 'Select all';
     this.assetsService.unselectAssets();
-    this.assets = {
-      assets: [],
-      resultCount: 0
-    };
+    this.assets = [];
   }
 
-  search(page = 0, perPage = this.perPage, address = this.accountSelected) {
+  search(page = 0, perPage = 15, address = this.accountSelected) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     this.searchPlaceholder = 'ie. Green apple';
