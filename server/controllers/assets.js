@@ -44,11 +44,12 @@ const create = (url, body, token) => {
  */
 exports.getAssets = (req, res, next) => {
   const { page, perPage, token } = req.query;
-  const hermesURL = req.session.user.company.hermes.url;
+  const user = req.session.user;
+  const hermesURL = user.company.hermes.url;
 
   Asset.paginate({}, { limit: 1 })
     .then(assets => {
-      let url = `${hermesURL}/assets?perPage=500&`;
+      let url = `${hermesURL}/assets?createdBy=${user.address}&perPage=500&`;
       url += `fromTimestamp=${assets[0].updatedAt}`;
 
       // GET assets from Hermes
