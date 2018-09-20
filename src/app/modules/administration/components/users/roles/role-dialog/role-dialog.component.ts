@@ -40,7 +40,7 @@ export class RoleDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  create() {
+  save() {
     this.error = null;
     this.successMessage = null; 
 
@@ -48,7 +48,7 @@ export class RoleDialogComponent implements OnInit {
       if (this.selectedPermissions.length === 0) { this.error = 'Please select at least one permission'; reject(); } 
       else if (!this.isEdit) {
         const body = { title: this.title, permissions: this.selectedPermissions };
-        this.putRole(body).then(response => resolve()).catch(error => reject()); 
+        this.createRole(body).then(response => resolve()).catch(error => reject()); 
       } else if (this.isEdit) {
         const body = { _id: this.roleObj[0]._id, title: this.title, permissions: this.selectedPermissions };
         this.putRole(body).then(response => resolve()).catch(error => reject());
@@ -61,6 +61,22 @@ export class RoleDialogComponent implements OnInit {
     const url = `/api/roles`;
     return new Promise((resolve, reject) => {
       this.http.put(url, body).subscribe(
+        (resp: any) => {
+          this.successMessage = 'Saved successfully';
+          resolve();
+        },
+        err => {
+          reject();
+          this.error = err.error ? err.error.message : JSON.stringify(err);
+          console.log('Role save failed: ', err);
+      });
+    });
+  }  
+
+  createRole(body) {
+    const url = `/api/roles`;
+    return new Promise((resolve, reject) => {
+      this.http.post(url, body).subscribe(
         (resp: any) => {
           this.successMessage = 'Saved successfully';
           resolve();
