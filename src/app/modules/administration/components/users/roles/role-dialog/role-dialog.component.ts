@@ -46,7 +46,6 @@ export class RoleDialogComponent implements OnInit {
 
     this.createPromise = new Promise((resolve, reject) => {
       if (this.selectedPermissions.length === 0) { this.error = 'Please select at least one permission'; reject(); } 
-      else if (!this.title) { this.error = 'Please fill the role title'; reject(); } 
       else if (!this.isEdit) {
         const body = { title: this.title, permissions: this.selectedPermissions };
         this.putRole(body).then(response => resolve()).catch(error => reject()); 

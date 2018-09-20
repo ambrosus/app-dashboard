@@ -6,11 +6,11 @@
 
     <div class="m-t-30">
       <div class="tab_content">
-        <form (ngSubmit)="create()">
+        <form (ngSubmit)="create()" ngNativeValidate>
           <!-- Create Role form -->
           <div class="form-text m-b-20">
             <label>Role Title</label>
-            <input [(ngModel)]="title" name="title" placeholder="Example: Admin, Manager, etc. " type="text">
+            <input [(ngModel)]="title" name="title" placeholder="Example: Admin, Manager, etc. " type="text" required>
           </div>
 
           <div class="m-b-20">
