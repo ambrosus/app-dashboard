@@ -351,31 +351,3 @@ exports.assignRole = (req, res, next) => {
   }
 
 };
-
-/**
- * Allows users to edit existing roles to other users using their email address
- *
- * @name editRole
- * @route {POST} api/users/role
- * @bodyparam email, role (Mongoose objectID)
- * @returns Status code 400 on failure
- * @returns Save success message on success with status code 200
- */
-exports.editRole = (req, res, next) => {
-  const { email, role } = req.body
-
-  if (email && role) {
-    User.findOneAndUpdate({ email }, { role })
-      .then(updateResponse => {
-        if (updateResponse) {
-          req.status = 200;
-          req.json = { message: 'Role edited successfully', data: updateResponse }
-          return next();
-        } else { throw 'Role edit error'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-  } else if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  } else if (!role) {
-    return res.status(400).json({ message: 'Role ObjectID is required' });
-  }
-};
