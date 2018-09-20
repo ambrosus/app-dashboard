@@ -13,7 +13,7 @@ const AssetsRoutes = express.Router();
 
 // Routes
 AssetsRoutes.route('/')
-  .post(AssetsController.createAsset, (req, res) => { res.status(req.status).json(req.json); })
+  .post(AssetsController.createAsset, AssetsController.createEvent, AssetsController.updateCachedAssets, (req, res) => { res.status(req.status).json(req.json); })
   .get(AssetsController.getAssets, AssetsController.updateCachedAssets, (req, res) => { res.status(req.status).json(req.json); });
 
 AssetsRoutes.get('/:assetId', AssetsController.getAsset, (req, res) => { res.status(req.status).json(req.json); });
