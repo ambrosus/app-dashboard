@@ -75,12 +75,8 @@ exports.edit = (req, res, next) => {
 exports.getRoles = (req, res, next) => {
   Role.find()
     .then(roles => {
-      if (roles) {
-        req.status = 200;
-        req.json = roles;
-        return next();
-      } else {
-        return res.status(400).json({ message: 'No roles found' });
-      }
+      req.status = 200;
+      req.json = roles;
+      return next();
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 };
