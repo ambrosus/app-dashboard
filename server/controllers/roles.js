@@ -55,7 +55,7 @@ exports.edit = (req, res, next) => {
   const title = req.body.title;
   const permissions = req.body.permissions;
 
-  Role.findOneAndUpdate({ _id }, {title: title, permissions: permissions})
+  Role.findOneAndUpdate({ _id }, {title, permissions})
     .then(updateResponse => {
       if (updateResponse) {
         req.status = 200;
