@@ -11,8 +11,8 @@ const Role = require('../models/roles');
 /**
  * This route allows you to create a new Role and add a set of permissions to them
  *
- * @name createOrEditRole
- * @route {PUT} api/roles
+ * @name createRole
+ * @route {POST} api/roles
  * @bodyparam 
  *      - title (e.g: { title: 'owner' }), 
  *      - permissions (e.g: { permissions: "string1, string2" }),
@@ -20,41 +20,48 @@ const Role = require('../models/roles');
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
+  const title = req.body.title;
+  const permissions = req.body.permissions;
+  const role = new Role({
+    _id: new mongoose.Types.ObjectId(),
+    title,
+    permissions,
+    createdBy: req.session.user._id
+  });
+  role.save()
+    .then(saveResponse => {
+      req.status = 200;
+      req.json = { message: 'New role saved successfully' };
+      return next();
+    })
+    .catch(error => (console.log(error), res.status(400).json({ message: error })));
+};
+
+/**
+ * This route allows you to edit a Role
+ *
+ * @name editRole
+ * @route {PUT} api/roles
+ * @bodyparam 
+ *      - _id
+ *      - title (e.g: { title: 'owner' }), 
+ *      - permissions (e.g: { permissions: "string1, string2" }),
+ * @returns Status code 400 on failure
+ * @returns New role saved successfully message on success with status code 200
+ */
+exports.edit = (req, res, next) => {
   const _id = req.body._id;
   const title = req.body.title;
   const permissions = req.body.permissions;
 
-  if (_id && title && permissions) {
-
-    Role.findOneAndUpdate({ _id }, {title: title, permissions: permissions})
-      .then(updateResponse => {
-        if (updateResponse) {
-          req.status = 200;
-          req.json = { message: 'Permissions updated successfully' }
-          return next();
-        }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-
-  } else if (!_id && title && permissions) {
-    const role = new Role({
-      _id: new mongoose.Types.ObjectId(),
-      title,
-      permissions,
-      createdBy: req.session.user._id
-    });
-    role.save()
-      .then(saveResponse => {
+  Role.findOneAndUpdate({ _id }, {title: title, permissions: permissions})
+    .then(updateResponse => {
+      if (updateResponse) {
         req.status = 200;
-        req.json = { message: 'New role saved successfully' };
+        req.json = { message: 'Permissions updated successfully' }
         return next();
-      })
-      .catch(error => (console.log(error), res.status(400).json({ message: error })));
-  } else if (!title) {
-    return res.status(400).json({ message: 'Role "title" is required' });
-  } else if (!permissions) {
-    return res.status(400).json({ message: 'Role "permissions" is required' });
-  }
-
+      }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 };
 
 /**

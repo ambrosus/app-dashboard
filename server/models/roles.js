@@ -11,11 +11,12 @@ const rolesSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   title: {
     type: String,
-    required: true
+    required: [(value) => !value, 'Title field is required' ]
   },
   permissions: {
     type: [String],
-    required: true
+    required: true,
+    validate: [(value) => value.length > 0, 'Permissions cannot be blank']
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,6 +33,7 @@ const rolesSchema = mongoose.Schema({
 });
 
 rolesSchema.pre('update', function(next) {
+  if (!this._id) { next(new Error('_id field is required to update role').toString()); }
   this.updatedAt = +new Date();
   next();
 });
