@@ -13,9 +13,8 @@ export class RoleDialogComponent implements OnInit {
   title: string;
   permissions: string;
   selectedPermissions: string[] = [];
-  error: string;
-  successMessage: string;
   isEdit: Boolean = false;
+  message: { type: Boolean, text: string };
 
   permissionsArray = [
     { id: '1', name: 'Invites', value: 'invites' },
@@ -41,11 +40,10 @@ export class RoleDialogComponent implements OnInit {
   }
 
   save() {
-    this.error = null;
-    this.successMessage = null; 
+    this.message.text = null;
 
     this.createPromise = new Promise((resolve, reject) => {
-      if (this.selectedPermissions.length === 0) { this.error = 'Please select at least one permission'; reject(); } 
+      if (this.selectedPermissions.length === 0) { this.message.text = 'Please select at least one permission'; this.message.type = false; reject(); }
       else if (!this.isEdit) {
         const body = { title: this.title, permissions: this.selectedPermissions };
         this.createRole(body).then(response => resolve()).catch(error => reject()); 
@@ -62,12 +60,14 @@ export class RoleDialogComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.put(url, body).subscribe(
         (resp: any) => {
-          this.successMessage = 'Saved successfully';
+          this.message.text = 'Saved Successfully';
+          this.message.type = true;
           resolve();
         },
         err => {
           reject();
-          this.error = err.error ? err.error.message : JSON.stringify(err);
+          this.message.type = false;
+          this.message.text = err.error ? err.error.message : JSON.stringify(err);
           console.log('Role save failed: ', err);
       });
     });
@@ -78,12 +78,14 @@ export class RoleDialogComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.post(url, body).subscribe(
         (resp: any) => {
-          this.successMessage = 'Saved successfully';
+          this.message.text = 'Saved Successfully';
+          this.message.type = true;
           resolve();
         },
         err => {
           reject();
-          this.error = err.error ? err.error.message : JSON.stringify(err);
+          this.message.type = false;
+          this.message.text = err.error ? err.error.message : JSON.stringify(err);
           console.log('Role save failed: ', err);
       });
     });

@@ -47,8 +47,7 @@
       </div>
     </div>
 
-    <p *ngIf="error" class="center p-t-20" style="color: #ea7070">{{error}}</p>
-    <p *ngIf="!error && successMessage" class="center p-t-20" style="color: #57b846;">{{successMessage}}</p>
+    <p *ngIf="message.text" class="center p-t-20" [ngClass]="message.type === true ? 'green-text' : 'red-text'">{{message.text}}</p>
   </div>
 
 </div>
