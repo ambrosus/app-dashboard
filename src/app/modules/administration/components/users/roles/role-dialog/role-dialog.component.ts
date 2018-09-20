@@ -9,7 +9,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RoleDialogComponent implements OnInit {
 
-  spinner: Boolean = false;
   createPromise;
   title: string;
   permissions: string;
