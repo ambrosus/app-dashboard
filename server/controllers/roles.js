@@ -20,10 +20,8 @@ const Role = require('../models/roles');
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const title = req.body.title;
-  const permissions = req.body.permissions;
+  const { title, permissions} = req.body;
   const role = new Role({
-    _id: new mongoose.Types.ObjectId(),
     title,
     permissions,
     createdBy: req.session.user._id,
@@ -51,9 +49,7 @@ exports.create = (req, res, next) => {
  * @returns New role saved successfully message on success with status code 200
  */
 exports.edit = (req, res, next) => {
-  const _id = req.body._id;
-  const title = req.body.title;
-  const permissions = req.body.permissions;
+  const { _id, title, permissions} = req.body;
 
   Role.updateOne({ _id }, {title, permissions})
     .then(updateResponse => {

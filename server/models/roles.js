@@ -8,7 +8,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const rolesSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   title: {
     type: String,
     required: [(value) => !value, 'Title field is required' ]

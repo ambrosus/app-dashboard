@@ -9,7 +9,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const express = require('express');
 
 const checkAddress = require('../../middleware/checkAddress');
-const checkPermission = require('../../middleware/checkPermission');
+const checkPermission = _require('/middleware/checkPermission');
 
 const UsersController = require('../../controllers/users');
 
