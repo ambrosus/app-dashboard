@@ -26,7 +26,8 @@ exports.create = (req, res, next) => {
     _id: new mongoose.Types.ObjectId(),
     title,
     permissions,
-    createdBy: req.session.user._id
+    createdBy: req.session.user._id,
+    company: req.session.user.company
   });
   role.save()
     .then(saveResponse => {
@@ -73,7 +74,8 @@ exports.edit = (req, res, next) => {
  * @returns Roles array on success with status code 200
  */
 exports.getRoles = (req, res, next) => {
-  Role.find()
+  const company = req.session.user.company;
+  Role.find({company})
     .then(roles => {
       req.status = 200;
       req.json = roles;

@@ -22,6 +22,10 @@ const rolesSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users'
   },
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Companies'
+  },
   createdAt: {
     type: Date,
     default: +new Date()
