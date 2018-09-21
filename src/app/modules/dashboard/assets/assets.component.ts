@@ -9,7 +9,6 @@ import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation, OnDestroy 
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
-import { StorageService } from 'app/services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AuthService } from 'app/services/auth.service';
@@ -25,7 +24,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetsSubscription: Subscription;
   eventsSubscription: Subscription;
   assets: any[] = [];
-  assetIds = [];
+  assetIds: String[] = [];
   // Pagination
   currentPage = 1;
   perPage = 15;
@@ -45,12 +44,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
-    private storage: StorageService,
     public dialog: MatDialog
   ) {
-    this.assetsSubscription = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) { this.loadAssets(); }
-    });
+    this.assetsSubscription = this.router.events.subscribe((e: any) => { if (e instanceof NavigationEnd) { this.loadAssets(); } });
   }
 
   ngOnInit() { }
@@ -210,5 +206,4 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.renderer[action](item, 'checkbox--checked');
     if (active) { this.toggleId('remove', item.id); } else { this.toggleId('add', item.id); }
   }
-
 }

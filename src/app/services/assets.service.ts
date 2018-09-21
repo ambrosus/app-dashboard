@@ -71,6 +71,17 @@ export class AssetsService {
     });
   }
 
+  getAsset(assetId) {
+    return new Observable(observer => {
+      const url = `/api/assets/${assetId}`;
+
+      this.http.get(url).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
+    });
+  }
+
 
 
 
@@ -83,26 +94,26 @@ export class AssetsService {
 
   // GET asset and GET event
 
-  getAsset(assetId) {
-    return new Observable(observer => {
-      if (this.currentAssetId && this.currentAssetId === assetId) {
-        return observer.next(this.asset);
-      }
+  // getAsset(assetId) {
+  //   return new Observable(observer => {
+  //     if (this.currentAssetId && this.currentAssetId === assetId) {
+  //       return observer.next(this.asset);
+  //     }
 
-      this.getAssetById(assetId).then(resp => {
-        const queries = {
-          assetId
-        };
+  //     this.getAssetById(assetId).then(resp => {
+  //       const queries = {
+  //         assetId
+  //       };
 
-        // this.getEvents(queries).then((events: any) => {
-        //   this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
-        //     this.asset = parsedData.data;
-        //     return observer.next(this.asset);
-        //   });
-        // });
-      });
-    });
-  }
+  //       // this.getEvents(queries).then((events: any) => {
+  //       //   this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
+  //       //     this.asset = parsedData.data;
+  //       //     return observer.next(this.asset);
+  //       //   });
+  //       // });
+  //     });
+  //   });
+  // }
 
   getAssetById(assetId) {
     return new Promise((resolve, reject) => {
