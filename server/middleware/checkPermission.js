@@ -42,7 +42,7 @@ module.exports = action => {
   }
 };
 
-getUserObj = userId => {
+getUser = userId => {
   return new Promise((resolve, reject) => {
     User.findById(userId)
       .populate('role')
