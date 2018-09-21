@@ -9,18 +9,21 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const usersSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   full_name: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Full name" field is required' ]
   },
   email: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Email" field is required' ]
   },
   password: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Password" field is required' ]
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,11 +31,11 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Address" field is required' ]
   },
   token: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Token" field is required' ]
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
