@@ -31,7 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
-import { CheckboxComponent } from './components/checkbox/checkbox.component';
+import { CustomCheckboxDirective } from './directives/customcheckbox.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -56,7 +56,7 @@ import { CheckboxComponent } from './components/checkbox/checkbox.component';
     PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
-    CheckboxComponent
+    CustomCheckboxDirective
   ],
   declarations: [
     InputDirective,
@@ -76,7 +76,7 @@ import { CheckboxComponent } from './components/checkbox/checkbox.component';
     NotificationComponent,
     PaginationComponent,
     CheckIfPipe,
-    CheckboxComponent
+    CustomCheckboxDirective
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

@@ -25,7 +25,8 @@
               <div class="table__item table" *ngFor="let permission of permissionsArray; let i = index" [ngClass]="checkPermission(permission.value) ? 'checkbox--checked' : ''">
                 <label class="table__label" for="{{ i }}">
                 <div class="relative table__checkbox">
-                  <app-checkbox id="{{ i }}" (click)="selectPermission(permission.value)"></app-checkbox>
+                  <input type="checkbox" id="{{ i }}" (click)="selectPermission(permission.value)" appCustomCheckbox #input>
+                  <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
                 </div>
                 </label>
 
