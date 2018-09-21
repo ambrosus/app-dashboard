@@ -8,14 +8,17 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const hermesesSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   title: {
     type: String,
-    required: true
+    required: [(value) => !value, 'Hermes "title" is required' ]
   },
   url: {
     type: String,
-    required: true,
+    required: [(value) => !value, 'Hermes "url" is required' ],
     index: { unique: true }
   },
   public: {
