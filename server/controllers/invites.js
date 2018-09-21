@@ -26,8 +26,7 @@ const Company = require('../models/companies');
  * @returns success message on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const invites = req.body.invites;
-  const user = req.body.user;
+  const { invites, user } = req.body;
 
   if (invites && invites.length !== 0 && user) {
     Company.findById(user.company._id)
