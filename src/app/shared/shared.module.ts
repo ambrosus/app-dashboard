@@ -31,6 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
+import { CheckboxComponent } from './components/checkbox/checkbox.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -54,7 +55,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     MatDialogModule,
     PaginationComponent,
     CheckIfPipe,
-    ImageCropperModule
+    ImageCropperModule,
+    CheckboxComponent
   ],
   declarations: [
     InputDirective,
@@ -73,7 +75,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    CheckboxComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
