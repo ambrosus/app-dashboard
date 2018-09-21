@@ -7,10 +7,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 const CompaniesController = require('../../controllers/companies');
+const checkRole = require('../../middleware/checkRole');
 
 const CompaniesRoutes = express.Router();
 
 // Routes
 CompaniesRoutes.post('/', CompaniesController.create, (req, res) => { res.status(req.status).json(req.json); });
+CompaniesRoutes.put('/', checkRole('editCompany'), CompaniesController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = CompaniesRoutes;

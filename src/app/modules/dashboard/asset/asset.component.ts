@@ -1,13 +1,10 @@
-import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdministrationService } from 'app/services/administration.service';
 import { MatDialog } from '@angular/material';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
-
-declare let QRCode: any;
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-asset',
@@ -21,6 +18,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   asset;
   assetId: string;
   events;
+  user;
   previewAppUrl;
 
   objectKeys = Object.keys;
@@ -32,9 +30,8 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private assetService: AssetsService,
-    private administration: AdministrationService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private storage: StorageService
   ) { }
 
   ngOnInit() {
@@ -42,7 +39,12 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => this.assetId = params.assetid);
     this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
 
-    this.previewAppUrl = this.administration.previewAppUrl;
+    this.user = this.storage.get('user');
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.user.company.settings);
+    } catch (e) { }
+    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
   }
 
   ngOnDestroy() {

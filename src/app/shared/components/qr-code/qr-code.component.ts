@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
-import { AdministrationService } from '../../../services/administration.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
+import { StorageService } from 'app/services/storage.service';
 
 declare let QRCode: any;
 
@@ -11,15 +11,23 @@ declare let QRCode: any;
   styleUrls: ['./qr-code.component.scss']
 })
 export class QrCodeComponent implements OnInit {
+  logo;
+
   @Input() value;
   @Input() size;
-  @Input() logo;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private administration: AdministrationService, private http: HttpClient, private sanitize: DomSanitizer) { }
+  constructor(private el: ElementRef, private renderer: Renderer2,
+    private http: HttpClient, private sanitize: DomSanitizer, private storage: StorageService) { }
 
   ngOnInit() {
     this.generateQR();
-    this.logo = this.logo ? this.logo : this.administration.companyLogo;
+
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.storage.get('user')['company']['settings']);
+    } catch (e) { }
+
+    this.logo = companySettings.logo || false;
   }
 
   generateQR() {
@@ -46,49 +54,35 @@ export class QrCodeComponent implements OnInit {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
-      this.http.get(this.logo, { responseType: 'blob' }).subscribe(
-        (resp: any) => {
-          const blob = new Blob([resp], { type: 'image/jpg' });
-          let url: any = this.sanitize.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
-          const fileReader = new FileReader();
-          fileReader.onload = (e: any) => {
-            url = e.target.result;
-            const img = document.createElement('img');
-            img.src = url;
-            img.onerror = () => {
-              this.logo = false;
-              rej();
-            };
+      let url: any = this.logo;
+      const img = document.createElement('img');
+      img.src = url;
+      img.onerror = () => {
+        this.logo = false;
+        rej();
+      };
 
-            img.onload = () => {
-              try {
-                let width = maxSize;
-                let height = (img.height * maxSize) / img.width;
+      img.onload = () => {
+        try {
+          let width = maxSize;
+          let height = (img.height * maxSize) / img.width;
 
-                if (img.width < img.height) {
-                  height = maxSize;
-                  width = (img.width * maxSize) / img.height;
-                }
+          if (img.width < img.height) {
+            height = maxSize;
+            width = (img.width * maxSize) / img.height;
+          }
 
-                canvas.width = width;
-                canvas.height = height;
+          canvas.width = width;
+          canvas.height = height;
 
-                ctx.drawImage(img, 0, 0, width, height);
-                url = canvas.toDataURL();
-                res(url);
-              } catch (err) {
-                this.logo = false;
-                rej();
-              }
-            };
-          };
-          fileReader.readAsDataURL(blob);
-        },
-        err => {
+          ctx.drawImage(img, 0, 0, width, height);
+          url = canvas.toDataURL();
+          res(url);
+        } catch (err) {
           this.logo = false;
           rej();
         }
-      );
+      };
     });
   }
 

@@ -228,7 +228,7 @@ exports.getEvents = (req, res, next) => {
       } else {
         // Timeline array of events
         req.status = 200;
-        req.json = assetsUtils.parseEvents(events);
+        req.json = events;
         return next();
       }
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));

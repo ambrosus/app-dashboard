@@ -40,7 +40,9 @@ export class AllComponent implements OnInit, OnDestroy {
       (resp: any) => {
         console.log('Users GET: ', resp);
         this.users = resp.data.map(user => {
-          user.lastLogin = moment(user.lastLogin).tz(companySettings.timeZone).fromNow();
+          try {
+            user.lastLogin = moment(user.lastLogin).tz(JSON.parse(this.user.company.settings)['timeZone']).fromNow();
+          } catch (e) { }
           return user;
         });
       },

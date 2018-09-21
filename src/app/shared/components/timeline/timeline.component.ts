@@ -9,6 +9,8 @@ import { Component, OnInit, Input, ElementRef, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
   selector: 'app-timeline',
@@ -18,6 +20,7 @@ import { AuthService } from 'app/services/auth.service';
 export class TimelineComponent implements OnInit, OnDestroy {
   eventsSubscription: Subscription;
   events = [];
+  unchangedEvents = [];
   // Pagination
   perPage = 15;
   currentEventsPage = 1;
@@ -35,7 +38,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   @Input() assetId;
   @Input() name;
 
-  constructor(private assetsService: AssetsService, private auth: AuthService, private el: ElementRef) { }
+  constructor(private assetsService: AssetsService, private auth: AuthService, private el: ElementRef, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.loadEvents = this.loadEvents.bind(this);
@@ -67,8 +70,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        console.log(resp);
-        this.events = resp.events;
+        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
+        this.events = this.assetsService.parseTimelineEvents(resp).events;
         if (!s) {
           this.resultCountEvents = resp.resultCount;
           this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
@@ -82,5 +85,26 @@ export class TimelineComponent implements OnInit, OnDestroy {
         console.log('Events GET failed: ', err);
       }
     );
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(JsonPreviewComponent, {
+      width: '600px',
+      position: { right: '0' }
+    });
+    const instance = dialogRef.componentInstance;
+    instance.data = this.unchangedEvents;
+    instance.name = this.name;
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
+  }
+
+  bulkActions(action) {
+    switch (action.value) {
+      case 'exportEvents':
+        this.openDialog();
+        break;
+    }
+
+    action.value = 'default';
   }
 }

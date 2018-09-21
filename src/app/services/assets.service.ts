@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
+import { AuthService } from './auth.service';
 
 declare let Web3: any;
 
@@ -27,7 +28,7 @@ export class AssetsService {
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
 
-  constructor(private storage: StorageService, private http: HttpClient) {
+  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) {
     this.initSDK();
     window.addEventListener('user:refresh', () => this.initSDK());
   }
@@ -82,244 +83,71 @@ export class AssetsService {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-  // GET asset and GET event
-
-  // getAsset(assetId) {
-  //   return new Observable(observer => {
-  //     if (this.currentAssetId && this.currentAssetId === assetId) {
-  //       return observer.next(this.asset);
-  //     }
-
-  //     this.getAssetById(assetId).then(resp => {
-  //       const queries = {
-  //         assetId
-  //       };
-
-  //       // this.getEvents(queries).then((events: any) => {
-  //       //   this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
-  //       //     this.asset = parsedData.data;
-  //       //     return observer.next(this.asset);
-  //       //   });
-  //       // });
-  //     });
-  //   });
-  // }
-
-  getAssetById(assetId) {
-    return new Promise((resolve, reject) => {
-      this.ambrosus
-        .getAssetById(assetId)
-        .then(response => {
-          resolve(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    });
-  }
-
-  // getEvents(queries = {}, page = 0, perPage = 25) {
-  //   queries['page'] = page;
-  //   queries['perPage'] = perPage;
-
-  //   return new Promise((resolve, reject) => {
-  //     this.ambrosus.getEvents(queries).then(resp => {
-  //       resolve(resp);
-  //     })
-  //       .catch(err => {
-  //         console.log('GET events fail: ', err);
-  //         reject(err);
-  //       });
-  //   });
-  // }
-
-  getEventById(eventId) {
+  getEvent(eventId) {
     return new Observable(observer => {
-      this.ambrosus
-        .getEventById(eventId)
-        .then(resp => {
-          return observer.next(resp.data);
-        })
-        .catch(err => {
-          return observer.error(err);
-        });
+      const token = this.auth.getToken();
+      const url = `/api/assets/events/${eventId}?token=${token}`;
+
+      this.http.get(url).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
     });
   }
 
   sortEventsByTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) {
-      return -1;
-    }
-    if (a.timestamp < b.timestamp) {
-      return 1;
-    }
+    if (a.timestamp > b.timestamp) { return -1; }
+    if (a.timestamp < b.timestamp) { return 1; }
     return 0;
   }
 
-  // All, unfiltered events
-  parseEvents(e) {
-    const events = e.results.reduce(
-      (_events, { content, eventId }) => {
-        const timestamp = content.idData.timestamp;
-        const author = content.idData.createdBy;
+  parseTimelineEvents(e) {
+    const events = e.results.reduce((_events, { content, eventId }) => {
+      const timestamp = content.idData.timestamp;
+      const author = content.idData.createdBy;
 
-        if (content && content.data) {
-          content.data.filter(obj => {
-            const parts = obj.type.split('.');
-            const type = parts[parts.length - 1];
-            const category = parts[parts.length - 2] || 'asset';
-            const namespace = parts[parts.length - 3] || 'ambrosus';
+      if (content && content.data) {
+        content.data.filter(obj => {
+          const parts = obj.type.split('.');
+          const type = parts[parts.length - 1];
+          const category = parts[parts.length - 2] || 'asset';
+          const namespace = parts[parts.length - 3] || 'ambrosus';
 
-            obj.timestamp = timestamp;
-            obj.author = author;
-            obj.name = obj.name || type;
-            obj.action = type;
-            obj.type = type;
-            obj.eventId = eventId;
+          obj.timestamp = timestamp;
+          obj.author = author;
+          obj.name = obj.name || type;
+          obj.action = type;
+          obj.type = type;
+          obj.eventId = eventId;
 
-            if (obj.type === 'location' && category === 'event') {
-              content.data.reduce((location, _event) => {
-                if (_event.type !== 'location') {
-                  _event.location = location;
-                }
-              }, obj);
-            }
+          if (obj.type === 'location' && category === 'event') {
+            content.data.reduce((location, _event) => {
+              if (_event.type !== 'location') {
+                _event.location = location;
+              }
+            }, obj);
+          }
 
+          const notInclude = ['location', 'identifier', 'identifiers'];
+          if (notInclude.indexOf(obj.type) === -1) {
             _events.events.push(obj);
-            return obj;
-          });
-        }
-        return _events;
-      },
-      { events: [], resultCount: e.resultCount }
-    );
+          }
+
+          return obj;
+        });
+      }
+      return _events;
+    }, { events: [], resultCount: e.resultCount });
 
     events.events.sort(this.sortEventsByTimestamp);
 
     return events;
   }
 
-  attachInfoEvents(resp, address = null) {
-    return new Promise((resolve, reject) => {
-      // Unique events
-      const events = this.latestEvents(resp.data.results);
-      // Extract and build asset objects in []
-      const assets = events.reduce((_assets, event) => {
-        const asset = {
-          assetId: event.content.idData.assetId,
-          content: {
-            idData: {
-              createdBy: event.content.idData.createdBy,
-              timestamp: event.content.idData.timestamp
-            }
-          }
-        };
-        _assets.push(asset);
-        return _assets;
-      }, []);
-      // Get info events + connect them to assets
-      const that = this;
-      const _params = {
-        createdBy: address,
-        'data[type]': 'ambrosus.asset.info'
-      };
-      this.ambrosus.getEvents(_params).then(function (info) {
-        const _assets = {
-          resultCount: resp.data.resultCount,
-          assets: that.parseAssetsInfo(assets, info.data.results)
-        };
-        resolve(_assets);
-      }).catch(function (e) {
-        console.log('GET info events error: ', e);
-        reject(e);
-      });
-    });
-  }
 
-  // GET assets
 
-  getAssetsInfo(page = 0, perPage = 15, address = '') {
-    const cachedAssetsInfo = this.storage.get('assets');
-    const that = this;
-    address = address || <any>this.storage.get('user')['address'];
-    const params = {
-      createdBy: address,
-      page: page,
-      perPage: perPage
-    };
 
-    return new Observable(observer => {
-      if (cachedAssetsInfo) {
-        observer.next(cachedAssetsInfo);
-      }
 
-      // 1. Get all the assets
-      this.ambrosus
-        .getAssets(params)
-        .then(function (assets) {
-          // 2. Get all info events
-          const _params = {
-            createdBy: address,
-            'data[type]': 'ambrosus.asset.info'
-          };
-          that.ambrosus.getEvents(_params).then(function (info) {
-            const _assets = {
-              resultCount: assets.data.resultCount,
-              assets: that.parseAssetsInfo(assets.data.results, info.data.results)
-            };
-            that.storage.set('assets', _assets);
-            return observer.next(_assets);
-          }).catch(function (e) {
-            console.log('Get info events error: ', e);
-            return observer.error(e);
-          });
-        })
-        .catch(function (error) {
-          console.log('Get assets error: ', error);
-          return observer.error(error);
-        });
-    });
-  }
-
-  parseAssetsInfo(assets, info) {
-    // Latest info event
-    info = this.latestEvents(info);
-    assets.map((asset) => {
-      const _info = info.find((obj) => obj.content.idData.assetId === asset.assetId);
-      if (_info) {
-        asset.info = _info;
-      }
-    });
-    return assets;
-  }
-
-  latestEvents(info) {
-    const latestEvents = info.reduce((events, obj) => {
-      const exists = events.findIndex((_obj) => obj.content.idData.assetId === _obj.content.idData.assetId);
-      if (exists !== -1) {
-        if (obj.content.idData.timestamp > events[exists].content.idData.timestamp) {
-          events.splice(exists, 1);
-          events.push(obj);
-        }
-      } else {
-        events.push(obj);
-      }
-
-      return events;
-    }, []);
-
-    return latestEvents;
-  }
 
   // CREATE asset and events
 
