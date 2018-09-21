@@ -23,8 +23,7 @@ exports.create = (req, res, next) => {
   const timeZone = req.body.company ? req.body.company.timeZone : '';
   const hermes = req.hermes || req.body.hermes;
 
-  const company = new Company({
-    _id: new mongoose.Types.ObjectId(),
+  const company = new Company({   
     title,
     timeZone,
     hermes

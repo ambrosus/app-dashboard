@@ -8,10 +8,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const companiesSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   title: {
     type: String,
-    required: true,
+    required: [(value) => !value, 'Title field is required' ],
     index: { unique: true }
   },
   hermes: {
@@ -48,8 +51,8 @@ companiesSchema.pre('update', function (next) {
 });
 
 companiesSchema.pre('save', function (next) {
-  if (!this.hermes) { next(new Error('"hermes" object is required').toString()); } 
-  else { this.updatedAt = +new Date(); next(); }
+  this.createdAt = +new Date();
+  next();
 });
 
 module.exports = mongoose.model('Companies', companiesSchema);
