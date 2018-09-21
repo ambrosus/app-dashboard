@@ -8,6 +8,10 @@ declare let Web3: any;
 
 @Injectable()
 export class AssetsService {
+  hermes;
+
+
+
   assetsSelected: string[] = [];
   toggleSelect: Subject<any> = new Subject();
   inputChanged = new Subject();
@@ -22,7 +26,6 @@ export class AssetsService {
   editInfoEventJSON;
   infoEventCreated = new Subject();
   infoEventFailed = new Subject();
-  hermes;
 
   constructor(private storage: StorageService, private http: HttpClient) {
     this.initSDK();
@@ -56,6 +59,18 @@ export class AssetsService {
     });
   }
 
+  getEvents(options) {
+    return new Observable(observer => {
+      let url = `/api/assets/events?`;
+      Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
+
+      this.http.get(url).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
+    });
+  }
+
 
 
 
@@ -79,12 +94,12 @@ export class AssetsService {
           assetId
         };
 
-        this.getEvents(queries).then((events: any) => {
-          this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
-            this.asset = parsedData.data;
-            return observer.next(this.asset);
-          });
-        });
+        // this.getEvents(queries).then((events: any) => {
+        //   this.ambrosus.parseEvents(events.data).then((parsedData: any) => {
+        //     this.asset = parsedData.data;
+        //     return observer.next(this.asset);
+        //   });
+        // });
       });
     });
   }
@@ -102,20 +117,20 @@ export class AssetsService {
     });
   }
 
-  getEvents(queries = {}, page = 0, perPage = 25) {
-    queries['page'] = page;
-    queries['perPage'] = perPage;
+  // getEvents(queries = {}, page = 0, perPage = 25) {
+  //   queries['page'] = page;
+  //   queries['perPage'] = perPage;
 
-    return new Promise((resolve, reject) => {
-      this.ambrosus.getEvents(queries).then(resp => {
-        resolve(resp);
-      })
-        .catch(err => {
-          console.log('GET events fail: ', err);
-          reject(err);
-        });
-    });
-  }
+  //   return new Promise((resolve, reject) => {
+  //     this.ambrosus.getEvents(queries).then(resp => {
+  //       resolve(resp);
+  //     })
+  //       .catch(err => {
+  //         console.log('GET events fail: ', err);
+  //         reject(err);
+  //       });
+  //   });
+  // }
 
   getEventById(eventId) {
     return new Observable(observer => {

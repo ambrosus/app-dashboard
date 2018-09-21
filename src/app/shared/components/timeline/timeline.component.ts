@@ -5,8 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
-
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -83,17 +81,17 @@ export class TimelineComponent implements OnInit {
       assetId: this.assetId
     };
 
-    this.assets.getEvents(queries, page)
-      .then((r: any) => {
-        this.json = r.data.results;
-        const resp = this.assets.parseEvents(r.data);
-        this.events = resp.events;
-        this.resultCountEvents = resp.resultCount;
-        this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
-      })
-      .catch(err => {
-        console.log('Load events error: ', err);
-      });
+    // this.assets.getEvents(queries, page)
+    //   .then((r: any) => {
+    //     this.json = r.data.results;
+    //     const resp = this.assets.parseEvents(r.data);
+    //     this.events = resp.events;
+    //     this.resultCountEvents = resp.resultCount;
+    //     this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
+    //   })
+    //   .catch(err => {
+    //     console.log('Load events error: ', err);
+    //   });
   }
 
   resetSearch() {
@@ -126,16 +124,16 @@ export class TimelineComponent implements OnInit {
         break;
     }
 
-    this.assets.getEvents(queries, page)
-      .then((r: any) => {
-        this.json = r.data.results;
-        const resp = this.assets.parseEvents(r.data);
-        this.events = resp.events;
-        this.resultCountSearch = resp.resultCount;
-        this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
-      })
-      .catch(err => {
-        console.log('Load events error: ', err);
-      });
+    // this.assets.getEvents(queries, page)
+    //   .then((r: any) => {
+    //     this.json = r.data.results;
+    //     const resp = this.assets.parseEvents(r.data);
+    //     this.events = resp.events;
+    //     this.resultCountSearch = resp.resultCount;
+    //     this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
+    //   })
+    //   .catch(err => {
+    //     console.log('Load events error: ', err);
+    //   });
   }
 }

@@ -197,24 +197,25 @@ exports.getAsset = (req, res, next) => {
  * @returns 200 and next() on success
  */
 exports.getEvents = (req, res, next) => {
-  const { createdBy, identifier, data, assetId, page, perPage, assets } = req.query;
+  const { createdBy, data, assetId, page, perPage, assets, token } = req.query;
   const user = req.session.user;
 
-  const url = `${user.hermes.url}/events?`;
+  let url = `${user.hermes.url}/events?`;
   url += `page=${page || 0}&`;
   url += `perPage=${perPage || 15}&`;
-  if (createdBy) { url += `${createdBy}&`; } else { url += `createdBy=${user.address}&`; }
-  if (identifier) { url += `${identifier}&`; }
-  if (data) { url += `${data}&`; }
-  if (assetId) { url += `${assetId}&`; }
+  if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
+  if (data) { url += `${decodeURI(data)}&`; }
+  if (assetId) { url += `${decodeURI(assetId)}&`; }
 
   get(url, token)
     .then(events => {
       if (assets) {
         // Extract unique assetIds
         const assetIds = events.results.reduce((_assetIds, event) => {
-          try { const _assetId = event.content.idData.assetId; } catch (e) { const _assetId = ''; }
+          let _assetId = '';
+          try { _assetId = event.content.idData.assetId; } catch (e) {}
           if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
+          return _assetIds;
         }, []);
 
         // Find cached assets
