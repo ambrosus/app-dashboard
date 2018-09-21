@@ -11,7 +11,8 @@ const companiesSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   title: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
@@ -47,8 +48,8 @@ companiesSchema.pre('update', function (next) {
 });
 
 companiesSchema.pre('save', function (next) {
-  this.updatedAt = +new Date();
-  next();
+  if (!this.hermes) { next(new Error('"hermes" object is required').toString()); } 
+  else { this.updatedAt = +new Date(); next(); }
 });
 
 module.exports = mongoose.model('Companies', companiesSchema);

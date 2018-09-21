@@ -23,24 +23,21 @@ exports.create = (req, res, next) => {
   const url = req.body.hermes ? req.body.hermes.url : null;
 
   if (title && url) {
-    Hermes.findOne({ url })
+    const hermes = new Hermes({
+      _id: new mongoose.Types.ObjectId(),
+      title,
+      url
+    });
+    hermes
+      .save()
       .then(hermes => {
-        if (!hermes) {
-          const hermes = new Hermes({
-            _id: new mongoose.Types.ObjectId(),
-            title,
-            url
-          });
-
-          hermes
-            .save()
-            .then(hermes => {
-              req.status = 200;
-              req.hermes = hermes;
-              return next();
-            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        } else { throw 'Hermes with this url already exists'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        req.status = 200;
+        req.hermes = hermes;
+        return next();
+      }).catch(error => {
+        if (error.code === 11000) { res.status(400).json({ message: 'Hermes URL already exists' }); }
+        else { console.log(error), res.status(400).json({ message: error }); }
+      });
   } else if (!title) {
     return res.status(400).json({ message: 'Hermes "title" is required' });
   } else if (!url) {

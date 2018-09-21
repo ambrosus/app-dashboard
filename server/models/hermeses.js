@@ -15,7 +15,8 @@ const hermesesSchema = mongoose.Schema({
   },
   url: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   public: {
     type: Boolean,
