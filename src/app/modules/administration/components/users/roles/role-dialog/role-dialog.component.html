@@ -47,7 +47,8 @@
       </div>
     </div>
 
-    <p *ngIf="message.text" class="center p-t-20" [ngClass]="message.type === true ? 'green-text' : 'red-text'">{{message.text}}</p>
+    
+    <p *ngIf="message" class="center p-t-20" [ngClass]="messageType === true ? 'green-text' : 'red-text'">{{message}}</p>
   </div>
 
 </div>

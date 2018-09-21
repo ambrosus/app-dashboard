@@ -14,7 +14,8 @@ export class RoleDialogComponent implements OnInit {
   permissions: string;
   selectedPermissions: string[] = [];
   isEdit: Boolean = false;
-  message: { type: Boolean, text: string };
+  messageType: Boolean
+  message: string
 
   permissionsArray = [
     { id: '1', name: 'Invites', value: 'invites' },
@@ -40,10 +41,10 @@ export class RoleDialogComponent implements OnInit {
   }
 
   save() {
-    this.message.text = null;
+    this.message = null;
 
     this.createPromise = new Promise((resolve, reject) => {
-      if (this.selectedPermissions.length === 0) { this.message.text = 'Please select at least one permission'; this.message.type = false; reject(); }
+      if (this.selectedPermissions.length === 0) { this.message = 'Please select at least one permission'; this.messageType = false; reject(); }
       else if (!this.isEdit) {
         const body = { title: this.title, permissions: this.selectedPermissions };
         this.createRole(body).then(response => resolve()).catch(error => reject()); 
@@ -60,14 +61,14 @@ export class RoleDialogComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.put(url, body).subscribe(
         (resp: any) => {
-          this.message.text = 'Saved Successfully';
-          this.message.type = true;
+          this.message = 'Saved Successfully';
+          this.messageType = true;
           resolve();
         },
         err => {
           reject();
-          this.message.type = false;
-          this.message.text = err.error ? err.error.message : JSON.stringify(err);
+          this.messageType = false;
+          this.message = err.error ? err.error.message : JSON.stringify(err);
           console.log('Role save failed: ', err);
       });
     });
@@ -78,14 +79,14 @@ export class RoleDialogComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.post(url, body).subscribe(
         (resp: any) => {
-          this.message.text = 'Saved Successfully';
-          this.message.type = true;
+          this.message = 'Saved Successfully';
+          this.messageType = true;
           resolve();
         },
         err => {
           reject();
-          this.message.type = false;
-          this.message.text = err.error ? err.error.message : JSON.stringify(err);
+          this.messageType = false;
+          this.message = err.error ? err.error.message : JSON.stringify(err);
           console.log('Role save failed: ', err);
       });
     });
