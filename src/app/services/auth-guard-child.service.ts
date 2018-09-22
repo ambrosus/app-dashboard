@@ -8,6 +8,9 @@ export class AuthGuardChild implements CanActivateChild {
   constructor(private router: Router, private auth: AuthService) { }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+
+    console.log('canActivate@AuthGuardChild');
+
     return new Promise(resolve => {
       if (this.auth.isLoggedIn()) {
         resolve(true);

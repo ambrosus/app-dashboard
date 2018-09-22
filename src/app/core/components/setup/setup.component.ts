@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { SetUpGuard } from '../../../guards/setup.guard';
 
 declare let moment: any;
-declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 @Component({
@@ -32,7 +32,8 @@ export class SetupComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private router: Router,
-    private storage: StorageService) {
+    private storage: StorageService,
+    private _setUpGuard: SetUpGuard) {
     this.initSetupForm();
     this.web3 = new Web3();
   }
@@ -51,21 +52,6 @@ export class SetupComponent implements OnInit {
   }
 
   ngOnInit() {
-    const url = `/api/hermeses`;
-
-    this.http.get(url).subscribe(
-      (resp: any) => {
-        if (resp.resultCount > 0) {
-          this.storage.set('hermes', resp.data[0]);
-          this.router.navigate(['/login']);
-        }
-      },
-      err => {
-        console.log('Hermes GET error: ', err);
-        this.router.navigate(['/login']);
-      }
-    );
-
     this.timezones = moment.tz.names();
   }
 

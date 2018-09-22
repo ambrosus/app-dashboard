@@ -72,8 +72,6 @@ export class HeaderComponent implements OnInit {
       width: '600px',
       position: { right: '0' }
     });
-    const instance = dialogRef.componentInstance;
-    instance.isDialog = true;
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');

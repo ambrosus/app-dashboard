@@ -6,9 +6,20 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class UsersService {
+
+  _data;
+
   apiEndpoint = '/api/users/';
 
   constructor(private http: HttpClient) { }
+
+  set data(data) {
+    this._data = data;
+  }
+
+  get data() {
+    return this._data;
+  }
 
   update(address, json) {
     return new Observable(observer => {
@@ -27,15 +38,4 @@ export class UsersService {
     });
   }
 
-  get(email = false) {
-    return new Observable(observer => {
-
-    });
-  }
-
-  getAll() {
-    return new Observable(observer => {
-
-    });
-  }
 }

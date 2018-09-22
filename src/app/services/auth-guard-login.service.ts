@@ -8,6 +8,9 @@ export class AuthGuardLogin implements CanActivate {
   constructor(private router: Router, private auth: AuthService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+
+    console.log('canActivate@AuthGuardLogin');
+
     return new Promise(resolve => {
       if (this.auth.isLoggedIn()) {
         resolve(false);
