@@ -10,7 +10,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
     <!-- Search bar -->
     <h2 class="center m-t-30">All assets</h2>
-    <p class="center m-b-30">Total count: {{ resultCount || 0 }}</p>
+    <p class="center m-b-30">Total count: {{ pagination.resultCount || 0 }}</p>
 
     <div class="block-center m-w-6 p-h-10">
       <div class="search">
@@ -103,17 +103,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
   </div>
 
-  <div class="block-center m-w-12 m-v-10 p-h-10" *ngIf="!searchActive">
-    <div *ngIf="assets.length !== 0">
-      Showing {{ assets.length < perPage ? resultCount : (currentPage * perPage) + assets.length }} to
-      <span *ngIf="currentPage * perPage > resultCount">{{ resultCount }}</span>
-      <span *ngIf="currentPage * perPage <= resultCount">{{ currentPage * perPage }}</span> of {{ resultCount }} assets
-    </div>
-  </div>
-
   <!-- Pagination -->
   <div class="block-center m-w-12 m-t-10 p-h-10">
+    <!-- Search pagination -->
+    <app-pagination *ngIf="searchActive" [pagination]="pagination" [method]="search"></app-pagination>
     <!-- Asset pagination -->
-    <app-pagination *ngIf="!searchActive" [currentPage]="currentPage" [totalPages]="totalPages" [method]="loadAssets"></app-pagination>
+    <app-pagination *ngIf="!searchActive" [pagination]="pagination" [method]="loadAssets"></app-pagination>
   </div>
 </main>

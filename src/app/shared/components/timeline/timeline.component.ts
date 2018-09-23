@@ -9,7 +9,7 @@ import { Component, OnInit, Input, ElementRef, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
@@ -22,13 +22,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
   events = [];
   unchangedEvents = [];
   // Pagination
-  perPage = 15;
-  currentEventsPage = 1;
-  totalEventsPages = 0;
-  resultCountEvents;
-  currentSearchPage = 1;
-  totalSearchPages = 0;
-  resultCountSearch;
+  pagination = {
+    currentPage: 1,
+    perPage: 15,
+    totalPages: 0,
+    resultCount: 0,
+    resultLength: 0
+  };
   searchActive = false;
   // Other
   searchPlaceholder = 'ie. ambrosus.asset.sold';
@@ -49,36 +49,54 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.eventsSubscription) { this.eventsSubscription.unsubscribe(); }
   }
 
-  loadEvents(page = 0, s = false) {
+  loadEvents(page = 0, perPage = 15) {
+    const token = this.auth.getToken();
+    const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
+    this.searchActive = false;
+
+    this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
+      (resp: any) => {
+        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
+        this.events = this.assetsService.parseTimelineEvents(resp).events;
+        this.pagination.currentPage = page;
+        this.pagination.perPage = perPage;
+        this.pagination.resultCount = resp.resultCount;
+        this.pagination.resultLength = resp.results.length;
+        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
+      },
+      err => {
+        this.events = [];
+        console.log('Events GET failed: ', err);
+      }
+    );
+  }
+
+  search(page = 0, perPage = 15) {
+    const search = this.el.nativeElement.querySelector('#search').value;
+    const select = this.el.nativeElement.querySelector('#select').value;
+    this.searchActive = true;
+
+    if (search.length === 0) { return this.loadEvents(); }
+
     const token = this.auth.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
 
-    if (s) {
-      const search = this.el.nativeElement.querySelector('#search').value;
-      const select = this.el.nativeElement.querySelector('#select').value;
-      this.searchActive = true;
-      if (search.length === 0) { return this.loadEvents(); }
-      const searchValues = search.split(',');
-      switch (select) {
-        case 'type':
-          options['data'] = `data[type]=${searchValues[0].trim()}`;
-          break;
-      }
-    } else {
-      this.searchActive = false;
+    const searchValues = search.split(',');
+    switch (select) {
+      case 'type':
+        options['data'] = `data[type]=${searchValues[0].trim()}`;
+        break;
     }
 
     this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
         this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
         this.events = this.assetsService.parseTimelineEvents(resp).events;
-        if (!s) {
-          this.resultCountEvents = resp.resultCount;
-          this.totalEventsPages = Math.ceil(this.resultCountEvents / this.perPage);
-        } else {
-          this.resultCountSearch = resp.resultCount;
-          this.totalSearchPages = Math.ceil(this.resultCountSearch / this.perPage);
-        }
+        this.pagination.currentPage = page;
+        this.pagination.perPage = perPage;
+        this.pagination.resultCount = resp.resultCount;
+        this.pagination.resultLength = resp.results.length;
+        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
       },
       err => {
         this.events = [];

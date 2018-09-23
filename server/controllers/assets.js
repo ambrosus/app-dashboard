@@ -197,7 +197,7 @@ exports.getAsset = (req, res, next) => {
  * @returns 200 and next() on success
  */
 exports.getEvents = (req, res, next) => {
-  const { createdBy, data, assetId, page, perPage, assets, token } = req.query;
+  const { createdBy, data, assetId, page, perPage, assets, token, assetPage, assetPerPage } = req.query;
   const user = req.session.user;
 
   let url = `${user.hermes.url}/events?`;
@@ -219,10 +219,10 @@ exports.getEvents = (req, res, next) => {
         }, []);
 
         // Find cached assets
-        Asset.paginate({ assetId: { $in: assetIds } }, { limit: 1000, sort: '-createdAt' })
+        Asset.paginate({ assetId: { $in: assetIds } }, { page: parseInt(assetPage) || 1, limit: parseInt(assetPerPage) || 15, sort: '-createdAt' })
           .then(_assets => {
             req.status = 200;
-            req.json = { assets: _assets, resultCount: events.resultCount };
+            req.json = { assets: _assets };
             return next();
           }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
       } else {

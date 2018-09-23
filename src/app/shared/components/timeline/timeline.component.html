@@ -9,7 +9,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <div class="table__label__select color-ablue--base m-r-20">
     <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions style="padding: 3px 5px; border-radius: 5px;">
       <option value="default" disabled>Bulk actions</option>
-      <option value="exportEvents">Export events, page: {{ searchActive ? currentSearchPage : currentEventsPage }}</option>
+      <option value="exportEvents">Export events, page: {{ pagination.currentPage + 1 }}</option>
     </select>
   </div>
 
@@ -21,7 +21,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <option value="type" selected>type</option>
   </select>
   <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
-  <a class="abtn btn-solid-ablue" (click)="loadEvents(0, true)">Search</a>
+  <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
 </div>
 
 <div class="events">
@@ -35,23 +35,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
 </div>
 
-<div class="block-center m-w-12 m-v-10 p-h-10">
-  <div *ngIf="!searchActive && events.length > 0">
-    Showing {{ (currentEventsPage - 1) * perPage + 1 }} to
-    <span *ngIf="currentEventsPage * perPage > resultCountEvents">{{ resultCountEvents }}</span>
-    <span *ngIf="currentEventsPage * perPage <= resultCountEvents">{{ currentEventsPage * perPage }}</span> of {{ resultCountEvents }} events
-  </div>
-  <div *ngIf="searchActive && events.length > 0">
-    Showing {{ (currentSearchPage - 1) * perPage + 1 }} to
-    <span *ngIf="currentSearchPage * perPage > resultCountSearch">{{ resultCountSearch }}</span>
-    <span *ngIf="currentSearchPage * perPage <= resultCountSearch">{{ currentSearchPage * perPage }}</span> of {{ resultCountSearch }} events
-  </div>
-</div>
-
 <!-- Pagination -->
 <div class="block-center m-w-12 m-t-10 p-h-10">
-  <!-- Asset pagination -->
-  <app-pagination *ngIf="!searchActive" [currentPage]="currentEventsPage" [totalPages]="totalEventsPages" [method]="loadEvents"></app-pagination>
   <!-- Search pagination -->
-  <app-pagination *ngIf="searchActive" [currentPage]="currentSearchPage" [totalPages]="totalSearchPages" [method]="search"></app-pagination>
+  <app-pagination *ngIf="searchActive" [pagination]="pagination" [method]="search" [for]="'events'"></app-pagination>
+  <!-- Asset pagination -->
+  <app-pagination *ngIf="!searchActive" [pagination]="pagination" [method]="loadEvents" [for]="'events'"></app-pagination>
 </div>

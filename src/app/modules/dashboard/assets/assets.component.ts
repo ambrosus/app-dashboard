@@ -26,10 +26,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assets: any[] = [];
   assetIds: String[] = [];
   // Pagination
-  currentPage = 1;
-  perPage = 15;
-  totalPages;
-  resultCount;
+  pagination = {
+    currentPage: 1,
+    perPage: 15,
+    totalPages: 0,
+    resultCount: 0,
+    resultLength: 0
+  };
   // Search
   searchActive = false;
   searchPlaceholder = 'ie. Green apple';
@@ -66,10 +69,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
         console.log(assets);
         this.loader = false;
         this.assets = assets.docs;
-        this.currentPage = assets.page;
-        this.perPage = perPage;
-        this.resultCount = assets.total;
-        this.totalPages = Math.ceil(assets.total / perPage);
+        this.pagination.currentPage = assets.page;
+        this.pagination.perPage = perPage;
+        this.pagination.resultCount = assets.total;
+        this.pagination.resultLength = this.assets.length;
+        this.pagination.totalPages = Math.ceil(assets.total / perPage);
       },
       err => {
         this.loader = false;
@@ -116,7 +120,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     action.value = 'default';
   }
 
-  search() {
+  search(assetPage = 1, assetPerPage = 15) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     if (search.length === 0) {
@@ -128,7 +132,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
     const searchValues = search.split(',');
     const token = this.auth.getToken();
-    const options = { assets: true, token };
+    const options = {
+      assets: true,
+      token,
+      assetPage,
+      assetPerPage
+    };
     switch (select) {
       case 'name':
         options['data'] = `data[name]=${searchValues[0].trim()}`;
@@ -144,10 +153,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
       ({ assets }) => {
         this.loader = false;
         this.assets = assets.docs;
+        this.pagination.currentPage = assets.page;
+        this.pagination.perPage = assetPerPage;
+        this.pagination.resultCount = assets.total;
+        this.pagination.resultLength = this.assets.length;
+        this.pagination.totalPages = Math.ceil(assets.total / assetPerPage);
       },
       err => {
         this.loader = false;
         console.log('Assets GET failed: ', err);
+        this.pagination['resultCount'] = 0;
+        this.pagination['resultLength'] = 0;
       }
     );
   }
