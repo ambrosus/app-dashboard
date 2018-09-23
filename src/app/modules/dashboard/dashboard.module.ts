@@ -19,6 +19,9 @@ import { ChartComponent } from './chart/chart.component';
 import { ChartistComponent } from './chart/chartist/chartist.component';
 import { AssetsService } from 'app/services/assets.service';
 import { UsersService } from '../../services/users.service';
+import { AssetFormComponent } from './forms/asset-form/asset-form.component';
+import { EventFormComponent } from './forms/event-form/event-form.component';
+import { JsonFormComponent } from './forms/json-form/json-form.component';
 
 @NgModule({
   imports: [
@@ -36,7 +39,10 @@ import { UsersService } from '../../services/users.service';
     EventComponent,
     EventAddComponent,
     ChartComponent,
-    ChartistComponent
+    ChartistComponent,
+    AssetFormComponent,
+    EventFormComponent,
+    JsonFormComponent
   ],
   providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService]
 })

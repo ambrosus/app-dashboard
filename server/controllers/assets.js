@@ -145,7 +145,7 @@ exports.updateCachedAssets = (req, res, next) => {
     getAssetEventsAndUpdate.then(() => next());
   } else {
     req.status = 400;
-    req.json['message'] = '"assets" object is required to update cached assets';
+    req.json['message'] = '"assets" docs array of asset objects is required to update cached assets';
     return next();
   }
 }
@@ -262,9 +262,10 @@ exports.getEvent = (req, res, next) => {
 }
 
 /**
- * 1. Gets signed asset object
- * 2. Creates an asset in Hermes
- * 3. Calls next();
+ * 1. Gets array of signed asset objects
+ * 2. Creates each asset in Hermes
+ * 3. Creates cached assets in dash db
+ * 4. Calls next();
  *
  * @name createAsset
  * @route { POST } api/assets/
@@ -276,37 +277,46 @@ exports.getEvent = (req, res, next) => {
  */
 exports.createAsset = (req, res, next) => {
   const { token } = req.query;
-  const asset = req.body.asset;
+  const assets = req.body.assets;
   const user = req.session.user;
+  req.json = { assets: { docs: [] } };
 
-  if (asset) {
+  if (Array.isArray(assets) && assets.length > 0) {
     // Create an asset
     const url = `${user.hermes.url}/assets`;
-    create(url, asset, token)
-      .then(assetCreated => {
-        const _asset = new Asset({
-          _id: new mongoose.Types.ObjectId(),
-          assetId: assetCreated.assetId,
-          createdBy: assetCreated.content.idData.createdBy,
-          updatedAt: (assetCreated.content.idData.timestamp * 1000) + 5000,
-          createdAt: assetCreated.content.idData.timestamp * 1000
-        });
+    const createAssets = new Promise((resolve, reject) => {
+      assets.forEach((asset, index, array) => {
+        create(url, asset, token)
+          .then(assetCreated => {
+            const _asset = new Asset({
+              _id: new mongoose.Types.ObjectId(),
+              assetId: assetCreated.assetId,
+              createdBy: assetCreated.content.idData.createdBy,
+              updatedAt: (assetCreated.content.idData.timestamp * 1000) + 3000,
+              createdAt: assetCreated.content.idData.timestamp * 1000
+            });
 
-        _asset.save()
-          .then(inserted => {
-            req.status = 200;
-            req.json = { assets: { docs: [inserted] } };
-            return next();
-          }).catch(error => (console.log('Cached asset creation error: ', error), next()));
+            _asset.save()
+              .then(inserted => {
+                req.json.assets.docs.push(inserted);
+                if (index === array.length - 1) { resolve(); }
+              }).catch(error => {
+                console.log('Cached asset creation error: ', error);
+                if (index === array.length - 1) { resolve(); }
+              });
+          });
       });
-  } else if (!asset) {
-    return res.status(400).json({ message: '"asset" object is required' })
+    });
+
+    createAssets.then(() => (req.status = 200, next()));
+  } else if (!(Array.isArray(assets) && assets.length > 0)) {
+    return res.status(400).json({ message: '"assets" needs to be a non-empty array of signed asset objects' })
   }
 }
 
 /**
  * 1. Gets array of signed event objects
- * 2. Loops and creates each event in Hermes
+ * 2. Creates each event in Hermes
  * 3. Calls next();
  *
  * @name createEvent
@@ -321,6 +331,9 @@ exports.createEvent = (req, res, next) => {
   const { token } = req.query;
   const events = req.body.events;
   const user = req.session.user;
+  if (req.json) {
+    req.json['events'] = [];
+  } else { req.json = { events: [] } }
 
   if (Array.isArray(events) && events.length > 0) {
 
@@ -329,6 +342,7 @@ exports.createEvent = (req, res, next) => {
         const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
         create(url, event, token)
           .then(eventCreated => {
+            req.json.events.push(eventCreated);
             if (index === array.length - 1) { resolve(); }
           }).catch(error => {
             console.log('Event create error: ', error);
