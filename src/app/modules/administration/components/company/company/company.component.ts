@@ -6,6 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./company.component.scss']
 })
 export class CompanyComponent implements OnInit {
+  sidebar = [
+    {
+      title: 'Settings',
+      link: 'settings',
+      icon: 'cog'
+    }
+  ];
 
   constructor() { }
 

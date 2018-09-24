@@ -90,6 +90,10 @@ export class SetupComponent implements OnInit {
     }
   }
 
+  stepClass(){
+    return 'animated';
+  }
+
   checkStep() {
     switch (this.currentStep) {
       case 1:

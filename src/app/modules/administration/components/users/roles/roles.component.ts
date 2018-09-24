@@ -11,7 +11,7 @@ import { UsersService } from 'app/services/users.service';
 })
 export class RolesComponent implements OnInit {
 
-  constructor(public dialog: MatDialog, private http: HttpClient, private _users: UsersService) { }
+  constructor(public dialog: MatDialog, private http: HttpClient, public _users: UsersService) { }
 
   ngOnInit() { }
 

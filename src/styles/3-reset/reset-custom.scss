@@ -12,16 +12,14 @@
 }
 
 html {
-  min-height: 100%; // Fallback to "vh" unit
+  min-height: 100%;
   min-height: 100vh;
   font-size: 1em;
 }
 
 body {
-  font-family: $font-family--secondary;
-  font-size: $base__font-size;
-  // body is always 1em, I change font-size's in typography as I would
-  line-height: $base__line-height;
+  font-size: 12px;
+  line-height: 16px;
   color: $grey;
   background-color: #fff;
   margin: 0;
@@ -29,9 +27,8 @@ body {
   font-weight: normal;
   font-style: normal;
   position: relative;
-  min-height: 100%; // Fallback to "vh" unit
+  min-height: 100%;
   min-height: 100vh;
-  cursor: auto;
   overflow-x: hidden;
 }
 
@@ -128,7 +125,7 @@ ul ol {
 }
 
 dt {
-  font-weight: $font-weight--bold;
+  font-weight: 700;
 }
 
 dd {

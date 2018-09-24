@@ -33,6 +33,10 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
   exports: [
@@ -56,7 +60,10 @@ import { CustomCheckboxDirective } from './directives/custom-checkbox.directive'
     PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
-    CustomCheckboxDirective
+    CustomCheckboxDirective,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   declarations: [
     InputDirective,
@@ -76,7 +83,10 @@ import { CustomCheckboxDirective } from './directives/custom-checkbox.directive'
     NotificationComponent,
     PaginationComponent,
     CheckIfPipe,
-    CustomCheckboxDirective
+    CustomCheckboxDirective,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })
