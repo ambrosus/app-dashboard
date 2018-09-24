@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { RoleDialogComponent } from './role-dialog/role-dialog.component';
 import { HttpClient } from '@angular/common/http';
-import { Subscription } from 'rxjs';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-roles',
@@ -10,43 +10,25 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./roles.component.scss']
 })
 export class RolesComponent implements OnInit {
-  rolesSubscription: Subscription;
-  roles;
 
-  constructor(public dialog: MatDialog, private http: HttpClient) { }
+  constructor(public dialog: MatDialog, private http: HttpClient, private _users: UsersService) { }
 
-  ngOnInit() {
-    const url = `/api/roles`;
+  ngOnInit() { }
 
-    this.rolesSubscription = this.http.get(url).subscribe(
-      (resp: any) => {
-        console.log('Roles GET: ', resp);
-        this.roles = resp;
-      },
-      err => {
-        console.log('Roles GET error: ', err);
-      }
-    );
-  }
-
-  createRoleDialog(_id) {
+  openRoleDialog(role) {
     const dialogRef = this.dialog.open(RoleDialogComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' },
+      data: { role }
     });
-    if (_id) {
-      const instance = dialogRef.componentInstance;
-      instance.roleObj = this.roles.filter(a => a._id === _id);
-    }
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.ngOnInit();
     });
   }
 
-  ngOnDestroy() {
-    if (this.rolesSubscription) { this.rolesSubscription.unsubscribe(); }
+  deleteRole({ _id }) {
+    this._users.deleteRole(_id);
   }
 
 }

@@ -15,6 +15,8 @@ import { InvitesComponent } from './components/users/invites/invites.component';
 import { RolesComponent } from './components/users/roles/roles.component';
 import { RoleDialogComponent } from './components/users/roles/role-dialog/role-dialog.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
+import { UsersService } from '../../services/users.service';
+
 
 @NgModule({
   imports: [
@@ -31,6 +33,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
     }),
     FormsModule
   ],
+  providers: [UsersService],
   declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, RoleDialogComponent],
   entryComponents: [RoleDialogComponent]
 })
