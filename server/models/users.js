@@ -7,6 +7,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 const mongoose = require('mongoose');
+const Web3 = require('Web3');
+const web3 = new Web3();
+
+const validateEmail = (email) => {
+  const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+};
 
 const usersSchema = mongoose.Schema({
   _id: {
@@ -19,7 +26,8 @@ const usersSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: [(value) => !value, '"Email" field is required' ]
+    required: [(value) => !value, '"Email" field is required' ],
+    validate: [validateEmail, 'E-mail format is not valid']
   },
   password: {
     type: String,
@@ -31,7 +39,8 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: [(value) => !value, '"Address" field is required' ]
+    required: [(value) => !value, '"Address" field is required' ],
+    validate: [web3.utils.isAddress, 'Address format is not valid']
   },
   token: {
     type: String,
