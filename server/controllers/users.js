@@ -333,8 +333,7 @@ exports.changePassword = (req, res, next) => {
  * @returns Save success message on success with status code 200
  */
 exports.assignRole = (req, res, next) => {
-  const email = req.body.email;
-  const role = req.body.role;
+  const { email, role } = req.body
 
   if (email && role) {
     User.findOneAndUpdate({ email }, { role })

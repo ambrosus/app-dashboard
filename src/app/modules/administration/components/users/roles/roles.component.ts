@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog} from '@angular/material';
-import { AddRoleDialogComponent } from './add-role-dialog/add-role-dialog.component';
+import { MatDialog } from '@angular/material';
+import { RoleDialogComponent } from './role-dialog/role-dialog.component';
+import { HttpClient } from '@angular/common/http';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-roles',
@@ -9,20 +11,24 @@ import { AddRoleDialogComponent } from './add-role-dialog/add-role-dialog.compon
 })
 export class RolesComponent implements OnInit {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog, private http: HttpClient, private _users: UsersService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
-  createRoleDialog() {
-    const dialogRef = this.dialog.open(AddRoleDialogComponent, {
+  openRoleDialog(role) {
+    const dialogRef = this.dialog.open(RoleDialogComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' },
+      data: { role }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+
+  deleteRole({ _id }) {
+    this._users.deleteRole(_id);
   }
 
 }
