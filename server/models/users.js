@@ -7,6 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const Web3 = require('Web3');
 const web3 = new Web3();
 
@@ -22,7 +23,8 @@ const usersSchema = mongoose.Schema({
   },
   full_name: {
     type: String,
-    required: [(value) => !value, '"Full name" field is required' ]
+    required: [(value) => !value, '"Full name" field is required' ],
+    minLength: 4
   },
   email: {
     type: String,
@@ -83,9 +85,15 @@ usersSchema.pre('update', function(next) {
 });
 
 usersSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  this.lastLogin = +new Date();
-  next();
+  if (!this.isModified('password')) return next();
+  bcrypt.hash(this.password, 10, (err, hash) => {
+    if (!err) {
+      this.password = hash;
+      this.updatedAt = +new Date();
+      this.lastLogin = +new Date();
+      next();
+    } else { throw new Error('Failure in password hashing').toString(); }
+  });
 });
 
 module.exports = mongoose.model('Users', usersSchema);
