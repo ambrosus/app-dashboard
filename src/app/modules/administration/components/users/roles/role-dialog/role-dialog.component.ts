@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
+import { MAT_DIALOG_DATA } from '@angular/material';
+
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-role-dialog',
@@ -10,30 +12,38 @@ import { HttpClient } from '@angular/common/http';
 export class RoleDialogComponent implements OnInit {
 
   createPromise;
-  title: string;
-  permissions: string;
-  selectedPermissions: string[] = [];
-  isEdit: Boolean = false;
-  messageType: Boolean
-  message: string
 
-  permissionsArray = [
-    { id: '1', name: 'Invites', value: 'invites' },
-    { id: '2', name: 'Users', value: 'users' },
-    { id: '3', name: 'Roles', value: 'roles' }
+  title: string;
+  _id: string;
+
+  message;
+
+  permissions: any = [
+    { title: 'Invites', value: 'invites' },
+    { title: 'Users', value: 'users' },
+    { title: 'Roles', value: 'roles' }
   ];
 
   @Input() roleObj;
 
-  constructor(private dialogRef: MatDialogRef<RoleDialogComponent>, private http: HttpClient) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<RoleDialogComponent>,
+    private _users: UsersService) { }
 
   ngOnInit() {
-    if (this.roleObj) { this.getRoleById(this.roleObj[0]); this.isEdit = true; }
-  }
+    if (this.data.role) {
+      this.title = this.data.role.title;
+      this._id = this.data.role._id;
 
-  getRoleById(role) {
-    this.selectedPermissions = role.permissions;
-    this.title = role.title;
+      this.permissions = this.permissions.map(p => {
+        if (this.data.role.permissions.indexOf(p.value) > -1) {
+          p.checked = true
+        };
+        return p;
+
+      });
+    }
   }
 
   closeDialog() {
@@ -41,65 +51,41 @@ export class RoleDialogComponent implements OnInit {
   }
 
   save() {
+
     this.message = null;
 
-    this.createPromise = new Promise((resolve, reject) => {
-      if (this.selectedPermissions.length === 0) { this.message = 'Please select at least one permission'; this.messageType = false; reject(); }
-      else if (!this.isEdit) {
-        const body = { title: this.title, permissions: this.selectedPermissions };
-        this.createRole(body).then(response => resolve()).catch(error => reject()); 
-      } else if (this.isEdit) {
-        const body = { _id: this.roleObj[0]._id, title: this.title, permissions: this.selectedPermissions };
-        this.putRole(body).then(response => resolve()).catch(error => reject());
+    const data: any = {
+      title: this.title,
+      permissions: this.permissions.filter(p => p.checked).map(p => p.value)
+    }
+
+    if (!/^[a-zA-Z\s]*$/.test(data.title)) { // Allow only letters and spaces
+      this.message = {
+        type: 'error',
+        text: 'Title is incorrect.'
       }
+      return false;
+    }
 
-    });
-  }
+    if (!data.permissions.length) {
+      this.message = {
+        type: 'error',
+        text: 'No permissions selected.'
+      }
+      return false;
+    }
 
-  putRole(body) {
-    const url = `/api/roles`;
-    return new Promise((resolve, reject) => {
-      this.http.put(url, body).subscribe(
-        (resp: any) => {
-          this.message = 'Saved Successfully';
-          this.messageType = true;
-          resolve();
-        },
-        err => {
-          reject();
-          this.messageType = false;
-          this.message = err.error ? err.error.message : JSON.stringify(err);
-          console.log('Role save failed: ', err);
+    if (this._id) {
+      this.createPromise = new Promise((resolve, reject) => {
+        this._users.updateRole(this._id, data)
+          .subscribe((role) => resolve());
       });
-    });
-  }  
-
-  createRole(body) {
-    const url = `/api/roles`;
-    return new Promise((resolve, reject) => {
-      this.http.post(url, body).subscribe(
-        (resp: any) => {
-          this.message = 'Saved Successfully';
-          this.messageType = true;
-          resolve();
-        },
-        err => {
-          reject();
-          this.messageType = false;
-          this.message = err.error ? err.error.message : JSON.stringify(err);
-          console.log('Role save failed: ', err);
+    } else {
+      this.createPromise = new Promise((resolve, reject) => {
+        this._users.createRole(data)
+          .subscribe((role) => resolve());
       });
-    });
-  }  
+    }
 
-  selectPermission(value) {
-    if (this.selectedPermissions.indexOf(value) > -1) { this.selectedPermissions = this.selectedPermissions.filter(a => a !== value); } 
-    else { this.selectedPermissions.push(value); }
   }
-
-  checkPermission(value) {
-    if (this.selectedPermissions.indexOf(value) > -1) { return true; }
-    else { return false; }
-  }
-
 }

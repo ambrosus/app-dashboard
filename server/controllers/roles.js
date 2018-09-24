@@ -13,24 +13,23 @@ const Role = require('../models/roles');
  *
  * @name createRole
  * @route {POST} api/roles
- * @bodyparam 
- *      - title (e.g: { title: 'owner' }), 
+ * @bodyparam
+ *      - title (e.g: { title: 'owner' }),
  *      - permissions (e.g: { permissions: "string1, string2" }),
  * @returns Status code 400 on failure
  * @returns New role saved successfully message on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const { title, permissions} = req.body;
-  const role = new Role({
-    title,
-    permissions,
-    createdBy: req.session.user._id,
-    company: req.session.user.company
-  });
-  role.save()
-    .then(saveResponse => {
+  const { title, permissions } = req.body;
+
+  Role.create({
+      title,
+      permissions,
+      createdBy: req.session.user._id,
+      company: req.session.user.company
+    }).then(role => {
       req.status = 200;
-      req.json = { message: 'New role saved successfully' };
+      req.json = role;
       return next();
     })
     .catch(error => (console.log(error), res.status(400).json({ message: error })));
@@ -40,22 +39,50 @@ exports.create = (req, res, next) => {
  * This route allows you to edit a Role
  *
  * @name editRole
- * @route {PUT} api/roles
- * @bodyparam 
- *      - _id
- *      - title (e.g: { title: 'owner' }), 
+ * @route {PUT} api/roles/:id
+ * @routeparam
+ *      - id (e.g: /1),
+ * @bodyparam
+ *      - title (e.g: { title: 'owner' }),
  *      - permissions (e.g: { permissions: "string1, string2" }),
  * @returns Status code 400 on failure
- * @returns New role saved successfully message on success with status code 200
+ * @returns Changed role successfully message on success with status code 200
  */
-exports.edit = (req, res, next) => {
-  const { _id, title, permissions} = req.body;
+exports.editRole = (req, res, next) => {
+  const { _id } = req.params;
+  const { title, permissions } = req.body;
 
-  Role.updateOne({ _id }, {title, permissions})
-    .then(updateResponse => {
+  Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true })
+    .then(role => {
+      console.log(role);
+
+      if (role) {
+        req.status = 200;
+        req.json = role;
+        return next();
+      }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+};
+
+/**
+ * This route allows you to delete a Role
+ *
+ * @name deleteRole
+ * @route {PUT} api/roles/:id
+ * @routeparam
+ *      - id (e.g: /1)
+ * @returns Status code 400 on failure
+ * @returns Deleted role successfully message on success with status code 200
+ */
+exports.deleteRole = (req, res, next) => {
+  const { _id } = req.params;
+  console.log(_id);
+
+  Role.findByIdAndRemove({ _id })
+    .then(role => {
       if (updateResponse) {
         req.status = 200;
-        req.json = { message: 'Permissions updated successfully' }
+        req.json = { message: 'Role deleted successfully' }
         return next();
       }
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
@@ -71,7 +98,7 @@ exports.edit = (req, res, next) => {
  */
 exports.getRoles = (req, res, next) => {
   const company = req.session.user.company;
-  Role.find({company})
+  Role.find({ company })
     .then(roles => {
       req.status = 200;
       req.json = roles;

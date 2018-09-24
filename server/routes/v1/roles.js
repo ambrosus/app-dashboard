@@ -7,14 +7,16 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 const checkPermission = _require('/middleware/checkPermission');
+const Roles = _require('/controllers/roles');
 
-const RolesController = require('../../controllers/roles');
-
-const RolesRoutes = express.Router();
+const routes = express.Router();
 
 // Routes
-RolesRoutes.post('/', checkPermission('roles'), RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
-RolesRoutes.put('/', checkPermission('roles'), RolesController.edit, (req, res) => { res.status(req.status).json(req.json); });
-RolesRoutes.get('/',  checkPermission('roles'), RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); });
+routes.post('/', checkPermission('roles'), Roles.create, (req, res) => { res.status(req.status).json(req.json); });
+routes.get('/', checkPermission('roles'), Roles.getRoles, (req, res) => { res.status(req.status).json(req.json); });
 
-module.exports = RolesRoutes;
+// Role
+routes.put('/:_id', checkPermission('roles'), Roles.editRole, (req, res) => { res.status(req.status).json(req.json); });
+routes.delete('/:_id', checkPermission('roles'), Roles.deleteRole, (req, res) => { res.status(req.status).json(req.json); });
+
+module.exports = routes;
