@@ -22,7 +22,7 @@ const Invite = require('../models/invites');
  * Create a new user.
  *
  * @name createUser
- * @route {POST} api/users/create
+ * @route {POST} api/users/
  * @bodyparam user: {email, accessLevel, permissions}, hermes
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
