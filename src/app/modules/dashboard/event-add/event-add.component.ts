@@ -66,27 +66,11 @@ export class EventAddComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.assetService.inputChanged.subscribe((resp: any) => {
-      resp.control.get('identifier').setValue(resp.value);
-    });
-    this.assetService.eventAdded.subscribe(resp => {
-      this.success = true;
-      setTimeout(() => {
-        this.success = false;
-      }, 3000);
-      this.spinner = false;
-    });
-    this.assetService.eventAddFailed.subscribe(resp => {
-      this.errorResponse = true;
-      this.spinner = false;
-    });
     // prefill the form
     if (this.prefill && this.assetId) {
-      this.assetService.selectAsset(this.assetId);
       this.prefillForm();
       this.buttonText = 'Edit event';
     } else if (this.assetId) {
-      this.assetService.selectAsset(this.assetId);
     }
   }
 
@@ -94,7 +78,7 @@ export class EventAddComponent implements OnInit {
     const event = this.prefill;
     try {
       this.eventForm.get('accessLevel').setValue(event.content.idData.accessLevel);
-    } catch (err) {}
+    } catch (err) { }
     event.content.data.map(obj => {
       switch (obj.type) {
         case 'ambrosus.event.location':
@@ -104,13 +88,13 @@ export class EventAddComponent implements OnInit {
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lat')
+          ['controls'][0].get('lat')
             .setValue(obj.location.geometry.coordinates[0]);
           locationEvent
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lng')
+          ['controls'][0].get('lng')
             .setValue(obj.location.geometry.coordinates[1]);
           Object.keys(obj).map(key => {
             const exists = locationEvent.get(key);
@@ -126,13 +110,13 @@ export class EventAddComponent implements OnInit {
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lat')
+          ['controls'][0].get('lat')
             .setValue(obj.location.geometry.coordinates[0]);
           locationAsset
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lng')
+          ['controls'][0].get('lng')
             .setValue(obj.location.geometry.coordinates[1]);
           Object.keys(obj).map(key => {
             const exists = locationAsset.get(key);
@@ -352,12 +336,12 @@ export class EventAddComponent implements OnInit {
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lat').value;
+      ['controls'][0].get('lat').value;
       let lng = locationEvent
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lng').value;
+      ['controls'][0].get('lng').value;
       let name = locationEvent.get('name').value;
       let city = locationEvent.get('city').value;
       let country = locationEvent.get('country').value;
@@ -377,12 +361,12 @@ export class EventAddComponent implements OnInit {
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lat').value;
+      ['controls'][0].get('lat').value;
       lng = locationAsset
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lng').value;
+      ['controls'][0].get('lng').value;
       name = locationAsset.get('name').value;
       city = locationAsset.get('city').value;
       country = locationAsset.get('country').value;
@@ -402,17 +386,13 @@ export class EventAddComponent implements OnInit {
       if (this.isMultiple) {
         selectedAssets = this.assetId;
       } else {
-        selectedAssets = this.assetService.getSelectedAssets();
       }
       // Confirmation window
-      this.assetService.assetsSelected = selectedAssets;
       const assetsString = selectedAssets.length > 1 ? 'assets' : 'asset';
       if (!confirm(`You are about to create an event for ${selectedAssets.length} ${assetsString}, are you sure you want to proceed?`)) {
         this.spinner = false;
         return;
       }
-      this.assetService.addEventsJSON = this.generateJSON();
-      this.assetService.addEvents();
     } else {
       this.error = true;
     }
@@ -486,12 +466,12 @@ export class EventAddComponent implements OnInit {
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lat').value;
+    ['controls'][0].get('lat').value;
     let lng = _locationEvent
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lng').value;
+    ['controls'][0].get('lng').value;
     let name = _locationEvent.get('name').value;
     let city = _locationEvent.get('city').value;
     let country = _locationEvent.get('country').value;
@@ -523,12 +503,12 @@ export class EventAddComponent implements OnInit {
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lat').value;
+    ['controls'][0].get('lat').value;
     lng = _locationAsset
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lng').value;
+    ['controls'][0].get('lng').value;
     name = _locationAsset.get('name').value;
     city = _locationAsset.get('city').value;
     country = _locationAsset.get('country').value;

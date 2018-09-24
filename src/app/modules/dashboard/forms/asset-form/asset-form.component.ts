@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { StorageService } from 'app/services/storage.service';
+import { AssetsService } from 'app/services/assets.service';
 
 @Component({
   selector: 'app-asset-form',
@@ -10,19 +12,20 @@ export class AssetFormComponent implements OnInit {
   assetForm: FormGroup;
   error;
   success;
-  spinner = false;
-  buttonText = 'Create asset';
+  spinner;
   identifiersAutocomplete = ['UPCE', 'UPC12', 'EAN8', 'EAN13', 'CODE 39', 'CODE 128', 'ITF', 'QR', 'DATAMATRIX', 'RFID', 'NFC',
     'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI', 'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'];
+  sequenceNumber = 0;
 
   @Input() prefill;
-  @Input() assetId: String[];
+  @Input() assetId: String;
 
   isObject(value) { return typeof value === 'object'; }
 
-  constructor() { }
+  constructor(private storage: StorageService, private assetsService: AssetsService) { }
 
   ngOnInit() {
+    this.initForm();
   }
 
   private initForm() {
@@ -30,10 +33,11 @@ export class AssetFormComponent implements OnInit {
       assetType: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl('', []),
+      accessLevel: new FormControl(0, []),
       productImage: new FormArray([
         new FormGroup({
-          imageName: new FormControl('default', [Validators.required]),
-          imageUrl: new FormControl('', [Validators.required])
+          imageName: new FormControl('default', []),
+          imageUrl: new FormControl('', [])
         })
       ]),
       identifiers: new FormArray([]),
@@ -131,9 +135,7 @@ export class AssetFormComponent implements OnInit {
   }
 
   // Methods for adding/removing new fields to the form
-  remove(array, index: number) {
-    (<FormArray>this.assetForm.get(array)).removeAt(index);
-  }
+  remove(array, index: number) { (<FormArray>this.assetForm.get(array)).removeAt(index); }
 
   addImageUrl() {
     (<FormArray>this.assetForm.get('productImage')).push(
@@ -192,40 +194,36 @@ export class AssetFormComponent implements OnInit {
     (<FormArray>groupsArray.at(i).get('groupValue')).removeAt(j);
   }
 
-  onSave() {
-    if (this.assetForm.valid) {
-      this.error = false;
-      this.spinner = true;
+  private generateAsset() {
+    const address = this.storage.get('user')['address'];
+    const secret = this.storage.get('secret');
 
-      if (this.prefill && this.assetId) {
-        // Edit info event
-        this.assetService.editInfoEventJSON = this.generateJSON('assetId');
-        this.assetService.editInfoEvent();
-      } else {
-        // Create asset and info event
-        this.assetService.addAssetAndInfoEventJSON = this.generateJSON('assetId');
-        this.assetService.addAssetAndInfoEvent();
-      }
-    } else {
-      this.error = true;
-    }
+    const idData = {
+      timestamp: Math.floor(new Date().getTime() / 1000),
+      sequenceNumber: this.sequenceNumber,
+      createdBy: address
+    };
+
+    const content = {
+      idData,
+      signature: this.assetsService.sign(idData, secret)
+    };
+
+    const asset = {
+      assetId: this.assetsService.calculateHash(content),
+      content
+    };
+
+    return asset;
   }
 
-  private generateJSON(assetId: string) {
-    const asset = {};
-    asset['content'] = {};
+  private generateInfoEvent(_assetId = this.assetId) {
+    const address = this.storage.get('user')['address'];
+    const secret = this.storage.get('secret');
 
-    // asset.content.idData
-    asset['content']['idData'] = {};
-    asset['content']['idData']['assetId'] = assetId;
-    asset['content']['idData']['createdBy'] = <any>this.storage.get('user')['address'];
-    asset['content']['idData']['accessLevel'] = 1;
-    asset['content']['idData']['timestamp'] = Math.floor(new Date().getTime() / 1000);
+    const data = [];
 
-    // asset.content.data
-    asset['content']['data'] = [];
-
-    // Identifiers
+    // Identifiers object
     const ide = this.assetForm.get('identifiers')['controls'];
     if (ide.length > 0) {
       const identifiers = {};
@@ -236,55 +234,108 @@ export class AssetFormComponent implements OnInit {
         identifiers['identifiers'][item.value.identifier].push(item.value.identifierValue);
       });
 
-      asset['content']['data'].push(identifiers);
+      data.push(identifiers);
     }
 
-    // Basic + custom data
-    const basicAndCustom = {};
-    // Basic data
-    basicAndCustom['type'] = 'ambrosus.asset.info';
-    basicAndCustom['name'] = this.assetForm.get('name').value;
-    basicAndCustom['assetType'] = this.assetForm.get('assetType').value;
+    // Info object
+    const info = {};
+    // Basic info
+    info['type'] = 'ambrosus.asset.info';
+    info['name'] = this.assetForm.get('name').value;
+    info['assetType'] = this.assetForm.get('assetType').value;
     const description = this.assetForm.get('description').value;
-    if (description) {
-      basicAndCustom['description'] = description;
-    }
+    if (description) { info['description'] = description; }
 
     // Images
     const productImages = this.assetForm.get('productImage')['controls'];
     if (productImages.length > 0) {
-      basicAndCustom['images'] = {};
+      info['images'] = {};
       for (let i = 0; i < productImages.length; i++) {
         if (i === 0) {
-          basicAndCustom['images']['default'] = {};
-          basicAndCustom['images']['default']['url'] = productImages[i].value.imageUrl;
+          info['images']['default'] = {};
+          info['images']['default']['url'] = productImages[i].value.imageUrl;
           continue;
         }
-        basicAndCustom['images'][productImages[i].value.imageName] = {};
-        basicAndCustom['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
+        info['images'][productImages[i].value.imageName] = {};
+        info['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
       }
     }
 
-    // Custom data
-    this.assetForm.get('customData')['controls'].map((item) => {
-      basicAndCustom[item.value.customDataKey] = item.value.customDataValue;
-    });
+    // Custom data key-value
+    this.assetForm.get('customData')['controls'].map(item => info[item.value.customDataKey] = item.value.customDataValue);
 
     // Custom data groups
     const customGroups = this.assetForm.get('customDataGroups')['controls'];
-    customGroups.map((item) => {
-      basicAndCustom[item.value.groupName] = {};
-      for (const group of item.get('groupValue')['controls']) {
-        basicAndCustom[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue;
-      }
+    customGroups.map(item => {
+      info[item.value.groupName] = {};
+      item.get('groupValue')['controls'].map(group => info[item.value.groupName][group.value.groupItemKey] = group.value.groupItemValue);
     });
 
-    asset['content']['data'].push(basicAndCustom);
+    data.push(info);
 
-    return asset;
+    // Finish signing event
+    const idData = {
+      assetId: _assetId,
+      timestamp: Math.floor(new Date().getTime() / 1000),
+      accessLevel: this.assetForm.get('accessLevel').value,
+      createdBy: address,
+      dataHash: this.assetsService.calculateHash(data)
+    };
+
+    console.log(this.assetsService.calculateHash(data));
+
+    const content = {
+      idData,
+      signature: this.assetsService.sign(idData, secret),
+      data
+    };
+
+    const event = {
+      eventId: this.assetsService.calculateHash(content),
+      content
+    };
+
+    return event;
   }
 
-  closeDialog() {
-    this.dialogRef.closeAll();
+  save() {
+    this.error = false;
+    this.success = false;
+
+    if (this.assetForm.valid) {
+      this.spinner = true;
+
+      if (this.prefill && this.assetId) {
+        // Edit info event
+        const infoEvent = this.generateInfoEvent();
+        this.assetsService.createEvents([infoEvent]).subscribe(
+          (resp: any) => {
+            this.spinner = false;
+            this.success = 'Success';
+          },
+          err => {
+            this.error = err;
+            this.spinner = false;
+            console.error('Info event edit error: ', err);
+          }
+        );
+      } else {
+        // Create asset and info event
+        const asset = this.generateAsset();
+        const infoEvent = this.generateInfoEvent(asset.assetId);
+        this.assetsService.createAssets([asset], [infoEvent]).subscribe(
+          (resp: any) => {
+            this.spinner = false;
+            this.success = 'Success';
+            this.sequenceNumber += 1;
+          },
+          err => {
+            this.error = err;
+            this.spinner = false;
+            console.error('Asset and info event create error: ', err);
+          }
+        );
+      }
+    } else { this.error = 'Please fill all required fields'; }
   }
 }

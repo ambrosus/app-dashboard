@@ -10,7 +10,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputDirective } from 'app/shared/directives/input.directive';
-import { OncheckedDirective } from './directives/onchecked.directive';
 import { RouterModule } from '@angular/router';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
@@ -40,7 +39,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
   exports: [
     CommonModule,
     InputDirective,
-    OncheckedDirective,
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
@@ -64,7 +62,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
   ],
   declarations: [
     InputDirective,
-    OncheckedDirective,
     SpinnerComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,

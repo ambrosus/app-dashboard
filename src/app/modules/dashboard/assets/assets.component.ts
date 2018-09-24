@@ -109,7 +109,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   bulkActions(action) {
     switch (action.value) {
       case 'createEvent':
-        if (this.assetsService.getSelectedAssets().length === 0) {
+        if (this.assetIds.length === 0) {
           alert(`You didn\'t select any assets. Please do so first.`);
         } else {
           this.createEventsDialog();

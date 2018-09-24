@@ -10,7 +10,7 @@ export class AutocompleteinputDirective implements OnInit {
   lastValue: string;
   div = document.createElement('div');
 
-  constructor(private el: ElementRef, private assets: AssetsService) {}
+  constructor(private el: ElementRef, private assets: AssetsService) { }
 
   ngOnInit() {
     // Create div to hold autocomplete items
@@ -35,10 +35,6 @@ export class AutocompleteinputDirective implements OnInit {
         b.innerHTML += item.substr(value.length);
         b.addEventListener('click', event => {
           this.el.nativeElement.value = item;
-          this.assets.inputChanged.next({
-            control: this.appAutocompleteinput.control,
-            value: item
-          });
           this.lastValue = item;
           this.clearList();
         });

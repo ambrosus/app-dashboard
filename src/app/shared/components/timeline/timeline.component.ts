@@ -23,7 +23,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   unchangedEvents = [];
   // Pagination
   pagination = {
-    currentPage: 1,
+    currentPage: 0,
     perPage: 15,
     totalPages: 0,
     resultCount: 0,

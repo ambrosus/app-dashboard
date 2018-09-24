@@ -45,7 +45,8 @@ exports.login = (req, res, next) => {
           user.save();
 
           if (valid) {
-            delete user.password;
+            user.toObject();
+
             req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
             req.status = 200;
             req.json = user
@@ -98,6 +99,9 @@ exports.verifyAccount = (req, res, next) => {
             .select('-active -createdAt -updatedAt -password -__v')
             .then(user => {
               if (user) {
+                user.toObject();
+                delete user.password;
+
                 req.status = 200;
                 req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
                 req.session.deviceInfo = deviceInfo;

@@ -11,9 +11,11 @@ declare let Web3: any;
 export class AssetsService {
   hermes;
   ambrosus;
+  web3;
 
   constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) {
     this.initSDK();
+    this.web3 = new Web3();
     window.addEventListener('user:refresh', () => this.initSDK());
   }
 
@@ -130,21 +132,47 @@ export class AssetsService {
 
   createAssets(assets, events) {
     return new Observable(observer => {
+      const token = this.auth.getToken();
+      const url = `/api/assets?token=${token}`;
+      const body = { assets, events };
 
+      this.http.post(url, body).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
     });
   }
 
   createEvents(events) {
     return new Observable(observer => {
+      const token = this.auth.getToken();
+      const url = `/api/assets/events?token=${token}`;
+      const body = { events };
 
+      this.http.post(url, body).subscribe(
+        resp => observer.next(resp),
+        err => observer.error(err)
+      );
     });
   }
 
-  signAsset(asset) {
+  sign(data, secret) { return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature; }
 
-  }
+  calculateHash(data) { return this.web3.eth.accounts.hashMessage(this.serializeForHashing(data)); }
 
-  signEvent(asset) {
+  serializeForHashing(object) {
+    const isDict = subject => typeof subject === 'object' && !Array.isArray(subject);
+    const isString = subject => typeof subject === 'string';
+    const isArray = subject => Array.isArray(subject);
 
+    if (isDict(object)) {
+      const content = Object.keys(object).sort().map(key => `"${key}":${this.serializeForHashing(object[key])}`).join(',');
+      return `{${content}}`;
+    } else if (isArray(object)) {
+      const content = object.map(item => this.serializeForHashing(item)).join(',');
+      return `[${content}]`;
+    } else if (isString(object)) { return `"${object}"`; }
+
+    return object.toString();
   }
 }

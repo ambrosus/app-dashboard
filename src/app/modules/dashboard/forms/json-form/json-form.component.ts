@@ -1,31 +1,45 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { AssetsService } from 'app/services/assets.service';
+import { StorageService } from 'app/services/storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-json-form',
   templateUrl: './json-form.component.html',
   styleUrls: ['./json-form.component.scss']
 })
-export class JsonFormComponent implements OnInit {
+export class JsonFormComponent implements OnInit, OnDestroy {
+  assetsCreateSubscription: Subscription;
+  eventsCreateSubscription: Subscription;
   error;
   success;
-  spinner = false;
+  spinner;
   textArea: any = '';
+  sequenceNumber = 0;
 
   @Input() prefill;
-  @Input() assetId: String[];
-  @Input() for = 'asset';
+  @Input() assetIds: String[];
+  @Input() for = 'assets';
 
-  constructor() { }
+  constructor(private storage: StorageService, private assetsService: AssetsService) { }
 
   ngOnInit() {
+    if (this.prefill && this.assetIds) { this.textArea = this.prefill; }
   }
 
-  validJSON(input) {
+  ngOnDestroy() {
+    if (this.assetsCreateSubscription) { this.assetsCreateSubscription.unsubscribe(); }
+    if (this.eventsCreateSubscription) { this.eventsCreateSubscription.unsubscribe(); }
+  }
+
+  validateJSON(input) {
     try {
       JSON.parse(input.value);
       this.error = false;
+      return true;
     } catch (error) {
-      this.error = true;
+      this.error = 'JSON is invalid, please fix it first';
+      return false;
     }
   }
 
@@ -60,40 +74,102 @@ export class JsonFormComponent implements OnInit {
     }
   }
 
+  private generateAsset() {
+    const address = this.storage.get('user')['address'];
+    const secret = this.storage.get('secret');
 
+    const idData = {
+      timestamp: Math.floor(new Date().getTime() / 1000),
+      sequenceNumber: this.sequenceNumber,
+      createdBy: address
+    };
 
-  onJSONSave(input) {
-    const json = input.value;
+    const content = {
+      idData,
+      signature: this.assetsService.sign(idData, secret)
+    };
+
+    const asset = {
+      assetId: this.assetsService.calculateHash(content),
+      content
+    };
+
+    return asset;
+  }
+
+  private generateEvents(json, _assetIds = this.assetIds) {
+    const address = this.storage.get('user')['address'];
+    const secret = this.storage.get('secret');
+    let allEvents = [];
+
+    if (!Array.isArray(json)) { json = [json]; }
+
+    _assetIds.map(assetId => {
+      const assetEvents = JSON.parse(JSON.stringify(json));
+
+      assetEvents
+        .filter(event => event.content && event.content.idData && event.content.data)
+        .map(event => {
+          event.content.idData['assetId'] = assetId;
+          event.content.idData['createdBy'] = address;
+          event.content.idData['dataHash'] = this.assetsService.calculateHash(event.content.data);
+          if (!event.content.idData['timestamp']) { event.content.idData['timestamp'] = Math.floor(new Date().getTime() / 1000); }
+          if (!event.content.idData['accessLevel']) { event.content.idData['accessLevel'] = 1; }
+
+          event.content['signature'] = this.assetsService.sign(event.content.idData, secret);
+        });
+      allEvents = allEvents.concat(assetEvents);
+    });
+
+    console.log('All events: ', allEvents);
+
+    return allEvents;
+  }
+
+  save(input) {
+    this.error = false;
+    this.success = false;
+    let json = {};
+    try {
+      json = JSON.parse(input.value);
+    } catch (e) { }
+
     if (json) {
-      this.error = false;
-      let data;
-
-      try {
-        data = JSON.parse(json);
-      } catch (e) {
-        this.invalidJSON = true;
-        return;
-      }
-
       this.spinner = true;
 
-      this.assetService.createAsset(data).subscribe(
-        (resp: any) => {
-          console.log('Asset and events created: ', resp);
-          this.success = true;
-          setTimeout(() => {
-            this.success = false;
-          }, 3000);
-          this.spinner = false;
-        },
-        error => {
-          console.log('Asset and event creation failed: ', error);
-          this.errorResponse = true;
-          this.spinner = false;
-        }
-      );
+      if (this.for === 'assets' && !this.prefill) {
+        // Create asset and info event
+        const asset = this.generateAsset();
+        const infoEvent = this.generateEvents(json, [asset.assetId]);
+        this.assetsCreateSubscription = this.assetsService.createAssets([asset], infoEvent).subscribe(
+          (resp: any) => {
+            this.spinner = false;
+            this.success = 'Success';
+            this.sequenceNumber += 1;
+          },
+          err => {
+            this.error = err;
+            this.spinner = false;
+            console.error('Asset and info event create error: ', err);
+          }
+        );
+      } else {
+        // Edit or add events
+        const events = this.generateEvents(json);
+        this.eventsCreateSubscription = this.assetsService.createEvents(events).subscribe(
+          (resp: any) => {
+            this.spinner = false;
+            this.success = 'Success';
+          },
+          err => {
+            this.error = err;
+            this.spinner = false;
+            console.error('Events create error: ', err);
+          }
+        );
+      }
     } else {
-      this.error = true;
+      this.error = 'Input some valid JSON first';
     }
   }
 }

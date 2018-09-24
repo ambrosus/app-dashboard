@@ -28,15 +28,15 @@ export class PaginationComponent implements OnInit {
 
   changePage(value) {
     if (value === 'next') {
-      this.pagination.pagination.currentPage += 1;
+      this.pagination.currentPage += 1;
     } else if (value === 'prev') {
-      this.pagination.pagination.currentPage -= 1;
+      this.pagination.currentPage -= 1;
     } else {
       value = parseInt(value.toString().replace(/\D/g, '') || 1, 10) || 1;
       this.pagination.currentPage = value > this.pagination.totalPages ? this.pagination.totalPages : value;
     }
 
-    this.method(this.pagination.currentPage - 1);
+    this.method(this.pagination.currentPage);
   }
 
 }
