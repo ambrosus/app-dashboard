@@ -37,6 +37,8 @@ export class AllComponent implements OnInit, OnDestroy {
       (resp: any) => {
         console.log('Users GET: ', resp);
         this.users = resp.data.map(user => {
+          if (user.role && user.role.title) { }
+          else { user.role = { title: 'No role assigned yet' }; }
           user.lastLogin = moment(user.lastLogin).tz(this.user.company.timeZone).fromNow();
           return user;
         });

@@ -45,7 +45,7 @@ button {
   cursor: pointer;
 }
 
-input,
+input:not([type='checkbox']),
 datalist,
 select,
 textarea {

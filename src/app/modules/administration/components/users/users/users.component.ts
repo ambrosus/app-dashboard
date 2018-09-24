@@ -21,6 +21,11 @@ export class UsersComponent implements OnInit {
       title: 'Invites',
       link: 'invites',
       icon: 'user-check'
+    },
+    {
+      title: 'Roles',
+      link: 'roles',
+      icon: 'user-check'
     }
   ];
 
