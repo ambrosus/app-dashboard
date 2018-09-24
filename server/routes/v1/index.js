@@ -13,7 +13,10 @@ const AuthRoutes = require('./auth');
 const UsersRoutes = require('./users');
 const SetupRoutes = require('./setup');
 const InvitesRoutes = require('./invites');
+
+const RolesRoutes = require('./roles');
 const AssetsRoutes = require('./assets');
+
 
 const APIRoutes = express.Router();
 
@@ -23,6 +26,7 @@ APIRoutes.use('/auth', AuthRoutes);
 APIRoutes.use('/users', UsersRoutes);
 APIRoutes.use('/invites', InvitesRoutes);
 APIRoutes.use('/setup', SetupRoutes);
+APIRoutes.use('/roles', RolesRoutes);
 APIRoutes.use('/assets', AssetsRoutes);
 
 module.exports = APIRoutes;

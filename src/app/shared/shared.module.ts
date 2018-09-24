@@ -31,6 +31,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
+import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
+
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
@@ -61,6 +63,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
+    CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
     SidebarComponent
@@ -85,6 +88,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     NotificationComponent,
     PaginationComponent,
     CheckIfPipe,
+    CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
     SidebarComponent
