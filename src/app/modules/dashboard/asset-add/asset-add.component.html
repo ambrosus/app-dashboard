@@ -6,11 +6,11 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
 <main class="main m-t-50">
-  <h1 class="center">{{ prefill ? 'Edit info event' : 'Create asset' }}</h1>
+  <h1 class="center m-b-20">{{ prefill ? 'Edit info event' : 'Create asset' }}</h1>
   <div class="tabs">
     <div class="tab_header">
       <p class="tab_header_item active" (click)="tabOpen('form', tabForm)" #tabForm>Form</p>
-      <p class="tab_header_item" *ngIf="!prefill" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
+      <p class="tab_header_item" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
     </div>
     <div class="tab_content">
       <!-- FORM -->

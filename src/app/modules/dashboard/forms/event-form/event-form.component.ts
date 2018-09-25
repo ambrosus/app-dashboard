@@ -1,15 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event-form',
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
-export class EventFormComponent implements OnInit {
+export class EventFormComponent implements OnInit, OnDestroy {
   eventForm: FormGroup;
+  inputChangedSub: Subscription;
   error;
   success;
   spinner;
@@ -26,8 +28,13 @@ export class EventFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.assetsService.inputChanged.subscribe((resp: any) => resp.control.get('identifier').setValue(resp.value));
     this.initForm();
     if (this.prefill) { this.prefillForm(); }
+  }
+
+  ngOnDestroy() {
+    if (this.inputChangedSub) { this.inputChangedSub.unsubscribe(); }
   }
 
   private initForm() {

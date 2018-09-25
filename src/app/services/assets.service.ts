@@ -1,6 +1,6 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { AuthService } from './auth.service';
@@ -9,6 +9,7 @@ declare let Web3: any;
 
 @Injectable()
 export class AssetsService {
+  inputChanged = new Subject();
   hermes;
   ambrosus;
   web3;
@@ -176,4 +177,6 @@ export class AssetsService {
 
     return object.toString();
   }
+
+  validTimestamp = timestamp => new Date(timestamp).getTime() > 0;
 }

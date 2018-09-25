@@ -47,10 +47,10 @@ export class EventComponent implements OnInit, OnDestroy {
       data => this.event = data.event,
       err => console.log('Event GET error: ', err)
     );
-    this.routeParamsSubscription = this.route.queryParams.subscribe(resp => {
+    this.routeParamsSubscription = this.route.params.subscribe(resp => {
       if (resp.edit && resp['edit'] === 'true') { this.edit = true; }
-      this.assetId = resp.assetId;
-      this.eventId = resp.eventId;
+      this.assetId = resp.assetid;
+      this.eventId = resp.eventid;
     });
     this.infoEvent = this.findInfoEvent();
 
@@ -79,9 +79,7 @@ export class EventComponent implements OnInit, OnDestroy {
     }
   }
 
-  findInfoEvent() {
-    return this.event && this.event.content && this.event.content.data ? this.event.content.data.find(obj => obj.type === 'ambrosus.asset.info') : {};
-  }
+  findInfoEvent() { return this.event && this.event.content && this.event.content.data ? this.event.content.data.find(obj => obj.type === 'ambrosus.asset.info') : {}; }
 
   getName(obj, alternative = '') {
     try {
@@ -127,8 +125,8 @@ export class EventComponent implements OnInit, OnDestroy {
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
-    instance.assetId = this.assetId;
-    instance.isEdit = true;
+    instance.assetIds = [this.assetId];
+    instance.isDialog = true;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 }

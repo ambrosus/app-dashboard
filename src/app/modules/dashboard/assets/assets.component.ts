@@ -120,7 +120,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     action.value = 'default';
   }
 
-  search(assetPage = 1, assetPerPage = 15) {
+  search(page = 0, perPage = 15) {
     const search = this.el.nativeElement.querySelector('#search').value;
     const select = this.el.nativeElement.querySelector('#select').value;
     if (search.length === 0) {
@@ -135,8 +135,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     const options = {
       assets: true,
       token,
-      assetPage,
-      assetPerPage
+      page,
+      perPage
     };
     switch (select) {
       case 'name':
@@ -150,14 +150,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
         break;
     }
     this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
-      ({ assets }) => {
+      ({ assets, events }) => {
         this.loader = false;
         this.assets = assets.docs;
-        this.pagination.currentPage = assets.page;
-        this.pagination.perPage = assetPerPage;
-        this.pagination.resultCount = assets.total;
+        this.pagination.resultCount = events.resultCount;
+        this.pagination.totalPages = Math.ceil(events.resultCount / perPage);
+        this.pagination.currentPage = page;
+        this.pagination.perPage = perPage;
         this.pagination.resultLength = this.assets.length;
-        this.pagination.totalPages = Math.ceil(assets.total / assetPerPage);
       },
       err => {
         this.loader = false;
@@ -182,8 +182,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
-    instance.assetId = this.assetIds;
-    instance.isMultiple = true;
+    instance.assetIds = this.assetIds;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 

@@ -24,7 +24,11 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   constructor(private storage: StorageService, private assetsService: AssetsService) { }
 
   ngOnInit() {
-    if (this.prefill && this.assetIds) { this.textArea = this.prefill; }
+    if (this.prefill && this.assetIds) {
+      if (!Array.isArray(this.prefill)) { this.prefill = [this.prefill]; }
+      this.prefill.map(event => delete event['metadata']);
+      this.textArea = JSON.stringify(this.prefill, null, 2);
+    }
   }
 
   ngOnDestroy() {
@@ -113,15 +117,16 @@ export class JsonFormComponent implements OnInit, OnDestroy {
           event.content.idData['assetId'] = assetId;
           event.content.idData['createdBy'] = address;
           event.content.idData['dataHash'] = this.assetsService.calculateHash(event.content.data);
-          if (!event.content.idData['timestamp']) { event.content.idData['timestamp'] = Math.floor(new Date().getTime() / 1000); }
+          if (!event.content.idData['timestamp'] || !this.assetsService.validTimestamp(event.content.idData['timestamp'])) {
+            event.content.idData['timestamp'] = Math.floor(new Date().getTime() / 1000);
+          } else { event.content.idData['timestamp'] = event.content.idData['timestamp'] + 1; }
           if (!event.content.idData['accessLevel']) { event.content.idData['accessLevel'] = 1; }
 
           event.content['signature'] = this.assetsService.sign(event.content.idData, secret);
+          event['eventId'] = this.assetsService.calculateHash(event.content);
         });
       allEvents = allEvents.concat(assetEvents);
     });
-
-    console.log('All events: ', allEvents);
 
     return allEvents;
   }

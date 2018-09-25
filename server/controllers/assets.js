@@ -53,7 +53,7 @@ exports.getAssets = (req, res, next) => {
   const { page, perPage } = req.query;
   const user = req.session.user;
 
-  Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15 })
+  Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' })
     .then(assets => {
       req.status = 200;
       req.json = { assets };
@@ -161,7 +161,7 @@ exports.getEvents = (req, res, next) => {
           }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
       } else {
         // Timeline array of events
-        Asset.findOne({ assetId })
+        Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) })
           .then(asset => {
             if (asset) {
               const latestEvent = assetsUtils.findEvent('latest', events.results);
