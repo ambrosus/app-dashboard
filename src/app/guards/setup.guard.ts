@@ -6,7 +6,7 @@ import { AuthService } from 'app/services/auth.service';
 
 export interface Hermes {
   data: any;
-  status: number,
+  status: number;
   totalCount: number;
 }
 
