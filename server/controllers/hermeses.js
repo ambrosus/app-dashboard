@@ -22,12 +22,10 @@ exports.create = (req, res, next) => {
   const title = req.body.hermes ? req.body.hermes.title : null;
   const url = req.body.hermes ? req.body.hermes.url : null;
 
-  const hermes = new Hermes({
-    title,
-    url
-  });
-  hermes
-    .save()
+  Hermes.create({
+      title,
+      url
+    })
     .then(hermes => {
       req.status = 200;
       req.hermes = hermes;
