@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { SetUpGuard } from '../../../guards/setup.guard';
 
 declare let moment: any;
 declare let Web3: any;
@@ -32,8 +31,7 @@ export class SetupComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private router: Router,
-    private storage: StorageService,
-    private _setUpGuard: SetUpGuard) {
+    private storage: StorageService) {
     this.initSetupForm();
     this.web3 = new Web3();
   }
