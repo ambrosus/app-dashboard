@@ -1,3 +1,6 @@
+global.base_dir = __dirname;
+global.abs_path = path => base_dir + path;
+global._require = file => require(abs_path('/server' + file));
 const express = require('express');
 const path = require('path');
 const http = require('http');
@@ -20,8 +23,6 @@ mongoose.connect(config.db, { useNewUrlParser: true })
     invitationsCron.start();
   })
   .catch(error => console.log('Mongodb connection error: ', error));
-
-console.log(config.db);
 
 // Session store
 const store = new MongoDBStore({

@@ -127,18 +127,8 @@ exports.setOwnership = (req, res, next) => {
                 _company.owner = _user;
                 _company.save()
                   .then(saved => {
-                    Role.findOne({ id: 1 })
-                      .then(role => {
-                        if (role) {
-                          _user.company = _company;
-                          _user.role = role;
-                          _user.save()
-                            .then(saved => {
-                              req.status = 200;
-                              return next();
-                            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-                        } else { throw 'No owner role'; }
-                      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                    req.status = 200;
+                    return next();
                   }).catch(error => (console.log(error), res.status(400).json({ message: error })));
               } else { throw 'No user found'; }
             }).catch(error => (console.log(error), res.status(400).json({ message: error })));
@@ -324,17 +314,31 @@ exports.changePassword = (req, res, next) => {
   }
 };
 
-exports.getRoles = (req, res, next) => {
-  Role.find({ title: { $ne: 'owner' } })
-    .select('-createdAt -updatedAt -__v')
-    .then(roles => {
-      if (roles) {
-        req.status = 200;
-        req.json = {
-          resultCount: roles.length,
-          data: roles
-        };
-        return next();
-      } else { throw 'No roles found'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-}
+/**
+ * Assign roles (role ObjectID) to users using their email address
+ *
+ * @name assignRole
+ * @route {POST} api/users/role
+ * @bodyparam email, role (Mongoose objectID)
+ * @returns Status code 400 on failure
+ * @returns Save success message on success with status code 200
+ */
+exports.assignRole = (req, res, next) => {
+  const { email, role } = req.body
+
+  if (email && role) {
+    User.findOneAndUpdate({ email }, { role })
+      .then(updateResponse => {
+        if (updateResponse) {
+          req.status = 200;
+          req.json = { message: 'Role updated successfully', data: updateResponse };
+          return next();
+        } else { throw 'Update data error'; }
+      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+  } else if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  } else if (!role) {
+    return res.status(400).json({ message: 'Role ObjectID is required' });
+  }
+
+};
