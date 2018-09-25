@@ -22,7 +22,7 @@ const Invite = require('../models/invites');
  * Create a new user.
  *
  * @name createUser
- * @route {POST} api/users/create
+ * @route {POST} api/users/
  * @bodyparam user: {email, accessLevel, permissions}, hermes
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
@@ -50,26 +50,30 @@ exports.create = (req, res, next) => {
     } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
 
-  if (full_name && email && address && password && hermes) {
-    User.find({ $or: [{ email }, { address }] })
-      .then((users = []) => {
-        if (!users.length) {
-          bcrypt.hash(password, 10, (err, hash) => {
-            if (!err) {
-              const user = new User({
-                _id: new mongoose.Types.ObjectId(),
-                full_name,
-                email,
-                address,
-                token,
-                password: hash
-              });
+  User.find({ $or: [{ email }, { address }] })
+    .then((users = []) => {
+      if (!users.length) {
+        const user = new User({
+          full_name,
+          email,
+          address,
+          token,
+          password
+        });
 
-              if (company) { user['company'] = company; }
+        if (company) { user['company'] = company; }
 
-              user
-                .save()
-                .then(user => {
+        user
+          .save()
+          .then(user => {
+            const query = role ? { _id: role } : { id: 3 };
+
+            Role.findOne(query)
+              .then(role => {
+                if (role) {
+                  user.role = role;
+                  user.save();
+
                   // Register user in the hermes
                   const headers = {
                     Accept: 'application/json',
@@ -80,7 +84,7 @@ exports.create = (req, res, next) => {
                     address,
                     permissions,
                     accessLevel
-                  }
+                  };
                   axios.post(`${hermes.url}/accounts`, body, { headers })
                     .then(userRegistered => {
                       if (inviteToken) {
@@ -92,25 +96,12 @@ exports.create = (req, res, next) => {
                       req.status = 200;
                       req.user = user;
                       return next();
-                    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-                }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-            } else { return (console.log(err), res.status(400).json({ message: err })); }
-          });
-        } else { throw 'Email or address is already in use'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-  } else if (!full_name) {
-    return res.status(400).json({ message: 'User "full_name" is required' });
-  } else if (!email) {
-    return res.status(400).json({ message: 'User "email" is required' });
-  } else if (!address) {
-    return res.status(400).json({ message: 'User "address" is required' });
-  } else if (!token) {
-    return res.status(400).json({ message: 'User "token" is required' });
-  } else if (!password) {
-    return res.status(400).json({ message: 'User "password" is required' });
-  } else if (!password) {
-    return res.status(400).json({ message: '"hermes" object is required' });
-  }
+                    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
+                } else { throw 'No user role'; }
+              }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      } else { throw 'Email or address is already in use'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -261,9 +252,9 @@ exports.edit = (req, res, next) => {
   const query = req.body;
 
   const update = {}
-  const nowAllowedToChange = ['email', 'company', 'address', 'token'];
+  const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
-    if (nowAllowedToChange.indexOf(key) === -1) {
+    if (allowedToChange.indexOf(key) > -1) {
       update[key] = query[key]
     }
   }
@@ -288,9 +279,7 @@ exports.edit = (req, res, next) => {
  * @returns Password success message on success with status code 200
  */
 exports.changePassword = (req, res, next) => {
-  const email = req.body.email;
-  const oldPassword = req.body.oldPassword;
-  const newPassword = req.body.newPassword;
+  const { email, oldPassword, newPassword } = req.body;
 
   if (email && oldPassword && newPassword) {
     User.findOne({ email })
@@ -302,7 +291,7 @@ exports.changePassword = (req, res, next) => {
             user.token = JSON.stringify(encData);
             bcrypt.hash(newPassword, 10, (err, hash) => {
               user.password = hash;
-              user.save()
+              User.updateOne({email}, user)
                 .then(updateResponse => {
                   if (updateResponse) {
                     req.status = 200;

@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { AdministrationService } from 'app/services/administration.service';
+import { StorageService } from 'app/services/storage.service';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from 'app/services/auth.service';
+
+declare let moment: any;
 
 @Component({
   selector: 'app-settings',
@@ -12,51 +16,104 @@ export class SettingsComponent implements OnInit {
   spinner = false;
   error;
   success = false;
+  timezones = [];
+  showCropper;
+  user;
+  company;
+  settings;
 
-  constructor(private administration: AdministrationService) {
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+
+  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) { }
+
+  ngOnInit() {
     this.initSettingsForm();
+
+    this.prefillSettings();
+    this.timezones = moment.tz.names();
   }
 
   initSettingsForm() {
     this.settingsForm = new FormGroup({
-      url: new FormControl('', [Validators.required]),
-      logo: new FormControl('', [Validators.required])
+      title: new FormControl('', [Validators.required]),
+      preview_app: new FormControl('', []),
+      timeZone: new FormControl('', [])
     });
   }
 
-  ngOnInit() {
-    this.prefillSettings();
-  }
-
   prefillSettings() {
-    // Current users API settings
-    this.settingsForm.get('url').setValue(this.administration.previewAppUrl);
-    this.settingsForm.get('logo').setValue(this.administration.companyLogo);
+    this.user = this.storage.get('user') || {};
+    this.company = this.user['company'] || {};
+    try {
+      this.settings = JSON.parse(this.company.settings);
+    } catch (e) { }
+
+    this.settingsForm.get('title').setValue(this.company['title']);
+    this.settingsForm.get('preview_app').setValue(this.settings['preview_app']);
+    this.settingsForm.get('timeZone').setValue(this.settings['timeZone']);
+    this.croppedImage = this.settings['logo'] || '';
   }
 
-  errorsReset() {
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(image: string) {
+    this.croppedImage = image;
+  }
+
+  emit(type) {
+    window.dispatchEvent(new Event(type));
+  }
+
+  resetForm() {
     this.error = false;
+    this.success = false;
+    this.showCropper = false;
   }
 
-  save() {
-    const previewApp = this.settingsForm.get('url').value;
-    const logo = this.settingsForm.get('logo').value;
-    this.errorsReset();
+  editCompany() {
+    this.resetForm();
+    const body = {
+      title: this.settingsForm.get('title').value,
+      settings: JSON.stringify({
+        preview_app: this.settingsForm.get('preview_app').value,
+        timeZone: this.settingsForm.get('timeZone').value,
+        logo: this.croppedImage
+      })
+    };
 
     if (this.settingsForm.valid) {
       this.spinner = true;
-      this.administration.previewAppUrl = previewApp;
-      this.administration.companyLogo = logo;
 
-      setTimeout(() => {
-        this.spinner = false;
-        this.success = true;
-        setTimeout(() => {
-          this.success = false;
-        }, 1500);
-      }, 1500);
+      const url = `/api/companies`;
+      this.http.put(url, body).subscribe(
+        (resp: any) => {
+          this.spinner = false;
+          this.success = true;
+          this.auth.getAccount(this.user.email).subscribe(
+            user => {
+              this.storage.set('user', user);
+              this.emit('user:refresh');
+            },
+            err => {
+              if (err.status === 401) { this.auth.logout(); }
+              console.log('Get account error: ', err);
+            }
+          );
+          console.log('Edit company: ', resp);
+        },
+        err => {
+          if (err.status === 401) { this.auth.logout(); }
+          this.spinner = false;
+          this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
+          console.log('Edit company error: ', err);
+        }
+      );
     } else {
-      this.error = 'All fields are required';
+      this.error = 'All inputs are required';
     }
   }
 }

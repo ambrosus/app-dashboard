@@ -8,8 +8,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const User = require('../models/users');
 
 const permissions = {
-  owner: ['sendInvites', 'getAccounts', 'getRoles'],
-  admin: ['sendInvites', 'getAccounts', 'getRoles'],
+  owner: ['sendInvites', 'getAccounts', 'getRoles', 'editCompany'],
+  admin: ['sendInvites', 'getAccounts', 'getRoles', 'editCompany'],
   user: []
 }
 

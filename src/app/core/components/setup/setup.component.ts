@@ -118,7 +118,7 @@ export class SetupComponent implements OnInit {
       },
       company: {
         title: this.setupForm.get('companyTitle').value,
-        timeZone: this.setupForm.get('companyTimeZone').value
+        settings: JSON.stringify({ timeZone: this.setupForm.get('companyTimeZone').value })
       },
       user: {
         full_name: this.setupForm.get('userFullName').value,

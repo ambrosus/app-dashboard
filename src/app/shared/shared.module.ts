@@ -10,7 +10,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputDirective } from 'app/shared/directives/input.directive';
-import { OncheckedDirective } from './directives/onchecked.directive';
 import { RouterModule } from '@angular/router';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
@@ -43,7 +42,6 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
   exports: [
     CommonModule,
     InputDirective,
-    OncheckedDirective,
     SpinnerComponent,
     TabsComponent,
     TabComponent,
@@ -70,7 +68,6 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
   ],
   declarations: [
     InputDirective,
-    OncheckedDirective,
     SpinnerComponent,
     TabsComponent,
     TabComponent,

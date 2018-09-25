@@ -11,13 +11,13 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EventResolver implements Resolve<any> {
-  constructor(private asset: AssetsService) {}
+  constructor(private asset: AssetsService) { }
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any> | Promise<any> | any {
-    return this.asset.getEventById(route.params.eventid).pipe(
+    return this.asset.getEvent(route.params.eventid).pipe(
       map(asset => asset),
       first()
     );

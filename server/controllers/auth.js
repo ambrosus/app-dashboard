@@ -29,7 +29,8 @@ exports.login = (req, res, next) => {
     User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner'
+        select: '-active -createdAt -updatedAt -__v -owner',
+        populate: { path: 'hermes' }
       })
       .populate({
         path: 'role',
@@ -46,7 +47,7 @@ exports.login = (req, res, next) => {
             user = user.toObject();
             delete user.password;
 
-            req.session.user = { _id: user._id, address: user.address, company: user.company };
+            req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
             req.status = 200;
             req.json = user
             return next();
@@ -88,7 +89,8 @@ exports.verifyAccount = (req, res, next) => {
           User.findOne({ address })
             .populate({
               path: 'company',
-              select: '-active -createdAt -updatedAt -__v -owner'
+              select: '-active -createdAt -updatedAt -__v -owner',
+              populate: { path: 'hermes' }
             })
             .populate({
               path: 'role',
@@ -97,8 +99,11 @@ exports.verifyAccount = (req, res, next) => {
             .select('-active -createdAt -updatedAt -password -__v')
             .then(user => {
               if (user) {
+                user.toObject();
+                delete user.password;
+
                 req.status = 200;
-                req.session.user = { _id: user._id, address: user.address, company: user.company };
+                req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
                 req.session.deviceInfo = deviceInfo;
                 req.json = user;
                 return next();
