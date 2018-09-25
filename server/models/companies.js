@@ -15,7 +15,8 @@ const companiesSchema = mongoose.Schema({
   title: {
     type: String,
     required: [(value) => !value, 'Title field is required' ],
-    index: { unique: true }
+    index: { unique: true },
+    minLength: 4
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,

@@ -23,13 +23,11 @@ exports.create = (req, res, next) => {
   const timeZone = req.body.company ? req.body.company.timeZone : '';
   const hermes = req.hermes || req.body.hermes;
 
-  const company = new Company({   
-    title,
-    timeZone,
-    hermes
-  });
-  company
-    .save()
+  Company.create({   
+      title,
+      timeZone,
+      hermes
+    })
     .then(company => {
       req.status = 200;
       req.company = company;
