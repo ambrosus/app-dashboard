@@ -41,7 +41,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   }, {
     path: 'administration',
-    canActivateChild: [AdminGuard, PermissionsGuard],
+    canActivate: [AdminGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   }, {
@@ -72,6 +72,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, SetUpGuard, AdminGuard]
+  providers: [AuthGuard, SetUpGuard, AdminGuard, PermissionsGuard]
 })
 export class AppRoutingModule { }

@@ -3,12 +3,7 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
-
-export interface Hermes {
-  data: any;
-  status: number;
-  totalCount: number;
-}
+import { HttpResponse } from './response.interface';
 
 @Injectable()
 export class SetUpGuard implements CanActivate {
@@ -19,7 +14,7 @@ export class SetUpGuard implements CanActivate {
     console.log('canActivate@SetUpGuard');
 
     return new Promise((resolve) => {
-      this.http.get('/api/hermeses').subscribe((res: Hermes) => {
+      this.http.get('/api/hermeses').subscribe((res: HttpResponse) => {
 
         if (state.url === '/login' && res.totalCount === 0) {
           this.router.navigate(['/setup']);

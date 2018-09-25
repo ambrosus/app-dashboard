@@ -13,10 +13,9 @@ export class AdminGuard implements CanActivate {
 
     return new Promise(resolve => {
       if (this.auth.isLoggedIn()) {
-        this.router.navigate(['/assets']);
         resolve(true);
       } else {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/assets']);
         resolve(false);
       }
     });
