@@ -7,20 +7,33 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const Web3 = require('Web3');
+const web3 = new Web3();
+
+const validateEmail = (email) => {
+  const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+};
 
 const usersSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   full_name: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Full name" field is required' ],
+    minLength: 4
   },
   email: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Email" field is required' ],
+    validate: [validateEmail, 'E-mail format is not valid']
   },
   password: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Password" field is required' ]
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,11 +41,12 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Address" field is required' ],
+    validate: [web3.utils.isAddress, 'Address format is not valid']
   },
   token: {
     type: String,
-    required: true
+    required: [(value) => !value, '"Token" field is required' ]
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
@@ -71,9 +85,15 @@ usersSchema.pre('update', function(next) {
 });
 
 usersSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  this.lastLogin = +new Date();
-  next();
+  if (!this.isModified('password')) return next();
+  bcrypt.hash(this.password, 10, (err, hash) => {
+    if (!err) {
+      this.password = hash;
+      this.updatedAt = +new Date();
+      this.lastLogin = +new Date();
+      next();
+    } else { throw new Error('Failure in password hashing').toString(); }
+  });
 });
 
 module.exports = mongoose.model('Users', usersSchema);
