@@ -8,15 +8,13 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { EventResolver } from 'app/services/event-resolver.service';
-import { AssetsResolver } from 'app/services/assets-resolver.service';
 
 const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
     children: [
-      { path: '', component: AssetsComponent,
-      resolve: { assets: AssetsResolver } },
+      { path: '', component: AssetsComponent },
       { path: 'new', component: AssetAddComponent },
       {
         path: ':assetid',
@@ -37,4 +35,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule { }

@@ -18,11 +18,12 @@ export class AllComponent implements OnInit, OnDestroy {
   ids = [];
   user;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient, private auth: AuthService, private storage: StorageService) { }
+  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient,
+    private auth: AuthService, private storage: StorageService) { }
 
   ngOnInit() {
-    this.getUsers();
     this.user = this.storage.get('user') || {};
+    this.getUsers();
   }
 
   ngOnDestroy() {
@@ -32,12 +33,16 @@ export class AllComponent implements OnInit, OnDestroy {
   getUsers() {
     // Get users
     const url = `/api/users`;
+    let companySettings: any = {};
+    try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { console.log(e); }
 
     this.usersSubscription = this.http.get(url).subscribe(
       (resp: any) => {
         console.log('Users GET: ', resp);
         this.users = resp.data.map(user => {
-          user.lastLogin = moment(user.lastLogin).tz(this.user.company.timeZone).fromNow();
+          try {
+            user.lastLogin = moment(user.lastLogin).tz(JSON.parse(this.user.company.settings)['timeZone']).fromNow();
+          } catch (e) { }
           return user;
         });
       },
