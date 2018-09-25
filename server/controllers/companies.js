@@ -23,9 +23,9 @@ exports.create = (req, res, next) => {
   const settings = req.body.company ? req.body.company.settings : '';
   const hermes = req.hermes || req.body.hermes;
 
-  Company.create({   
+  Company.create({
       title,
-      timeZone,
+      settings,
       hermes
     })
     .then(company => {

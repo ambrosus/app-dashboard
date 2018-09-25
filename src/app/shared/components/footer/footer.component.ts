@@ -8,7 +8,23 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() {}
+  menu;
 
-  ngOnInit() {}
+  constructor() {
+    this.menu = [
+      {
+        title: 'Help',
+        url: '/help'
+      },
+      {
+        title: 'About',
+        url: '/about'
+      },{
+        title: 'Terms and Conditions',
+        url: '/terms'
+      }
+    ]
+  }
+
+  ngOnInit() { }
 }

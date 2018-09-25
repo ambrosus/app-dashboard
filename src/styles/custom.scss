@@ -17,8 +17,8 @@ body {
 
 app-root {
   display: flex;
-  min-height: 100vh;
   flex-direction: column;
+  height: 100%;
 }
 
 .card {
@@ -64,6 +64,13 @@ app-root {
   &--blue {
     @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));
     color: #fff;
+    border: 0px;
+  }
+
+  &:disabled {
+    background: #ddd;
+    color: #a2a2a2;
+    cursor: not-allowed;
     border: 0px;
   }
 }

@@ -8,19 +8,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 <div class="wrapper footer">
   <ul class="footer__menu">
-    <li routerLink="/help">
-      Help
-    </li>
-    <li routerLink="/about">
-      About
-    </li>
-    <li routerLink="/terms">
-      Terms of use
+    <li *ngFor="let link of menu">
+      <a routerLink="{{ link.url }}" routerLinkActive="active">{{ link.title }}</a>
     </li>
   </ul>
 
-  <div class="copyright m-t-30">
-    <h6 class="m-r-10">Powered by</h6>
-    <img src="/assets/raster/amb-logo.png" alt="Ambrosus">
+  <div class="copyright">
+    <h6>Powered by</h6>
+    <img src="/assets/raster/amb-logo.png" alt="Ambrosus Logo">
   </div>
 </div>
