@@ -20,7 +20,7 @@ const Company = require('../models/companies');
  */
 exports.create = (req, res, next) => {
   const title = req.body.company ? req.body.company.title : null;
-  const timeZone = req.body.company ? req.body.company.timeZone : '';
+  const settings = req.body.company ? req.body.company.settings : '';
   const hermes = req.hermes || req.body.hermes;
 
   Company.create({   
@@ -37,3 +37,25 @@ exports.create = (req, res, next) => {
       else { console.log(error), res.status(400).json({ message: error }); }
     });
 };
+
+exports.edit = (req, res, next) => {
+  const id = req.session.user.company || '';
+  const query = req.body;
+
+  const update = {}
+  const allowedToChange = ['title', 'settings'];
+  for (const key in query) {
+    if (allowedToChange.indexOf(key) > -1) {
+      update[key] = query[key]
+    }
+  }
+
+  Company.findByIdAndUpdate(id, update)
+    .then(updateResponse => {
+      if (updateResponse) {
+        req.status = 200;
+        req.json = { message: 'Update data success', data: updateResponse };
+        return next();
+      } else { throw 'Update data error'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+}

@@ -1,11 +1,11 @@
 import { AssetAddComponent } from './../asset-add/asset-add.component';
-import { AssetsService } from 'app/services/assets.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AdministrationService } from 'app/services/administration.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
+import { StorageService } from 'app/services/storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event',
@@ -14,36 +14,53 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
   encapsulation: ViewEncapsulation.None
 })
 export class EventComponent implements OnInit, OnDestroy {
-  hostLink = 'amb.to';
-  json = false;
-  event;
-  jsonEvent = [];
-  edit = false;
+  routeSubscription: Subscription;
+  routeParamsSubscription: Subscription;
+  previewAppUrl;
   assetId;
   eventId;
-  infoEvent = false;
-  previewAppUrl;
-
+  user;
+  event;
+  edit = false;
+  infoEvent = {};
 
   objectKeys = Object.keys;
-  stringify = JSON.stringify;
   isArray = Array.isArray;
+  stringify = JSON.stringify;
 
-  isObject(value) {
-    return typeof value === 'object';
-  }
-
-  valueJSON(value) {
-    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
-  }
+  isObject(value) { return typeof value === 'object'; }
+  valueJSON(value) { return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, ''); }
 
   constructor(
     private route: ActivatedRoute,
-    private assetService: AssetsService,
-    private router: Router,
-    private administration: AdministrationService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private storage: StorageService
   ) { }
+
+  ngOnDestroy() {
+    if (this.routeSubscription) { this.routeSubscription.unsubscribe(); }
+    if (this.routeParamsSubscription) { this.routeParamsSubscription.unsubscribe(); }
+  }
+
+  ngOnInit() {
+    this.routeSubscription = this.route.data.subscribe(
+      data => this.event = data.event,
+      err => console.log('Event GET error: ', err)
+    );
+    this.routeParamsSubscription = this.route.params.subscribe(resp => {
+      if (resp.edit && resp['edit'] === 'true') { this.edit = true; }
+      this.assetId = resp.assetid;
+      this.eventId = resp.eventid;
+    });
+    this.infoEvent = this.findInfoEvent();
+
+    this.user = this.storage.get('user');
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.user.company.settings);
+    } catch (e) { }
+    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
+  }
 
   downloadQR(el: any) {
     const data = el.el.nativeElement.children[0].src;
@@ -62,75 +79,31 @@ export class EventComponent implements OnInit, OnDestroy {
     }
   }
 
-  hasInfoEvent() {
-    const event = this.event || null;
-    return event && event.content && event.content.data ? this.event.content.data.some(obj => obj.type === 'ambrosus.asset.info') : false;
-  }
+  findInfoEvent() { return this.event && this.event.content && this.event.content.data ? this.event.content.data.find(obj => obj.type === 'ambrosus.asset.info') : {}; }
 
-  ngOnInit() {
-    // Get event data
-    this.route.data.subscribe(
-      data => {
-        this.event = data.event;
-        this.assetId = this.event.content.idData.assetId || '';
-        this.eventId = this.event.eventId || '';
-        this.infoEvent = this.hasInfoEvent();
-        this.jsonEvent.push(data.event);
-      },
-      err => {
-        console.log('err ', err);
-      }
-    );
-    // Query params
-    this.route.queryParams.subscribe(resp => {
-      if (resp.edit && resp['edit'] === 'true') {
-        this.edit = true;
-      }
-    });
-    // New info event created from edit
-    this.assetService.infoEventCreated.subscribe(
-      (resp: any) => {
-        const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
-        if (location.pathname.indexOf('/events/') > -1) {
-          this.router.navigate([url]);
-        }
-      }
-    );
-    // New other event created from edit
-    this.assetService.eventAdded.subscribe(
-      (resp: any) => {
-        const url = `/assets/${resp.data.content.idData.assetId}/events/${resp.data.eventId}`;
-        if (location.pathname.indexOf('/events/') > -1) {
-          this.router.navigate([url]);
-        }
-      }
-    );
-
-    this.previewAppUrl = this.administration.previewAppUrl;
+  getName(obj, alternative = '') {
+    try {
+      const name = obj.name;
+      const type = obj.type.split('.');
+      return name ? name : type[type.length - 1];
+    } catch (e) { return alternative; }
   }
 
   openDialog() {
     if (this.infoEvent) {
-      // console.log('Asset Info');
-      this.openAssetEditDialog();
-      return;
-    } else {
-      this.openEditDialog();
-      return;
-    }
+      return this.openAssetEditDialog();
+    } else { return this.openEditDialog(); }
   }
 
-  openJsonDialog(): void {
+  openJSONPreviewDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
       position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
-    instance.data = this.jsonEvent;
-    instance.name = this.event.content.data[0].name || this.event.content.idData.timestamp;
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    instance.data = [this.event];
+    instance.name = this.getName(this.infoEvent, 'No title');
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 
   openAssetEditDialog() {
@@ -140,12 +113,9 @@ export class EventComponent implements OnInit, OnDestroy {
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
-    instance.assetId = this.assetId;
-    instance.infoEvent = true;
+    instance.assetIds = [this.assetId];
     instance.isDialog = true;
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 
   openEditDialog(): void {
@@ -155,14 +125,8 @@ export class EventComponent implements OnInit, OnDestroy {
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
-    instance.assetId = this.assetId;
-    instance.isEdit = true;
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
-
-  ngOnDestroy() {
-    this.assetService.unselectAssets();
+    instance.assetIds = [this.assetId];
+    instance.isDialog = true;
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 }

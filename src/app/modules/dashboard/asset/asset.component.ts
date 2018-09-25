@@ -1,12 +1,10 @@
-import { AssetsService } from 'app/services/assets.service';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdministrationService } from 'app/services/administration.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { EventAddComponent } from './../event-add/event-add.component';
-
-declare let QRCode: any;
+import { Subscription } from 'rxjs';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-asset',
@@ -14,44 +12,59 @@ declare let QRCode: any;
   styleUrls: ['./asset.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class AssetComponent implements OnInit {
+export class AssetComponent implements OnInit, OnDestroy {
+  routeSubscription: Subscription;
+  routeParamsSubscription: Subscription;
   asset;
   assetId: string;
-  createEvents = false;
-  jsonEvents;
-  json = false;
   events;
+  user;
   previewAppUrl;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
   stringify = JSON.stringify;
 
-  isObject(value) {
-    return typeof value === 'object';
-  }
-
-  valueJSON(value) {
-    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
-  }
+  isObject(value) { return typeof value === 'object'; }
+  valueJSON(value) { return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, ''); }
 
   constructor(
     private route: ActivatedRoute,
-    private assetService: AssetsService,
-    private administration: AdministrationService,
-    public dialog: MatDialog
-  ) {}
+    public dialog: MatDialog,
+    private storage: StorageService
+  ) { }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      this.asset = data.asset;
-    });
+    this.route.data.subscribe(data => this.asset = data.asset);
+    this.route.params.subscribe(params => this.assetId = params.assetid);
+    this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
 
-    this.route.params.subscribe(params => {
-      this.assetId = params.assetid;
-    });
+    this.user = this.storage.get('user');
+    let companySettings: any = {};
+    try {
+      companySettings = JSON.parse(this.user.company.settings);
+    } catch (e) { }
+    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
+  }
 
-    this.previewAppUrl = this.administration.previewAppUrl;
+  ngOnDestroy() {
+    if (this.routeSubscription) { this.routeSubscription.unsubscribe(); }
+    if (this.routeParamsSubscription) { this.routeParamsSubscription.unsubscribe(); }
+  }
+
+  JSONparse(value) {
+    try {
+      return JSON.parse(value);
+    } catch (e) { return false; }
+  }
+
+  getName(eventObject, alternative = '') {
+    try {
+      const obj = JSON.parse(eventObject);
+      const name = obj.name;
+      const type = obj.type.split('.');
+      return name ? name : type[type.length - 1];
+    } catch (e) { return alternative; }
   }
 
   downloadQR(el: any) {
@@ -70,36 +83,26 @@ export class AssetComponent implements OnInit {
   }
 
   openCreateEventDialog() {
-    this.assetService.unselectAssets();
-    this.assetService.selectAsset(this.assetId);
-    this.createEvents = true;
-
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
     const instance = dialogRef.componentInstance;
     instance.prefill = this.events;
-    instance.assetId = this.assetId;
-
+    instance.assetIds = [this.assetId];
   }
 
   openJsonDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0'}
+      position: { right: '0' }
     });
     const instance = dialogRef.componentInstance;
-    instance.data = this.jsonEvents;
-    instance.name = this.asset.info.name || this.asset.timestamp;
+    instance.data = this.events;
+    instance.name = this.getName(this.asset.infoEvent, 'No title');
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
-
 }

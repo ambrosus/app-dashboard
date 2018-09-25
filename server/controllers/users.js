@@ -252,9 +252,9 @@ exports.edit = (req, res, next) => {
   const query = req.body;
 
   const update = {}
-  const nowAllowedToChange = ['email', 'company', 'address', 'token'];
+  const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
-    if (nowAllowedToChange.indexOf(key) === -1) {
+    if (allowedToChange.indexOf(key) > -1) {
       update[key] = query[key]
     }
   }

@@ -40,7 +40,8 @@ export class AuthService {
     return user && user.address && secret && token;
   }
 
-  getToken(secret) {
+  getToken() {
+    const secret = this.storage.get('secret');
     const validUntil = moment().add(5, 'days').format();
     return this.sdk.getToken(secret, validUntil);
   }
@@ -110,7 +111,7 @@ export class AuthService {
     this.storage.set('secret', secret);
 
     return new Observable(observer => {
-      const token = this.getToken(secret);
+      const token = this.getToken();
       const hermes: any = this.storage.get('hermes');
 
       this.verifyAccount(address, token, hermes).subscribe(

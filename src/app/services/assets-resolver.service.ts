@@ -11,13 +11,13 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AssetsResolver implements Resolve<any> {
-  constructor(private asset: AssetsService) {}
+  constructor(private asset: AssetsService) { }
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any> | Promise<any> | any {
-    return this.asset.getAssetsInfo().pipe(
+    return this.asset.getAssets({}).pipe(
       map(asset => asset),
       first()
     );

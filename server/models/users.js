@@ -64,10 +64,6 @@ const usersSchema = mongoose.Schema({
     type: Date,
     default: +new Date()
   },
-  assetsCachedAt: {
-    type: Date,
-    default: +new Date()
-  },
   createdAt: {
     type: Date,
     default: +new Date()
@@ -80,7 +76,6 @@ const usersSchema = mongoose.Schema({
 
 usersSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
-  this.lastLogin = +new Date();
   next();
 });
 
