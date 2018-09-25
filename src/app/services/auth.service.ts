@@ -90,7 +90,10 @@ export class AuthService {
   }
 
 
-  verifyAccount(address, token) {
+  verifyAccount(address, secret) {
+
+    const token = this.getToken(secret);
+
     return new Observable(observer => {
       const deviceInfo = this.deviceService.getDeviceInfo();
 
@@ -112,7 +115,15 @@ export class AuthService {
           const token = JSON.parse(user.token);
           const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
 
+          user.address = address;
 
+          this.storage.set('secret', privateKey);
+          this.storage.set('user', user);
+          this.storage.set('token', this.getToken(privateKey));
+
+          this.addAccount(user);
+          this.emit('user:refresh');
+          observer.next('success');
         },
         err => {
           const error = err.error ? err.error.message : JSON.stringify(err);

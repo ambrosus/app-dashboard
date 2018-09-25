@@ -29,7 +29,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   }, {
     path: 'login',
-    canActivate: [AuthGuardLogin],
+    canActivate: [SetUpGuard, AuthGuardLogin],
     component: LoginComponent,
     runGuardsAndResolvers: 'always'
   }, {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router, CanActivate } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 export interface Hermes {
@@ -12,19 +12,22 @@ export interface Hermes {
 export class SetUpGuard implements CanActivate {
   constructor(private router: Router, private http: HttpClient) { }
 
-  canActivate(): Promise<boolean> {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
 
     console.log('canActivate@SetUpGuard');
 
     return new Promise((resolve) => {
       this.http.get('/api/hermeses').subscribe((res: Hermes) => {
 
-        if (res.data && res.data.length > 0) {
+        if (state.url === '/login' && res.totalCount === 0) {
+          this.router.navigate(['/setup']);
+          resolve(false);
+        } else if (state.url === '/setup' && res.totalCount > 0) {
           this.router.navigate(['/login']);
           resolve(false);
-        } else {
-          resolve(true);
         }
+
+        resolve(true);
 
       });
     });

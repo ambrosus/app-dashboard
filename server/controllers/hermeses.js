@@ -61,9 +61,10 @@ exports.getAll = (req, res, next) => {
     .then(results => {
       req.status = 200;
       req.json = {
-        resultCount: results.length,
+        totalCount: results.length,
         data: results
       };
+
       return next();
     }).catch(error => (console.log(error), res.status(400).json({ message: error })));
 };

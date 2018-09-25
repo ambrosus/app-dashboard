@@ -77,6 +77,9 @@ export class LoginComponent implements OnInit {
 
     this.promiseAction = new Promise((resolve, reject) => {
       this.auth.login(email, password).subscribe((resp: any) => {
+
+        console.log(resp);
+
         this.router.navigate(['/assets']);
         resolve();
       }, err => {

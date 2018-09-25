@@ -8,27 +8,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UsersService {
 
-  _data;
-
-  apiEndpoint = '/api/users/';
-
   constructor(private http: HttpClient) {
     this.getRoles();
   }
 
-  set data(data) {
-    this._data = data;
-  }
+  /* User */
 
-  get data() {
-    return this._data;
-  }
 
   update(address, json) {
     return new Observable(observer => {
-      const url = `${this.apiEndpoint}${address}`;
-
-      this.http.put(url, json).subscribe(
+      this.http.put(`/api/users/${address}`, json).subscribe(
         resp => {
           console.log('PUST / update user settings success: ', resp);
           return observer.next(resp);

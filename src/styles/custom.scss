@@ -74,6 +74,8 @@ a {
 }
 
 input {
+  appearance: none;
+  -webkit-appearance: none;
   display: block;
   width: 100%;
   font-weight: 400;
