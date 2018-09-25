@@ -9,37 +9,34 @@ const mongoose = require('mongoose');
 
 const Company = require('../models/companies');
 
+/**
+ * Create a new company.
+ *
+ * @name createCompany
+ * @route {POST} api/companies
+ * @bodyparam company: { title, timeZone }, hermes
+ * @returns Status code 400 on failure
+ * @returns company Object on success with status code 200
+ */
 exports.create = (req, res, next) => {
   const title = req.body.company ? req.body.company.title : null;
   const settings = req.body.company ? req.body.company.settings : '';
   const hermes = req.hermes || req.body.hermes;
 
-  if (title && hermes) {
-    Company.findOne({ title })
-      .then(company => {
-        if (!company) {
-          const company = new Company({
-            _id: new mongoose.Types.ObjectId(),
-            title,
-            hermes,
-            settings
-          });
-
-          company
-            .save()
-            .then(company => {
-              req.status = 200;
-              req.company = company;
-              return next();
-            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        } else { throw 'Company with this title already exists'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-  } else if (!title) {
-    return res.status(400).json({ message: 'Company "title" is required' });
-  } else if (!hermes) {
-    return res.status(400).json({ message: '"hermes" object is required' });
-  }
-}
+  Company.create({   
+      title,
+      timeZone,
+      hermes
+    })
+    .then(company => {
+      req.status = 200;
+      req.company = company;
+      return next();
+    }).catch(error => {
+      if (error.code === 11000) { res.status(400).json({ message: 'Company with this title already exists' }); }
+      else { console.log(error), res.status(400).json({ message: error }); }
+    });
+};
 
 exports.edit = (req, res, next) => {
   const id = req.session.user.company || '';
