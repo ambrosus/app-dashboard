@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  apiEndpoint = '/api/users/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.getRoles();
+  }
+
+  /* User */
+
 
   update(address, json) {
     return new Observable(observer => {
-      const url = `${this.apiEndpoint}${address}`;
-
-      this.http.put(url, json).subscribe(
+      this.http.put(`/api/users/${address}`, json).subscribe(
         resp => {
           console.log('PUST / update user settings success: ', resp);
           return observer.next(resp);
@@ -26,16 +29,75 @@ export class UsersService {
       );
     });
   }
+  /* Roles */
 
-  get(email = false) {
-    return new Observable(observer => {
+  private _roles: BehaviorSubject<any> = new BehaviorSubject([]);
 
-    });
+  get roles() {
+    return this._roles.asObservable();
   }
 
-  getAll() {
+  getRoles() {
+    this.http.get('/api/roles').subscribe(
+      (roles: any) => {
+        this._roles.next(roles);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+  }
+
+  createRole(json) {
+
     return new Observable(observer => {
+      this.http.post('/api/roles', json).subscribe(role => {
+
+        this._roles.next([...this._roles.getValue(), role]);
+
+        observer.next();
+      });
 
     });
+
+  }
+
+  updateRole(id, json) {
+    return new Observable(observer => {
+      this.http.put(`/api/roles/${id}`, json).subscribe((role: any) => {
+
+        console.log(role);
+
+        const roles = [...this._roles.getValue()].map(r => {
+          if (r._id === id) {
+            return role;
+          }
+          return r;
+        });
+
+        this._roles.next(roles);
+        observer.next();
+      });
+
+    })
+  }
+
+  deleteRole(id) {
+    console.log(id);
+    return new Observable(observer => {
+      this.http.delete(`/api/roles/${id}`).subscribe(() => {
+
+        console.log('deteted');
+
+        const roles = [...this._roles.getValue()].filter(r => r._id !== id);
+
+        this._roles.next(roles);
+        observer.next();
+      }, err => {
+        console.log(err);
+      });
+
+
+    })
   }
 }

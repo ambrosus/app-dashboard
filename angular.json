@@ -29,7 +29,6 @@
             "styles": [
               "node_modules/sanitize.css/sanitize.css",
               "node_modules/chartist/dist/chartist.css",
-              "node_modules/animate.css/animate.min.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
@@ -40,7 +39,8 @@
             "scripts": [
               "node_modules/qrcode/build/qrcode.min.js",
               "node_modules/moment/min/moment.min.js",
-              "node_modules/moment-timezone/builds/moment-timezone-with-data.min.js"
+              "node_modules/moment-timezone/builds/moment-timezone-with-data.min.js",
+              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.umd.min.js"
             ]
           },
           "configurations": {
@@ -111,7 +111,8 @@
             "scripts": [
               "node_modules/qrcode/build/qrcode.min.js",
               "node_modules/moment/min/moment.min.js",
-              "node_modules/moment-timezone/builds/moment-timezone-with-data.min.js"
+              "node_modules/moment-timezone/builds/moment-timezone-with-data.min.js",
+              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.umd.min.js"
             ]
           }
         },

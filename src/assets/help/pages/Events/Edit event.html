@@ -1,0 +1,13 @@
+<h1>Edit events</h1>
+
+<p>
+  All data uploaded to the blockchain is immutable, meaning it cannot be modified or deleted. That means events can't really be edited,
+  but we call it edit, as once user clicks on <b>edit event</b> button on event page, form gets prefilled with current event information and on save,
+  it actually creates a new event with same event type as edited event.
+</p>
+
+<p>For example, <b>ambrosus.asset.info</b> event specifically is the first event created, when user creates an asset using dashboard.
+  That event holds all the descriptive information about the asset (images, description, etc.). Dashboard and amb.to in particular only display the latest version of that event type.
+  Which means once we edit that event using dashboard, it creates a new event of the same type (ambrosus.asset.info), but with edited information, which is then as latest event of that type displayed.</p>
+
+<img src="/assets/help/images/events-edit-event.png" alt="Events edit">

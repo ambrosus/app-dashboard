@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
 const User = require('../models/users');
+const Company = require('../models/companies');
 
 /**
  * Logs in user
@@ -22,18 +23,13 @@ const User = require('../models/users');
  * @returns user Object on success with status code 200
  */
 exports.login = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   if (email && password) {
     User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner',
-        populate: {
-          path: 'hermes',
-          select: '-active -createdAt -updatedAt -__v -public'
-        }
+        select: '-active -createdAt -updatedAt -__v -owner'
       })
       .populate({
         path: 'role',
@@ -43,11 +39,13 @@ exports.login = (req, res, next) => {
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
-          user.lastLogin = +new Date();
-          user.save();
-
           if (valid) {
+            user.lastLogin = +new Date();
+            user.save();
+
+            user = user.toObject();
             delete user.password;
+
             req.session.user = { _id: user._id, address: user.address, company: user.company };
             req.status = 200;
             req.json = user
@@ -73,48 +71,46 @@ exports.login = (req, res, next) => {
  * @returns user Object on success with status code 200
  */
 exports.verifyAccount = (req, res, next) => {
-  const address = req.body.address;
-  const token = req.body.token;
-  const hermes = req.body.hermes;
-  const deviceInfo = req.body.deviceInfo;
+  const { address, token, deviceInfo } = req.body;
+  const companyId = req.session.user.company._id;
 
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    Authorization: `AMB_TOKEN ${token}`
-  };
+  Company.findById(companyId)
+    .populate('hermes')
+    .then(company => {
+      const headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `AMB_TOKEN ${token}`
+      };
 
-  axios.get(`${hermes.url}/accounts/${address}`, { headers })
-    .then(resp => {
-      User.findOne({ address })
-        .populate({
-          path: 'company',
-          select: '-active -createdAt -updatedAt -__v -owner',
-          populate: {
-            path: 'hermes',
-            select: '-active -createdAt -updatedAt -__v -public'
-          }
-        })
-        .populate({
-          path: 'role',
-          select: '-createdAt -updatedAt -__v'
-        })
-        .select('-active -createdAt -updatedAt -password -__v')
-        .then(user => {
-          if (user) {
-            req.status = 200;
-            req.session.user = { _id: user._id, address: user.address, company: user.company };
-            req.session.deviceInfo = deviceInfo;
-            req.json = user;
-            return next();
-          } else { throw 'No user found'; }
-        })
-        .catch(error => {
-          req.status = 200;
-          req.json = { message: 'No registered user' };
-          return next();
-        });
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
+      axios.get(`${company.hermes.url}/accounts/${address}`, { headers })
+        .then(resp => {
+          User.findOne({ address })
+            .populate({
+              path: 'company',
+              select: '-active -createdAt -updatedAt -__v -owner'
+            })
+            .populate({
+              path: 'role',
+              select: '-createdAt -updatedAt -__v'
+            })
+            .select('-active -createdAt -updatedAt -password -__v')
+            .then(user => {
+              if (user) {
+                req.status = 200;
+                req.session.user = { _id: user._id, address: user.address, company: user.company };
+                req.session.deviceInfo = deviceInfo;
+                req.json = user;
+                return next();
+              } else { throw 'No user found'; }
+            })
+            .catch(error => {
+              req.status = 200;
+              req.json = { message: 'No registered user' };
+              return next();
+            });
+        }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
 }
 
 /**
@@ -161,12 +157,7 @@ exports.getActiveSessions = (req, res, next) => {
       req.status = 200;
       req.json = sessions;
       return next();
-    } else {
-      req.status = 401;
-      req.json = { 'message': "No sessions were found." }
-      return next();
-    }
-
+    } else { return res.status(401).json({ message: 'No sessions were found' }); }
   });
 }
 
@@ -187,11 +178,33 @@ exports.deleteSession = (req, res, next) => {
       req.status = 200;
       req.json = { message: "Success" };
       return next();
-    } else {
-      req.status = 400;
-      req.json = { message: "Session was not found." };
-      return next();
-    }
-
+    } else { return res.status(400).json({ message: 'Session was not found' }); }
   });
+}
+
+exports.deleteSessions = (req, res, next) => {
+  const userId = req.session.user._id;
+
+  let sessionsCollection = mongoose.connection.db.collection('sessions');
+
+  sessionsCollection.find({ "session.user._id": userId }).toArray((err, sessions) => {
+    const currentSession = sessions.filter(session => {
+      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) {
+        return session;
+      }
+    });
+
+    sessionsCollection.deleteMany({ 'session.user._id': userId, _id: { $ne: currentSession[0]._id } }, (err, response) => {
+      if (!err) {
+        req.status = 200;
+        req.json = { message: "Success" };
+        return next();
+      } else {
+        req.status = 400;
+        req.json = { message: "Error in deleting sessions." };
+        return next();
+      }
+    });
+
+  })
 }

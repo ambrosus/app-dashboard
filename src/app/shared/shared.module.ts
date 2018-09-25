@@ -31,6 +31,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
+import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
+
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -39,6 +45,8 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     InputDirective,
     OncheckedDirective,
     SpinnerComponent,
+    TabsComponent,
+    TabComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,
@@ -54,12 +62,18 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     MatDialogModule,
     PaginationComponent,
     CheckIfPipe,
-    ImageCropperModule
+    ImageCropperModule,
+    CustomCheckboxDirective,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   declarations: [
     InputDirective,
     OncheckedDirective,
     SpinnerComponent,
+    TabsComponent,
+    TabComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,
@@ -73,7 +87,11 @@ import { CheckIfPipe } from './pipes/checkIf.pipe';
     QrCodeComponent,
     NotificationComponent,
     PaginationComponent,
-    CheckIfPipe
+    CheckIfPipe,
+    CustomCheckboxDirective,
+    FooterComponent,
+    HeaderComponent,
+    SidebarComponent
   ],
   entryComponents: [JsonPreviewComponent, EventAddComponent]
 })

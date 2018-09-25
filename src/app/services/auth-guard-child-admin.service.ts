@@ -10,6 +10,9 @@ export class AuthGuardChildAdmin implements CanActivateChild {
   constructor(private router: Router, private auth: AuthService, private storage: StorageService) { }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+
+    console.log('canActivate@AuthGuardChildAdmin');
+
     const user: any = this.storage.get('user');
 
     return new Promise(resolve => {

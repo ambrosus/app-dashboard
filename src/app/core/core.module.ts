@@ -11,10 +11,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SetupComponent } from './components/setup/setup.component';
 import { InviteComponent } from './components/invite/invite.component';
+import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 
 
 @NgModule({
-  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule],
+  imports: [SharedModule, AppRoutingModule, ReactiveFormsModule, Angular2PromiseButtonModule.forRoot()],
   exports: [AppRoutingModule],
   declarations: [
     NotfoundComponent,
