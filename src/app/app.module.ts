@@ -19,6 +19,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector';
+import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,13 @@ import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector
     DashboardModule,
     SharedModule,
     DeviceDetectorModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    Angular2PromiseButtonModule.forRoot({
+      spinnerTpl: '<span class="btn-spinner"></span>',
+      disableBtn: true,
+      btnLoadingClass: 'is-loading',
+      handleCurrentBtnOnly: false,
+    })
   ],
   providers: [
     DeviceDetectorService,

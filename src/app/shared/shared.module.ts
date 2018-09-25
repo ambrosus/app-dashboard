@@ -35,6 +35,7 @@ import { CustomCheckboxDirective } from './directives/custom-checkbox.directive'
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -42,6 +43,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     CommonModule,
     InputDirective,
     SpinnerComponent,
+    TabsComponent,
+    TabComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,
@@ -66,6 +69,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
   declarations: [
     InputDirective,
     SpinnerComponent,
+    TabsComponent,
+    TabComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,

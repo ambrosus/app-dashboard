@@ -23,8 +23,7 @@ const Company = require('../models/companies');
  * @returns user Object on success with status code 200
  */
 exports.login = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
   if (email && password) {
     User.findOne({ email })
@@ -41,11 +40,12 @@ exports.login = (req, res, next) => {
       .then(user => {
         if (user) {
           const valid = bcrypt.compareSync(password, user.password);
-          user.lastLogin = +new Date();
-          user.save();
-
           if (valid) {
-            user.toObject();
+            user.lastLogin = +new Date();
+            user.save();
+
+            user = user.toObject();
+            delete user.password;
 
             req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
             req.status = 200;

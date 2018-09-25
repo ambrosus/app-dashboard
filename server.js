@@ -67,3 +67,5 @@ const server = http.createServer(app);
 server.listen(config.port, () => {
   console.log('Server running...');
 });
+
+module.exports = app;

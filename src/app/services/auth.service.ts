@@ -14,6 +14,7 @@ declare let Web3: any;
 })
 export class AuthService {
   sdk;
+  web3;
 
   constructor(
     private http: HttpClient,
@@ -26,6 +27,7 @@ export class AuthService {
       apiEndpoint: hermes.url,
       Web3
     });
+    this.web3 = new Web3();
   }
 
   emit(type) {
@@ -40,8 +42,7 @@ export class AuthService {
     return user && user.address && secret && token;
   }
 
-  getToken() {
-    const secret = this.storage.get('secret');
+  getToken(secret = this.storage.get('secret')) {
     const validUntil = moment().add(5, 'days').format();
     return this.sdk.getToken(secret, validUntil);
   }
@@ -57,23 +58,6 @@ export class AuthService {
     });
   }
 
-  verifyAccount(address, token, hermes) {
-    return new Observable(observer => {
-      const url = `/api/auth/verify`;
-      const deviceInfo = this.deviceService.getDeviceInfo();
-      const body = {
-        address,
-        token,
-        hermes,
-        deviceInfo,
-      };
-
-      this.http.post(url, body).subscribe(
-        resp => observer.next(resp),
-        err => observer.error(err)
-      );
-    });
-  }
 
   addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
@@ -105,39 +89,54 @@ export class AuthService {
     });
   }
 
-  login(address: string, secret: string) {
-    const user = { address };
-    this.storage.set('user', user);
-    this.storage.set('secret', secret);
+
+  verifyAccount(address, secret) {
+
+    const token = this.getToken(secret);
 
     return new Observable(observer => {
-      const token = this.getToken();
-      const hermes: any = this.storage.get('hermes');
+      const deviceInfo = this.deviceService.getDeviceInfo();
 
-      this.verifyAccount(address, token, hermes).subscribe(
-        (r: any) => {
-          this.storage.set('token', token);
-          if (!r.message) {
-            this.storage.set('user', r);
-            this.addAccount(r);
-            this.emit('user:refresh');
-            observer.next('success');
-          } else {
-            this.addAccount({ address });
-            this.emit('user:refresh');
-            observer.next('success');
-          }
+      this.http.post('/api/auth/verify', { address, token, deviceInfo }).subscribe(
+        user => {
+          console.log(user);
         },
         err => observer.error(err)
       );
     });
   }
 
+  login(email: string, password: string) {
+    return new Observable(observer => {
+      const deviceInfo = this.deviceService.getDeviceInfo();
+
+      this.http.post('/api/auth/login', { email, password, deviceInfo }).subscribe(
+        (user: any) => {
+          const token = JSON.parse(user.token);
+          const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
+
+          user.address = address;
+
+          this.storage.set('secret', privateKey);
+          this.storage.set('user', user);
+          this.storage.set('token', this.getToken(privateKey));
+
+          this.addAccount(user);
+          this.emit('user:refresh');
+          observer.next('success');
+        },
+        err => {
+          const error = err.error ? err.error.message : JSON.stringify(err);
+          observer.error(error);
+        }
+      );
+    });
+  }
+
   // Deletes current session
   logoutAPI() {
-    const url = `/api/auth/logout`;
 
-    this.http.delete(url).subscribe(
+    this.http.delete('/api/auth/logout').subscribe(
       () => console.log('User API logout success'),
       () => console.log('User API logout error')
     );

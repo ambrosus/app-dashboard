@@ -7,17 +7,17 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class UsersService {
-  apiEndpoint = '/api/users/';
 
   constructor(private http: HttpClient) {
     this.getRoles();
   }
 
+  /* User */
+
+
   update(address, json) {
     return new Observable(observer => {
-      const url = `${this.apiEndpoint}${address}`;
-
-      this.http.put(url, json).subscribe(
+      this.http.put(`/api/users/${address}`, json).subscribe(
         resp => {
           console.log('PUST / update user settings success: ', resp);
           return observer.next(resp);
@@ -29,7 +29,6 @@ export class UsersService {
       );
     });
   }
-
   /* Roles */
 
   private _roles: BehaviorSubject<any> = new BehaviorSubject([]);

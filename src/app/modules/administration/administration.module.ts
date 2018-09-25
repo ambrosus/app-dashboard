@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
+import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+
+import { SharedModule } from 'app/shared/shared.module';
+import { UsersService } from 'app/services/users.service';
 
 import { AdministrationRoutingModule } from './administration-routing.module';
 import { CompanyComponent } from './components/company/company/company.component';
@@ -14,8 +17,7 @@ import { InviteComponent } from './components/users/invite/invite.component';
 import { InvitesComponent } from './components/users/invites/invites.component';
 import { RolesComponent } from './components/users/roles/roles.component';
 import { RoleDialogComponent } from './components/users/roles/role-dialog/role-dialog.component';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons/dist';
-import { UsersService } from '../../services/users.service';
+
 
 
 @NgModule({
@@ -25,12 +27,7 @@ import { UsersService } from '../../services/users.service';
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
-    Angular2PromiseButtonModule.forRoot({
-      spinnerTpl: '<span class="btn-spinner"></span>',
-      disableBtn: true,
-      btnLoadingClass: 'is-loading',
-      handleCurrentBtnOnly: false,
-    }),
+    Angular2PromiseButtonModule.forRoot(),
     FormsModule
   ],
   providers: [UsersService],

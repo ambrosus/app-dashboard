@@ -6,11 +6,19 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 
+@import 'mixins';
+
 body {
   background: #f5f7fc;
   font-size: 14px;
   color: #121e3e;
   font-family: 'Open Sans', sans-serif;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card {
@@ -46,16 +54,24 @@ body {
   border-radius: 1px;
   background: transparent;
   border: 1px solid #ddd;
-  height: 40px;
-  line-height: 40px;
+  height: 46px;
+  line-height: 46px;
   text-align: center;
   display: inline-block;
   color: #55a8fd;
+  cursor: pointer;
 
   &--blue {
+    @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));
     color: #fff;
-    background: #55a8fd;
-    border-color: #55a8fd;
+    border: 0px;
+  }
+
+  &:disabled {
+    background: #ddd;
+    color: #a2a2a2;
+    cursor: not-allowed;
+    border: 0px;
   }
 }
 
@@ -65,6 +81,8 @@ a {
 }
 
 input {
+  appearance: none;
+  -webkit-appearance: none;
   display: block;
   width: 100%;
   font-weight: 400;
@@ -105,6 +123,13 @@ label {
   font-weight: 500;
 }
 
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
 button .btn-spinner {
   font-family: sans-serif;
   font-weight: 100;
@@ -135,9 +160,6 @@ button.is-loading .btn-spinner {
   opacity: 1
 }
 
-.btn {
-  text-align: left
-}
 
 .custom_checkbox {
   visibility: hidden;
@@ -178,7 +200,6 @@ button.is-loading .btn-spinner {
       }
     }
   }
-
 }
 
 @-webkit-keyframes three-quarters {
