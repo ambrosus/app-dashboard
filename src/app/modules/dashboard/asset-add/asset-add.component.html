@@ -14,9 +14,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
     <div class="tab_content">
       <!-- FORM -->
-      <app-asset-form [prefill]="prefill" [assetId]="prefill ? assetIds[0] : ''" *ngIf="!json"></app-asset-form>
+      <app-asset-form [prefill]="prefill" [assetId]="assetIds[0]" *ngIf="!json"></app-asset-form>
       <!-- JSON -->
-      <app-json-form [prefill]="prefill" [assetIds]="prefill ? assetIds : []" [for]="'assets'" *ngIf="json"></app-json-form>
+      <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'assets'" *ngIf="json"></app-json-form>
     </div>
   </div>
 </main>

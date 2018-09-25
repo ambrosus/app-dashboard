@@ -62,7 +62,8 @@ export class AssetsService {
 
   getAsset(assetId) {
     return new Observable(observer => {
-      const url = `/api/assets/${assetId}`;
+      const token = this.auth.getToken();
+      const url = `/api/assets/${assetId}?token=${token}`;
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),

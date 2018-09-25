@@ -10,7 +10,7 @@ export class AssetAddComponent implements OnInit {
   json;
 
   @Input() prefill;
-  @Input() assetIds: String[];
+  @Input() assetIds: String[] = [];
   @Input() isDialog;
 
   constructor(

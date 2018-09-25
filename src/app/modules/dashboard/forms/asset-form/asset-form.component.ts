@@ -26,6 +26,7 @@ export class AssetFormComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+    if (this.prefill) { this.prefillForm(); }
   }
 
   private initForm() {
@@ -135,6 +136,7 @@ export class AssetFormComponent implements OnInit {
   }
 
   // Methods for adding/removing new fields to the form
+
   remove(array, index: number) { (<FormArray>this.assetForm.get(array)).removeAt(index); }
 
   addImageUrl() {
@@ -250,15 +252,15 @@ export class AssetFormComponent implements OnInit {
     const productImages = this.assetForm.get('productImage')['controls'];
     if (productImages.length > 0) {
       info['images'] = {};
-      for (let i = 0; i < productImages.length; i++) {
-        if (i === 0) {
+      productImages.map((image, index, array) => {
+        if (index === 0) {
           info['images']['default'] = {};
-          info['images']['default']['url'] = productImages[i].value.imageUrl;
-          continue;
+          info['images']['default']['url'] = productImages[index].value.imageUrl;
+        } else {
+          info['images'][productImages[index].value.imageName] = {};
+          info['images'][productImages[index].value.imageName]['url'] = productImages[index].value.imageUrl;
         }
-        info['images'][productImages[i].value.imageName] = {};
-        info['images'][productImages[i].value.imageName]['url'] = productImages[i].value.imageUrl;
-      }
+      });
     }
 
     // Custom data key-value
@@ -274,6 +276,7 @@ export class AssetFormComponent implements OnInit {
     data.push(info);
 
     // Finish signing event
+
     const idData = {
       assetId: _assetId,
       timestamp: Math.floor(new Date().getTime() / 1000),
@@ -281,8 +284,6 @@ export class AssetFormComponent implements OnInit {
       createdBy: address,
       dataHash: this.assetsService.calculateHash(data)
     };
-
-    console.log(this.assetsService.calculateHash(data));
 
     const content = {
       idData,
