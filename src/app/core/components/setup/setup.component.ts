@@ -1,13 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { SetUpGuard } from '../../../guards/setup.guard';
 
-declare let moment: any;
+import * as moment from 'moment-timezone';
+
 declare let Web3: any;
-
 @Component({
   selector: 'app-setup',
   templateUrl: './setup.component.html',
@@ -15,7 +12,15 @@ declare let Web3: any;
   encapsulation: ViewEncapsulation.None
 })
 export class SetupComponent implements OnInit {
+
+  forms: {
+    hermes: FormGroup,
+    company: FormGroup,
+    account: FormGroup
+  }
+
   setupForm: FormGroup;
+
   error;
   spinner = false;
   stepHermes;
@@ -30,29 +35,33 @@ export class SetupComponent implements OnInit {
   address;
   secret;
 
-  constructor(private http: HttpClient,
-    private router: Router,
-    private storage: StorageService,
-    private _setUpGuard: SetUpGuard) {
-    this.initSetupForm();
-    this.web3 = new Web3();
-  }
+  constructor(private http: HttpClient) {
 
-  initSetupForm() {
-    this.setupForm = new FormGroup({
-      hermesTitle: new FormControl('', [Validators.required]),
-      hermesUrl: new FormControl('', [Validators.required]),
-      companyTitle: new FormControl('', [Validators.required]),
-      companyTimeZone: new FormControl('', [Validators.required]),
-      userFullName: new FormControl('', [Validators.required]),
-      userEmail: new FormControl('', [Validators.required]),
-      userPassword: new FormControl('', [Validators.required]),
-      userPasswordConfirm: new FormControl('', [Validators.required])
+    this.forms.hermes = new FormGroup({
+      title: new FormControl('', [Validators.required]),
+      url: new FormControl('', [Validators.required]),
     });
+
+    this.forms.company = new FormGroup({
+      title: new FormControl('', [Validators.required]),
+      timeZone: new FormControl('', [Validators.required]),
+    })
+
+    this.forms.account = new FormGroup({
+      fullname: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required]),
+      confirmPassword: new FormControl('', [Validators.required]),
+    })
+
+    this.web3 = new Web3();
+
+    this.timezones = moment.tz.names();
+    console.log(this.timezones);
   }
 
   ngOnInit() {
-    this.timezones = moment.tz.names();
+
   }
 
   changeStep(type) {
@@ -76,7 +85,7 @@ export class SetupComponent implements OnInit {
     }
   }
 
-  stepClass(){
+  stepClass() {
     return 'animated';
   }
 
