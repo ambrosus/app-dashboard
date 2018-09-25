@@ -29,7 +29,7 @@ export class SetUpGuard implements CanActivate {
           resolve(false);
         } else if (state.url === '/login' && res.totalCount > 0) {
             this.storage.set('hermes', res.data[0]);
-            if(this.auth.isLoggedIn()) {
+            if (this.auth.isLoggedIn()) {
               this.router.navigate(['/assets']);
               resolve(true);
             }
