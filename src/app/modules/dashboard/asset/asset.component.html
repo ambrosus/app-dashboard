@@ -5,7 +5,7 @@
     <div class="view-header">
       <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
       <div>
-        <a href="https://amb.to/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on amb.to</a>
+        <a href="{{ previewAppUrl }}/{{ assetId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on {{ previewAppUrl.replace('https://', '') }}</a>
       </div>
       <button class="abtn btn-solid-ablue m-t-10" (click)="openCreateEventDialog()">Add Event</button>
     </div>
@@ -16,35 +16,34 @@
     <div class="layout-split">
 
       <!-- Details -->
-      <div class="layout-split__col1" *ngIf="asset | checkIf: 'asset.info'">
+      <div class="layout-split__col1" *ngIf="asset | checkIf: 'asset.infoEvent'">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">
           Asset details
-          <app-svg-icon *ngIf="asset | checkIf: 'asset.info.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.info.eventId"
-            [queryParams]="{edit: 'true'}"></app-svg-icon>
+          <app-svg-icon *ngIf="asset | checkIf: 'asset.infoEvent.eventId'" name="pencil" width="15" height="15" [routerLink]="'events/' + asset.infoEvent.eventId" [queryParams]="{edit: 'true'}"></app-svg-icon>
         </h3>
 
         <div>
           <!-- image -->
-          <div *ngIf="asset | checkIf: 'asset.info.images.default'">
-            <div class="item m-b-20 asset-image" *ngIf="!isObject(asset.info.images.default)">
-              <img src="{{ asset.info.images.default }}">
+          <div *ngIf="asset | checkIf: 'asset.infoEvent.images.default'">
+            <div class="item m-b-20 asset-image" *ngIf="!isObject(asset.infoEvent.images.default)">
+              <img src="{{ asset.infoEvent.images.default }}">
             </div>
           </div>
-          <div class="item m-b-20 asset-image" *ngIf="asset | checkIf: 'asset.info.images.default.url'">
-            <img src="{{ asset.info.images.default.url }}">
+          <div class="item m-b-20 asset-image" *ngIf="asset | checkIf: 'asset.infoEvent.images.default.url'">
+            <img src="{{ asset.infoEvent.images.default.url }}">
           </div>
 
           <!-- timestamp -->
-          <div class="item" *ngIf="asset | checkIf: 'asset.info.timestamp'">
+          <div class="item" *ngIf="asset | checkIf: 'asset.infoEvent.timestamp'">
             <p class="item__cell__title">timestamp: </p>
-            <p class="item__cell">{{ asset.info.timestamp * 1000 | date:'d MMM yyyy' }} ({{ asset.info.timestamp }})</p>
+            <p class="item__cell">{{ asset.infoEvent.timestamp * 1000 | date:'d MMM yyyy' }} ({{ asset.infoEvent.timestamp }})</p>
           </div>
 
           <!-- key - value -->
-          <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
-            <div class="item" *ngIf="!isObject(asset.info[key])">
-              <p class="item__cell__title" *ngIf="!isArray(asset.info[key])">{{ key }}: </p>
-              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.info[key]) }" [innerHtml]="isObject(asset.info[key]) ? valueJSON(stringify(asset.info[key], null, 5)) : asset.info[key]"></p>
+          <div *ngFor="let key of objectKeys(asset.infoEvent) | loopExclude:['type', 'action', 'images', 'timestamp']">
+            <div class="item" *ngIf="!isObject(asset.infoEvent[key])">
+              <p class="item__cell__title" *ngIf="!isArray(asset.infoEvent[key])">{{ key }}: </p>
+              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.infoEvent[key]) }" [innerHtml]="isObject(asset.infoEvent[key]) ? valueJSON(stringify(asset.infoEvent[key], null, 5)) : asset.infoEvent[key]"></p>
             </div>
           </div>
 
@@ -59,19 +58,17 @@
           </div>
 
           <!-- Groups -->
-          <div *ngFor="let key of objectKeys(asset.info) | loopExclude:['type', 'action', 'images', 'timestamp']">
-            <div *ngIf="isObject(asset.info[key])">
+          <div *ngFor="let key of objectKeys(asset.infoEvent) | loopExclude:['type', 'action', 'images', 'timestamp']">
+            <div *ngIf="isObject(asset.infoEvent[key])">
               <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
 
-              <div class="item" *ngFor="let k of objectKeys(asset.info[key])">
-                <p class="item__cell__title" *ngIf="!isArray(asset.info[key])">{{ k }}:</p>
-                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.info[key][k]) }" [innerHtml]="isObject(asset.info[key][k]) ? valueJSON(stringify(asset.info[key][k], null, 5)) : asset.info[key][k]"></p>
+              <div class="item" *ngFor="let k of objectKeys(asset.infoEvent[key])">
+                <p class="item__cell__title" *ngIf="!isArray(asset.infoEvent[key])">{{ k }}:</p>
+                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(asset.infoEvent[key][k]) }" [innerHtml]="isObject(asset.infoEvent[key][k]) ? valueJSON(stringify(asset.infoEvent[key][k], null, 5)) : asset.infoEvent[key][k]"></p>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- <app-chart></app-chart> -->
 
       </div>
 
@@ -79,7 +76,7 @@
       <div class="layout-split__col2">
         <h3 class="m-t-10 m-b-30 p-h-10 flex flex-direction-r justify-content-sb">Events</h3>
 
-        <app-timeline [assetId]="assetId" [name]="asset && asset.info ? asset.info.name : null"></app-timeline>
+        <app-timeline [assetId]="assetId" [name]="asset && asset.infoEvent ? asset.infoEvent.name : null"></app-timeline>
       </div>
     </div>
   </div>

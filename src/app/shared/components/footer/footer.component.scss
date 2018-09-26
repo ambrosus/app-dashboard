@@ -1,3 +1,35 @@
 app-footer {
+  flex: none;
+  border-top: 1px solid #eee;
+  padding: 10px 0;
+  margin-top: 40px;
 
+  .footer {
+    &__menu {
+      padding-bottom: 20px;
+
+      li {
+        display: inline-block;
+        padding: 5px 15px;
+
+        a {
+          color: #333;
+          padding: 5px;
+          font-size: 12px;
+          display: block;
+
+          &.active {
+            color: #5078f1;
+          }
+        }
+      }
+    }
+
+    .copyright {
+      margin-bottom: 10px;
+      h6 {
+        margin-right: 20px;
+      }
+    }
+  }
 }

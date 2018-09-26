@@ -42,7 +42,7 @@ export class AuthService {
     return user && user.address && secret && token;
   }
 
-  getToken(secret) {
+  getToken(secret = this.storage.get('secret')) {
     const validUntil = moment().add(5, 'days').format();
     return this.sdk.getToken(secret, validUntil);
   }

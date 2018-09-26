@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AssetResolver implements Resolve<any> {
-  constructor(private asset: AssetsService) {}
+  constructor(private asset: AssetsService) { }
 
   resolve(
     route: ActivatedRouteSnapshot,

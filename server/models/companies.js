@@ -8,10 +8,15 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const companiesSchema = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
   title: {
     type: String,
-    required: true
+    required: [(value) => !value, 'Title field is required' ],
+    index: { unique: true },
+    minLength: 4
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,8 +34,10 @@ const companiesSchema = mongoose.Schema({
     dasboard: String,
     ambto: String
   },
-  settings: String,
-  timeZone: String,
+  settings: {
+    type: String,
+    default: JSON.stringify({ preview_app: 'https://amb.to' })
+  },
   createdAt: {
     type: Date,
     default: +new Date()
@@ -41,13 +48,13 @@ const companiesSchema = mongoose.Schema({
   }
 });
 
-companiesSchema.pre('update', function (next) {
+companiesSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
 companiesSchema.pre('save', function (next) {
-  this.updatedAt = +new Date();
+  this.createdAt = +new Date();
   next();
 });
 
