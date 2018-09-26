@@ -6,7 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const Role = require('../models/roles');
+const Role = _require('/models/roles');
 
 /**
  * This route allows you to create a new Role and add a set of permissions to them

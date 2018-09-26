@@ -9,8 +9,8 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
-const User = require('../models/users');
-const Company = require('../models/companies');
+const User = _require('/models/users');
+const Company = _require('/models/companies');
 
 /**
  * Logs in user
