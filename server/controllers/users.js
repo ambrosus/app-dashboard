@@ -118,21 +118,13 @@ exports.setOwnership = (req, res, next) => {
   const company = req.company || req.body.company;
 
   if (user && company) {
-    Company.findById(company._id)
-      .then(_company => {
-        if (_company) {
-          User.findById(user._id)
-            .then(_user => {
-              if (_user) {
-                _company.owner = _user;
-                _company.save()
-                  .then(saved => {
-                    req.status = 200;
-                    return next();
-                  }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-              } else { throw 'No user found'; }
-            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        } else { throw 'No company found'; }
+    User.findById(user._id)
+      .then(_user => {
+        Company.findByIdAndUpdate(company._id, { owner: user._id })
+          .then(_saved => {
+            req.status = 200;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!user) {
     return res.status(400).json({ message: '"user" object is required' });
