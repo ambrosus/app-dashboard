@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import * as moment from 'moment-timezone';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 
 declare let Web3: any;
@@ -18,12 +18,10 @@ export class SetupComponent implements OnInit {
   forms: {
     hermes?: FormGroup,
     company?: FormGroup,
-    account?: FormGroup
+    user?: FormGroup
   } = {}
 
-  setupForm: FormGroup;
-
-  currentStep: number = 1;
+  currentStep: number = 0;
 
   error;
   timezones = [];
@@ -32,6 +30,10 @@ export class SetupComponent implements OnInit {
   secret;
 
   constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
+
+    this.web3 = new Web3();
+
+    this.timezones = moment.tz.names();
 
     this.forms.hermes = new FormGroup({
       title: new FormControl('', Validators.compose([
@@ -48,21 +50,28 @@ export class SetupComponent implements OnInit {
     this.forms.company = new FormGroup({
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
-    })
+    });
 
-    this.forms.account = new FormGroup({
+    this.forms.user = new FormGroup({
       full_name: new FormControl('', [Validators.required]),
       email: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+        Validators.email,
       ])),
       password: new FormControl('', [Validators.required]),
-      confirmPassword: new FormControl('', [Validators.required]),
-    })
+      confirmPassword: new FormControl('', Validators.compose([
+        Validators.required,
+        this.confirmPasswords.bind(this)
+      ])),
+    });
+  }
 
-    this.web3 = new Web3();
+  confirmPasswords(fieldControl: FormControl) {
 
-    this.timezones = moment.tz.names();
+    try {
+      return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true }
+    } catch (e) { return null }
+
   }
 
   ngOnInit() { }
@@ -72,7 +81,7 @@ export class SetupComponent implements OnInit {
     const body = {
       hermes: this.forms.hermes.value,
       company: this.forms.company.value,
-      user: this.forms.account.value,
+      user: this.forms.user.value,
     };
 
     console.log(body);

@@ -16,22 +16,22 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
     <div class="steps">
       <ul>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 1, 'step--completed': currentStep > 1 }"><span class="step__balloon"></span>Hermes Node</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 2, 'step--completed': currentStep > 2 }"><span class="step__balloon"></span>Company</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 3, 'step--completed': currentStep > 3 }"><span class="step__balloon"></span>Account</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 4, 'step--completed': currentStep > 4 }"><span class="step__balloon"></span>Submit</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 0, 'step--completed': forms.hermes.valid }"><span class="step__balloon"></span>Hermes Node</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 1, 'step--completed': forms.company.valid }"><span class="step__balloon"></span>Company</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 2, 'step--completed': forms.user.valid }"><span class="step__balloon"></span>Owner</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 3, 'step--completed': currentStep > 3 }"><span class="step__balloon"></span>Submit</li>
       </ul>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 1">
+    <div class="step__content" *ngIf="currentStep === 0">
       <form [formGroup]="forms.hermes" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Hermes Title
-          <input formControlName="title" type="text" spellcheck="false">
+          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="1">
         </label>
 
         <label>Hermes Gateway URL
-          <input formControlName="url" type="url" spellcheck="false">
+          <input formControlName="url" type="url" spellcheck="false" tabindex="2">
         </label>
 
         <button type="submit" class="button button--blue" [disabled]="!forms.hermes.valid">Next</button>
@@ -39,15 +39,15 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 2">
+    <div class="step__content" *ngIf="currentStep === 1">
       <form [formGroup]="forms.company" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Company Title
-          <input formControlName="title" type="text" spellcheck="false">
+          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="3">
         </label>
 
         <label>Company Time Zone
-          <input formControlName="timezone" list="timezones" spellcheck="false">
+          <input formControlName="timezone" list="timezones" spellcheck="false" tabindex="4">
           <datalist id="timezones">
             <option *ngFor="let timezone of timezones" value="{{ timezone }}">
           </datalist>
@@ -59,11 +59,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 3">
-      <form [formGroup]="forms.account" (ngSubmit)="currentStep = currentStep + 1">
+    <div class="step__content" *ngIf="currentStep === 2">
+      <form [formGroup]="forms.user" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Full name
-          <input formControlName="full_name" type="text" spellcheck="false">
+          <input formControlName="full_name" type="text" spellcheck="false" autofocus>
         </label>
 
         <label>Email
@@ -79,12 +79,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         </label>
 
         <button type="button" class="button" (click)="currentStep = currentStep - 1">Back</button>
-        <button type="submit" class="button button--blue" [disabled]="!forms.account.valid">Next</button>
+        <button type="submit" class="button button--blue" [disabled]="!forms.user.valid">Next</button>
 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 4">
+    <div class="step__content" *ngIf="currentStep === 3">
       <button type="button" class="button" (click)="currentStep = currentStep - 1">Back</button>
       <button type="button" class="button button--blue" (click)="setup()">Register</button>
     </div>
