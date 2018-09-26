@@ -202,6 +202,12 @@ button.is-loading .btn-spinner {
   }
 }
 
+.checkbox--checked {
+  .custom_checkbox__icon:after {
+    display: block;
+  }
+}
+
 @-webkit-keyframes three-quarters {
   0% {
     -webkit-transform: rotate(0);
