@@ -5,10 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const Web3 = require('Web3');
+const Web3 = require('web3');
 const web3 = new Web3();
 
 const validateEmail = (email) => {
@@ -23,17 +22,17 @@ const usersSchema = mongoose.Schema({
   },
   full_name: {
     type: String,
-    required: [(value) => !value, '"Full name" field is required' ],
+    required: [(value) => !value, '"Full name" field is required'],
     minLength: 4
   },
   email: {
     type: String,
-    required: [(value) => !value, '"Email" field is required' ],
+    required: [(value) => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid']
   },
   password: {
     type: String,
-    required: [(value) => !value, '"Password" field is required' ]
+    required: [(value) => !value, '"Password" field is required']
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -41,12 +40,12 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: [(value) => !value, '"Address" field is required' ],
+    required: [(value) => !value, '"Address" field is required'],
     validate: [web3.utils.isAddress, 'Address format is not valid']
   },
   token: {
     type: String,
-    required: [(value) => !value, '"Token" field is required' ]
+    required: [(value) => !value, '"Token" field is required']
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,

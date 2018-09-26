@@ -179,7 +179,7 @@ exports.getEvents = (req, res, next) => {
           }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
 
         req.status = 200;
-        req.json = events;
+        req.json = { events };
         return next();
       }
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));

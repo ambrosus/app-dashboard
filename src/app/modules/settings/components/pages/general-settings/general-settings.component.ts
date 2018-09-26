@@ -3,8 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
-
-declare let moment: any;
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-general-settings',

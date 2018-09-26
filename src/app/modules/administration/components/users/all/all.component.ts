@@ -3,8 +3,7 @@ import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
-
-declare let moment: any;
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-all',
@@ -41,8 +40,7 @@ export class AllComponent implements OnInit, OnDestroy {
         console.log('Users GET: ', resp);
         this.users = resp.data.map(user => {
 
-          if (user.role && user.role.title) { }
-          else { user.role = { title: 'No role assigned yet' }; }
+          if (!user.role && !user.role.title) { user.role = { title: 'No role assigned yet' }; }
           user.lastLogin = moment(user.lastLogin).tz(this.user.company.timeZone).fromNow();
 
           return user;
