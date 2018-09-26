@@ -33,7 +33,7 @@
     "codelyzer": "~4.2.1",
     "cors": "^2.8.4",
     "express": "^4.16.3",
-    "http": "0.0.0",
+    "http": "0.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.6.3",
