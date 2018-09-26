@@ -1,9 +1,8 @@
 import { AuthService } from 'app/services/auth.service';
-import { Component, ElementRef, Renderer2 } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from 'app/services/storage.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
