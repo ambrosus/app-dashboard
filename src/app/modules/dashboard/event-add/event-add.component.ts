@@ -95,13 +95,13 @@ export class EventAddComponent implements OnInit {
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lat')
+          ['controls'][0].get('lat')
             .setValue(obj.location.geometry.coordinates[0]);
           locationEvent
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lng')
+          ['controls'][0].get('lng')
             .setValue(obj.location.geometry.coordinates[1]);
           Object.keys(obj).map(key => {
             const exists = locationEvent.get(key);
@@ -117,13 +117,13 @@ export class EventAddComponent implements OnInit {
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lat')
+          ['controls'][0].get('lat')
             .setValue(obj.location.geometry.coordinates[0]);
           locationAsset
             .get('location')
             .get('geometry')
             .get('coordinates')
-            ['controls'][0].get('lng')
+          ['controls'][0].get('lng')
             .setValue(obj.location.geometry.coordinates[1]);
           Object.keys(obj).map(key => {
             const exists = locationAsset.get(key);
@@ -342,12 +342,12 @@ export class EventAddComponent implements OnInit {
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lat').value;
+      ['controls'][0].get('lat').value;
       let lng = locationEvent
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lng').value;
+      ['controls'][0].get('lng').value;
       let name = locationEvent.get('name').value;
       let city = locationEvent.get('city').value;
       let country = locationEvent.get('country').value;
@@ -367,12 +367,12 @@ export class EventAddComponent implements OnInit {
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lat').value;
+      ['controls'][0].get('lat').value;
       lng = locationAsset
         .get('location')
         .get('geometry')
         .get('coordinates')
-        ['controls'][0].get('lng').value;
+      ['controls'][0].get('lng').value;
       name = locationAsset.get('name').value;
       city = locationAsset.get('city').value;
       country = locationAsset.get('country').value;
@@ -456,11 +456,13 @@ export class EventAddComponent implements OnInit {
     // Identifiers
     const ide = this.eventForm.get('identifiers')['controls'];
     if (ide.length > 0) {
-      const identifiers = {};
-      identifiers['type'] = 'ambrosus.event.identifiers';
-      ide.map((item) => {
-        identifiers[item.value.identifier] = [];
-        identifiers[item.value.identifier].push(item.value.identifierValue);
+      const identifiers = {
+        type: 'ambrosus.event.identifiers',
+        identifiers: {}
+      };
+      ide.map(item => {
+        identifiers['identifiers'][item.value.identifier] = [];
+        identifiers['identifiers'][item.value.identifier].push(item.value.identifierValue);
       });
       event['content']['data'].push(identifiers);
     }
@@ -471,12 +473,12 @@ export class EventAddComponent implements OnInit {
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lat').value;
+    ['controls'][0].get('lat').value;
     let lng = _locationEvent
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lng').value;
+    ['controls'][0].get('lng').value;
     let name = _locationEvent.get('name').value;
     let city = _locationEvent.get('city').value;
     let country = _locationEvent.get('country').value;
@@ -508,12 +510,12 @@ export class EventAddComponent implements OnInit {
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lat').value;
+    ['controls'][0].get('lat').value;
     lng = _locationAsset
       .get('location')
       .get('geometry')
       .get('coordinates')
-      ['controls'][0].get('lng').value;
+    ['controls'][0].get('lng').value;
     name = _locationAsset.get('name').value;
     city = _locationAsset.get('city').value;
     country = _locationAsset.get('country').value;
