@@ -68,7 +68,6 @@ exports.create = (req, res, next) => {
   }
 }
 
-
 /**
  * Delete multiple invites
  *
