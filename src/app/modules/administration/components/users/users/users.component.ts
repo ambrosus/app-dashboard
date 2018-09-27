@@ -12,25 +12,25 @@ export class UsersComponent implements OnInit {
       title: 'All users',
       link: 'all',
       icon: 'users',
-      role: 'users'
+      permission: 'users'
     },
     {
       title: 'Invite members',
       link: 'invite',
       icon: 'user-plus',
-      role: 'invites'
+      permission: 'invites'
     },
     {
       title: 'Invites',
       link: 'invites',
       icon: 'user-check',
-      role: 'invites'
+      permission: 'invites'
     },
     {
       title: 'Roles',
       link: 'roles',
       icon: 'user-check',
-      role: 'roles'
+      permission: 'roles'
     }
   ];
 
@@ -50,7 +50,7 @@ export class UsersComponent implements OnInit {
 
   generateSidebar() {
     this.userSidebar = this.sidebar.filter(module => {
-      const validPermission = this.permissions.filter(p => p === module['role']);
+      const validPermission = this.permissions.filter(p => p === module['permission']);
       if (validPermission.length !== 0 ) { return module; }
     });
   }
