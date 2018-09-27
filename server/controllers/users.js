@@ -5,18 +5,18 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const utilsPassword = require('../utils/password');
+const utilsPassword = _require('/utils/password');
 const mongoose = require('mongoose');
-const config = require('../config');
+const config = _require('/config');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 
-const User = require('../models/users');
-const Company = require('../models/companies');
-const Role = require('../models/roles');
-const Invite = require('../models/invites');
+const User = _require('/models/users');
+const Company = _require('/models/companies');
+const Role = _require('/models/roles');
+const Invite = _require('/models/invites');
 
 /**
  * Create a new user.

@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 
-const AuthController = require('../../controllers/auth');
+const AuthController = _require('/controllers/auth');
 
 const AuthRoutes = express.Router();
 

@@ -1,7 +1,7 @@
 const CronJob = require('cron').CronJob;
 const moment = require('moment');
 
-const Invites = require('./../models/invites');
+const Invites = _require('/models/invites');
 
 exports.start = () => {
 
