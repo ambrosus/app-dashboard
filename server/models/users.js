@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
+const findOrCreate = require('mongoose-findorcreate');
 
 const validateEmail = (email) => {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -72,6 +73,8 @@ const usersSchema = mongoose.Schema({
     default: +new Date()
   }
 });
+
+usersSchema.plugin(findOrCreate);
 
 usersSchema.pre('update', function(next) {
   this.updatedAt = +new Date();

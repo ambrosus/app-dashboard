@@ -60,6 +60,7 @@ app-root {
   display: inline-block;
   color: #55a8fd;
   cursor: pointer;
+  word-break: keep-all;
 
   &--blue {
     @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));

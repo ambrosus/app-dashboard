@@ -5,18 +5,18 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const utilsPassword = require('../utils/password');
+const utilsPassword = _require('/utils/password');
 const mongoose = require('mongoose');
-const config = require('../config');
+const config = _require('/config');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 
-const User = require('../models/users');
-const Company = require('../models/companies');
-const Role = require('../models/roles');
-const Invite = require('../models/invites');
+const User = _require('/models/users');
+const Company = _require('/models/companies');
+const Role = _require('/models/roles');
+const Invite = _require('/models/invites');
 
 /**
  * Create a new user.
@@ -49,59 +49,48 @@ exports.create = (req, res, next) => {
       if (_token['role']['title'] === 'admin') { permissions = ['register_account', 'create_entity'] }
     } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
+  const query = { $or: [{ email }, { address }] };
+  const _user = {
+    full_name,
+    email,
+    address,
+    token,
+    password,
+    company: mongoose.Types.ObjectId(company)
+  };
 
-  User.find({ $or: [{ email }, { address }] })
-    .then((users = []) => {
-      if (!users.length) {
-        const user = new User({
-          full_name,
-          email,
+  console.log('User: ', _user);
+
+  User.findOrCreate(query, _user)
+    .then(({ doc, created }) => {
+      if (created) {
+        console.log('User doc: ', doc, created);
+
+        // Register user in the hermes
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `AMB_TOKEN ${config.token}`
+        };
+        const body = {
           address,
-          token,
-          password
-        });
+          permissions,
+          accessLevel
+        };
+        axios.post(`${hermes.url}/accounts`, body, { headers })
+          .then(userRegistered => {
+            if (inviteToken) {
+              Invite.findOneAndRemove({ token: inviteToken })
+                .then(inviteDeleted => console.log('Invite deleted'))
+                .catch(error => console.log('Invite delete error: ', error));
+            }
 
-        if (company) { user['company'] = company; }
-
-        user
-          .save()
-          .then(user => {
-            const query = role ? { _id: role } : { id: 3 };
-
-            Role.findOne(query)
-              .then(role => {
-                if (role) {
-                  user.role = role;
-                  user.save();
-
-                  // Register user in the hermes
-                  const headers = {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: `AMB_TOKEN ${config.token}`
-                  };
-                  const body = {
-                    address,
-                    permissions,
-                    accessLevel
-                  };
-                  axios.post(`${hermes.url}/accounts`, body, { headers })
-                    .then(userRegistered => {
-                      if (inviteToken) {
-                        Invite.findOneAndRemove({ token: inviteToken })
-                          .then(inviteDeleted => console.log('Invite deleted'))
-                          .catch(error => console.log('Invite delete error: ', error));
-                      }
-
-                      req.status = 200;
-                      req.user = user;
-                      return next();
-                    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
-                } else { throw 'No user role'; }
-              }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      } else { throw 'Email or address is already in use'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+            req.status = 200;
+            req.user = doc;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
+      } else { throw 'User exists'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'User creation error: ', error })));
 }
 
 /**
@@ -291,7 +280,7 @@ exports.changePassword = (req, res, next) => {
             user.token = JSON.stringify(encData);
             bcrypt.hash(newPassword, 10, (err, hash) => {
               user.password = hash;
-              User.updateOne({email}, user)
+              User.updateOne({ email }, user)
                 .then(updateResponse => {
                   if (updateResponse) {
                     req.status = 200;

@@ -141,12 +141,12 @@ export class EventFormComponent implements OnInit, OnDestroy {
           break;
         case 'ambrosus.event.identifiers':
           // Identifiers
-          Object.keys(obj).map(key => {
+          Object.keys(obj['identifiers']).map(key => {
             if (key !== 'type') {
               (<FormArray>this.eventForm.get('identifiers')).push(
                 new FormGroup({
                   identifier: new FormControl(key, [Validators.required]),
-                  identifierValue: new FormControl(obj[key][0], [Validators.required])
+                  identifierValue: new FormControl(obj['identifiers'][key][0], [Validators.required])
                 })
               );
             }
