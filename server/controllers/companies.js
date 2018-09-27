@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 
-const Company = require('../models/companies');
+const Company = _require('/models/companies');
 
 /**
  * Create a new company.

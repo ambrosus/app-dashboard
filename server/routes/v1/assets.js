@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 
-const AssetsController = require('../../controllers/assets');
+const AssetsController = _require('/controllers/assets');
 
 const AssetsRoutes = express.Router();
 

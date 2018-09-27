@@ -8,8 +8,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const axios = require('axios');
 const mongoose = require('mongoose');
 
-const Asset = require('../models/assets');
-const assetsUtils = require('../utils/assets');
+const Asset = _require('/models/assets');
+const assetsUtils = _require('/utils/assets');
 
 const get = (url, token) => {
   const headers = {
@@ -179,7 +179,7 @@ exports.getEvents = (req, res, next) => {
           }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
 
         req.status = 200;
-        req.json = events;
+        req.json = { events };
         return next();
       }
     }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));

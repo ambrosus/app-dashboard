@@ -8,6 +8,6 @@
   <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validateJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)" #jsonInput [ngClass]="{ invalid: error }" [value]="textArea"></textarea>
   <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <a class="abtn m-l-20 btn-solid-ablue" (click)="save(jsonInput)">{{ prefill ? 'Edit' : 'Create' }} {{ for }}</a>
+    <button type="button" class="button button--blue m-l-20" (click)="save(jsonInput)">{{ prefill ? 'Edit' : 'Create' }} {{ for }}</button>
   </div>
 </div>

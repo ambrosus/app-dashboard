@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 
-const Hermes = require('../models/hermeses');
+const Hermes = _require('/models/hermeses');
 
 /**
  * Register a hermese node
