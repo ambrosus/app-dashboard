@@ -119,7 +119,7 @@ export class InviteComponent implements OnInit, OnDestroy {
     const members = this.inviteForm.get('members')['controls'];
     if (members.length > 0) {
       members.map((member) => {
-        const role = JSON.parse(member.get('role').value);
+        const role = member.get('role').value || {};
         const to = member.get('email').value;
         if (to) {
           invites.push({
