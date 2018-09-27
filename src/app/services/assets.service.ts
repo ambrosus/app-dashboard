@@ -1,24 +1,28 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 declare let Web3: any;
 
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
+  _events: BehaviorSubject<any> = new BehaviorSubject([]);
   hermes;
   ambrosus;
   web3;
 
-  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) {
+  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService, private router: Router) {
     this.initSDK();
     this.web3 = new Web3();
     window.addEventListener('user:refresh', () => this.initSDK());
   }
+
+  get events() { return this._events.asObservable(); }
 
   emit(type) { window.dispatchEvent(new Event(type)); }
 
@@ -55,7 +59,10 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
 
       this.http.get(url).subscribe(
-        resp => observer.next(resp),
+        (resp: any) => {
+          this._events.next(resp.events.results);
+          observer.next(resp);
+        },
         err => observer.error(err)
       );
     });
@@ -152,7 +159,12 @@ export class AssetsService {
       const body = { events };
 
       this.http.post(url, body).subscribe(
-        resp => observer.next(resp),
+        (resp: any) => {
+          this._events.next([...this._events.getValue()].concat(resp.events));
+          const u = `/assets/${resp.events[0].content.idData.assetId}/events/${resp.events[0].eventId}`;
+          if (location.pathname.includes('/events/')) { this.router.navigate([u]); }
+          observer.next(resp);
+        },
         err => observer.error(err)
       );
     });
@@ -178,5 +190,5 @@ export class AssetsService {
     return object.toString();
   }
 
-  validTimestamp = timestamp => new Date(timestamp).getTime() > 0;
+  validTimestamp(timestamp) { return new Date(timestamp).getTime() > 0; }
 }

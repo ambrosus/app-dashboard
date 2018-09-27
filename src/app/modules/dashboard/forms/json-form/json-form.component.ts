@@ -9,8 +9,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./json-form.component.scss']
 })
 export class JsonFormComponent implements OnInit, OnDestroy {
-  assetsCreateSubscription: Subscription;
-  eventsCreateSubscription: Subscription;
+  assetsCreateSub: Subscription;
+  eventsCreateSub: Subscription;
   error;
   success;
   spinner;
@@ -23,6 +23,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
 
   constructor(private storage: StorageService, private assetsService: AssetsService) { }
 
+  emit(type) { window.dispatchEvent(new Event(type)); }
+
   ngOnInit() {
     if (this.prefill && this.assetIds) {
       if (!Array.isArray(this.prefill)) { this.prefill = [this.prefill]; }
@@ -32,8 +34,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.assetsCreateSubscription) { this.assetsCreateSubscription.unsubscribe(); }
-    if (this.eventsCreateSubscription) { this.eventsCreateSubscription.unsubscribe(); }
+    if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
+    if (this.eventsCreateSub) { this.eventsCreateSub.unsubscribe(); }
   }
 
   validateJSON(input) {
@@ -146,11 +148,12 @@ export class JsonFormComponent implements OnInit, OnDestroy {
         // Create asset and info event
         const asset = this.generateAsset();
         const infoEvent = this.generateEvents(json, [asset.assetId]);
-        this.assetsCreateSubscription = this.assetsService.createAssets([asset], infoEvent).subscribe(
+        this.assetsCreateSub = this.assetsService.createAssets([asset], infoEvent).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
+            this.emit('asset:created');
           },
           err => {
             this.error = err;
@@ -161,10 +164,11 @@ export class JsonFormComponent implements OnInit, OnDestroy {
       } else {
         // Edit or add events
         const events = this.generateEvents(json);
-        this.eventsCreateSubscription = this.assetsService.createEvents(events).subscribe(
+        this.eventsCreateSub = this.assetsService.createEvents(events).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
+            this.emit('event:created');
           },
           err => {
             this.error = err;

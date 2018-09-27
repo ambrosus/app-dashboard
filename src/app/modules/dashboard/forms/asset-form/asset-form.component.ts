@@ -1,14 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-form',
   templateUrl: './asset-form.component.html',
   styleUrls: ['./asset-form.component.scss']
 })
-export class AssetFormComponent implements OnInit {
+export class AssetFormComponent implements OnInit, OnDestroy {
+  createAssetsSub: Subscription;
+  createEventsSub: Subscription;
   assetForm: FormGroup;
   error;
   success;
@@ -22,11 +26,18 @@ export class AssetFormComponent implements OnInit {
 
   isObject(value) { return typeof value === 'object'; }
 
-  constructor(private storage: StorageService, private assetsService: AssetsService) { }
+  constructor(private storage: StorageService, private assetsService: AssetsService, private router: Router) { }
+
+  emit(type) { window.dispatchEvent(new Event(type)); }
 
   ngOnInit() {
     this.initForm();
     if (this.prefill) { this.prefillForm(); }
+  }
+
+  ngOnDestroy() {
+    if (this.createAssetsSub) { this.createAssetsSub.unsubscribe(); }
+    if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
   }
 
   private initForm() {
@@ -309,10 +320,11 @@ export class AssetFormComponent implements OnInit {
       if (this.prefill && this.assetId) {
         // Edit info event
         const infoEvent = this.generateInfoEvent();
-        this.assetsService.createEvents([infoEvent]).subscribe(
+        this.createEventsSub = this.assetsService.createEvents([infoEvent]).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
+            this.emit('event:created');
           },
           err => {
             this.error = err;
@@ -324,11 +336,12 @@ export class AssetFormComponent implements OnInit {
         // Create asset and info event
         const asset = this.generateAsset();
         const infoEvent = this.generateInfoEvent(asset.assetId);
-        this.assetsService.createAssets([asset], [infoEvent]).subscribe(
+        this.createAssetsSub = this.assetsService.createAssets([asset], [infoEvent]).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
+            this.emit('asset:created');
           },
           err => {
             this.error = err;

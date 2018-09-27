@@ -10,8 +10,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./event-form.component.scss']
 })
 export class EventFormComponent implements OnInit, OnDestroy {
-  eventForm: FormGroup;
   inputChangedSub: Subscription;
+  createEventsSub: Subscription;
+  eventForm: FormGroup;
   error;
   success;
   spinner;
@@ -27,6 +28,8 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.initForm();
   }
 
+  emit(type) { window.dispatchEvent(new Event(type)); }
+
   ngOnInit() {
     this.assetsService.inputChanged.subscribe((resp: any) => resp.control.get('identifier').setValue(resp.value));
     this.initForm();
@@ -35,6 +38,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.inputChangedSub) { this.inputChangedSub.unsubscribe(); }
+    if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
   }
 
   private initForm() {
@@ -450,10 +454,11 @@ export class EventFormComponent implements OnInit, OnDestroy {
       // Make a request
       const events = [];
       this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
-      this.assetsService.createEvents(events).subscribe(
+      this.createEventsSub = this.assetsService.createEvents(events).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Success';
+          this.emit('event:created');
         },
         err => {
           this.error = err;
