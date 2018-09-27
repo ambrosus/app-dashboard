@@ -41,7 +41,7 @@ export class PermissionsGuard implements CanActivate {
   getRoutePermission(route: string): string {
     if (route === '/administration/users/all') {
       return 'users';
-    } else if (route === '/administration/users/invite' || route === '/administration/users/invite') {
+    } else if (route === '/administration/users/invite' || route === '/administration/users/invites') {
       return 'invites';
     } else if (route === '/administration/users/roles') {
       return 'roles';
