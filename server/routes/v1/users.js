@@ -8,11 +8,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 const express = require('express');
 
-const checkAddress = require('../../middleware/checkAddress');
+const checkAddress = _require('/middleware/checkAddress');
 const checkPermission = _require('/middleware/checkPermission');
 
 const UsersController = _require('/controllers/users');
-
 
 const routes = express.Router();
 

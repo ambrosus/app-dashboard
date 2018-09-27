@@ -6,14 +6,14 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const config = require('../config');
-const tokenEncrypt = require('../utils/password');
-const email = require('../utils/email');
-const inviteTemplate = require('../assets/templates/email/invite.template.html');
+const config = _require('/config');
+const tokenEncrypt = _require('/utils/password');
+const email = _require('/utils/email');
+const inviteTemplate = _require('/assets/templates/email/invite.template.html');
 const slug = require('slug')
 
-const Invite = require('../models/invites');
-const Company = require('../models/companies');
+const Invite = _require('/models/invites');
+const Company = _require('/models/companies');
 
 /**
  * Create a new invite

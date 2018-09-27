@@ -7,11 +7,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 
-const Role = require('../../models/roles');
+const Role = _require('/models/roles');
 
-const HermesesController = require('../../controllers/hermeses');
-const CompaniesController = require('../../controllers/companies');
-const UsersController = require('../../controllers/users');
+const HermesesController = _require('/controllers/hermeses');
+const CompaniesController = _require('/controllers/companies');
+const UsersController = _require('/controllers/users');
 
 const SetupRoutes = express.Router();
 
