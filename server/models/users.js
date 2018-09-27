@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const Web3 = require('Web3');
+const Web3 = require('web3');
 const web3 = new Web3();
 
 const validateEmail = (email) => {
@@ -23,17 +23,17 @@ const usersSchema = mongoose.Schema({
   },
   full_name: {
     type: String,
-    required: [(value) => !value, '"Full name" field is required' ],
+    required: [(value) => !value, '"Full name" field is required'],
     minLength: 4
   },
   email: {
     type: String,
-    required: [(value) => !value, '"Email" field is required' ],
+    required: [(value) => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid']
   },
   password: {
     type: String,
-    required: [(value) => !value, '"Password" field is required' ]
+    required: [(value) => !value, '"Password" field is required']
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -41,12 +41,12 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: [(value) => !value, '"Address" field is required' ],
+    required: [(value) => !value, '"Address" field is required'],
     validate: [web3.utils.isAddress, 'Address format is not valid']
   },
   token: {
     type: String,
-    required: [(value) => !value, '"Token" field is required' ]
+    required: [(value) => !value, '"Token" field is required']
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,

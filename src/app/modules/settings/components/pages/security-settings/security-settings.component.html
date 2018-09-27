@@ -15,9 +15,7 @@
   </div>
   <div class="flex flex-direction-r justify-content-fe align-items-c">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <button type="submit" class="abtn m-l-20 btn-solid-ablue">
-      Change Password
-    </button>
+    <button type="submit" class="button button--blue m-l-20">Change Password</button>
   </div>
   <div class="m-t-30 center">
     <h5 *ngIf="error" style="color: #ea7070;">{{ error }}</h5>
@@ -54,7 +52,9 @@
       </tr>
 
       <tr *ngIf="sessions.length > 1">
-        <td></td><td></td><td></td>
+        <td></td>
+        <td></td>
+        <td></td>
         <td><a class="abtn m-l-20 btn-solid-aorange" (click)="logoutOfAllDevices()">Logout of all devices</a></td>
       </tr>
 
