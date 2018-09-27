@@ -19,58 +19,58 @@ const validateEmail = (email) => {
 const usersSchema = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    auto: true,
   },
   full_name: {
     type: String,
     required: [(value) => !value, '"Full name" field is required'],
-    minLength: 4
+    minLength: 4,
   },
   email: {
     type: String,
     required: [(value) => !value, '"Email" field is required'],
-    validate: [validateEmail, 'E-mail format is not valid']
+    validate: [validateEmail, 'E-mail format is not valid'],
   },
   password: {
     type: String,
-    required: [(value) => !value, '"Password" field is required']
+    required: [(value) => !value, '"Password" field is required'],
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies'
+    ref: 'Companies',
   },
   address: {
     type: String,
     required: [(value) => !value, '"Address" field is required'],
-    validate: [web3.utils.isAddress, 'Address format is not valid']
+    validate: [web3.utils.isAddress, 'Address format is not valid'],
   },
   token: {
     type: String,
-    required: [(value) => !value, '"Token" field is required']
+    required: [(value) => !value, '"Token" field is required'],
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Roles'
+    ref: 'Roles',
   },
   profile: {
-    image: String
+    image: String,
   },
   active: {
     type: Boolean,
-    default: true
+    default: true,
   },
   settings: String,
   lastLogin: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   }
 });
 
@@ -82,7 +82,9 @@ usersSchema.pre('update', function(next) {
 });
 
 usersSchema.pre('save', function(next) {
+  
   if (!this.isModified('password')) return next();
+  
   bcrypt.hash(this.password, 10, (err, hash) => {
     if (!err) {
       this.password = hash;
@@ -91,6 +93,7 @@ usersSchema.pre('save', function(next) {
       next();
     } else { throw new Error('Failure in password hashing').toString(); }
   });
+  
 });
 
 module.exports = mongoose.model('Users', usersSchema);
