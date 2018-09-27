@@ -10,7 +10,7 @@ export class UsersComponent implements OnInit {
   sidebar = [
     {
       title: 'All users',
-      link: 'users',
+      link: 'all',
       icon: 'users',
       role: 'users'
     },
