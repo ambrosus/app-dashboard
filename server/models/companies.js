@@ -25,7 +25,8 @@ const companiesSchema = mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users'
+    ref: 'Users',
+    index: { unique: true }
   },
   active: {
     type: Boolean,
