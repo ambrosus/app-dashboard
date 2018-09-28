@@ -4,17 +4,24 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { HttpResponse } from './response.interface';
+import { UsersService } from './../services/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private http: HttpClient, private storage: StorageService, private auth: AuthService) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private storage: StorageService,
+    private auth: AuthService,
+    private user: UsersService
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
 
     console.log('canActivate@SetUpGuard');
 
     return new Promise((resolve) => {
-      this.http.get('/api/hermeses').subscribe((res: HttpResponse) => {
+      this.auth.getHermeses().subscribe((res: HttpResponse) => {
 
         if (state.url === '/login' && res.totalCount === 0) {
           this.router.navigate(['/setup']);

@@ -97,4 +97,13 @@ export class UsersService {
 
     });
   }
+
+  getUser() {
+    return new Observable(observer => {
+    this.http.get('/api/users').subscribe(
+      (user: any) => { observer.next(user); },
+      err => { observer.error(err); }
+    );
+    });
+  }
 }

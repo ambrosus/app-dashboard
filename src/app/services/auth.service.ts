@@ -163,4 +163,14 @@ export class AuthService {
     this.emit('user:refresh');
     this.router.navigate(['/login']);
   }
+
+  getHermeses() {
+    return new Observable(observer => {
+    this.http.get('/api/hermeses').subscribe(
+      (user: any) => { observer.next(user); },
+      err => { observer.error(err); }
+    );
+    });
+  }
+
 }
