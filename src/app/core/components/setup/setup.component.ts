@@ -21,6 +21,8 @@ export class SetupComponent implements OnInit {
     user?: FormGroup
   } = {}
 
+  formsPromise;
+
   currentStep: number = 0;
 
   error;
@@ -44,7 +46,7 @@ export class SetupComponent implements OnInit {
       url: new FormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(4),
-      ]))
+      ])),
     });
 
     this.forms.company = new FormGroup({
@@ -59,22 +61,23 @@ export class SetupComponent implements OnInit {
         Validators.email,
       ])),
       password: new FormControl('', [Validators.required]),
-      confirmPassword: new FormControl('', Validators.compose([
+      passwordConfirm: new FormControl('', Validators.compose([
         Validators.required,
-        this.confirmPasswords.bind(this)
+        this.comparePasswords.bind(this)
       ])),
     });
   }
 
-  confirmPasswords(fieldControl: FormControl) {
+  ngOnInit() {
+  }
+
+  comparePasswords(fieldControl: FormControl) {
 
     try {
       return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true }
     } catch (e) { return null }
 
   }
-
-  ngOnInit() { }
 
   setup() {
 
@@ -84,8 +87,6 @@ export class SetupComponent implements OnInit {
       user: this.forms.user.value,
     };
 
-    console.log(body);
-
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
 
     console.log('address: ', address);
@@ -93,6 +94,11 @@ export class SetupComponent implements OnInit {
 
     body.user.token = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
     body.user.address = address;
+
+    this.formsPromise = new Promise((resolve, reject) => {
+      this.address = address;
+      this.secret = privateKey;
+    });
 
     this.http.post('/api/setup', body).subscribe(
       (resp: any) => {

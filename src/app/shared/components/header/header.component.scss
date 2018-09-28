@@ -9,7 +9,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 @import 'var';
 
 app-header{
-  flex: none;
+  flex-shrink: 0;
 }
 
 .header {
