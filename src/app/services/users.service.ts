@@ -38,7 +38,7 @@ export class UsersService {
   }
 
   getRoles() {
-    this.http.get('/api/roles').subscribe(
+    this.http.get('/api/users/roles').subscribe(
       (roles: any) => {
         this._roles.next(roles);
       },
@@ -51,7 +51,7 @@ export class UsersService {
   createRole(json) {
 
     return new Observable(observer => {
-      this.http.post('/api/roles', json).subscribe(role => {
+      this.http.post('/api/users/roles', json).subscribe(role => {
 
         this._roles.next([...this._roles.getValue(), role]);
 
@@ -64,7 +64,7 @@ export class UsersService {
 
   updateRole(id, json) {
     return new Observable(observer => {
-      this.http.put(`/api/roles/${id}`, json).subscribe((role: any) => {
+      this.http.put(`/api/users/role/${id}`, json).subscribe((role: any) => {
 
         console.log(role);
 
@@ -85,7 +85,7 @@ export class UsersService {
   deleteRole(id) {
     console.log(id);
     return new Observable(observer => {
-      this.http.delete(`/api/roles/${id}`).subscribe(() => {
+      this.http.delete(`/api/users/role/${id}`).subscribe(() => {
 
         console.log('deteted');
 
