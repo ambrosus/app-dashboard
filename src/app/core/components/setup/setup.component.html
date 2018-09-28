@@ -10,28 +10,26 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <div class="card">
     <div class="card__header">
       <h2 class="card__title">Setup Dashboard</h2>
-      <p class="card__body">Description to explain the important part of this process. Maybe add a second sentence to test
-        the length.<p>
+      <p class="card__body">Description to explain the important part of this process. Maybe add a second sentence to test the length.<p>
     </div>
 
     <div class="steps">
       <ul>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 1, 'step--completed': currentStep > 1 }"><span class="step__balloon"></span>Hermes Node</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 2, 'step--completed': currentStep > 2 }"><span class="step__balloon"></span>Company</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 3, 'step--completed': currentStep > 3 }"><span class="step__balloon"></span>Account</li>
-        <li class="step" [ngClass]="{ 'step--active': currentStep == 4, 'step--completed': currentStep > 4 }"><span class="step__balloon"></span>Submit</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 0, 'step--completed': forms.hermes.valid }"><span class="step__balloon"></span>Hermes Node</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 1, 'step--completed': forms.company.valid }"><span class="step__balloon"></span>Company</li>
+        <li class="step" [ngClass]="{ 'step--active': currentStep == 2, 'step--completed': forms.user.valid }"><span class="step__balloon"></span>Owner</li>
       </ul>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 1">
+    <div class="step__content" *ngIf="currentStep === 0">
       <form [formGroup]="forms.hermes" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Hermes Title
-          <input formControlName="title" type="text" spellcheck="false">
+          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="1">
         </label>
 
         <label>Hermes Gateway URL
-          <input formControlName="url" type="url" spellcheck="false">
+          <input formControlName="url" type="url" spellcheck="false" tabindex="2">
         </label>
 
         <button type="submit" class="button button--blue" [disabled]="!forms.hermes.valid">Next</button>
@@ -39,19 +37,17 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 2">
+    <div class="step__content" *ngIf="currentStep === 1">
       <form [formGroup]="forms.company" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Company Title
-          <input formControlName="title" type="text" spellcheck="false">
+          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="3">
         </label>
 
-        <label>Company Time Zone
-          <input formControlName="timezone" list="timezones" spellcheck="false">
-          <datalist id="timezones">
-            <option *ngFor="let timezone of timezones" value="{{ timezone }}">
-          </datalist>
+        <label>
+          <ng-select [searchable]="true" [selectOnTab]="true" formControlName="timezone" [items]="timezones"></ng-select>
         </label>
+
 
         <button type="button" class="button" (click)="currentStep = currentStep - 1">Back</button>
         <button type="submit" class="button button--blue" [disabled]="!forms.company.valid">Next</button>
@@ -59,11 +55,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 3">
-      <form [formGroup]="forms.account" (ngSubmit)="currentStep = currentStep + 1">
+    <div class="step__content" *ngIf="currentStep === 2">
+      <form [formGroup]="forms.user" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Full name
-          <input formControlName="full_name" type="text" spellcheck="false">
+          <input formControlName="full_name" type="text" spellcheck="false" autofocus>
         </label>
 
         <label>Email
@@ -75,21 +71,17 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         </label>
 
         <label>Password Confirm
-          <input formControlName="confirmPassword" type="password" spellcheck="false">
+          <input formControlName="passwordConfirm" type="password" spellcheck="false">
         </label>
 
         <button type="button" class="button" (click)="currentStep = currentStep - 1">Back</button>
-        <button type="submit" class="button button--blue" [disabled]="!forms.account.valid">Next</button>
+        <button type="button" class="button button--blue" [disabled]="!forms.user.valid" [promiseBtn]="formsPromise" (click)="setup()">Register</button>
 
       </form>
     </div>
 
-    <div class="step__content" *ngIf="currentStep === 4">
-      <button type="button" class="button" (click)="currentStep = currentStep - 1">Back</button>
-      <button type="button" class="button button--blue" (click)="setup()">Register</button>
-    </div>
 
-    <div class="step__content" *ngIf="false">
+    <div class="step__content" *ngIf="address && secret">
       <div *ngIf="success">
         <p class="card__body">Setup was successfuly done. Now you can login with your email and password.</p>
         <p class="card__body">But, before you go, this is your <b>address: {{ address }}</b> and <b>secret: {{ secret }}</b>

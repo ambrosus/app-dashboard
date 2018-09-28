@@ -7,10 +7,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 
 app-setup {
-  flex: 1 0 auto;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   justify-content: center;
+  padding: 15px 0;
+  flex-shrink: 0;
 
   .card {
     width: 100%;
@@ -89,7 +91,7 @@ app-setup {
     }
 
     &--completed {
-      @extend .step--active;
+      color: #121e3e;
 
       .step__balloon {
         background: #24d17e;
@@ -116,6 +118,33 @@ app-setup {
     &__content {
       max-width: 450px;
       margin: 0 auto;
+
+      &__info {
+        text-align: left;
+
+        &__list {
+          &__row {
+            display: flex;
+            flex-direction: row;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+
+            &:last-child {
+              border-bottom: 0;
+            }
+
+            &__key {
+              flex: 1;
+              font-weight: 600;
+            }
+
+            &__value {
+              flex: 1;
+              font-weight: 100;
+            }
+          }
+        }
+      }
     }
   }
 

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import * as moment from 'moment-timezone';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 
 declare let Web3: any;
@@ -18,12 +18,12 @@ export class SetupComponent implements OnInit {
   forms: {
     hermes?: FormGroup,
     company?: FormGroup,
-    account?: FormGroup
+    user?: FormGroup
   } = {}
 
-  setupForm: FormGroup;
+  formsPromise;
 
-  currentStep: number = 1;
+  currentStep: number = 0;
 
   error;
   timezones = [];
@@ -32,6 +32,10 @@ export class SetupComponent implements OnInit {
   secret;
 
   constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
+
+    this.web3 = new Web3();
+
+    this.timezones = moment.tz.names();
 
     this.forms.hermes = new FormGroup({
       title: new FormControl('', Validators.compose([
@@ -42,40 +46,46 @@ export class SetupComponent implements OnInit {
       url: new FormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(4),
-      ]))
+      ])),
     });
 
     this.forms.company = new FormGroup({
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
-    })
+    });
 
-    this.forms.account = new FormGroup({
+    this.forms.user = new FormGroup({
       full_name: new FormControl('', [Validators.required]),
       email: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+        Validators.email,
       ])),
       password: new FormControl('', [Validators.required]),
-      confirmPassword: new FormControl('', [Validators.required]),
-    })
-
-    this.web3 = new Web3();
-
-    this.timezones = moment.tz.names();
+      passwordConfirm: new FormControl('', Validators.compose([
+        Validators.required,
+        this.comparePasswords.bind(this)
+      ])),
+    });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
+
+  comparePasswords(fieldControl: FormControl) {
+
+    try {
+      return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true }
+    } catch (e) { return null }
+
+  }
 
   setup() {
 
     const body = {
       hermes: this.forms.hermes.value,
       company: this.forms.company.value,
-      user: this.forms.account.value,
+      user: this.forms.user.value,
     };
-
-    console.log(body);
 
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
 
@@ -84,6 +94,11 @@ export class SetupComponent implements OnInit {
 
     body.user.token = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
     body.user.address = address;
+
+    this.formsPromise = new Promise((resolve, reject) => {
+      this.address = address;
+      this.secret = privateKey;
+    });
 
     this.http.post('/api/setup', body).subscribe(
       (resp: any) => {
