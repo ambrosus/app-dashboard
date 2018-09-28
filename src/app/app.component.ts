@@ -9,20 +9,19 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 })
 export class AppComponent {
   navigationSub: Subscription;
-  noWebWorker = false;
-  loginPage;
+  initialLoad = false;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private router: Router) {
-    if (typeof(Worker) === 'undefined') {
-      this.noWebWorker = true;
-    }
-
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
-        this.loginPage = location.pathname === '/login' || location.pathname === '/setup';
+        this.initialLoad = true;
       }
     });
+  }
+
+  hideHeader() {
+    return location.pathname === '/login' || location.pathname === '/setup';
   }
 
   // Dropdown close on click outside of it
