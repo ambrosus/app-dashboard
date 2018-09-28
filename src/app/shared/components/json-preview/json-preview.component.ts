@@ -66,7 +66,9 @@ export class JsonPreviewComponent implements OnInit {
         delete eventObj.author;
         delete eventObj.action;
         delete eventObj.eventId;
-        delete eventObj.location;
+        let type = eventObj.type.split('.');
+        type = type[type.length - 1];
+        if (type !== 'location') { delete eventObj.location; }
       });
     });
     const data = this.stringify(copy, null, 3);
