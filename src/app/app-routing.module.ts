@@ -10,9 +10,7 @@ import { SetupComponent } from './core/components/setup/setup.component';
 import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
-import { SetUpGuard } from './guards/setup.guard';
 import { AuthGuard } from './guards/auth.guard';
-import { AdminGuard } from './guards/admin.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 
 const routes: Routes = [
@@ -22,12 +20,12 @@ const routes: Routes = [
     redirectTo: '/login'
   }, {
     path: 'setup',
-    canActivate: [SetUpGuard],
+    canActivate: [AuthGuard],
     component: SetupComponent,
     runGuardsAndResolvers: 'always'
   }, {
     path: 'login',
-    canActivate: [SetUpGuard],
+    canActivate: [AuthGuard],
     component: LoginComponent,
     runGuardsAndResolvers: 'always'
   }, {
@@ -41,7 +39,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   }, {
     path: 'administration',
-    canActivate: [AdminGuard, PermissionsGuard],
+    canActivate: [PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   }, {
@@ -72,6 +70,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, SetUpGuard, AdminGuard, PermissionsGuard]
+  providers: [AuthGuard, PermissionsGuard]
 })
 export class AppRoutingModule { }
