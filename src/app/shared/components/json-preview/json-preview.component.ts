@@ -61,6 +61,13 @@ export class JsonPreviewComponent implements OnInit {
       delete obj.metadata;
       delete obj.content.idData.dataHash;
       delete obj.content.signature;
+      obj.content.data.map(eventObj => {
+        delete eventObj.timestamp;
+        delete eventObj.author;
+        delete eventObj.action;
+        delete eventObj.eventId;
+        delete eventObj.location;
+      });
     });
     const data = this.stringify(copy, null, 3);
     const blob = new Blob([data], { type: 'application/json' });
