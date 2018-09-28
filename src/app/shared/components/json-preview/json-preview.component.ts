@@ -56,7 +56,6 @@ export class JsonPreviewComponent implements OnInit {
     copy.map(obj => {
       obj.content.idData.assetId = '{{ assetId }}';
       obj.content.idData.createdBy = '{{ userAddress }}';
-      obj.content.idData.timestamp = '{{ timestamp }}';
       delete obj.eventId;
       delete obj.metadata;
       delete obj.content.idData.dataHash;
