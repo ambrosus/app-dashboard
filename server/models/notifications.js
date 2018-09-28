@@ -6,6 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
+const findOrCreate = require('mongoose-findorcreate');
 
 const notificationsSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -25,12 +26,14 @@ const notificationsSchema = mongoose.Schema({
   updatedAt: { type: Date, default: +new Date() }
 });
 
-notificationsSchema.pre('update', function (next) {
+notificationsSchema.plugin(findOrCreate);
+
+notificationsSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
-notificationsSchema.pre('save', function (next) {
+notificationsSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
 });

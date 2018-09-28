@@ -7,6 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
+const findOrCreate = require('mongoose-findorcreate');
 
 const assetsSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -19,5 +20,6 @@ const assetsSchema = mongoose.Schema({
 });
 
 assetsSchema.plugin(mongoosePaginate);
+assetsSchema.plugin(findOrCreate);
 
 module.exports = mongoose.model('Assets', assetsSchema);

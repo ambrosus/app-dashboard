@@ -49,59 +49,48 @@ exports.create = (req, res, next) => {
       if (_token['role']['title'] === 'admin') { permissions = ['register_account', 'create_entity'] }
     } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
+  const query = { $or: [{ email }, { address }] };
+  const _user = {
+    full_name,
+    email,
+    address,
+    token,
+    password,
+    company: mongoose.Types.ObjectId(company)
+  };
 
-  User.find({ $or: [{ email }, { address }] })
-    .then((users = []) => {
-      if (!users.length) {
-        const user = new User({
-          full_name,
-          email,
+  console.log('User: ', _user);
+
+  User.findOrCreate(query, _user)
+    .then(({ doc, created }) => {
+      if (created) {
+        console.log('User doc: ', doc, created);
+
+        // Register user in the hermes
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `AMB_TOKEN ${config.token}`
+        };
+        const body = {
           address,
-          token,
-          password
-        });
+          permissions,
+          accessLevel
+        };
+        axios.post(`${hermes.url}/accounts`, body, { headers })
+          .then(userRegistered => {
+            if (inviteToken) {
+              Invite.findOneAndRemove({ token: inviteToken })
+                .then(inviteDeleted => console.log('Invite deleted'))
+                .catch(error => console.log('Invite delete error: ', error));
+            }
 
-        if (company) { user['company'] = company; }
-
-        user
-          .save()
-          .then(user => {
-            const query = role ? { _id: role } : { id: 3 };
-
-            Role.findOne(query)
-              .then(role => {
-                if (role) {
-                  user.role = role;
-                  user.save();
-
-                  // Register user in the hermes
-                  const headers = {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: `AMB_TOKEN ${config.token}`
-                  };
-                  const body = {
-                    address,
-                    permissions,
-                    accessLevel
-                  };
-                  axios.post(`${hermes.url}/accounts`, body, { headers })
-                    .then(userRegistered => {
-                      if (inviteToken) {
-                        Invite.findOneAndRemove({ token: inviteToken })
-                          .then(inviteDeleted => console.log('Invite deleted'))
-                          .catch(error => console.log('Invite delete error: ', error));
-                      }
-
-                      req.status = 200;
-                      req.user = user;
-                      return next();
-                    }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
-                } else { throw 'No user role'; }
-              }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      } else { throw 'Email or address is already in use'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+            req.status = 200;
+            req.user = doc;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
+      } else { throw 'User exists'; }
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'User creation error: ', error })));
 }
 
 /**
@@ -118,21 +107,13 @@ exports.setOwnership = (req, res, next) => {
   const company = req.company || req.body.company;
 
   if (user && company) {
-    Company.findById(company._id)
-      .then(_company => {
-        if (_company) {
-          User.findById(user._id)
-            .then(_user => {
-              if (_user) {
-                _company.owner = _user;
-                _company.save()
-                  .then(saved => {
-                    req.status = 200;
-                    return next();
-                  }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-              } else { throw 'No user found'; }
-            }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-        } else { throw 'No company found'; }
+    User.findById(user._id)
+      .then(_user => {
+        Company.findByIdAndUpdate(company._id, { owner: user._id })
+          .then(_saved => {
+            req.status = 200;
+            return next();
+          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
       }).catch(error => (console.log(error), res.status(400).json({ message: error })));
   } else if (!user) {
     return res.status(400).json({ message: '"user" object is required' });
@@ -291,7 +272,7 @@ exports.changePassword = (req, res, next) => {
             user.token = JSON.stringify(encData);
             bcrypt.hash(newPassword, 10, (err, hash) => {
               user.password = hash;
-              User.updateOne({email}, user)
+              User.updateOne({ email }, user)
                 .then(updateResponse => {
                   if (updateResponse) {
                     req.status = 200;

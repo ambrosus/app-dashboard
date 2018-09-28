@@ -14,8 +14,8 @@ import { Subscription } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class EventComponent implements OnInit, OnDestroy {
-  routeSubscription: Subscription;
-  routeParamsSubscription: Subscription;
+  routeSub: Subscription;
+  routeParamsSub: Subscription;
   previewAppUrl;
   assetId;
   eventId;
@@ -38,16 +38,16 @@ export class EventComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnDestroy() {
-    if (this.routeSubscription) { this.routeSubscription.unsubscribe(); }
-    if (this.routeParamsSubscription) { this.routeParamsSubscription.unsubscribe(); }
+    if (this.routeSub) { this.routeSub.unsubscribe(); }
+    if (this.routeParamsSub) { this.routeParamsSub.unsubscribe(); }
   }
 
   ngOnInit() {
-    this.routeSubscription = this.route.data.subscribe(
+    this.routeSub = this.route.data.subscribe(
       data => this.event = data.event,
       err => console.log('Event GET error: ', err)
     );
-    this.routeParamsSubscription = this.route.params.subscribe(resp => {
+    this.routeParamsSub = this.route.params.subscribe(resp => {
       if (resp.edit && resp['edit'] === 'true') { this.edit = true; }
       this.assetId = resp.assetid;
       this.eventId = resp.eventid;
