@@ -1,7 +1,5 @@
-<p class="no-support" *ngIf="noWebWorker">Ambrosus dashboard does not support your current browser. Please update your browser to the newest version.</p>
-
-<app-header *ngIf="!loginPage"></app-header>
+<app-header *ngIf="initialLoad && !hideHeader()"></app-header>
 
 <router-outlet></router-outlet>
 
-<app-footer></app-footer>
+<app-footer *ngIf="initialLoad"></app-footer>
