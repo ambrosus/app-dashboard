@@ -23,7 +23,7 @@ export class AssetComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private assetService: AssetsService
-  ) {}
+  ) { }
 
   isObject(value) {
     return typeof value === 'object';
@@ -37,7 +37,7 @@ export class AssetComponent implements OnInit {
     return json.replace(
       /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
 
-      function(match) {
+      function (match) {
         let cls = 'number';
         if (/^"/.test(match)) {
           if (/:$/.test(match)) {
@@ -81,12 +81,21 @@ export class AssetComponent implements OnInit {
       copy.push(JSON.parse(JSON.stringify(obj)));
     });
     copy.map(obj => {
-      obj.content.idData.assetId = '{{assetId}}';
-      obj.content.idData.createdBy = '{{userAddress}}';
+      obj.content.idData.assetId = '{{ assetId }}';
+      obj.content.idData.createdBy = '{{ userAddress }}';
       delete obj.eventId;
       delete obj.metadata;
       delete obj.content.idData.dataHash;
       delete obj.content.signature;
+      obj.content.data.map(eventObj => {
+        delete eventObj.timestamp;
+        delete eventObj.author;
+        delete eventObj.action;
+        delete eventObj.eventId;
+        let type = eventObj.type.split('.');
+        type = type[type.length - 1];
+        if (type !== 'location') { delete eventObj.location; }
+      });
     });
     const data = this.stringify(copy, null, 3);
     const blob = new Blob([data], { type: 'application/json' });
