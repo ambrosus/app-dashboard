@@ -23,36 +23,21 @@ export class PermissionsGuard implements CanActivate {
     return new Promise(resolve => {
       this.http.get('/api/users').subscribe((res: HttpResponse) => {
         resolve(true);
-        if (res.data[0].role && res.data[0].role.permissions) {
-          const permissions = res.data[0].role.permissions;
-          if (this.checkPermission(permissions, this.routePermission[state.url])) {
-            resolve(true);
-          } else {
-            this.router.navigate(['/assets']);
-            resolve(false);
-          }
-        } else if (res.data[0] && res.data[0].company && res.data[0].company._id) {
-          const companyId = res.data[0].company._id;
-          const userId = res.data[0]._id;
-          if (this.checkOwnership(companyId, userId)) {
-            resolve(true);
-          } else {
-            this.router.navigate(['/assets']);
-            resolve(false);
-          }
-        } else { resolve(false); }
+        // if (res.data[0].role && res.data[0].role.permissions) {
+        //   const permissions = res.data[0].role.permissions;
+        //   if (this.checkPermission(permissions, this.routePermission[state.url])) {
+        //     resolve(true);
+        //   } else {
+        //     this.router.navigate(['/assets']);
+        //     resolve(false);
+        //   }
+        // } else { resolve(false); }
       });
     });
   }
 
   checkPermission(permissions: string[], routePermission: string): boolean {
     return permissions.find(permission => permission === routePermission) ? true : false;
-  }
-
-  checkOwnership(companyId: string, userId: string): boolean {
-    // We need to find a way to check ownership of a user
-    // Attn. Required
-    return true;
   }
 
 }
