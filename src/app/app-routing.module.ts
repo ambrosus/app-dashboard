@@ -11,6 +11,7 @@ import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
+import { AuthLoginGuard } from './guards/auth-login.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 
 const routes: Routes = [
@@ -39,7 +40,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   }, {
     path: 'administration',
-    canActivate: [PermissionsGuard],
+    canActivate: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   }, {
@@ -70,6 +71,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, PermissionsGuard]
+  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard]
 })
 export class AppRoutingModule { }
