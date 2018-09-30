@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HelpService } from './help.service';
 
 @Component({
   selector: 'app-help',
@@ -62,7 +63,14 @@ export class HelpComponent implements OnInit, OnDestroy {
     }
   ];
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2) { }
+  constructor(
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer,
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private helpService: HelpService
+  ) { }
 
   sanitizeHTML = this.sanitizer.bypassSecurityTrustHtml;
 
@@ -77,9 +85,8 @@ export class HelpComponent implements OnInit, OnDestroy {
           this.question = url[1].path;
         }
 
-        const _url = `/assets/help/pages/${this.category}/${this.question}.html`;
-        this.contentSub = this.http.get(_url, { responseType: 'text' }).subscribe(
-          page => {
+        this.contentSub = this.helpService.get(this.category, this.question).subscribe(
+          (page: any) => {
             this.content = this.sanitizeHTML(page);
 
             try {

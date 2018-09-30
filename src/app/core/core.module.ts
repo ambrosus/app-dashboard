@@ -13,6 +13,7 @@ import { SetupComponent } from './components/setup/setup.component';
 import { InviteComponent } from './components/invite/invite.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { HelpService } from './components/help/help.service';
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, NgSelectModule, ReactiveFormsModule, Angular2PromiseButtonModule.forRoot()],
@@ -30,8 +31,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
-      multi: true
-    }
+      multi: true,
+    },
+    HelpService
   ]
 })
 export class CoreModule { }
