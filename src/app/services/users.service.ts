@@ -100,4 +100,15 @@ export class UsersService {
 
     })
   }
+
+  createUser(body, token) {
+    const url = `/api/users?token=${token}`;
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (resp: any) => observer.next(resp),
+        (err) => { console.log('Create account error: ', err); observer.error(err); }
+      );
+    });
+  }
+
 }
