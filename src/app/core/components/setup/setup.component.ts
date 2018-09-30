@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import * as moment from 'moment-timezone';
 import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
+import { SetupService } from './setup.service';
 
 declare let Web3: any;
 @Component({
@@ -31,7 +31,11 @@ export class SetupComponent implements OnInit {
   address;
   secret;
 
-  constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
+  constructor(
+    private router: Router,
+    private _auth: AuthService,
+    private setupService: SetupService
+    ) {
 
     this.web3 = new Web3();
 
@@ -100,11 +104,11 @@ export class SetupComponent implements OnInit {
       this.secret = privateKey;
     });
 
-    this.http.post('/api/setup', body).subscribe(
+    this.setupService.post(body).subscribe(
       (resp: any) => {
         this._auth.login(body.user.email, body.user.password).subscribe(() => {
           this.router.navigate(['/assets']);
-        })
+        });
       },
       err => {
         const error = err.error.message ? err.error.message : 'Setup error';
