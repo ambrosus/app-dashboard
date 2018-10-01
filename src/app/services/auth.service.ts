@@ -10,7 +10,7 @@ declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   sdk;
@@ -25,7 +25,7 @@ export class AuthService {
     const hermes = <any>this.storage.get('hermes') || <any>{};
     this.sdk = new AmbrosusSDK({
       apiEndpoint: hermes.url,
-      Web3
+      Web3,
     });
     this.web3 = new Web3();
   }
@@ -91,7 +91,6 @@ export class AuthService {
 
 
   verifyAccount(address, secret) {
-
     const token = this.getToken(secret);
 
     return new Observable(observer => {
@@ -99,7 +98,12 @@ export class AuthService {
 
       this.http.post('/api/auth/verify', { address, token, deviceInfo }).subscribe(
         user => {
-          console.log(user);
+          this.storage.set('secret', secret);
+          this.storage.set('user', user);
+          this.storage.set('token', token);
+          this.addAccount(user);
+          this.emit('user:refresh');
+          return observer.next(user);
         },
         err => observer.error(err)
       );

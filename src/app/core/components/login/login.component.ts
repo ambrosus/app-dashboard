@@ -12,8 +12,10 @@ import { MatDialog } from '@angular/material';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
-  addressForm: FormGroup;
+  forms: {
+    loginForm?: FormGroup,
+    addressForm?: FormGroup
+  } = {};
 
   error;
   deviceInfo;
@@ -22,37 +24,30 @@ export class LoginComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private router: Router,
-    public dialog: MatDialog,
+    public dialog: MatDialog
   ) {
 
-    this.loginForm = new FormGroup({
+    this.forms.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.addressForm = new FormGroup({
+    this.forms.addressForm = new FormGroup({
       address: new FormControl(null, [Validators.required]),
       secret: new FormControl(null, [Validators.required]),
     });
 
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() { }
 
   verifyAccount() {
-    const address = this.addressForm.get('address').value;
-    const secret = this.addressForm.get('secret').value;
+    this.error = false;
+    const data = this.forms.addressForm.value;
 
-    if (this.addressForm.valid) {
-      this.error = false;
-    } else {
-      this.error = 'All fields are required';
-      return false;
-    }
+    if (!this.forms.addressForm.valid) { return this.error = 'All fields are required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.auth.verifyAccount(address, secret).subscribe((resp: any) => {
+      this.auth.verifyAccount(data.address, data.secret).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
@@ -60,26 +55,15 @@ export class LoginComponent implements OnInit {
         reject();
       });
     });
-
   }
 
   login() {
+    const data = this.forms.loginForm.value;
 
-    const email = this.loginForm.get('email').value;
-    const password = this.loginForm.get('password').value;
-
-    if (this.loginForm.valid) {
-      this.error = false;
-    } else {
-      this.error = 'All fields are required';
-      return false;
-    }
+    if (!this.forms.loginForm.valid) { return this.error = 'All fields are required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.auth.login(email, password).subscribe((resp: any) => {
-
-        console.log(resp);
-
+      this.auth.login(data.email, data.password).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
@@ -88,6 +72,4 @@ export class LoginComponent implements OnInit {
       });
     });
   }
-
-
 }
