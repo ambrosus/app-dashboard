@@ -11,9 +11,28 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const invitationsCron = require('./server/cron/invitation-cron');
 
+const compress = require('compression');
+const methodOverride = require('method-override');
+const cors = require('cors');
+const helmet = require('helmet');
+
 const APIRoutes = require('./server/routes/v1');
 
+/**
+ * Express instance
+ * @public
+ */
 const app = express();
+
+// gzip compression
+app.use(compress());
+
+// lets you use HTTP verbs such as PUT or DELETE
+// in places where the client doesn't support it
+app.use(methodOverride());
+
+// enable CORS - Cross Origin Resource Sharing
+app.use(cors());
 
 // Mongoose
 mongoose.Promise = global.Promise;
