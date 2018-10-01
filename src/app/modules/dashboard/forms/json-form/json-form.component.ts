@@ -21,7 +21,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   @Input() assetIds: String[];
   @Input() for = 'assets';
 
-  constructor(private storage: StorageService, private assetsService: AssetsService) { }
+  constructor(private storageService: StorageService, private assetsService: AssetsService) { }
 
   emit(type) { window.dispatchEvent(new Event(type)); }
 
@@ -81,8 +81,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   private generateAsset() {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const idData = {
       timestamp: Math.floor(new Date().getTime() / 1000),
@@ -104,8 +104,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   private generateEvents(json, _assetIds = this.assetIds) {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
     let allEvents = [];
 
     if (!Array.isArray(json)) { json = [json]; }

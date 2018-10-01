@@ -28,8 +28,8 @@ export class HeaderComponent implements OnInit {
   addAccount;
 
   constructor(
-    private auth: AuthService,
-    private storage: StorageService,
+    private authService: AuthService,
+    private storageService: StorageService,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer
   ) { }
@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit {
   }
 
   headerInit() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
     this.profile_image = '';
 
@@ -50,21 +50,21 @@ export class HeaderComponent implements OnInit {
       this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
     }
 
-    this.isLoggedin = this.auth.isLoggedIn();
-    this.users = this.storage.get('accounts') || [];
+    this.isLoggedin = this.authService.isLoggedIn();
+    this.users = this.storageService.get('accounts') || [];
     this.dialog.closeAll();
   }
 
   switchAccount(address) {
-    this.auth.switchAccount(address);
+    this.authService.switchAccount(address);
   }
 
   logout() {
-    this.auth.logout();
+    this.authService.logout();
   }
 
   logoutAll() {
-    this.auth.logoutAll();
+    this.authService.logoutAll();
   }
 
   addAccountDialog() {

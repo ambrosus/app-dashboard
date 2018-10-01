@@ -26,7 +26,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
 
   isObject(value) { return typeof value === 'object'; }
 
-  constructor(private storage: StorageService, private assetsService: AssetsService, private router: Router) { }
+  constructor(private storageService: StorageService, private assetsService: AssetsService, private router: Router) { }
 
   emit(type) { window.dispatchEvent(new Event(type)); }
 
@@ -208,8 +208,8 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   }
 
   private generateAsset() {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const idData = {
       timestamp: Math.floor(new Date().getTime() / 1000),
@@ -231,8 +231,8 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   }
 
   private generateInfoEvent(_assetId = this.assetId) {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const data = [];
 

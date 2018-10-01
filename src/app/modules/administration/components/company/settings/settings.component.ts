@@ -24,7 +24,7 @@ export class SettingsComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
 
-  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) { }
+  constructor(private storageService: StorageService, private http: HttpClient, private authService: AuthService) { }
 
   ngOnInit() {
     this.initSettingsForm();
@@ -42,7 +42,7 @@ export class SettingsComponent implements OnInit {
   }
 
   prefillSettings() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.company = this.user['company'] || {};
     try {
       this.settings = JSON.parse(this.company.settings);
@@ -92,20 +92,20 @@ export class SettingsComponent implements OnInit {
         (resp: any) => {
           this.spinner = false;
           this.success = true;
-          this.auth.getAccount(this.user.email).subscribe(
+          this.authService.getAccount(this.user.email).subscribe(
             user => {
-              this.storage.set('user', user);
+              this.storageService.set('user', user);
               this.emit('user:refresh');
             },
             err => {
-              if (err.status === 401) { this.auth.logout(); }
+              if (err.status === 401) { this.authService.logout(); }
               console.log('Get account error: ', err);
             }
           );
           console.log('Edit company: ', resp);
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
           console.log('Edit company error: ', err);

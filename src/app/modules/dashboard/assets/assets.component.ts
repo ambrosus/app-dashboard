@@ -43,7 +43,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   constructor(
     private assetsService: AssetsService,
-    private auth: AuthService,
+    private authService: AuthService,
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
@@ -63,7 +63,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loadAssets(page = 1, perPage = 15) {
     this.resetLoadAssets();
     this.loader = true;
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     this.assetsSubscription = this.assetsService.getAssets({ page, perPage, token }).subscribe(
       ({ assets }) => {
         console.log(assets);
@@ -131,7 +131,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loader = true;
 
     const searchValues = search.split(',');
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     const options = {
       assets: true,
       token,

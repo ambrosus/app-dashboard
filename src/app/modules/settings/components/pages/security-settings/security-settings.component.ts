@@ -27,7 +27,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   logoutSessionSub: Subscription;
   logoutDevicesSub: Subscription;
 
-  constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
+  constructor(private http: HttpClient, private storageService: StorageService, private authService: AuthService) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
@@ -40,7 +40,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   }
 
   getSessions() {
-    const email = this.storage.get('user')['email'];
+    const email = this.storageService.get('user')['email'];
     const url = `/api/auth/sessions`;
 
     this.getSessionsSub = this.http.get(url).subscribe(
@@ -49,7 +49,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         this.sessions = resp;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('GET sessions error: ', err);
       }
     );
@@ -61,7 +61,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
     this.logoutSessionSub = this.http.delete(url).subscribe(
       resp => this.getSessions(),
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('DELETE session error: ', err);
       }
     );
@@ -75,7 +75,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
   changePassword() {
     this.resetErrors();
-    const email = this.storage.get('user')['email'];
+    const email = this.storageService.get('user')['email'];
     const newPassword = this.resetForm.get('password').value;
     const oldPassword = this.resetForm.get('oldPassword').value;
     const passwordConfirm = this.resetForm.get('passwordConfirm').value;
@@ -100,7 +100,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         this.resetSuccess = true;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         this.spinner = false;
         this.error = err.error.message;
         console.log('Reset password error: ', err);
