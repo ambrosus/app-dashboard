@@ -13,11 +13,11 @@ exports.start = () => {
         invites.forEach(invite => {
           if (moment().diff(invite.validUntil) < 0) {
             Invites.findByIdAndRemove(invite._id)
-              .then(deleted => console.log('Invite expired, deleted'))
-              .catch(error => console.log('Invite delete error: ', error));
+              .then(deleted => logger.info('Invite expired, deleted'))
+              .catch(error => logger.error('Invite delete error: ', error));
           }
         });
-      }).catch(error => console.log('CRON Invites find error: ', error));
+      }).catch(error => logger.error('CRON Invites find error: ', error));
   });
 
   job.start();
