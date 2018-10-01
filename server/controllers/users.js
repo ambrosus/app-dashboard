@@ -57,12 +57,12 @@ exports.create = (req, res, next) => {
     company: mongoose.Types.ObjectId(company)
   };
 
-  console.log('User: ', _user);
+  logger.info('User: ', _user);
 
   User.findOrCreate(query, _user)
     .then(({ doc, created }) => {
       if (created) {
-        console.log('User doc: ', doc, created);
+        logger.info('User doc: ', doc, created);
 
         // Register user in the hermes
         const headers = {
@@ -79,16 +79,16 @@ exports.create = (req, res, next) => {
           .then(userRegistered => {
             if (inviteToken) {
               Invite.findOneAndRemove({ token: inviteToken })
-                .then(inviteDeleted => console.log('Invite deleted'))
-                .catch(error => console.log('Invite delete error: ', error));
+                .then(inviteDeleted => logger.info('Invite deleted'))
+                .catch(error => logger.error('Invite delete error: ', error));
             }
 
             req.status = 200;
             req.user = doc;
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes error' })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes error' })));
       } else { throw 'User exists'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'User creation error: ', error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'User creation error: ', error })));
 }
 
 /**
@@ -111,8 +111,8 @@ exports.setOwnership = (req, res, next) => {
           .then(_saved => {
             req.status = 200;
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
   } else if (!user) {
     return res.status(400).json({ message: '"user" object is required' });
   } else if (!company) {
@@ -147,12 +147,12 @@ exports.getAccount = (req, res, next) => {
     .select('-active -createdAt -updatedAt -__v')
     .then(user => {
       if (user) {
-        console.log(user);
+        logger.info(user);
         req.status = 200;
         req.json = user;
         return next();
       } else { throw 'No user found'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -189,7 +189,7 @@ exports.getAccounts = (req, res, next) => {
         };
         return next();
       } else { throw 'No users found'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -211,7 +211,7 @@ exports.getSettings = (req, res, next) => {
         req.json = user.settings;
         return next();
       } else { throw 'No accounts found'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 exports.getNotifications = (req, res, next) => {}
@@ -245,7 +245,7 @@ exports.edit = (req, res, next) => {
         req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -277,13 +277,13 @@ exports.changePassword = (req, res, next) => {
                     req.json = { message: 'Password reset successful' };
                     return next();
                   } else { throw 'Error in updating password'; }
-                }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+                }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
             });
           } catch (err) {
             throw 'Incorrect password';
           }
         } else { throw 'No user found with this email address'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
   } else if (!email) {
     return res.status(400).json({ message: '"email" is required' });
   } else if (!oldPassword) {
@@ -313,7 +313,7 @@ exports.assignRole = (req, res, next) => {
           req.json = { message: 'Role updated successfully', data: updateResponse };
           return next();
         } else { throw 'Update data error'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
   } else if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   } else if (!role) {
