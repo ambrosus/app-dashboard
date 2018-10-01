@@ -20,7 +20,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <option value="type">type</option>
         </select>
         <input type="text" id="search" class="grey-placeholder" placeholder="{{ searchPlaceholder }}">
-        <a class="abtn btn-solid-ablue" (click)="search()">Search</a>
+        <button type="button" class="button button--blue" (click)="search()">Search</button>
       </div>
       <p class="center m-t-10">Separate multiple entries with comma, ie. GTN: 123, GLN: 1234 (identifiers)</p>
 
@@ -32,10 +32,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <!-- Select all -->
     <div class="table__item table__item__header">
       <label class="table__label table__label__heading" for="selectAll" (click)="onSelectAll($event, input)">
-        <div class="relative">
-          <input type="checkbox" id="selectAll" class="table__checkbox" #input>
-          <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
-        </div>
+        <label class="table__label">
+          <input type="checkbox" id="selectAll" appCustomCheckbox #input>
+        </label>
         <span class="capitalize color-ablue--base">{{ selectAllText }}</span>
       </label>
       <!-- Bulk actions -->
@@ -45,8 +44,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <option value="createEvent">Create Event</option>
         </select>
       </div>
-      <!-- Refresh -->
-      <button class="abtn btn-outline-ablue m-l-auto" routerLink="/assets/new">Create Asset</button>
+      <button type="button" class="button button--blue m-l-auto" routerLink="/assets/new">Create Asset</button>
     </div>
 
     <div class="table__item table__item__header header--sticky" appSticky [addClass]="'sticky'">
@@ -69,9 +67,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <!-- Items -->
     <div class="table__item table" *ngFor="let asset of assets; let i = index" (click)="onSelect($event, element)" id="{{ asset.assetId }}" #element>
       <label class="table__label" for="{{ i }}">
-        <div class="check">
-          <app-svg-icon name="check" fill="#5078f1" width="13px" class="checkbox-icon"></app-svg-icon>
-        </div>
+        <input type="checkbox" appCustomCheckbox>
       </label>
 
       <div class="table__column__image">

@@ -9,8 +9,8 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
-const User = require('../models/users');
-const Company = require('../models/companies');
+const User = _require('/models/users');
+const Company = _require('/models/companies');
 
 /**
  * Logs in user
@@ -54,7 +54,7 @@ exports.login = (req, res, next) => {
 
           } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
         } else { throw 'No user found'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
   } else if (!email) {
     return res.status(400).json({ message: 'User "email" is required' });
   } else if (!password) {
@@ -114,8 +114,8 @@ exports.verifyAccount = (req, res, next) => {
               req.json = { message: 'No registered user' };
               return next();
             });
-        }).catch(error => (console.log(error), res.status(400).json({ message: 'Hermes account error' })));
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error', error })));
+        }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes account error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Company GET error', error })));
 }
 
 /**
@@ -129,7 +129,7 @@ exports.verifyAccount = (req, res, next) => {
 exports.logout = (req, res, next) => {
   req.session.destroy(error => {
     if (error) {
-      console.log('User logout error: ', error);
+      logger.warn('User logout error: ', error);
       return res.status(400).json({ message: 'User logout error' });
     }
     req.status = 200;

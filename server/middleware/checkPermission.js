@@ -5,8 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const User = require('../models/users');
-const Company = require('../models/companies');
+const User = _require('/models/users');
+const Company = _require('/models/companies');
 const mongoose = require('mongoose');
 
 module.exports = action => {
@@ -36,7 +36,7 @@ module.exports = action => {
                   }
                 } catch(err) { throw 'Unauthorized'; }
               }
-            }).catch(error => { console.log('error: ' + error); return res.status(401).json({ message: error }); });
+            }).catch(error => { logger.error('error: ' + error); return res.status(401).json({ message: error }); });
         }).catch(error => { throw 'No user found' });
     } catch (error) { return res.status(401).json({ message: error }); }
   }
@@ -48,7 +48,7 @@ getUser = userId => {
       .populate('role')
       .then(userObj => {
         resolve(userObj);
-      }).catch(error => { console.log('getUserObj error: ' + error);
+      }).catch(error => { logger.error('getUserObj error: ' + error);
         reject(error) });
   })
 }
@@ -64,7 +64,7 @@ checkOwnership = userObject => {
           } else {
             resolve(false);
           }
-        }).catch(error => { console.log('checkOwnership error: ' + error);
+        }).catch(error => { logger.error('checkOwnership error: ' + error);
           reject(error) });
     } else { reject('No companyId inside user object') }
   })

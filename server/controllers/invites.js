@@ -6,14 +6,14 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const config = require('../config');
-const tokenEncrypt = require('../utils/password');
-const email = require('../utils/email');
-const inviteTemplate = require('../assets/templates/email/invite.template.html');
+const config = _require('/config');
+const tokenEncrypt = _require('/utils/password');
+const email = _require('/utils/email');
+const inviteTemplate = _require('/assets/templates/email/invite.template.html');
 const slug = require('slug')
 
-const Invite = require('../models/invites');
-const Company = require('../models/companies');
+const Invite = _require('/models/invites');
+const Company = _require('/models/companies');
 
 /**
  * Create a new invite
@@ -49,17 +49,17 @@ exports.create = (req, res, next) => {
               invitation.subject = `${user.full_name} invited you to join ${user.company.title} Dasbhoard`;
               invitation.from = `no-reply@${slug(user.company.title)}.com`;
               email.send(invitation)
-                .then(sent => console.log('Email sent'))
-                .catch(error => console.log('Email send error: ', error));
+                .then(sent => logger.info('Email sent'))
+                .catch(error => logger.error('Email send error: ', error));
             });
 
             req.status = 200;
             req.json = { message: 'Success' };
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 
         } else { throw 'No company found'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 
   } else if (!invites || invites.length === 0) {
     return res.status(400).json({ message: '"invites" need to be a non-empty array.' })
@@ -67,7 +67,6 @@ exports.create = (req, res, next) => {
     return res.status(400).json({ message: '"user" is required' })
   }
 }
-
 
 /**
  * Delete multiple invites
@@ -87,7 +86,7 @@ exports.delete = (req, res, next) => {
       req.status = 200;
       req.json = { message: 'Successfuly deleted', data: deleted };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -109,7 +108,7 @@ exports.getAll = (req, res, next) => {
       req.status = 200;
       req.json = { resultCount: invites.length, data: invites };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }
 
 /**
@@ -132,7 +131,7 @@ exports.verify = (req, res, next) => {
       Invite.findOneAndRemove({ token })
         .then(deleted => {
           return res.status(400).json({ message: 'Invitation expired' });
-        }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
     } else {
       Invite.findOne({ token })
         .then(invite => {
@@ -141,7 +140,7 @@ exports.verify = (req, res, next) => {
             req.json = { message: 'Token is valid' };
             return next();
           } else { throw 'No invite'; }
-        }).catch(error => (console.log(error), res.status(404).json({ message: error })))
+        }).catch(error => (logger.error(error), res.status(404).json({ message: error })))
     }
   } else { return res.status(400).json({ message: 'Token is invalid' }) }
 }

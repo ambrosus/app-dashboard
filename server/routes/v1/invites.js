@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const express = require('express');
 const checkPermission = _require('/middleware/checkPermission');
 
-const InvitesController = require('../../controllers/invites');
+const InvitesController = _require('/controllers/invites');
 
 const InvitesRoutes = express.Router();
 

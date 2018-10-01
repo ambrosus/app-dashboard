@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'loopExclude',
-  pure: false
+  pure: false,
 })
 export class LoopExcludePipe implements PipeTransform {
   transform(items: any[], filter: Array<any>): any {

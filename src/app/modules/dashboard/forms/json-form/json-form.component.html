@@ -3,11 +3,11 @@
   <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">{{ error }}</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">{{ success }}</h4>
 
-  <label for="file" class="abtn btn-outline-ablue m-b-10">Upload JSON</label>
+  <label for="file" class="button m-b-10">Upload JSON</label>
   <input type="file" id="file" class="srt" accept=".json" name="file" (change)="uploadJSON($event)" #file>
   <textarea id="jsonInput" class="jsonInput" placeholder="Insert JSON" spellcheck="false" (keyup)="validateJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)" #jsonInput [ngClass]="{ invalid: error }" [value]="textArea"></textarea>
   <div class="flex flex-direction-r justify-content-fe align-items-c m-b-50 m-t-20">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <a class="abtn m-l-20 btn-solid-ablue" (click)="save(jsonInput)">{{ prefill ? 'Edit' : 'Create' }} {{ for }}</a>
+    <button type="button" class="button button--blue m-l-20" (click)="save(jsonInput)">{{ prefill ? 'Edit' : 'Create' }} {{ for }}</button>
   </div>
 </div>

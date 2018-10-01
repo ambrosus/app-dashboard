@@ -23,7 +23,7 @@
               <!-- Items -->
               <div class="table__item table" *ngFor="let permission of permissions; let i = index">
                 <label class="table__label">
-<input type="checkbox" [checked]="permissions[i].checked" (change)="permissions[i].checked = !permissions[i].checked" appCustomCheckbox>
+                  <input type="checkbox" [checked]="permissions[i].checked" (change)="permissions[i].checked = !permissions[i].checked" appCustomCheckbox>
                 </label>
 
                 <div class="table__column">
@@ -35,8 +35,8 @@
             </div>
           </div>
 
-          <a (click)="closeDialog()" #ngNoForm class="abtn btn-solid-ared">Close</a>
-          <button class="abtn m-l-20 btn-solid-ablue" type="submit" [promiseBtn]="createPromise">{{ _id ? 'Edit Role' : 'Create'}}</button>
+          <button type="button" (click)="closeDialog()" #ngNoForm class="button">Close</button>
+          <button class="button button--blue m-l-20" type="submit" [promiseBtn]="createPromise">{{ _id ? 'Edit Role' : 'Create'}}</button>
 
         </form>
       </div>

@@ -6,13 +6,13 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const Role = require('../models/roles');
+const Role = _require('/models/roles');
 
 /**
  * This route allows you to create a new Role and add a set of permissions to them
  *
  * @name createRole
- * @route {POST} api/roles
+ * @route {POST} api/users/roles
  * @bodyparam
  *      - title (e.g: { title: 'owner' }),
  *      - permissions (e.g: { permissions: "string1, string2" }),
@@ -32,14 +32,14 @@ exports.create = (req, res, next) => {
       req.json = role;
       return next();
     })
-    .catch(error => (console.log(error), res.status(400).json({ message: error })));
+    .catch(error => (logger.error(error), res.status(400).json({ message: error })));
 };
 
 /**
  * This route allows you to edit a Role
  *
  * @name editRole
- * @route {PUT} api/roles/:id
+ * @route {PUT} api/users/role/:id
  * @routeparam
  *      - id (e.g: /1),
  * @bodyparam
@@ -54,21 +54,21 @@ exports.editRole = (req, res, next) => {
 
   Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true })
     .then(role => {
-      console.log(role);
+      logger.info(role);
 
       if (role) {
         req.status = 200;
         req.json = role;
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 };
 
 /**
  * This route allows you to delete a Role
  *
  * @name deleteRole
- * @route {PUT} api/roles/:id
+ * @route {PUT} api/users/role/:id
  * @routeparam
  *      - id (e.g: /1)
  * @returns Status code 400 on failure
@@ -76,7 +76,7 @@ exports.editRole = (req, res, next) => {
  */
 exports.deleteRole = (req, res, next) => {
   const { _id } = req.params;
-  console.log(_id);
+  logger.info(_id);
 
   Role.findByIdAndRemove({ _id })
     .then(role => {
@@ -85,14 +85,14 @@ exports.deleteRole = (req, res, next) => {
         req.json = { message: 'Role deleted successfully' }
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 };
 
 /**
  * Fetch all Roles that exists in the Roles collection
  *
  * @name getRoles
- * @route {GET} api/roles
+ * @route {GET} api/users/roles
  * @returns Status code 400 on failure
  * @returns Roles array on success with status code 200
  */
@@ -103,5 +103,5 @@ exports.getRoles = (req, res, next) => {
       req.status = 200;
       req.json = roles;
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 };

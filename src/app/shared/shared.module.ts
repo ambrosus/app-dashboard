@@ -64,7 +64,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
-    SidebarComponent
+    SidebarComponent,
   ],
   declarations: [
     InputDirective,
@@ -88,8 +88,8 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
-    SidebarComponent
+    SidebarComponent,
   ],
-  entryComponents: [JsonPreviewComponent, EventAddComponent]
+  entryComponents: [ JsonPreviewComponent, EventAddComponent ],
 })
 export class SharedModule { }

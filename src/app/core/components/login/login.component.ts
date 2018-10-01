@@ -1,15 +1,15 @@
-import { AuthService } from 'app/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -20,18 +20,18 @@ export class LoginComponent implements OnInit {
   promiseAction;
 
   constructor(
-    private auth: AuthService,
+    private authService: AuthService,
     private router: Router,
     public dialog: MatDialog,
   ) {
 
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
-      password: new FormControl(null, [Validators.required])
+      password: new FormControl(null, [Validators.required]),
     });
     this.addressForm = new FormGroup({
       address: new FormControl(null, [Validators.required]),
-      secret: new FormControl(null, [Validators.required])
+      secret: new FormControl(null, [Validators.required]),
     });
 
   }
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.auth.verifyAccount(address, secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(address, secret).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.auth.login(email, password).subscribe((resp: any) => {
+      this.authService.login(email, password).subscribe((resp: any) => {
 
         console.log(resp);
 

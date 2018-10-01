@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
+import { InviteService } from 'app/services/invite.service';
 
 @Component({
   selector: 'app-invite',
@@ -18,7 +19,12 @@ export class InviteComponent implements OnInit, OnDestroy {
   roles = [];
   getRolesSub: Subscription;
 
-  constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
+  constructor(
+    private http: HttpClient,
+    private storage: StorageService,
+    private auth: AuthService,
+    private inviteService: InviteService
+  ) {
     this.initInviteForm();
   }
 
@@ -55,7 +61,7 @@ export class InviteComponent implements OnInit, OnDestroy {
         this.roles = resp.data;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Roles GET error: ', err);
       }
     );
@@ -85,23 +91,20 @@ export class InviteComponent implements OnInit, OnDestroy {
     this.errorsResetInvite();
     const body = {
       invites: this.generateInviteObject(),
-      user: this.storage.get('user')
+      user: this.storageService.get('user')
     };
     console.log(body);
 
     if (this.inviteForm.valid && body.invites.length > 0) {
       this.spinner = true;
 
-      // Send invites
-      const url = `/api/invites`;
-
-      this.http.post(url, body).subscribe(
+      this.inviteService.sendInvite(body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Invites sent';
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           console.log('Invites error: ', err);
           this.error = 'Invites failed';
         }
@@ -119,7 +122,7 @@ export class InviteComponent implements OnInit, OnDestroy {
     const members = this.inviteForm.get('members')['controls'];
     if (members.length > 0) {
       members.map((member) => {
-        const role = JSON.parse(member.get('role').value);
+        const role = member.get('role').value || {};
         const to = member.get('email').value;
         if (to) {
           invites.push({

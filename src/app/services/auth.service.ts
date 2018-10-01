@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import * as moment from 'moment-timezone';
 
-declare let moment: any;
 declare let AmbrosusSDK: any;
 declare let Web3: any;
 

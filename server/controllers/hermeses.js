@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 
-const Hermes = require('../models/hermeses');
+const Hermes = _require('/models/hermeses');
 
 /**
  * Register a hermese node
@@ -32,7 +32,7 @@ exports.create = (req, res, next) => {
       return next();
     }).catch(error => {
       if (error.code === 11000) { res.status(400).json({ message: 'Hermes URL already exists' }); }
-      else { console.log(error), res.status(400).json({ message: error }); }
+      else { logger.error(error), res.status(400).json({ message: error }); }
     });
 };
 
@@ -54,5 +54,5 @@ exports.getAll = (req, res, next) => {
       };
 
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 };

@@ -7,11 +7,12 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-event-form',
   templateUrl: './event-form.component.html',
-  styleUrls: ['./event-form.component.scss']
+  styleUrls: ['./event-form.component.scss'],
 })
 export class EventFormComponent implements OnInit, OnDestroy {
-  eventForm: FormGroup;
   inputChangedSub: Subscription;
+  createEventsSub: Subscription;
+  eventForm: FormGroup;
   error;
   success;
   spinner;
@@ -23,9 +24,11 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   isObject(value) { return typeof value === 'object'; }
 
-  constructor(private storage: StorageService, private assetsService: AssetsService) {
+  constructor(private storageService: StorageService, private assetsService: AssetsService) {
     this.initForm();
   }
+
+  emit(type) { window.dispatchEvent(new Event(type)); }
 
   ngOnInit() {
     this.assetsService.inputChanged.subscribe((resp: any) => resp.control.get('identifier').setValue(resp.value));
@@ -35,6 +38,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.inputChangedSub) { this.inputChangedSub.unsubscribe(); }
+    if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
   }
 
   private initForm() {
@@ -53,16 +57,16 @@ export class EventFormComponent implements OnInit, OnDestroy {
             coordinates: new FormArray([
               new FormGroup({
                 lat: new FormControl(null, []),
-                lng: new FormControl(null, [])
-              })
-            ])
-          })
+                lng: new FormControl(null, []),
+              }),
+            ]),
+          }),
         }),
         name: new FormControl(null, []),
         city: new FormControl(null, []),
         country: new FormControl(null, []),
         locationId: new FormControl(null, []),
-        GLN: new FormControl(null, [])
+        GLN: new FormControl(null, []),
       }),
       locationAsset: new FormGroup({
         location: new FormGroup({
@@ -70,17 +74,17 @@ export class EventFormComponent implements OnInit, OnDestroy {
             coordinates: new FormArray([
               new FormGroup({
                 lat: new FormControl(null, []),
-                lng: new FormControl(null, [])
-              })
-            ])
-          })
+                lng: new FormControl(null, []),
+              }),
+            ]),
+          }),
         }),
         name: new FormControl(null, []),
         city: new FormControl(null, []),
         country: new FormControl(null, []),
         locationId: new FormControl(null, []),
-        GLN: new FormControl(null, [])
-      })
+        GLN: new FormControl(null, []),
+      }),
     });
   }
 
@@ -137,12 +141,12 @@ export class EventFormComponent implements OnInit, OnDestroy {
           break;
         case 'ambrosus.event.identifiers':
           // Identifiers
-          Object.keys(obj).map(key => {
+          Object.keys(obj['identifiers']).map(key => {
             if (key !== 'type') {
               (<FormArray>this.eventForm.get('identifiers')).push(
                 new FormGroup({
                   identifier: new FormControl(key, [Validators.required]),
-                  identifierValue: new FormControl(obj[key][0], [Validators.required])
+                  identifierValue: new FormControl(obj['identifiers'][key][0], [Validators.required]),
                 })
               );
             }
@@ -165,7 +169,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
                       new FormGroup({
                         documentTitle: new FormControl(doc, [Validators.required]),
                         documentUrl: new FormControl(this.isObject(obj[key][doc]) ?
-                          obj[key][doc]['url'] || '' : obj[key][doc] || '', [Validators.required])
+                          obj[key][doc]['url'] || '' : obj[key][doc] || '', [Validators.required]),
                       })
                     );
                   });
@@ -176,7 +180,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
                   (<FormArray>customDataGroups).push(
                     new FormGroup({
                       groupName: new FormControl(key, [Validators.required]),
-                      groupValue: new FormArray([])
+                      groupValue: new FormArray([]),
                     })
                   );
                   // Add key-value to the group
@@ -185,7 +189,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
                       new FormGroup({
                         groupItemKey: new FormControl(_key, [Validators.required]),
                         groupItemValue: new FormControl(this.isObject(obj[key][_key]) ?
-                          JSON.stringify(obj[key][_key]).replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
+                          JSON.stringify(obj[key][_key]).replace(/["{}]/g, '') : obj[key][_key], [Validators.required]),
                       })
                     );
                   });
@@ -198,7 +202,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
                   (<FormArray>this.eventForm.get('customData')).push(
                     new FormGroup({
                       customDataKey: new FormControl(key, [Validators.required]),
-                      customDataValue: new FormControl(obj[key], [Validators.required])
+                      customDataValue: new FormControl(obj[key], [Validators.required]),
                     })
                   );
                 }
@@ -218,7 +222,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.eventForm.get('documents')).push(
       new FormGroup({
         documentTitle: new FormControl('', [Validators.required]),
-        documentUrl: new FormControl('', [Validators.required])
+        documentUrl: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -227,7 +231,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.eventForm.get('identifiers')).push(
       new FormGroup({
         identifier: new FormControl('', [Validators.required]),
-        identifierValue: new FormControl('', [Validators.required])
+        identifierValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -236,7 +240,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.eventForm.get('customData')).push(
       new FormGroup({
         customDataKey: new FormControl('', [Validators.required]),
-        customDataValue: new FormControl('', [Validators.required])
+        customDataValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -249,9 +253,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
         groupValue: new FormArray([
           new FormGroup({
             groupItemKey: new FormControl('', [Validators.required]),
-            groupItemValue: new FormControl('', [Validators.required])
-          })
-        ])
+            groupItemValue: new FormControl('', [Validators.required]),
+          }),
+        ]),
       })
     );
   }
@@ -261,7 +265,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     (<FormArray>groupsArray.at(i).get('groupValue')).push(
       new FormGroup({
         groupItemKey: new FormControl('', [Validators.required]),
-        groupItemValue: new FormControl('', [Validators.required])
+        groupItemValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -272,8 +276,8 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   private generateEvent(assetId) {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const data = [];
 
@@ -312,7 +316,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     if (ide.length > 0) {
       const identifiers = {
         type: 'ambrosus.event.identifiers',
-        identifiers: {}
+        identifiers: {},
       };
       ide.map(item => {
         identifiers['identifiers'][item.value.identifier] = [];
@@ -338,14 +342,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [lat, lng]
-          }
+            coordinates: [lat, lng],
+          },
         },
         name,
         city,
         country,
         locationId,
-        GLN
+        GLN,
       };
       data.push(location);
     }
@@ -367,14 +371,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [lat, lng]
-          }
+            coordinates: [lat, lng],
+          },
         },
         name,
         city,
         country,
         locationId,
-        GLN
+        GLN,
       };
       data.push(location);
     }
@@ -386,18 +390,18 @@ export class EventFormComponent implements OnInit, OnDestroy {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: this.eventForm.get('accessLevel').value,
       createdBy: address,
-      dataHash: this.assetsService.calculateHash(data)
+      dataHash: this.assetsService.calculateHash(data),
     };
 
     const content = {
       idData,
       signature: this.assetsService.sign(idData, secret),
-      data
+      data,
     };
 
     const event = {
       eventId: this.assetsService.calculateHash(content),
-      content
+      content,
     };
 
     return event;
@@ -439,21 +443,19 @@ export class EventFormComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.spinner = true;
-
       // Confirmation window
-      if (!confirm(`You are about to create an event for ${this.assetIds.length} ${this.assetIds.length === 1 ? 'asset' : 'assets'}, are you sure you want to proceed?`)) {
-        this.spinner = false;
-        return;
-      }
+      if (!confirm(`You are about to create an event for ${this.assetIds.length} ${this.assetIds.length === 1 ? 'asset' : 'assets'}, are you sure you want to proceed?`)) { return; }
+
+      this.spinner = true;
 
       // Make a request
       const events = [];
       this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
-      this.assetsService.createEvents(events).subscribe(
+      this.createEventsSub = this.assetsService.createEvents(events).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Success';
+          this.emit('event:created');
         },
         err => {
           this.error = err;

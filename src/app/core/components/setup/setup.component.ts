@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { DashboardService } from 'app/services/dashboard.service';
 
 import * as moment from 'moment-timezone';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
 
-declare let Web3: any;
 @Component({
   selector: 'app-setup',
   templateUrl: './setup.component.html',
@@ -15,23 +14,27 @@ declare let Web3: any;
 })
 export class SetupComponent implements OnInit {
 
+  formsPromise;
+
   forms: {
     hermes?: FormGroup,
     company?: FormGroup,
-    account?: FormGroup
-  } = {}
+    user?: FormGroup
+  } = { };
 
-  setupForm: FormGroup;
+  currentStep: number = 0;
 
-  currentStep: number = 1;
-
-  error;
   timezones = [];
-  web3;
+
   address;
   secret;
 
-  constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
+  constructor(
+    private router: Router,
+    private _auth: AuthService,
+    private Dashboard: DashboardService
+    ) {
+    this.timezones = moment.tz.names();
 
     this.forms.hermes = new FormGroup({
       title: new FormControl('', Validators.compose([
@@ -42,60 +45,59 @@ export class SetupComponent implements OnInit {
       url: new FormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(4),
-      ]))
+      ])),
     });
 
     this.forms.company = new FormGroup({
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
-    })
+      settings: new FormGroup({
+        preview_app: new FormControl(''),
+      }),
+    });
 
-    this.forms.account = new FormGroup({
+    this.forms.user = new FormGroup({
       full_name: new FormControl('', [Validators.required]),
       email: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+        Validators.email,
       ])),
       password: new FormControl('', [Validators.required]),
-      confirmPassword: new FormControl('', [Validators.required]),
-    })
-
-    this.web3 = new Web3();
-
-    this.timezones = moment.tz.names();
+      passwordConfirm: new FormControl('', Validators.compose([
+        Validators.required,
+        this.comparePasswords.bind(this)
+      ])),
+    });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
+
+  comparePasswords(fieldControl: FormControl) {
+
+    try {
+      return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true }
+    } catch (e) { return null }
+
+  }
 
   setup() {
 
-    const body = {
+    const data = {
       hermes: this.forms.hermes.value,
       company: this.forms.company.value,
-      user: this.forms.account.value,
+      user: this.forms.user.value,
     };
 
-    console.log(body);
+    this.formsPromise = new Promise((resolve, reject) => {
 
-    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+      this.dashboardService.initSetup(data).subscribe(({ address, secret }) => {
+        this.address = address;
+        this.secret = secret;
 
-    console.log('address: ', address);
-    console.log('privateKey: ', privateKey);
+        resolve();
+      })
 
-    body.user.token = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
-    body.user.address = address;
-
-    this.http.post('/api/setup', body).subscribe(
-      (resp: any) => {
-        this._auth.login(body.user.email, body.user.password).subscribe(() => {
-          this.router.navigate(['/assets']);
-        })
-      },
-      err => {
-        const error = err.error.message ? err.error.message : 'Setup error';
-        console.log('Setup error: ', error);
-      }
-    );
+    });
 
   }
 }

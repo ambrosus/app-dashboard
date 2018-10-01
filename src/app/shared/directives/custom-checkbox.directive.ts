@@ -1,7 +1,7 @@
 import { Directive, ElementRef, HostListener, Renderer2, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[appCustomCheckbox]'
+  selector: '[appCustomCheckbox]',
 })
 export class CustomCheckboxDirective implements OnInit {
 

@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 
-const Company = require('../models/companies');
+const Company = _require('/models/companies');
 
 /**
  * Create a new company.
@@ -34,7 +34,7 @@ exports.create = (req, res, next) => {
       return next();
     }).catch(error => {
       if (error.code === 11000) { res.status(400).json({ message: 'Company with this title already exists' }); }
-      else { console.log(error), res.status(400).json({ message: error }); }
+      else { logger.error(error), res.status(400).json({ message: error }); }
     });
 };
 
@@ -57,5 +57,5 @@ exports.edit = (req, res, next) => {
         req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
 }

@@ -6,11 +6,11 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-json-form',
   templateUrl: './json-form.component.html',
-  styleUrls: ['./json-form.component.scss']
+  styleUrls: ['./json-form.component.scss'],
 })
 export class JsonFormComponent implements OnInit, OnDestroy {
-  assetsCreateSubscription: Subscription;
-  eventsCreateSubscription: Subscription;
+  assetsCreateSub: Subscription;
+  eventsCreateSub: Subscription;
   error;
   success;
   spinner;
@@ -21,7 +21,9 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   @Input() assetIds: String[];
   @Input() for = 'assets';
 
-  constructor(private storage: StorageService, private assetsService: AssetsService) { }
+  constructor(private storageService: StorageService, private assetsService: AssetsService) { }
+
+  emit(type) { window.dispatchEvent(new Event(type)); }
 
   ngOnInit() {
     if (this.prefill && this.assetIds) {
@@ -32,8 +34,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.assetsCreateSubscription) { this.assetsCreateSubscription.unsubscribe(); }
-    if (this.eventsCreateSubscription) { this.eventsCreateSubscription.unsubscribe(); }
+    if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
+    if (this.eventsCreateSub) { this.eventsCreateSub.unsubscribe(); }
   }
 
   validateJSON(input) {
@@ -79,31 +81,31 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   private generateAsset() {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const idData = {
       timestamp: Math.floor(new Date().getTime() / 1000),
       sequenceNumber: this.sequenceNumber,
-      createdBy: address
+      createdBy: address,
     };
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret)
+      signature: this.assetsService.sign(idData, secret),
     };
 
     const asset = {
       assetId: this.assetsService.calculateHash(content),
-      content
+      content,
     };
 
     return asset;
   }
 
   private generateEvents(json, _assetIds = this.assetIds) {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
     let allEvents = [];
 
     if (!Array.isArray(json)) { json = [json]; }
@@ -134,23 +136,26 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   save(input) {
     this.error = false;
     this.success = false;
-    let json = {};
+    let json = null;
     try {
       json = JSON.parse(input.value);
     } catch (e) { }
 
     if (json) {
+      if (!confirm('Are you sure you want to proceed creating this asset?')) { return; }
+
       this.spinner = true;
 
       if (this.for === 'assets' && !this.prefill) {
         // Create asset and info event
         const asset = this.generateAsset();
         const infoEvent = this.generateEvents(json, [asset.assetId]);
-        this.assetsCreateSubscription = this.assetsService.createAssets([asset], infoEvent).subscribe(
+        this.assetsCreateSub = this.assetsService.createAssets([asset], infoEvent).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
+            this.emit('asset:created');
           },
           err => {
             this.error = err;
@@ -161,10 +166,11 @@ export class JsonFormComponent implements OnInit, OnDestroy {
       } else {
         // Edit or add events
         const events = this.generateEvents(json);
-        this.eventsCreateSubscription = this.assetsService.createEvents(events).subscribe(
+        this.eventsCreateSub = this.assetsService.createEvents(events).subscribe(
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
+            this.emit('event:created');
           },
           err => {
             this.error = err;

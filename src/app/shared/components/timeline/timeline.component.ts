@@ -15,10 +15,11 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss']
+  styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent implements OnInit, OnDestroy {
-  eventsSubscription: Subscription;
+  eventsSub: Subscription;
+  eventsResultsSub: Subscription;
   events = [];
   unchangedEvents = [];
   // Pagination
@@ -27,7 +28,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     perPage: 15,
     totalPages: 0,
     resultCount: 0,
-    resultLength: 0
+    resultLength: 0,
   };
   searchActive = false;
   // Other
@@ -38,7 +39,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   @Input() assetId;
   @Input() name;
 
-  constructor(private assetsService: AssetsService, private auth: AuthService, private el: ElementRef, public dialog: MatDialog) { }
+  constructor(private assetsService: AssetsService, private authService: AuthService, private el: ElementRef, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.loadEvents = this.loadEvents.bind(this);
@@ -46,23 +47,25 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.eventsSubscription) { this.eventsSubscription.unsubscribe(); }
+    if (this.eventsSub) { this.eventsSub.unsubscribe(); }
+    if (this.eventsResultsSub) { this.eventsResultsSub.unsubscribe(); }
   }
 
   loadEvents(page = 0, perPage = 15) {
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
     this.searchActive = false;
 
-    this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
+    this.eventsResultsSub = this.assetsService._events.subscribe(results => this.events = this.assetsService.parseTimelineEvents({ results }).events);
+
+    this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
-        this.events = this.assetsService.parseTimelineEvents(resp).events;
+        this.unchangedEvents = JSON.parse(JSON.stringify(resp.events.results));
         this.pagination.currentPage = page;
         this.pagination.perPage = perPage;
-        this.pagination.resultCount = resp.resultCount;
-        this.pagination.resultLength = resp.results.length;
-        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
+        this.pagination.resultCount = resp.events.resultCount;
+        this.pagination.resultLength = resp.events.results.length;
+        this.pagination.totalPages = Math.ceil(resp.events.resultCount / perPage);
       },
       err => {
         this.events = [];
@@ -78,7 +81,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (search.length === 0) { return this.loadEvents(); }
 
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
 
     const searchValues = search.split(',');
@@ -88,7 +91,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
+    this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
         this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
         this.events = this.assetsService.parseTimelineEvents(resp).events;
@@ -108,7 +111,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   openDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.unchangedEvents;

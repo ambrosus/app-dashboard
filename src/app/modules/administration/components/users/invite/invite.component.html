@@ -29,7 +29,7 @@
   </div>
   <div class="flex flex-direction-r justify-content-fe align-items-c">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <button [disabled]="!inviteForm.valid" type="submit" class="abtn m-l-20 btn-outline-ablue">Send invites</button>
+    <button [disabled]="!inviteForm.valid" type="submit" class="button button--blue m-l-20">Send invites</button>
   </div>
 </form>
 <h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>

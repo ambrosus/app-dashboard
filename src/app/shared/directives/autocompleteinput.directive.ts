@@ -3,14 +3,14 @@ import { FormControl } from '@angular/forms';
 import { AssetsService } from 'app/services/assets.service';
 
 @Directive({
-  selector: '[appAutocompleteinput]'
+  selector: '[appAutocompleteinput]',
 })
 export class AutocompleteinputDirective implements OnInit {
   @Input() appAutocompleteinput: { control: FormControl; array: string[] };
   lastValue: string;
   div = document.createElement('div');
 
-  constructor(private el: ElementRef, private assets: AssetsService) { }
+  constructor(private el: ElementRef, private assetsService: AssetsService) { }
 
   ngOnInit() {
     // Create div to hold autocomplete items
@@ -35,9 +35,9 @@ export class AutocompleteinputDirective implements OnInit {
         b.innerHTML += item.substr(value.length);
         b.addEventListener('click', event => {
           this.el.nativeElement.value = item;
-          this.assets.inputChanged.next({
+          this.assetsService.inputChanged.next({
             control: this.appAutocompleteinput.control,
-            value: item
+            value: item,
           });
           this.lastValue = item;
           this.clearList();
