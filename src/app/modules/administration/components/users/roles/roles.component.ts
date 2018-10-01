@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { RoleDialogComponent } from './role-dialog/role-dialog.component';
-import { HttpClient } from '@angular/common/http';
 import { UsersService } from 'app/services/users.service';
 
 @Component({
@@ -11,7 +10,7 @@ import { UsersService } from 'app/services/users.service';
 })
 export class RolesComponent implements OnInit {
 
-  constructor(public dialog: MatDialog, private http: HttpClient, public _users: UsersService) { }
+  constructor(public dialog: MatDialog, public _users: UsersService) { }
 
   ngOnInit() { }
 
