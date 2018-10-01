@@ -108,8 +108,6 @@
             },
             "scripts": [
               "node_modules/qrcode/build/qrcode.min.js",
-              "node_modules/moment/min/moment.min.js",
-              "node_modules/moment-timezone/builds/moment-timezone-with-data.min.js",
               "node_modules/ambrosus-javascript-sdk/lib/ambrosus.umd.min.js"
             ]
           }

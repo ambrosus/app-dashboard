@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-asset-form',
   templateUrl: './asset-form.component.html',
-  styleUrls: ['./asset-form.component.scss']
+  styleUrls: ['./asset-form.component.scss'],
 })
 export class AssetFormComponent implements OnInit, OnDestroy {
   createAssetsSub: Subscription;
@@ -49,12 +49,12 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       productImage: new FormArray([
         new FormGroup({
           imageName: new FormControl('default', []),
-          imageUrl: new FormControl('', [])
-        })
+          imageUrl: new FormControl('', []),
+        }),
       ]),
       identifiers: new FormArray([]),
       customData: new FormArray([]),
-      customDataGroups: new FormArray([])
+      customDataGroups: new FormArray([]),
     });
   }
 
@@ -72,7 +72,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
                     new FormGroup({
                       identifier: new FormControl(_key, [Validators.required]),
                       identifierValue: new FormControl(this.isObject(obj[key][_key]) ?
-                        obj[key][_key][0] : obj[key][_key], [Validators.required])
+                        obj[key][_key][0] : obj[key][_key], [Validators.required]),
                     })
                   );
                 });
@@ -99,7 +99,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
                           new FormGroup({
                             imageName: new FormControl(doc, [Validators.required]),
                             imageUrl: new FormControl(this.isObject(obj[key][doc]) ?
-                              obj[key][doc]['url'] || '' : obj[key][doc] || '', [Validators.required])
+                              obj[key][doc]['url'] || '' : obj[key][doc] || '', [Validators.required]),
                           })
                         );
                       }
@@ -111,7 +111,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
                     (<FormArray>customDataGroups).push(
                       new FormGroup({
                         groupName: new FormControl(key, [Validators.required]),
-                        groupValue: new FormArray([])
+                        groupValue: new FormArray([]),
                       })
                     );
                     // Add key-value to the group
@@ -120,7 +120,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
                         new FormGroup({
                           groupItemKey: new FormControl(_key, [Validators.required]),
                           groupItemValue: new FormControl(this.isObject(obj[key][_key]) ?
-                            JSON.stringify(obj[key][_key]).replace(/["{}]/g, '') : obj[key][_key], [Validators.required])
+                            JSON.stringify(obj[key][_key]).replace(/["{}]/g, '') : obj[key][_key], [Validators.required]),
                         })
                       );
                     });
@@ -133,7 +133,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
                     (<FormArray>this.assetForm.get('customData')).push(
                       new FormGroup({
                         customDataKey: new FormControl(key, [Validators.required]),
-                        customDataValue: new FormControl(obj[key], [Validators.required])
+                        customDataValue: new FormControl(obj[key], [Validators.required]),
                       })
                     );
                   }
@@ -154,7 +154,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.assetForm.get('productImage')).push(
       new FormGroup({
         imageName: new FormControl('', [Validators.required]),
-        imageUrl: new FormControl('', [Validators.required])
+        imageUrl: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -163,7 +163,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.assetForm.get('identifiers')).push(
       new FormGroup({
         identifier: new FormControl('', [Validators.required]),
-        identifierValue: new FormControl('', [Validators.required])
+        identifierValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -172,7 +172,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.assetForm.get('customData')).push(
       new FormGroup({
         customDataKey: new FormControl('', [Validators.required]),
-        customDataValue: new FormControl('', [Validators.required])
+        customDataValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -185,9 +185,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
         groupValue: new FormArray([
           new FormGroup({
             groupItemKey: new FormControl('', [Validators.required]),
-            groupItemValue: new FormControl('', [Validators.required])
-          })
-        ])
+            groupItemValue: new FormControl('', [Validators.required]),
+          }),
+        ]),
       })
     );
   }
@@ -197,7 +197,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     (<FormArray>groupsArray.at(i).get('groupValue')).push(
       new FormGroup({
         groupItemKey: new FormControl('', [Validators.required]),
-        groupItemValue: new FormControl('', [Validators.required])
+        groupItemValue: new FormControl('', [Validators.required]),
       })
     );
   }
@@ -214,17 +214,17 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     const idData = {
       timestamp: Math.floor(new Date().getTime() / 1000),
       sequenceNumber: this.sequenceNumber,
-      createdBy: address
+      createdBy: address,
     };
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret)
+      signature: this.assetsService.sign(idData, secret),
     };
 
     const asset = {
       assetId: this.assetsService.calculateHash(content),
-      content
+      content,
     };
 
     return asset;
@@ -293,18 +293,18 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: this.assetForm.get('accessLevel').value,
       createdBy: address,
-      dataHash: this.assetsService.calculateHash(data)
+      dataHash: this.assetsService.calculateHash(data),
     };
 
     const content = {
       idData,
       signature: this.assetsService.sign(idData, secret),
-      data
+      data,
     };
 
     const event = {
       eventId: this.assetsService.calculateHash(content),
-      content
+      content,
     };
 
     return event;
@@ -315,6 +315,8 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     this.success = false;
 
     if (this.assetForm.valid) {
+      if (!confirm(`Are you sure you want to proceed ${this.prefill && this.assetId ? 'editing' : 'creating'} this asset?`)) { return; }
+
       this.spinner = true;
 
       if (this.prefill && this.assetId) {

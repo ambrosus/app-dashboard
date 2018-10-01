@@ -15,7 +15,7 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss']
+  styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent implements OnInit, OnDestroy {
   eventsSub: Subscription;
@@ -28,7 +28,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     perPage: 15,
     totalPages: 0,
     resultCount: 0,
-    resultLength: 0
+    resultLength: 0,
   };
   searchActive = false;
   // Other
@@ -111,7 +111,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   openDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.unchangedEvents;

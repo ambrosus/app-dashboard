@@ -12,8 +12,18 @@ const checkAddress = _require('/middleware/checkAddress');
 const checkPermission = _require('/middleware/checkPermission');
 
 const UsersController = _require('/controllers/users');
+const RolesController = _require('/controllers/roles');
 
 const routes = express.Router();
+
+// Roles sub-route 
+routes.route('/roles')
+  .get(RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); })
+  .post(checkPermission('roles'), RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
+
+routes.route('/role/:_id')
+  .put(checkPermission('roles'), RolesController.editRole, (req, res) => { res.status(req.status).json(req.json); })
+  .delete(checkPermission('roles'), RolesController.deleteRole, (req, res) => { res.status(req.status).json(req.json); });
 
 // Routes
 routes.route('/')

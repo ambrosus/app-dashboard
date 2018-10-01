@@ -12,7 +12,7 @@ const Role = _require('/models/roles');
  * This route allows you to create a new Role and add a set of permissions to them
  *
  * @name createRole
- * @route {POST} api/roles
+ * @route {POST} api/users/roles
  * @bodyparam
  *      - title (e.g: { title: 'owner' }),
  *      - permissions (e.g: { permissions: "string1, string2" }),
@@ -39,7 +39,7 @@ exports.create = (req, res, next) => {
  * This route allows you to edit a Role
  *
  * @name editRole
- * @route {PUT} api/roles/:id
+ * @route {PUT} api/users/role/:id
  * @routeparam
  *      - id (e.g: /1),
  * @bodyparam
@@ -68,7 +68,7 @@ exports.editRole = (req, res, next) => {
  * This route allows you to delete a Role
  *
  * @name deleteRole
- * @route {PUT} api/roles/:id
+ * @route {PUT} api/users/role/:id
  * @routeparam
  *      - id (e.g: /1)
  * @returns Status code 400 on failure
@@ -92,7 +92,7 @@ exports.deleteRole = (req, res, next) => {
  * Fetch all Roles that exists in the Roles collection
  *
  * @name getRoles
- * @route {GET} api/roles
+ * @route {GET} api/users/roles
  * @returns Status code 400 on failure
  * @returns Roles array on success with status code 200
  */

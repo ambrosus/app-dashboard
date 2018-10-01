@@ -28,7 +28,7 @@ import { CompaniesService } from 'app/services/companies.service';
     RouterModule,
     ReactiveFormsModule,
     Angular2PromiseButtonModule.forRoot(),
-    FormsModule
+    FormsModule,
   ],
   providers: [UsersService, InviteService, CompaniesService],
   declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, RoleDialogComponent],

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HelpService } from './help.service';
@@ -9,7 +9,7 @@ import { HelpService } from './help.service';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HelpComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
@@ -23,14 +23,14 @@ export class HelpComponent implements OnInit, OnDestroy {
       menu: [
         { title: 'What is Dashboard', link: '/help/Getting started/What is Dashboard' },
         { title: 'How it works', link: '/help/Getting started/How it works' },
-        { title: 'Dashboard setup', link: '/help/Getting started/Dashboard setup' }
+        { title: 'Dashboard setup', link: '/help/Getting started/Dashboard setup' },
       ]
     },
     {
       title: 'Administration',
       menu: [
         { title: 'User invites', link: '/help/Administration/User invites' },
-        { title: 'Managing users', link: '/help/Administration/Managing users' }
+        { title: 'Managing users', link: '/help/Administration/Managing users' },
       ]
     },
     {
@@ -39,7 +39,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         { title: 'Creating an account', link: '/help/User/Creating an account' },
         { title: 'Editing profile', link: '/help/User/Editing profile' },
         { title: 'Password change', link: '/help/User/Password change' },
-        { title: 'Security', link: '/help/User/Security' }
+        { title: 'Security', link: '/help/User/Security' },
       ]
     },
     {
@@ -48,7 +48,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         { title: 'What are assets', link: '/help/Assets/What are assets' },
         { title: 'Create an asset', link: '/help/Assets/Create an asset' },
         { title: 'View assets', link: '/help/Assets/View assets' },
-        { title: 'Search assets', link: '/help/Assets/Search assets' }
+        { title: 'Search assets', link: '/help/Assets/Search assets' },
       ]
     },
     {
@@ -58,7 +58,7 @@ export class HelpComponent implements OnInit, OnDestroy {
         { title: 'Create an event', link: '/help/Events/Create an event' },
         { title: 'Edit event', link: '/help/Events/Edit event' },
         { title: 'View events', link: '/help/Events/View events' },
-        { title: 'Search events', link: '/help/Events/Search events' }
+        { title: 'Search events', link: '/help/Events/Search events' },
       ]
     }
   ];

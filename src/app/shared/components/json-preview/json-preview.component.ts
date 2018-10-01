@@ -56,11 +56,19 @@ export class JsonPreviewComponent implements OnInit {
     copy.map(obj => {
       obj.content.idData.assetId = '{{ assetId }}';
       obj.content.idData.createdBy = '{{ userAddress }}';
-      obj.content.idData.timestamp = '{{ timestamp }}';
+        
       delete obj.eventId;
       delete obj.metadata;
       delete obj.content.idData.dataHash;
       delete obj.content.signature;
+      
+      obj.content.data.map(eventObj => {
+        
+        ['timestamp', 'author', 'action', 'eventId'].forEach(e => delete eventObj[e]);
+
+        const type = eventObj.type.split('.').pop();
+        if (type !== 'location') { delete eventObj.location; }
+      });
     });
     const data = this.stringify(copy, null, 3);
     const blob = new Blob([data], { type: 'application/json' });

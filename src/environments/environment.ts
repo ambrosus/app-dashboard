@@ -10,8 +10,8 @@ export const environment = {
     address: '/accounts/',
     assets: '/assets',
     createEvent: '/assets/',
-    getEvents: '/events'
-  }
+    getEvents: '/events',
+  },
 };
 
 /*
