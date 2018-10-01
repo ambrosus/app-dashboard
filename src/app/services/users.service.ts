@@ -111,4 +111,14 @@ export class UsersService {
     });
   }
 
+  getUsers() {
+    const url = `/api/users`;
+    return new Observable(observer => {
+      this.http.get(url).subscribe(
+        (resp: any) => observer.next(resp),
+        (err) => { observer.error(err); }
+      );
+    });
+  }
+
 }
