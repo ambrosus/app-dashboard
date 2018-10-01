@@ -31,7 +31,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private storage: StorageService
+    private storageService: StorageService
   ) { }
 
   ngOnInit() {
@@ -39,7 +39,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.routeParamsSub = this.route.params.subscribe(params => this.assetId = params.assetid);
     this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
 
-    this.user = this.storage.get('user');
+    this.user = this.storageService.get('user');
     let companySettings: any = {};
     try {
       companySettings = JSON.parse(this.user.company.settings);

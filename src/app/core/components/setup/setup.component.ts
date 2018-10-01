@@ -28,7 +28,7 @@ export class SetupComponent implements OnInit {
   address;
   secret;
 
-  constructor(private Dashboard: DashboardService) {
+  constructor(private dashboardService: DashboardService) {
 
     this.timezones = moment.tz.names();
 
@@ -86,7 +86,7 @@ export class SetupComponent implements OnInit {
 
     this.formsPromise = new Promise((resolve, reject) => {
 
-      this.Dashboard.initSetup(data).subscribe(({ address, secret }) => {
+      this.dashboardService.initSetup(data).subscribe(({ address, secret }) => {
         this.address = address;
         this.secret = secret;
 

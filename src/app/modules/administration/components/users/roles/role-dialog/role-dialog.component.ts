@@ -29,7 +29,7 @@ export class RoleDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<RoleDialogComponent>,
-    private _users: UsersService) { }
+    private usersService: UsersService) { }
 
   ngOnInit() {
     if (this.data.role) {
@@ -77,12 +77,12 @@ export class RoleDialogComponent implements OnInit {
 
     if (this._id) {
       this.createPromise = new Promise((resolve, reject) => {
-        this._users.updateRole(this._id, data)
+        this.usersService.updateRole(this._id, data)
           .subscribe((role) => resolve());
       });
     } else {
       this.createPromise = new Promise((resolve, reject) => {
-        this._users.createRole(data)
+        this.usersService.createRole(data)
           .subscribe((role) => resolve());
       });
     }

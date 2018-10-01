@@ -15,7 +15,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
   ids = [];
   invitesSubscription: Subscription;
 
-  constructor(private storage: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2, private auth: AuthService) { }
+  constructor(private storageService: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2, private authService: AuthService) { }
 
   ngOnInit() {
     this.getInvites();
@@ -23,7 +23,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
 
   getInvites() {
     // Get invites
-    const user: any = this.storage.get('user') || {};
+    const user: any = this.storageService.get('user') || {};
     const url = `/api/invites/company/${user.company._id}`;
 
     this.invitesSubscription = this.http.get(url).subscribe(
@@ -32,7 +32,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
         this.invites = resp.data;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Invites GET error: ', err);
       }
     );
@@ -53,7 +53,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
             this.getInvites();
           },
           err => {
-            if (err.status === 401) { this.auth.logout(); }
+            if (err.status === 401) { this.authService.logout(); }
             console.log('Invites DELETE error: ', err);
           }
         );

@@ -18,10 +18,10 @@ export class AllComponent implements OnInit, OnDestroy {
   user;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient,
-    private auth: AuthService, private storage: StorageService) { }
+    private authService: AuthService, private storageService: StorageService) { }
 
   ngOnInit() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.getUsers();
   }
 
@@ -47,7 +47,7 @@ export class AllComponent implements OnInit, OnDestroy {
         });
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Users GET error: ', err);
       }
     );
