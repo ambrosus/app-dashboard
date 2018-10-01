@@ -9,7 +9,7 @@ import { MatDialog } from '@angular/material';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -27,11 +27,11 @@ export class LoginComponent implements OnInit {
 
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
-      password: new FormControl(null, [Validators.required])
+      password: new FormControl(null, [Validators.required]),
     });
     this.addressForm = new FormGroup({
       address: new FormControl(null, [Validators.required]),
-      secret: new FormControl(null, [Validators.required])
+      secret: new FormControl(null, [Validators.required]),
     });
 
   }

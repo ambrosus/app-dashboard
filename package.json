@@ -9,7 +9,7 @@
     "dev": "ng serve --aot --proxy-config proxy-config.json",
     "test": "ng test",
     "server-test": "nyc mocha --exit",
-    "lint": "ng lint",
+    "lint": "nodemon --exec \"ng lint || exit 1\" --ext ts,html,scss",
     "e2e": "ng e2e",
     "postinstall": "ng build --prod --output-path=dist --aot"
   },

@@ -36,7 +36,6 @@ exports.create = (req, res, next) => {
   let accessLevel = user.accessLevel || 1;
   let permissions = user.permissions || ['create_entity'];
   let company = '';
-  let role = '';
 
   // invite
   if (inviteToken) {

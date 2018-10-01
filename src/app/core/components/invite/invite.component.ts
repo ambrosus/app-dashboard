@@ -4,15 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-declare let moment: any;
-declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 @Component({
   selector: 'app-invite',
   templateUrl: './invite.component.html',
   styleUrls: ['./invite.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class InviteComponent implements OnInit {
   createAccountForm: FormGroup;
@@ -35,11 +33,11 @@ export class InviteComponent implements OnInit {
 
   initCreateAccountForm() {
     this.createAccountForm = new FormGroup({
-      fullName: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
-      passwordConfirm: new FormControl('', [Validators.required]),
+      fullName: new FormControl('', [Validators.required,]),
+      password: new FormControl('', [Validators.required,]),
+      passwordConfirm: new FormControl('', [Validators.required,]),
       address: new FormControl('', []),
-      secret: new FormControl('', [])
+      secret: new FormControl('', []),
     });
   }
 
@@ -73,7 +71,7 @@ export class InviteComponent implements OnInit {
         password: this.createAccountForm.get('password').value,
         passwordConfirm: this.createAccountForm.get('passwordConfirm').value,
         address: this.createAccountForm.get('address').value,
-        secret: this.createAccountForm.get('secret').value
+        secret: this.createAccountForm.get('secret').value,
       }
     };
 

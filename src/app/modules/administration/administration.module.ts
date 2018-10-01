@@ -18,8 +18,6 @@ import { InvitesComponent } from './components/users/invites/invites.component';
 import { RolesComponent } from './components/users/roles/roles.component';
 import { RoleDialogComponent } from './components/users/roles/role-dialog/role-dialog.component';
 
-
-
 @NgModule({
   imports: [
     CommonModule,
@@ -28,7 +26,7 @@ import { RoleDialogComponent } from './components/users/roles/role-dialog/role-d
     RouterModule,
     ReactiveFormsModule,
     Angular2PromiseButtonModule.forRoot(),
-    FormsModule
+    FormsModule,
   ],
   providers: [UsersService],
   declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, RoleDialogComponent],
