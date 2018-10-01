@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   selector: 'app-setup',
   templateUrl: './setup.component.html',
   styleUrls: ['./setup.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class SetupComponent implements OnInit {
 
@@ -22,7 +22,7 @@ export class SetupComponent implements OnInit {
     user?: FormGroup
   } = { };
 
-  currentStep: number = 0;
+  currentStep = 0;
 
   timezones = [];
 
@@ -30,8 +30,6 @@ export class SetupComponent implements OnInit {
   secret;
 
   constructor(
-    private router: Router,
-    private _auth: AuthService,
     private Dashboard: DashboardService
     ) {
     this.timezones = moment.tz.names();
@@ -65,7 +63,7 @@ export class SetupComponent implements OnInit {
       password: new FormControl('', [Validators.required]),
       passwordConfirm: new FormControl('', Validators.compose([
         Validators.required,
-        this.comparePasswords.bind(this)
+        this.comparePasswords.bind(this),
       ])),
     });
   }
@@ -75,8 +73,8 @@ export class SetupComponent implements OnInit {
   comparePasswords(fieldControl: FormControl) {
 
     try {
-      return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true }
-    } catch (e) { return null }
+      return fieldControl.value === this.forms.user.value.password ? null : { NotEqual: true };
+    } catch (e) { return null; }
 
   }
 
@@ -88,14 +86,14 @@ export class SetupComponent implements OnInit {
       user: this.forms.user.value,
     };
 
-    this.formsPromise = new Promise((resolve, reject) => {
+    this.formsPromise = new Promise((resolve) => {
 
-      this.dashboardService.initSetup(data).subscribe(({ address, secret }) => {
+      this.Dashboard.initSetup(data).subscribe(({ address, secret }) => {
         this.address = address;
         this.secret = secret;
 
         resolve();
-      })
+      });
 
     });
 

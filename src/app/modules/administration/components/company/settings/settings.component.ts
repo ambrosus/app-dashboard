@@ -25,8 +25,8 @@ export class SettingsComponent implements OnInit {
   croppedImage: any = '';
 
   constructor(
-    private storage: StorageService,
-    private auth: AuthService,
+    private storageService: StorageService,
+    private authService: AuthService,
     private companiesService: CompaniesService
   ) { }
 

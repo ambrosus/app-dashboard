@@ -17,7 +17,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'users'
+        redirectTo: 'users',
       },
       {
         path: 'company',
@@ -26,13 +26,13 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            redirectTo: 'settings'
+            redirectTo: 'settings',
           },
           {
             path: 'settings',
-            component: SettingsComponent
-          }
-        ]
+            component: SettingsComponent,
+          },
+        ],
       },
       {
         path: 'users',
@@ -41,32 +41,32 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            redirectTo: 'all'
+            redirectTo: 'all',
           },
           {
             path: 'all',
-            component: AllComponent
+            component: AllComponent,
           },
           {
             path: 'invite',
-            component: InviteComponent
+            component: InviteComponent,
           },
           {
             path: 'invites',
-            component: InvitesComponent
+            component: InvitesComponent,
           },
           {
             path: 'roles',
-            component: RolesComponent
-          }
-        ]
-      }
-    ]
-  }
+            component: RolesComponent,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AdministrationRoutingModule { }

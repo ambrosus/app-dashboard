@@ -20,8 +20,8 @@ export class AllComponent implements OnInit, OnDestroy {
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
-    private auth: AuthService,
-    private storage: StorageService,
+    private authService: AuthService,
+    private storageService: StorageService,
     private usersService: UsersService
   ) { }
 
