@@ -21,8 +21,8 @@ export class InviteComponent implements OnInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private storage: StorageService,
-    private auth: AuthService,
+    private storageService: StorageService,
+    private authService: AuthService,
     private inviteService: InviteService
   ) {
     this.initInviteForm();

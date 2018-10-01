@@ -19,7 +19,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
     private storage: StorageService,
     private el: ElementRef,
     private renderer: Renderer2,
-    private auth: AuthService,
+    private authService: AuthService,
     private inviteService: InviteService
     ) { }
 
@@ -33,7 +33,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
 
     this.invitesSubscription = this.inviteService.getInvites(user).subscribe(
       (resp: any) => { console.log('Invites GET: ', resp); this.invites = resp.data; },
-      err => { if (err.status === 401) { this.auth.logout(); } console.log('Invites GET error: ', err); }
+      err => { if (err.status === 401) { this.authService.logout(); } console.log('Invites GET error: ', err); }
 
     );
   }

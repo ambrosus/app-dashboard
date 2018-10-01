@@ -14,7 +14,7 @@ export class PermissionsGuard implements CanActivate {
     '/administration/users/all': 'users',
     '/administration/users/invite': 'invites',
     '/administration/users/invites': 'invites',
-    '/administration/users/roles': 'roles'
+    '/administration/users/roles': 'roles',
   };
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
