@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 
 declare let QRCode: any;
@@ -16,8 +15,12 @@ export class QrCodeComponent implements OnInit {
   @Input() value;
   @Input() size;
 
-  constructor(private el: ElementRef, private renderer: Renderer2,
-    private http: HttpClient, private sanitize: DomSanitizer, private storage: StorageService) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private sanitize: DomSanitizer,
+    private storage: StorageService
+  ) { }
 
   ngOnInit() {
     this.generateQR();
