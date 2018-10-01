@@ -26,7 +26,7 @@ export class InviteComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService) {
+    private storageService: StorageService) {
     this.initCreateAccountForm();
     this.web3 = new Web3();
   }
@@ -65,7 +65,7 @@ export class InviteComponent implements OnInit {
   createAccount() {
     this.createAccountReset();
     const body: any = {
-      hermes: this.storage.get('user')['company']['hermes'],
+      hermes: this.storageService.get('user')['company']['hermes'],
       user: {
         full_name: this.createAccountForm.get('fullName').value,
         password: this.createAccountForm.get('password').value,

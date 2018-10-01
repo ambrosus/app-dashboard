@@ -17,14 +17,14 @@ export class QrCodeComponent implements OnInit {
   @Input() size;
 
   constructor(private el: ElementRef, private renderer: Renderer2,
-    private http: HttpClient, private sanitize: DomSanitizer, private storage: StorageService) { }
+    private http: HttpClient, private sanitize: DomSanitizer, private storageService: StorageService) { }
 
   ngOnInit() {
     this.generateQR();
 
     let companySettings: any = {};
     try {
-      companySettings = JSON.parse(this.storage.get('user')['company']['settings']);
+      companySettings = JSON.parse(this.storageService.get('user')['company']['settings']);
     } catch (e) { }
 
     this.logo = companySettings.logo || false;
