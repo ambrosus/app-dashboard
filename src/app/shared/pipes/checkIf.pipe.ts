@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'checkIf',
-  pure: false
+  pure: false,
 })
 export class CheckIfPipe implements PipeTransform {
   transform(obj: any[], filter: string): any {

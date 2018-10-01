@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { AssetsService } from 'app/services/assets.service';
 
 @Directive({
-  selector: '[appAutocompleteinput]'
+  selector: '[appAutocompleteinput]',
 })
 export class AutocompleteinputDirective implements OnInit {
   @Input() appAutocompleteinput: { control: FormControl; array: string[] };
@@ -37,7 +37,7 @@ export class AutocompleteinputDirective implements OnInit {
           this.el.nativeElement.value = item;
           this.assets.inputChanged.next({
             control: this.appAutocompleteinput.control,
-            value: item
+            value: item,
           });
           this.lastValue = item;
           this.clearList();

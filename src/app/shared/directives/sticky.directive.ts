@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Input, HostListener, Renderer2, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[appSticky]'
+  selector: '[appSticky]',
 })
 export class StickyDirective implements OnInit {
   sticked = true;

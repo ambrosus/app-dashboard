@@ -1,12 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { DashboardService } from 'app/services/dashboard.service';
 
 import * as moment from 'moment-timezone';
-import { AuthService } from 'app/services/auth.service';
-import { Router } from '@angular/router';
 
-declare let Web3: any;
+
 @Component({
   selector: 'app-setup',
   templateUrl: './setup.component.html',
@@ -15,25 +13,22 @@ declare let Web3: any;
 })
 export class SetupComponent implements OnInit {
 
+  formsPromise;
+
   forms: {
     hermes?: FormGroup,
     company?: FormGroup,
     user?: FormGroup
   } = {}
 
-  formsPromise;
-
   currentStep: number = 0;
 
-  error;
   timezones = [];
-  web3;
+
   address;
   secret;
 
-  constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
-
-    this.web3 = new Web3();
+  constructor(private Dashboard: DashboardService) {
 
     this.timezones = moment.tz.names();
 
@@ -52,6 +47,9 @@ export class SetupComponent implements OnInit {
     this.forms.company = new FormGroup({
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
+      settings: new FormGroup({
+        preview_app: new FormControl('')
+      })
     });
 
     this.forms.user = new FormGroup({
@@ -68,8 +66,7 @@ export class SetupComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   comparePasswords(fieldControl: FormControl) {
 
@@ -81,36 +78,22 @@ export class SetupComponent implements OnInit {
 
   setup() {
 
-    const body = {
+    const data = {
       hermes: this.forms.hermes.value,
       company: this.forms.company.value,
       user: this.forms.user.value,
     };
 
-    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-
-    console.log('address: ', address);
-    console.log('privateKey: ', privateKey);
-
-    body.user.token = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
-    body.user.address = address;
-
     this.formsPromise = new Promise((resolve, reject) => {
-      this.address = address;
-      this.secret = privateKey;
-    });
 
-    this.http.post('/api/setup', body).subscribe(
-      (resp: any) => {
-        this._auth.login(body.user.email, body.user.password).subscribe(() => {
-          this.router.navigate(['/assets']);
-        })
-      },
-      err => {
-        const error = err.error.message ? err.error.message : 'Setup error';
-        console.log('Setup error: ', error);
-      }
-    );
+      this.Dashboard.initSetup(data).subscribe(({ address, secret }) => {
+        this.address = address;
+        this.secret = secret;
+
+        resolve();
+      })
+
+    });
 
   }
 }
