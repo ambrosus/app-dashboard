@@ -10,6 +10,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const invitationsCron = require('./server/cron/invitation-cron');
+// use log, trace, debug, info, warn, error
+global.logger = require('tracer').colorConsole();
 
 const APIRoutes = require('./server/routes/v1');
 
@@ -19,7 +21,7 @@ const app = express();
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
   .then(connected => {
-    console.log('MongoDB connected')
+    logger.log('MongoDB connected')
     invitationsCron.start();
   }).catch(error => console.log('Mongodb connection error: ', error));
 
@@ -30,7 +32,7 @@ const store = new MongoDBStore({
 });
 
 store.on('connected', () => {
-  console.log('MongoDB Session Store connected');
+  logger.log('MongoDB Session Store connected');
   store.client;
 });
 store.on('error', error => console.log('MongoDB Session Store connection error: ', error));
@@ -65,7 +67,7 @@ app.get('*', (req, res) => {
 
 const server = http.createServer(app);
 server.listen(config.port, () => {
-  console.log('Server running...');
+  logger.log('Server running...');
 });
 
 module.exports = app;
