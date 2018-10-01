@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment-timezone';
 import { AuthService } from 'app/services/auth.service';
 import { Router } from '@angular/router';
+import { DashboardService } from '../../../services/dashboard.service';
 
 declare let Web3: any;
 @Component({
@@ -31,7 +32,7 @@ export class SetupComponent implements OnInit {
   address;
   secret;
 
-  constructor(private http: HttpClient, private router: Router, private _auth: AuthService) {
+  constructor(private http: HttpClient, private router: Router, private Dashboard: DashboardService) {
 
     this.web3 = new Web3();
 
@@ -89,9 +90,6 @@ export class SetupComponent implements OnInit {
 
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
 
-    console.log('address: ', address);
-    console.log('privateKey: ', privateKey);
-
     body.user.token = JSON.stringify(this.web3.eth.accounts.encrypt(privateKey, body.user.password));
     body.user.address = address;
 
@@ -100,17 +98,11 @@ export class SetupComponent implements OnInit {
       this.secret = privateKey;
     });
 
-    this.http.post('/api/setup', body).subscribe(
-      (resp: any) => {
-        this._auth.login(body.user.email, body.user.password).subscribe(() => {
-          this.router.navigate(['/assets']);
-        })
-      },
-      err => {
-        const error = err.error.message ? err.error.message : 'Setup error';
-        console.log('Setup error: ', error);
-      }
-    );
+    this._auth.login(body.user.email, body.user.password).subscribe(() => {
+      this.router.navigate(['/assets']);
+    })
+
+
 
   }
 }
