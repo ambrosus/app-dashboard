@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { InviteService } from 'app/services/invite.service';
+import { UsersService } from 'app/services/users.service';
 
 declare let Web3: any;
 
@@ -24,9 +25,11 @@ export class InviteComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
     private router: Router,
-    private storageService: StorageService) {
+    private storage: StorageService,
+    private inviteService: InviteService,
+    private usersService: UsersService
+    ) {
     this.initCreateAccountForm();
     this.web3 = new Web3();
   }
@@ -45,14 +48,9 @@ export class InviteComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.token = params.token;
 
-      // verify token
-      const url = `/api/invites/verify/${this.token}`;
-      this.http.get(url).subscribe(
-        resp => console.log('Invite is valid'),
-        err => {
-          console.log('Invite verify error: ', err);
-          this.router.navigate(['/login']);
-        }
+      this.inviteService.validateInvite(this.token).subscribe(
+        (resp: any) => console.log('Invite is valid'),
+        error => { console.log('Invite verify error: ', error); this.router.navigate(['/login']); }
       );
     });
   }
@@ -90,11 +88,10 @@ export class InviteComponent implements OnInit {
       }
       this.spinner = true;
 
-      const url = `/api/users?token=${this.token}`;
       body.user['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(body.user.secret, body.user.password));
       delete body.user.secret;
 
-      this.http.post(url, body).subscribe(
+      this.usersService.createUser(body, this.token).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.address = body.user.address;

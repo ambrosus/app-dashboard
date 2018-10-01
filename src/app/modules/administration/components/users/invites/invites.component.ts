@@ -1,8 +1,8 @@
 import { Component, OnInit, ElementRef, Renderer2, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
+import { InviteService } from 'app/services/invite.service';
 
 @Component({
   selector: 'app-invites',
@@ -15,7 +15,13 @@ export class InvitesComponent implements OnInit, OnDestroy {
   ids = [];
   invitesSubscription: Subscription;
 
-  constructor(private storageService: StorageService, private http: HttpClient, private el: ElementRef, private renderer: Renderer2, private authService: AuthService) { }
+  constructor(
+    private storage: StorageService,
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private auth: AuthService,
+    private inviteService: InviteService
+    ) { }
 
   ngOnInit() {
     this.getInvites();
@@ -23,18 +29,12 @@ export class InvitesComponent implements OnInit, OnDestroy {
 
   getInvites() {
     // Get invites
-    const user: any = this.storageService.get('user') || {};
-    const url = `/api/invites/company/${user.company._id}`;
+    const user: any = this.storage.get('user') || {};
 
-    this.invitesSubscription = this.http.get(url).subscribe(
-      (resp: any) => {
-        console.log('Invites GET: ', resp);
-        this.invites = resp.data;
-      },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.log('Invites GET error: ', err);
-      }
+    this.invitesSubscription = this.inviteService.getInvites(user).subscribe(
+      (resp: any) => { console.log('Invites GET: ', resp); this.invites = resp.data; },
+      err => { if (err.status === 401) { this.auth.logout(); } console.log('Invites GET error: ', err); }
+
     );
   }
 
@@ -45,9 +45,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
   bulkActions(action) {
     switch (action.value) {
       case 'revoke':
-        const url = `/api/invites/delete`;
-
-        this.http.post(url, { ids: this.ids }).subscribe(
+        this.inviteService.revokeInvites(this.ids).subscribe(
           (resp: any) => {
             console.log('Invites DELETE: ', resp);
             this.getInvites();

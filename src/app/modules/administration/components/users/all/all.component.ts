@@ -1,9 +1,9 @@
 import { Component, OnInit, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-all',
@@ -17,8 +17,13 @@ export class AllComponent implements OnInit, OnDestroy {
   ids = [];
   user;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private http: HttpClient,
-    private authService: AuthService, private storageService: StorageService) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private auth: AuthService,
+    private storage: StorageService,
+    private usersService: UsersService
+  ) { }
 
   ngOnInit() {
     this.user = this.storageService.get('user') || {};
@@ -31,11 +36,10 @@ export class AllComponent implements OnInit, OnDestroy {
 
   getUsers() {
     // Get users
-    const url = `/api/users`;
     let companySettings: any = {};
     try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { console.log(e); }
 
-    this.usersSubscription = this.http.get(url).subscribe(
+    this.usersSubscription = this.usersService.getUsers().subscribe(
       (resp: any) => {
         console.log('Users GET: ', resp);
         this.users = resp.data.map(user => {

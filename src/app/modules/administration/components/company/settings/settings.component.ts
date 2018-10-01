@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
 import * as moment from 'moment-timezone';
+import { CompaniesService } from 'app/services/companies.service';
 
 @Component({
   selector: 'app-settings',
@@ -24,7 +24,11 @@ export class SettingsComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
 
-  constructor(private storageService: StorageService, private http: HttpClient, private authService: AuthService) { }
+  constructor(
+    private storage: StorageService,
+    private auth: AuthService,
+    private companiesService: CompaniesService
+  ) { }
 
   ngOnInit() {
     this.initSettingsForm();
@@ -87,8 +91,7 @@ export class SettingsComponent implements OnInit {
     if (this.settingsForm.valid) {
       this.spinner = true;
 
-      const url = `/api/companies`;
-      this.http.put(url, body).subscribe(
+      this.companiesService.editCompany(body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = true;
