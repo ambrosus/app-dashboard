@@ -12,6 +12,7 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
+const generalUtils = _require('/utils/general');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -33,7 +34,7 @@ exports.create = (req, res, next) => {
   const inviteToken = req.query.token;
   let email = user.email;
   let accessLevel = user.accessLevel || 1;
-  let permissions = user.permissions || ['create_entity'];
+  let permissions = user.permissions || ['create_asset', 'create_event'];
   let company = '';
 
   // invite
@@ -44,7 +45,7 @@ exports.create = (req, res, next) => {
       accessLevel = _token['accessLevel'];
       company = _token['company'];
       role = _token['role']['_id'];
-      if (_token['role']['title'] === 'admin') { permissions = ['register_account', 'create_entity'] }
+      if (_token['role']['title'] === 'admin') { permissions = ['register_accounts', 'create_asset', 'create_event'] }
     } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
   }
   const query = { $or: [{ email }, { address }] };
@@ -65,17 +66,12 @@ exports.create = (req, res, next) => {
         logger.info('User doc: ', doc, created);
 
         // Register user in the hermes
-        const headers = {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `AMB_TOKEN ${config.token}`
-        };
         const body = {
           address,
           permissions,
           accessLevel
         };
-        axios.post(`${hermes.url}/accounts`, body, { headers })
+        generalUtils.create(`${hermes.url}/accounts`, body, config.token)
           .then(userRegistered => {
             if (inviteToken) {
               Invite.findOneAndRemove({ token: inviteToken })
@@ -86,7 +82,7 @@ exports.create = (req, res, next) => {
             req.status = 200;
             req.user = doc;
             return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes error' })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: error.data['reason'] })));
       } else { throw 'User exists'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'User creation error: ', error })));
 }
@@ -152,7 +148,7 @@ exports.getAccount = (req, res, next) => {
         req.json = user;
         return next();
       } else { throw 'No user found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get account error' })));
 }
 
 /**
@@ -189,7 +185,7 @@ exports.getAccounts = (req, res, next) => {
         };
         return next();
       } else { throw 'No users found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get accounts error' })));
 }
 
 /**
@@ -211,7 +207,7 @@ exports.getSettings = (req, res, next) => {
         req.json = user.settings;
         return next();
       } else { throw 'No accounts found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get settings error' })));
 }
 
 exports.getNotifications = (req, res, next) => {}
@@ -245,7 +241,7 @@ exports.edit = (req, res, next) => {
         req.json = { message: 'Update data success', data: updateResponse };
         return next();
       } else { throw 'Update data error'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'User update error' })));
 }
 
 /**

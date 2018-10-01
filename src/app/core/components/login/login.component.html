@@ -14,7 +14,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
       <app-tabs>
         <app-tab label="Email/Password">
-          <form [formGroup]="loginForm" (ngSubmit)="login()" [ngClass]="{ error: error }">
+          <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
 
             <label>Email
               <input formControlName="email" type="email" name="email" spellcheck="false">
@@ -30,7 +30,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         </app-tab>
         <app-tab label="Address/Secret">
 
-          <form [formGroup]="addressForm" (ngSubmit)="verifyAccount()" [ngClass]="{ error: error }">
+          <form [formGroup]="forms.addressForm" (ngSubmit)="verifyAccount()">
 
             <label>Address
               <input formControlName="address" type="text" name="address" spellcheck="false">

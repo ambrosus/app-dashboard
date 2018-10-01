@@ -15,7 +15,7 @@ import { AuthService } from 'app/services/auth.service';
 @Component({
   selector: 'app-security-settings',
   templateUrl: './security-settings.component.html',
-  styleUrls: ['./security-settings.component.scss']
+  styleUrls: ['./security-settings.component.scss'],
 })
 export class SecuritySettingsComponent implements OnInit, OnDestroy {
   sessions;
@@ -75,26 +75,16 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
   changePassword() {
     this.resetErrors();
+    const data = this.resetForm.value;
     const email = this.storageService.get('user')['email'];
-    const newPassword = this.resetForm.get('password').value;
-    const oldPassword = this.resetForm.get('oldPassword').value;
-    const passwordConfirm = this.resetForm.get('passwordConfirm').value;
 
-    if (!email || !newPassword || !oldPassword || !passwordConfirm) {
-      this.error = 'All fields are required';
-      return;
-    }
+    if (!email || !this.resetForm.valid) { return this.error = 'All fields are required'; }
 
     this.spinner = true;
 
     const url = `/api/users/password`;
-    const body = {
-      email,
-      oldPassword,
-      newPassword
-    };
 
-    this.http.put(url, body).subscribe(
+    this.http.put(url, data).subscribe(
       resp => {
         this.spinner = false;
         this.resetSuccess = true;
@@ -102,7 +92,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
       err => {
         if (err.status === 401) { this.authService.logout(); }
         this.spinner = false;
-        this.error = err.error.message;
+        this.error = err.message;
         console.log('Reset password error: ', err);
       }
     );

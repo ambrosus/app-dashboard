@@ -36,9 +36,9 @@ export class InviteComponent implements OnInit {
 
   initCreateAccountForm() {
     this.createAccountForm = new FormGroup({
-      fullName: new FormControl('', [Validators.required,]),
-      password: new FormControl('', [Validators.required,]),
-      passwordConfirm: new FormControl('', [Validators.required,]),
+      full_name: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required]),
+      passwordConfirm: new FormControl('', [Validators.required]),
       address: new FormControl('', []),
       secret: new FormControl('', []),
     });
@@ -55,22 +55,13 @@ export class InviteComponent implements OnInit {
     });
   }
 
-  createAccountReset() {
+  createAccount() {
     this.error = null;
     this.success = null;
-  }
 
-  createAccount() {
-    this.createAccountReset();
     const body: any = {
-      hermes: this.storageService.get('user')['company']['hermes'],
-      user: {
-        full_name: this.createAccountForm.get('fullName').value,
-        password: this.createAccountForm.get('password').value,
-        passwordConfirm: this.createAccountForm.get('passwordConfirm').value,
-        address: this.createAccountForm.get('address').value,
-        secret: this.createAccountForm.get('secret').value,
-      }
+      hermes: this.storage.get('user')['company']['hermes'],
+      user: this.createAccountForm.value,
     };
 
     if (!body.user.address || !body.user.secret) {
@@ -82,10 +73,7 @@ export class InviteComponent implements OnInit {
     this.secret = body.user.secret;
 
     if (this.createAccountForm.valid) {
-      if (!(body.user.password === body.user.passwordConfirm)) {
-        this.error = 'Passwords do not match';
-        return;
-      }
+      if (!(body.user.password === body.user.passwordConfirm)) { return this.error = 'Passwords do not match'; }
       this.spinner = true;
 
       body.user['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(body.user.secret, body.user.password));
@@ -100,7 +88,7 @@ export class InviteComponent implements OnInit {
         },
         err => {
           this.spinner = false;
-          this.error = err.error.message ? err.error.message : 'Create account error';
+          this.error = err.message;
           console.log('Create account error: ', err);
         }
       );

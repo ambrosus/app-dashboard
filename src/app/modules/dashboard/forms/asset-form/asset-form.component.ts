@@ -329,7 +329,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
             this.emit('event:created');
           },
           err => {
-            this.error = err;
+            this.error = err.message;
             this.spinner = false;
             console.error('Info event edit error: ', err);
           }
@@ -346,7 +346,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
             this.emit('asset:created');
           },
           err => {
-            this.error = err;
+            this.error = err.message;
             this.spinner = false;
             console.error('Asset and info event create error: ', err);
           }

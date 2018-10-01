@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
   namespace = 'amb_';
 
-  constructor() {}
+  constructor() { }
 
   // localStorage wrapper
   set(key, value) {

@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class EventComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
@@ -98,7 +98,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openJSONPreviewDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.data = [this.event];
@@ -109,7 +109,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openAssetEditDialog() {
     const dialogRef = this.dialog.open(AssetAddComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;
@@ -121,7 +121,7 @@ export class EventComponent implements OnInit, OnDestroy {
   openEditDialog(): void {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.prefill = this.event;

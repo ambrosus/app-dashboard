@@ -158,7 +158,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
             this.emit('asset:created');
           },
           err => {
-            this.error = err;
+            this.error = err.message;
             this.spinner = false;
             console.error('Asset and info event create error: ', err);
           }
@@ -173,7 +173,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
             this.emit('event:created');
           },
           err => {
-            this.error = err;
+            this.error = err.message;
             this.spinner = false;
             console.error('Events create error: ', err);
           }

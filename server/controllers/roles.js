@@ -32,7 +32,7 @@ exports.create = (req, res, next) => {
       req.json = role;
       return next();
     })
-    .catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    .catch(error => (logger.error(error), res.status(400).json({ message: 'Role create error' })));
 };
 
 /**
@@ -61,7 +61,7 @@ exports.editRole = (req, res, next) => {
         req.json = role;
         return next();
       }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role edit error' })));
 };
 
 /**
@@ -85,7 +85,7 @@ exports.deleteRole = (req, res, next) => {
         req.json = { message: 'Role deleted successfully' }
         return next();
       }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role delete error' })));
 };
 
 /**
@@ -103,5 +103,6 @@ exports.getRoles = (req, res, next) => {
       req.status = 200;
       req.json = roles;
       return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Roles GET error' })));
+
 };

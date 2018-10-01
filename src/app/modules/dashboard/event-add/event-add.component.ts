@@ -4,7 +4,7 @@ import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } fr
   selector: 'app-event-add',
   templateUrl: './event-add.component.html',
   styleUrls: ['./event-add.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class EventAddComponent implements OnInit {
   json;

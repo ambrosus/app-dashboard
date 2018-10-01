@@ -79,11 +79,12 @@ export class SettingsComponent implements OnInit {
 
   editCompany() {
     this.resetForm();
+    const data = this.settingsForm.value;
     const body = {
-      title: this.settingsForm.get('title').value,
+      title: data.title,
       settings: JSON.stringify({
-        preview_app: this.settingsForm.get('preview_app').value,
-        timeZone: this.settingsForm.get('timeZone').value,
+        preview_app: data.preview_app,
+        timeZone: data.timeZone,
         logo: this.croppedImage,
       }),
     };
@@ -110,7 +111,7 @@ export class SettingsComponent implements OnInit {
         err => {
           if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
-          this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
+          this.error = err.message;
           console.log('Edit company error: ', err);
         }
       );

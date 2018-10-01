@@ -5,9 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const axios = require('axios');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const generalUtils = _require('/utils/general');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -55,6 +55,7 @@ exports.login = (req, res, next) => {
           } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
         } else { throw 'No user found'; }
       }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+
   } else if (!email) {
     return res.status(400).json({ message: 'User "email" is required' });
   } else if (!password) {
@@ -78,13 +79,7 @@ exports.verifyAccount = (req, res, next) => {
   Company.findById(companyId)
     .populate('hermes')
     .then(company => {
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `AMB_TOKEN ${token}`
-      };
-
-      axios.get(`${company.hermes.url}/accounts/${address}`, { headers })
+      generalUtils.get(`${company.hermes.url}/accounts/${address}`, token)
         .then(resp => {
           User.findOne({ address })
             .populate({

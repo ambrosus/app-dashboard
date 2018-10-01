@@ -10,7 +10,7 @@ declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   sdk;
@@ -25,7 +25,7 @@ export class AuthService {
     const hermes = <any>this.storage.get('hermes') || <any>{};
     this.sdk = new AmbrosusSDK({
       apiEndpoint: hermes.url,
-      Web3
+      Web3,
     });
     this.web3 = new Web3();
   }
@@ -53,7 +53,7 @@ export class AuthService {
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -91,17 +91,24 @@ export class AuthService {
 
 
   verifyAccount(address, secret) {
-
-    const token = this.getToken(secret);
+    let token = '';
+    try {
+      token = this.getToken(secret);
+    } catch (e) { }
 
     return new Observable(observer => {
       const deviceInfo = this.deviceService.getDeviceInfo();
 
       this.http.post('/api/auth/verify', { address, token, deviceInfo }).subscribe(
         user => {
-          console.log(user);
+          this.storage.set('secret', secret);
+          this.storage.set('user', user);
+          this.storage.set('token', token);
+          this.addAccount(user);
+          this.emit('user:refresh');
+          return observer.next(user);
         },
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -125,10 +132,7 @@ export class AuthService {
           this.emit('user:refresh');
           observer.next('success');
         },
-        err => {
-          const error = err.error ? err.error.message : JSON.stringify(err);
-          observer.error(error);
-        }
+        err => observer.error(err.error)
       );
     });
   }

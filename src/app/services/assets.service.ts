@@ -36,8 +36,8 @@ export class AssetsService {
       secret,
       Web3,
       headers: {
-        Authorization: `AMB_TOKEN ${token}`
-      }
+        Authorization: `AMB_TOKEN ${token}`,
+      },
     });
   }
 
@@ -48,7 +48,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -63,7 +63,7 @@ export class AssetsService {
           this._events.next(resp.events.results);
           observer.next(resp);
         },
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -75,7 +75,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -87,7 +87,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -147,7 +147,7 @@ export class AssetsService {
 
       this.http.post(url, body).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -165,7 +165,7 @@ export class AssetsService {
           if (location.pathname.includes('/events/')) { this.router.navigate([u]); }
           observer.next(resp);
         },
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
