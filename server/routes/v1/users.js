@@ -27,7 +27,7 @@ routes.route('/role/:_id')
 
 // Routes
 routes.route('/')
-  .get(checkPermission('accounts'), UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
+  .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
   .post(UsersController.create, (req, res) => { res.status(req.status).json(req.json); });
 routes.put('/password', UsersController.changePassword, (req, res) => { res.status(req.status).json(req.json); });
 routes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.status(req.status).json(req.json); });
