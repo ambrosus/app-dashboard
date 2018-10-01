@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-json-form',
   templateUrl: './json-form.component.html',
-  styleUrls: ['./json-form.component.scss']
+  styleUrls: ['./json-form.component.scss'],
 })
 export class JsonFormComponent implements OnInit, OnDestroy {
   assetsCreateSub: Subscription;
@@ -87,17 +87,17 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     const idData = {
       timestamp: Math.floor(new Date().getTime() / 1000),
       sequenceNumber: this.sequenceNumber,
-      createdBy: address
+      createdBy: address,
     };
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret)
+      signature: this.assetsService.sign(idData, secret),
     };
 
     const asset = {
       assetId: this.assetsService.calculateHash(content),
-      content
+      content,
     };
 
     return asset;
@@ -136,12 +136,14 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   save(input) {
     this.error = false;
     this.success = false;
-    let json = {};
+    let json = null;
     try {
       json = JSON.parse(input.value);
     } catch (e) { }
 
     if (json) {
+      if (!confirm('Are you sure you want to proceed creating this asset?')) { return; }
+
       this.spinner = true;
 
       if (this.for === 'assets' && !this.prefill) {
