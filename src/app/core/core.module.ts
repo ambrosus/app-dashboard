@@ -25,7 +25,7 @@ import { HelpService } from './components/help/help.service';
     HelpComponent,
     LoginComponent,
     SetupComponent,
-    InviteComponent
+    InviteComponent,
   ],
   providers: [
     {
@@ -34,6 +34,6 @@ import { HelpService } from './components/help/help.service';
       multi: true,
     },
     HelpService
-  ]
+  ],
 })
 export class CoreModule { }

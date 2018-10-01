@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 export interface Hermes {
   data: any;
-  status: number,
+  status: number;
   totalCount: number;
 }
 

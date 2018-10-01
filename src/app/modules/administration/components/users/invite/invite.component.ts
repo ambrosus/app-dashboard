@@ -61,7 +61,7 @@ export class InviteComponent implements OnInit, OnDestroy {
         this.roles = resp.data;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Roles GET error: ', err);
       }
     );
@@ -91,7 +91,7 @@ export class InviteComponent implements OnInit, OnDestroy {
     this.errorsResetInvite();
     const body = {
       invites: this.generateInviteObject(),
-      user: this.storage.get('user')
+      user: this.storageService.get('user')
     };
     console.log(body);
 
@@ -104,7 +104,7 @@ export class InviteComponent implements OnInit, OnDestroy {
           this.success = 'Invites sent';
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           console.log('Invites error: ', err);
           this.error = 'Invites failed';
         }

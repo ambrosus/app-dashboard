@@ -8,7 +8,7 @@ import { CompaniesService } from 'app/services/companies.service';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
   settingsForm: FormGroup;
@@ -41,12 +41,12 @@ export class SettingsComponent implements OnInit {
     this.settingsForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
       preview_app: new FormControl('', []),
-      timeZone: new FormControl('', [])
+      timeZone: new FormControl('', []),
     });
   }
 
   prefillSettings() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.company = this.user['company'] || {};
     try {
       this.settings = JSON.parse(this.company.settings);
@@ -84,8 +84,8 @@ export class SettingsComponent implements OnInit {
       settings: JSON.stringify({
         preview_app: this.settingsForm.get('preview_app').value,
         timeZone: this.settingsForm.get('timeZone').value,
-        logo: this.croppedImage
-      })
+        logo: this.croppedImage,
+      }),
     };
 
     if (this.settingsForm.valid) {
@@ -95,20 +95,20 @@ export class SettingsComponent implements OnInit {
         (resp: any) => {
           this.spinner = false;
           this.success = true;
-          this.auth.getAccount(this.user.email).subscribe(
+          this.authService.getAccount(this.user.email).subscribe(
             user => {
-              this.storage.set('user', user);
+              this.storageService.set('user', user);
               this.emit('user:refresh');
             },
             err => {
-              if (err.status === 401) { this.auth.logout(); }
+              if (err.status === 401) { this.authService.logout(); }
               console.log('Get account error: ', err);
             }
           );
           console.log('Edit company: ', resp);
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
           console.log('Edit company error: ', err);

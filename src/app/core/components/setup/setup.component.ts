@@ -34,7 +34,6 @@ export class SetupComponent implements OnInit {
     private _auth: AuthService,
     private Dashboard: DashboardService
     ) {
-
     this.timezones = moment.tz.names();
 
     this.forms.hermes = new FormGroup({
@@ -91,7 +90,7 @@ export class SetupComponent implements OnInit {
 
     this.formsPromise = new Promise((resolve, reject) => {
 
-      this.Dashboard.initSetup(data).subscribe(({ address, secret }) => {
+      this.dashboardService.initSetup(data).subscribe(({ address, secret }) => {
         this.address = address;
         this.secret = secret;
 

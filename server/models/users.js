@@ -16,7 +16,7 @@ const validateEmail = (email) => {
   return re.test(email);
 };
 
-const usersSchema = mongoose.Schema({
+const users = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
@@ -74,26 +74,34 @@ const usersSchema = mongoose.Schema({
   }
 });
 
-usersSchema.plugin(findOrCreate);
+users.plugin(findOrCreate);
 
-usersSchema.pre('update', function(next) {
+users.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
-usersSchema.pre('save', function(next) {
-  
+users.pre('save', function(next) {
+
   if (!this.isModified('password')) return next();
-  
+
   bcrypt.hash(this.password, 10, (err, hash) => {
     if (!err) {
       this.password = hash;
       this.updatedAt = +new Date();
       this.lastLogin = +new Date();
       next();
-    } else { throw new Error('Failure in password hashing').toString(); }
+    } else { next(new Error('Failure in password hashing')); }
   });
-  
+
 });
 
-module.exports = mongoose.model('Users', usersSchema);
+users.post('save', function(error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('There was a duplicate key error'));
+  } else {
+    next();
+  }
+});
+
+module.exports = mongoose.model('Users', users);

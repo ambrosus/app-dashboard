@@ -34,7 +34,7 @@ export class EventComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private storage: StorageService
+    private storageService: StorageService
   ) { }
 
   ngOnDestroy() {
@@ -54,7 +54,7 @@ export class EventComponent implements OnInit, OnDestroy {
     });
     this.infoEvent = this.findInfoEvent();
 
-    this.user = this.storage.get('user');
+    this.user = this.storageService.get('user');
     let companySettings: any = {};
     try {
       companySettings = JSON.parse(this.user.company.settings);

@@ -5,7 +5,6 @@ import {
   HttpInterceptor,
   HttpHandler,
   HttpRequest,
-  HttpResponse,
   HttpHeaders
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -13,7 +12,7 @@ import { tap } from 'rxjs/operators';
 import { AuthService } from 'app/services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InterceptorService implements HttpInterceptor {
   constructor(private storage: StorageService, private auth: AuthService) { }
@@ -31,16 +30,16 @@ export class InterceptorService implements HttpInterceptor {
         headers: new HttpHeaders({
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `AMB_TOKEN ${token}`
-        })
+          Authorization: `AMB_TOKEN ${token}`,
+        }),
       });
     } else {
       request = req.clone({
         headers: new HttpHeaders({
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `AMB ${secret}`
-        })
+          Authorization: `AMB ${secret}`,
+        }),
       });
     }
 

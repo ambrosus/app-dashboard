@@ -39,7 +39,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   @Input() assetId;
   @Input() name;
 
-  constructor(private assetsService: AssetsService, private auth: AuthService, private el: ElementRef, public dialog: MatDialog) { }
+  constructor(private assetsService: AssetsService, private authService: AuthService, private el: ElementRef, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.loadEvents = this.loadEvents.bind(this);
@@ -52,7 +52,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   loadEvents(page = 0, perPage = 15) {
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
     this.searchActive = false;
 
@@ -81,7 +81,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (search.length === 0) { return this.loadEvents(); }
 
-    const token = this.auth.getToken();
+    const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
 
     const searchValues = search.split(',');

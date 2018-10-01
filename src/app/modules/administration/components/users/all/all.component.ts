@@ -26,7 +26,7 @@ export class AllComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.getUsers();
   }
 
@@ -51,7 +51,7 @@ export class AllComponent implements OnInit, OnDestroy {
         });
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Users GET error: ', err);
       }
     );

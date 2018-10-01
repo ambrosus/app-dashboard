@@ -27,7 +27,7 @@ export class QrCodeComponent implements OnInit {
 
     let companySettings: any = {};
     try {
-      companySettings = JSON.parse(this.storage.get('user')['company']['settings']);
+      companySettings = JSON.parse(this.storageService.get('user')['company']['settings']);
     } catch (e) { }
 
     this.logo = companySettings.logo || false;

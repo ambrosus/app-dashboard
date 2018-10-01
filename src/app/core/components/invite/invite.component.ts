@@ -63,7 +63,7 @@ export class InviteComponent implements OnInit {
   createAccount() {
     this.createAccountReset();
     const body: any = {
-      hermes: this.storage.get('user')['company']['hermes'],
+      hermes: this.storageService.get('user')['company']['hermes'],
       user: {
         full_name: this.createAccountForm.get('fullName').value,
         password: this.createAccountForm.get('password').value,
