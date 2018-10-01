@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { StorageService } from 'app/services/storage.service';
 
 declare let QRCode: any;
@@ -18,8 +17,7 @@ export class QrCodeComponent implements OnInit {
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
-    private sanitize: DomSanitizer,
-    private storage: StorageService
+    private storageService: StorageService
   ) { }
 
   ngOnInit() {

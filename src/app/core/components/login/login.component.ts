@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     if (!this.forms.addressForm.valid) { return this.error = 'All fields are required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(address, secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(data.address, data.secret).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
@@ -63,10 +63,10 @@ export class LoginComponent implements OnInit {
 
     this.promiseAction = new Promise((resolve, reject) => {
 
-      this.authService.login(email, password).subscribe((resp: any) => {
+      this.authService.login(data.email, data.password).subscribe((resp: any) => {
 
         console.log(resp);
-        
+
         this.router.navigate(['/assets']);
         resolve();
       }, err => {

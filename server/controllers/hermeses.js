@@ -30,7 +30,7 @@ exports.create = (req, res, next) => {
       req.status = 200;
       req.hermes = hermes;
       return next();
-    }).catch(error => 
+    }).catch(error => {
       if (error.code === 11000) { res.status(400).json({ message: 'Hermes URL already exists' }); }
       else { logger.error(error), res.status(400).json({ message: error }); }
     });
