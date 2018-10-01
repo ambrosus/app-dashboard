@@ -14,7 +14,9 @@ const invitationsCron = require('./server/cron/invitation-cron');
 global.logger = require('tracer').colorConsole();
 
 const APIRoutes = require('./server/routes/v1');
-
+logger.error('Error');
+logger.warn('warn');
+logger.info('Info');
 const app = express();
 
 // Mongoose
