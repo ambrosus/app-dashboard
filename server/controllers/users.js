@@ -15,7 +15,6 @@ const web3 = new Web3();
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
-const Role = _require('/models/roles');
 const Invite = _require('/models/invites');
 
 /**

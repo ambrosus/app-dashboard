@@ -24,14 +24,14 @@ import { NgSelectModule } from '@ng-select/ng-select';
     HelpComponent,
     LoginComponent,
     SetupComponent,
-    InviteComponent
+    InviteComponent,
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class CoreModule { }

@@ -8,7 +8,7 @@ import * as moment from 'moment-timezone';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
   settingsForm: FormGroup;
@@ -37,7 +37,7 @@ export class SettingsComponent implements OnInit {
     this.settingsForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
       preview_app: new FormControl('', []),
-      timeZone: new FormControl('', [])
+      timeZone: new FormControl('', []),
     });
   }
 
@@ -80,8 +80,8 @@ export class SettingsComponent implements OnInit {
       settings: JSON.stringify({
         preview_app: this.settingsForm.get('preview_app').value,
         timeZone: this.settingsForm.get('timeZone').value,
-        logo: this.croppedImage
-      })
+        logo: this.croppedImage,
+      }),
     };
 
     if (this.settingsForm.valid) {
