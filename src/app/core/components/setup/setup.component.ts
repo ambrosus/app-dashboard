@@ -53,8 +53,8 @@ export class SetupComponent implements OnInit {
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
       settings: new FormGroup({
-        preview_app: new FormControl('');
-      })
+        preview_app: new FormControl(''),
+      }),
     });
 
     this.forms.user = new FormGroup({
