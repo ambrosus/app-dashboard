@@ -53,7 +53,7 @@ export class AuthService {
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -91,7 +91,10 @@ export class AuthService {
 
 
   verifyAccount(address, secret) {
-    const token = this.getToken(secret);
+    let token = '';
+    try {
+      token = this.getToken(secret);
+    } catch (e) { }
 
     return new Observable(observer => {
       const deviceInfo = this.deviceService.getDeviceInfo();
@@ -105,7 +108,7 @@ export class AuthService {
           this.emit('user:refresh');
           return observer.next(user);
         },
-        err => observer.error(err)
+        err => observer.error(err.error)
       );
     });
   }
@@ -129,10 +132,7 @@ export class AuthService {
           this.emit('user:refresh');
           observer.next('success');
         },
-        err => {
-          const error = err.error ? err.error.message : JSON.stringify(err);
-          observer.error(error);
-        }
+        err => observer.error(err.error)
       );
     });
   }

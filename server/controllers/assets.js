@@ -5,37 +5,11 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const axios = require('axios');
 const mongoose = require('mongoose');
 
 const Asset = _require('/models/assets');
 const assetsUtils = _require('/utils/assets');
-
-const get = (url, token) => {
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
-  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
-  return new Promise((resolve, reject) => {
-    axios.get(url, { headers, data: null })
-      .then(resp => resolve(resp.data))
-      .catch(error => reject(error));
-  });
-}
-
-const create = (url, body, token = null) => {
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
-  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
-  return new Promise((resolve, reject) => {
-    axios.post(url, body, { headers, data: null })
-      .then(resp => resolve(resp.data))
-      .catch(error => reject(error));
-  });
-}
+const generalUtils = _require('/utils/general');
 
 /**
  * 1. Gets paginated assets from dash db
@@ -58,7 +32,7 @@ exports.getAssets = (req, res, next) => {
       req.status = 200;
       req.json = { assets };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error' })));
 }
 
 /**
@@ -86,7 +60,7 @@ exports.getAsset = (req, res, next) => {
         const updateAsset = new Promise((resolve, reject) => {
           // Get info event
           url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
-          get(url, token)
+          generalUtils.get(url, token)
             .then(resp => {
               const infoEvent = assetsUtils.findEvent('info', resp.results);
               if (infoEvent) { asset['infoEvent'] = JSON.stringify(infoEvent); }
@@ -96,7 +70,7 @@ exports.getAsset = (req, res, next) => {
                 .then(assetUpdated => {
                   resolve(assetUpdated);
                 }).catch(error => (console.log('Asset update error: ', error), resolve(asset)));
-            }).catch(error => (console.log('Asset info event GET error: ', error)));
+            }).catch(error => (console.log('Asset info event GET error: ', error.data['reason'])));
         });
 
         updateAsset.then(a => {
@@ -105,7 +79,7 @@ exports.getAsset = (req, res, next) => {
           return next();
         });
       } else { throw 'No asset'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error' })));
 }
 
 /**
@@ -141,7 +115,7 @@ exports.getEvents = (req, res, next) => {
   if (data) { url += `${decodeURI(data)}&`; }
   if (assetId) { url += `${decodeURI(assetId)}&`; }
 
-  get(url, token)
+  generalUtils.get(url, token)
     .then(events => {
       if (assets) {
         // Extract unique assetIds
@@ -158,7 +132,7 @@ exports.getEvents = (req, res, next) => {
             req.status = 200;
             req.json = { assets: _assets, events };
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error' })));
       } else {
         // Timeline array of events
         Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) })
@@ -176,13 +150,13 @@ exports.getEvents = (req, res, next) => {
                   .catch(error => console.log('Asset update error: ', error));
               }
             } else { throw 'No asset'; }
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error', error })));
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error' })));
 
         req.status = 200;
         req.json = { events };
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Events GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: error.data['reason'] })));
 }
 
 /**
@@ -204,12 +178,12 @@ exports.getEvent = (req, res, next) => {
 
   const url = `${user.hermes.url}/events/${eventId}`;
 
-  get(url, token)
+  generalUtils.get(url, token)
     .then(event => {
       req.status = 200;
       req.json = event;
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Event GET error', error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: error.data['reason'] })));
 }
 
 /**
@@ -236,7 +210,7 @@ exports.createAsset = (req, res, next) => {
     const url = `${user.hermes.url}/assets`;
     const createAssets = new Promise((resolve, reject) => {
       assets.forEach((asset, index, array) => {
-        create(url, asset)
+        generalUtils.create(url, asset)
           .then(assetCreated => {
             const _asset = new Asset({
               _id: new mongoose.Types.ObjectId(),
@@ -288,7 +262,7 @@ exports.createEvents = (req, res, next) => {
     const createEvents = new Promise((resolve, reject) => {
       events.forEach((event, index, array) => {
         const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
-        create(url, event)
+        generalUtils.create(url, event)
           .then(eventCreated => {
             req.json.events.push(eventCreated);
             const latestEvent = assetsUtils.findEvent('latest', [eventCreated]);

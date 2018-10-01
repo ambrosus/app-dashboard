@@ -26,7 +26,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog
   ) {
-
     this.forms.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
@@ -35,7 +34,6 @@ export class LoginComponent implements OnInit {
       address: new FormControl(null, [Validators.required]),
       secret: new FormControl(null, [Validators.required]),
     });
-
   }
 
   ngOnInit() { }
@@ -51,13 +49,14 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
-        this.error = err;
+        this.error = err.message;
         reject();
       });
     });
   }
 
   login() {
+    this.error = false;
     const data = this.forms.loginForm.value;
 
     if (!this.forms.loginForm.valid) { return this.error = 'All fields are required'; }
@@ -67,7 +66,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
-        this.error = err;
+        this.error = err.message;
         reject();
       });
     });

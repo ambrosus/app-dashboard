@@ -56,10 +56,10 @@ exports.create = (req, res, next) => {
             req.status = 200;
             req.json = { message: 'Success' };
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+          }).catch(error => (console.log(error), res.status(400).json({ message: 'Creating invites error' })));
 
         } else { throw 'No company found'; }
-      }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+      }).catch(error => (console.log(error), res.status(400).json({ message: 'Company GET error' })));
 
   } else if (!invites || invites.length === 0) {
     return res.status(400).json({ message: '"invites" need to be a non-empty array.' })
@@ -86,7 +86,7 @@ exports.delete = (req, res, next) => {
       req.status = 200;
       req.json = { message: 'Successfuly deleted', data: deleted };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Delete invite error' })));
 }
 
 /**
@@ -108,7 +108,7 @@ exports.getAll = (req, res, next) => {
       req.status = 200;
       req.json = { resultCount: invites.length, data: invites };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+    }).catch(error => (console.log(error), res.status(400).json({ message: 'Invites GET error' })));
 }
 
 /**
@@ -131,7 +131,7 @@ exports.verify = (req, res, next) => {
       Invite.findOneAndRemove({ token })
         .then(deleted => {
           return res.status(400).json({ message: 'Invitation expired' });
-        }).catch(error => (console.log(error), res.status(400).json({ message: error })));
+        }).catch(error => (console.log(error), res.status(400).json({ message: 'Invite remove error' })));
     } else {
       Invite.findOne({ token })
         .then(invite => {
@@ -140,7 +140,7 @@ exports.verify = (req, res, next) => {
             req.json = { message: 'Token is valid' };
             return next();
           } else { throw 'No invite'; }
-        }).catch(error => (console.log(error), res.status(404).json({ message: error })))
+        }).catch(error => (console.log(error), res.status(404).json({ message: 'Invite GET error' })))
     }
   } else { return res.status(400).json({ message: 'Token is invalid' }) }
 }

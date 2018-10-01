@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-invite',
   templateUrl: './invite.component.html',
-  styleUrls: ['./invite.component.scss']
+  styleUrls: ['./invite.component.scss'],
 })
 export class InviteComponent implements OnInit, OnDestroy {
   inviteForm: FormGroup;
@@ -30,10 +30,10 @@ export class InviteComponent implements OnInit, OnDestroy {
         new FormGroup({
           email: new FormControl('', []),
           accessLevel: new FormControl(1, []),
-          role: new FormControl('', [])
-        })
+          role: new FormControl('', []),
+        }),
       ]),
-      message: new FormControl('', [])
+      message: new FormControl('', []),
     });
   }
 
@@ -71,23 +71,22 @@ export class InviteComponent implements OnInit, OnDestroy {
       new FormGroup({
         email: new FormControl('', []),
         accessLevel: new FormControl(1, []),
-        role: new FormControl('', [])
+        role: new FormControl('', []),
       })
     );
   }
 
-  errorsResetInvite() {
+  invite() {
     this.error = false;
     this.success = false;
-  }
+    const user: any = this.storage.get('user');
+    delete user.profile;
+    delete user.company.settings;
 
-  invite() {
-    this.errorsResetInvite();
     const body = {
       invites: this.generateInviteObject(),
-      user: this.storage.get('user')
+      user,
     };
-    console.log(body);
 
     if (this.inviteForm.valid && body.invites.length > 0) {
       this.spinner = true;
