@@ -1,23 +1,43 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
-import { Observable } from 'rxjs';
+import { HttpResponse } from './response.interface';
+import { UsersService } from './../services/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private auth: AuthService) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private storage: StorageService,
+    private auth: AuthService,
+    private user: UsersService
+  ) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
 
-    console.log('canActivate@AuthGuard');
+    console.log('canActivate@SetUpGuard');
 
-    return new Promise(resolve => {
-      if (this.auth.isLoggedIn()) {
+    return new Promise((resolve) => {
+      this.auth.getHermeses().subscribe((res: HttpResponse) => {
+
+        if (state.url === '/login' && res.totalCount === 0) {
+          this.router.navigate(['/setup']);
+          resolve(false);
+        } else if (state.url === '/setup' && res.totalCount > 0) {
+          this.router.navigate(['/login']);
+          resolve(false);
+        } else if (state.url === '/login' && res.totalCount > 0 && this.auth.isLoggedIn()) {
+            this.router.navigate(['/assets']);
+            resolve(true);
+        }
+
         resolve(true);
-      } else {
-        this.router.navigate(['/login']);
-        resolve(false);
-      }
+
+      });
     });
+
   }
 }

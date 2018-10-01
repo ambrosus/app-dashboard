@@ -4,19 +4,19 @@ import { AuthService } from 'app/services/auth.service';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class AuthGuardLogin implements CanActivate {
+export class AuthLoginGuard implements CanActivate {
   constructor(private router: Router, private auth: AuthService) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
 
-    console.log('canActivate@AuthGuardLogin');
+    console.log('canActivate@AuthLoginGuard');
 
     return new Promise(resolve => {
       if (this.auth.isLoggedIn()) {
-        this.router.navigate(['/assets']);
-        resolve(false);
-      } else {
         resolve(true);
+      } else {
+        this.router.navigate(['/login']);
+        resolve(false);
       }
     });
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-users',
@@ -10,27 +11,48 @@ export class UsersComponent implements OnInit {
     {
       title: 'All users',
       link: 'all',
-      icon: 'users'
+      icon: 'users',
+      permission: 'users'
     },
     {
       title: 'Invite members',
       link: 'invite',
-      icon: 'user-plus'
+      icon: 'user-plus',
+      permission: 'invites'
     },
     {
       title: 'Invites',
       link: 'invites',
-      icon: 'user-check'
+      icon: 'user-check',
+      permission: 'invites'
     },
     {
       title: 'Roles',
       link: 'roles',
-      icon: 'user-check'
+      icon: 'user-check',
+      permission: 'roles'
     }
   ];
 
-  constructor() { }
+  userSidebar = [];
+  permissions: string[];
+
+  constructor(private usersService: UsersService) { }
 
   ngOnInit() {
+    this.permissions = ['invites', 'users', 'roles'];
+    if (this.permissions.length) {
+      this.generateSidebar();
+    } else {
+      this.userSidebar = this.sidebar;
+    }
   }
+
+  generateSidebar() {
+    this.userSidebar = this.sidebar.filter(module => {
+      const validPermission = this.permissions.filter(p => p === module['permission']);
+      if (validPermission.length !== 0 ) { return module; }
+    });
+  }
+
 }

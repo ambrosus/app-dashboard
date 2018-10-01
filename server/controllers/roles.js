@@ -32,7 +32,7 @@ exports.create = (req, res, next) => {
       req.json = role;
       return next();
     })
-    .catch(error => (console.log(error), res.status(400).json({ message: 'Role create error' })));
+    .catch(error => (logger.error(error), res.status(400).json({ message: 'Role create error' })));
 };
 
 /**
@@ -54,14 +54,14 @@ exports.editRole = (req, res, next) => {
 
   Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true })
     .then(role => {
-      console.log(role);
+      logger.info(role);
 
       if (role) {
         req.status = 200;
         req.json = role;
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Role edit error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role edit error' })));
 };
 
 /**
@@ -76,7 +76,7 @@ exports.editRole = (req, res, next) => {
  */
 exports.deleteRole = (req, res, next) => {
   const { _id } = req.params;
-  console.log(_id);
+  logger.info(_id);
 
   Role.findByIdAndRemove({ _id })
     .then(role => {
@@ -85,7 +85,7 @@ exports.deleteRole = (req, res, next) => {
         req.json = { message: 'Role deleted successfully' }
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Role delete error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role delete error' })));
 };
 
 /**
@@ -103,5 +103,6 @@ exports.getRoles = (req, res, next) => {
       req.status = 200;
       req.json = roles;
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Roles GET error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Roles GET error' })));
+
 };

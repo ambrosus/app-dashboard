@@ -24,7 +24,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   isObject(value) { return typeof value === 'object'; }
 
-  constructor(private storage: StorageService, private assetsService: AssetsService) {
+  constructor(private storageService: StorageService, private assetsService: AssetsService) {
     this.initForm();
   }
 
@@ -276,8 +276,8 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   private generateEvent(assetId) {
-    const address = this.storage.get('user')['address'];
-    const secret = this.storage.get('secret');
+    const address = this.storageService.get('user')['address'];
+    const secret = this.storageService.get('secret');
 
     const data = [];
 

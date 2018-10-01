@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
+import { InviteService } from 'app/services/invite.service';
 
 @Component({
   selector: 'app-invite',
@@ -18,7 +19,12 @@ export class InviteComponent implements OnInit, OnDestroy {
   roles = [];
   getRolesSub: Subscription;
 
-  constructor(private http: HttpClient, private storage: StorageService, private auth: AuthService) {
+  constructor(
+    private http: HttpClient,
+    private storage: StorageService,
+    private auth: AuthService,
+    private inviteService: InviteService
+  ) {
     this.initInviteForm();
   }
 
@@ -55,7 +61,7 @@ export class InviteComponent implements OnInit, OnDestroy {
         this.roles = resp.data;
       },
       err => {
-        if (err.status === 401) { this.auth.logout(); }
+        if (err.status === 401) { this.authService.logout(); }
         console.log('Roles GET error: ', err);
       }
     );
@@ -79,7 +85,7 @@ export class InviteComponent implements OnInit, OnDestroy {
   invite() {
     this.error = false;
     this.success = false;
-    const user: any = this.storage.get('user');
+    const user: any = this.storageService.get('user');
     delete user.profile;
     delete user.company.settings;
 
@@ -91,16 +97,13 @@ export class InviteComponent implements OnInit, OnDestroy {
     if (this.inviteForm.valid && body.invites.length > 0) {
       this.spinner = true;
 
-      // Send invites
-      const url = `/api/invites`;
-
-      this.http.post(url, body).subscribe(
+      this.inviteService.sendInvite(body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Invites sent';
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           console.log('Invites error: ', err);
           this.error = 'Invites failed';
         }

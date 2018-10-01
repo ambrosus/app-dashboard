@@ -7,13 +7,13 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class UsersService {
+  private _roles: BehaviorSubject<any> = new BehaviorSubject([]);
 
   constructor(private http: HttpClient) {
     this.getRoles();
   }
 
   /* User */
-
 
   update(address, json) {
     return new Observable(observer => {
@@ -30,8 +30,6 @@ export class UsersService {
     });
   }
   /* Roles */
-
-  private _roles: BehaviorSubject<any> = new BehaviorSubject([]);
 
   get roles() {
     return this._roles.asObservable();
@@ -79,7 +77,7 @@ export class UsersService {
         observer.next();
       });
 
-    })
+    });
   }
 
   deleteRole(id) {
@@ -97,7 +95,36 @@ export class UsersService {
         console.log(err);
       });
 
-
-    })
+    });
   }
+
+  getUser() {
+    return new Observable(observer => {
+    this.http.get('/api/users').subscribe(
+      (user: any) => { observer.next(user); },
+      err => { observer.error(err); }
+    );
+    });
+  }
+
+  createUser(body, token) {
+    const url = `/api/users?token=${token}`;
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (resp: any) => observer.next(resp),
+        (err) => { console.log('Create account error: ', err); observer.error(err); }
+      );
+    });
+  }
+
+  getUsers() {
+    const url = `/api/users`;
+    return new Observable(observer => {
+      this.http.get(url).subscribe(
+        (resp: any) => observer.next(resp),
+        (err) => { observer.error(err); }
+      );
+    });
+  }
+
 }

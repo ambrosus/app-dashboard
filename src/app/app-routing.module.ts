@@ -1,10 +1,6 @@
-import { AuthGuardChild } from './services/auth-guard-child.service';
-import { AuthGuardChildAdmin } from './services/auth-guard-child-admin.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
-
-import { AuthGuardLogin } from 'app/services/auth-guard-login.service';
 
 import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
@@ -14,8 +10,9 @@ import { SetupComponent } from './core/components/setup/setup.component';
 import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
-import { SetUpGuard } from './guards/setup.guard';
 import { AuthGuard } from './guards/auth.guard';
+import { AuthLoginGuard } from './guards/auth-login.guard';
+import { PermissionsGuard } from './guards/permissions.guard';
 
 const routes: Routes = [
   {
@@ -24,12 +21,12 @@ const routes: Routes = [
     redirectTo: '/login'
   }, {
     path: 'setup',
-    canActivate: [SetUpGuard],
+    canActivate: [AuthGuard],
     component: SetupComponent,
     runGuardsAndResolvers: 'always'
   }, {
     path: 'login',
-    canActivate: [SetUpGuard, AuthGuardLogin],
+    canActivate: [AuthGuard],
     component: LoginComponent,
     runGuardsAndResolvers: 'always'
   }, {
@@ -38,17 +35,17 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always'
   }, {
     path: 'assets',
-    canActivateChild: [AuthGuardChild],
+    canActivate: [AuthGuard],
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always'
   }, {
     path: 'administration',
-    canActivateChild: [AuthGuardChildAdmin],
+    canActivate: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always'
   }, {
     path: 'settings',
-    canActivateChild: [AuthGuardChild],
+    canActivate: [AuthGuard],
     loadChildren: 'app/modules/settings/settings.module#SettingsModule',
     runGuardsAndResolvers: 'always'
   }, {
@@ -74,6 +71,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthGuardChild, AuthGuardChildAdmin, AuthGuardLogin, SetUpGuard]
+  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard]
 })
 export class AppRoutingModule { }

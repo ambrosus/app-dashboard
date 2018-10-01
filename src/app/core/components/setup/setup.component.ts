@@ -3,7 +3,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DashboardService } from 'app/services/dashboard.service';
 
 import * as moment from 'moment-timezone';
-
+import { AuthService } from 'app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-setup',
@@ -19,7 +20,7 @@ export class SetupComponent implements OnInit {
     hermes?: FormGroup,
     company?: FormGroup,
     user?: FormGroup
-  } = {}
+  } = { };
 
   currentStep: number = 0;
 
@@ -28,8 +29,11 @@ export class SetupComponent implements OnInit {
   address;
   secret;
 
-  constructor(private Dashboard: DashboardService) {
-
+  constructor(
+    private router: Router,
+    private _auth: AuthService,
+    private Dashboard: DashboardService
+    ) {
     this.timezones = moment.tz.names();
 
     this.forms.hermes = new FormGroup({
@@ -48,8 +52,8 @@ export class SetupComponent implements OnInit {
       title: new FormControl('', [Validators.required]),
       timezone: new FormControl('', [Validators.required]),
       settings: new FormGroup({
-        preview_app: new FormControl('')
-      })
+        preview_app: new FormControl(''),
+      }),
     });
 
     this.forms.user = new FormGroup({
@@ -86,7 +90,7 @@ export class SetupComponent implements OnInit {
 
     this.formsPromise = new Promise((resolve, reject) => {
 
-      this.Dashboard.initSetup(data).subscribe(({ address, secret }) => {
+      this.dashboardService.initSetup(data).subscribe(({ address, secret }) => {
         this.address = address;
         this.secret = secret;
 

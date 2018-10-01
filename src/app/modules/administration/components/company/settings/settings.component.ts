@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/services/auth.service';
 import * as moment from 'moment-timezone';
+import { CompaniesService } from 'app/services/companies.service';
 
 @Component({
   selector: 'app-settings',
@@ -24,7 +24,11 @@ export class SettingsComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
 
-  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) { }
+  constructor(
+    private storage: StorageService,
+    private auth: AuthService,
+    private companiesService: CompaniesService
+  ) { }
 
   ngOnInit() {
     this.initSettingsForm();
@@ -42,7 +46,7 @@ export class SettingsComponent implements OnInit {
   }
 
   prefillSettings() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.company = this.user['company'] || {};
     try {
       this.settings = JSON.parse(this.company.settings);
@@ -88,25 +92,24 @@ export class SettingsComponent implements OnInit {
     if (this.settingsForm.valid) {
       this.spinner = true;
 
-      const url = `/api/companies`;
-      this.http.put(url, body).subscribe(
+      this.companiesService.editCompany(body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = true;
-          this.auth.getAccount(this.user.email).subscribe(
+          this.authService.getAccount(this.user.email).subscribe(
             user => {
-              this.storage.set('user', user);
+              this.storageService.set('user', user);
               this.emit('user:refresh');
             },
             err => {
-              if (err.status === 401) { this.auth.logout(); }
+              if (err.status === 401) { this.authService.logout(); }
               console.log('Get account error: ', err);
             }
           );
           console.log('Edit company: ', resp);
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.message;
           console.log('Edit company error: ', err);

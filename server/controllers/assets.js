@@ -32,7 +32,7 @@ exports.getAssets = (req, res, next) => {
       req.status = 200;
       req.json = { assets };
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
 }
 
 /**
@@ -69,8 +69,8 @@ exports.getAsset = (req, res, next) => {
               Asset.findByIdAndUpdate(asset._id, asset)
                 .then(assetUpdated => {
                   resolve(assetUpdated);
-                }).catch(error => (console.log('Asset update error: ', error), resolve(asset)));
-            }).catch(error => (console.log('Asset info event GET error: ', error.data['reason'])));
+                }).catch(error => (logger.error('Asset update error: ', error), resolve(asset)));
+            }).catch(error => (logger.error('Asset info event GET error: ', error)));
         });
 
         updateAsset.then(a => {
@@ -79,7 +79,7 @@ exports.getAsset = (req, res, next) => {
           return next();
         });
       } else { throw 'No asset'; }
-    }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error' })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
 }
 
 /**
@@ -132,7 +132,7 @@ exports.getEvents = (req, res, next) => {
             req.status = 200;
             req.json = { assets: _assets, events };
             return next();
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Cached Assets GET error' })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
       } else {
         // Timeline array of events
         Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) })
@@ -146,17 +146,17 @@ exports.getEvents = (req, res, next) => {
               if (latestEvent && (!assetsLatestEvent || assetsLatestEvent.timestamp < latestEvent.timestamp)) {
                 asset.latestEvent = JSON.stringify(latestEvent);
                 Asset.findByIdAndUpdate(asset._id, asset)
-                  .then(updated => console.log('Asset updated: ', updated))
-                  .catch(error => console.log('Asset update error: ', error));
+                  .then(updated => logger.info('Asset updated: ', updated))
+                  .catch(error => logger.error('Asset update error: ', error));
               }
             } else { throw 'No asset'; }
-          }).catch(error => (console.log(error), res.status(400).json({ message: 'Asset GET error' })));
+          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
 
         req.status = 200;
         req.json = { events };
         return next();
       }
-    }).catch(error => (console.log(error), res.status(400).json({ message: error.data['reason'] })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Events GET error', error })));
 }
 
 /**
@@ -183,7 +183,7 @@ exports.getEvent = (req, res, next) => {
       req.status = 200;
       req.json = event;
       return next();
-    }).catch(error => (console.log(error), res.status(400).json({ message: error.data['reason'] })));
+    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Event GET error', error })));
 }
 
 /**
@@ -225,7 +225,7 @@ exports.createAsset = (req, res, next) => {
                 req.json.assets.docs.push(inserted);
                 if (index === array.length - 1) { resolve(); }
               }).catch(error => {
-                console.log('Cached asset creation error: ', error);
+                logger.error('Cached asset creation error: ', error);
                 if (index === array.length - 1) { resolve(); }
               });
           });
@@ -276,11 +276,11 @@ exports.createEvents = (req, res, next) => {
             Asset.findOneAndUpdate({ assetId: asset.assetId }, asset)
               .then(assetUpdated => { if (index === array.length - 1) { resolve(); } })
               .catch(error => {
-                console.log('Asset update error: ', error);
+                logger.error('Asset update error: ', error);
                 if (index === array.length - 1) { resolve(); }
               });
           }).catch(error => {
-            console.log('Event create error: ', error);
+            logger.error('Event create error: ', error);
             if (index === array.length - 1) { resolve(); }
           });
       });

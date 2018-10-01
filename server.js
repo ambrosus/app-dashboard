@@ -10,16 +10,37 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const invitationsCron = require('./server/cron/invitation-cron');
+// use log, trace, debug, info, warn, error when logging with *logger*
+global.logger = require('tracer').colorConsole();
+
+const compress = require('compression');
+const methodOverride = require('method-override');
+const cors = require('cors');
+const helmet = require('helmet');
 
 const APIRoutes = require('./server/routes/v1');
 
+/**
+ * Express instance
+ * @public
+ */
 const app = express();
+
+// gzip compression
+app.use(compress());
+
+// lets you use HTTP verbs such as PUT or DELETE
+// in places where the client doesn't support it
+app.use(methodOverride());
+
+// enable CORS - Cross Origin Resource Sharing
+app.use(cors());
 
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
   .then(connected => {
-    console.log('MongoDB connected')
+    logger.info('MongoDB connected')
     invitationsCron.start();
   }).catch(error => console.log('Mongodb connection error: ', error));
 
@@ -30,7 +51,7 @@ const store = new MongoDBStore({
 });
 
 store.on('connected', () => {
-  console.log('MongoDB Session Store connected');
+  logger.info('MongoDB Session Store connected');
   store.client;
 });
 store.on('error', error => console.log('MongoDB Session Store connection error: ', error));
@@ -65,7 +86,7 @@ app.get('*', (req, res) => {
 
 const server = http.createServer(app);
 server.listen(config.port, () => {
-  console.log('Server running...');
+  logger.info('Server running...');
 });
 
 module.exports = app;

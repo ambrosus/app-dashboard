@@ -22,7 +22,7 @@ export class GeneralSettingsComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
 
-  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService) { }
+  constructor(private storageService: StorageService, private http: HttpClient, private authService: AuthService) { }
 
   ngOnInit() {
     this.editProfileForm = new FormGroup({
@@ -48,7 +48,7 @@ export class GeneralSettingsComponent implements OnInit {
   }
 
   prefillEditProfile() {
-    this.user = this.storage.get('user') || {};
+    this.user = this.storageService.get('user') || {};
     this.editProfileForm.get('full_name').setValue(this.user.full_name);
     let companySettings: any = {};
     try { companySettings = JSON.parse(this.user.settings); } catch (e) { console.log(e); }
@@ -86,20 +86,20 @@ export class GeneralSettingsComponent implements OnInit {
         (resp: any) => {
           this.spinner = false;
           this.success = true;
-          this.auth.getAccount(this.user.email).subscribe(
+          this.authService.getAccount(this.user.email).subscribe(
             user => {
-              this.storage.set('user', user);
+              this.storageService.set('user', user);
               this.emit('user:refresh');
             },
             err => {
-              if (err.status === 401) { this.auth.logout(); }
+              if (err.status === 401) { this.authService.logout(); }
               console.log('Get account error: ', err);
             }
           );
           console.log('Edit profile: ', resp);
         },
         err => {
-          if (err.status === 401) { this.auth.logout(); }
+          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.message;
           console.log('Edit profile error: ', err);
