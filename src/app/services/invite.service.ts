@@ -40,4 +40,14 @@ export class InviteService {
 
   }
 
+  sendInvite(body) {
+    const url = `/api/invites`;
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (resp: any) => { observer.next(resp); },
+        err => { observer.error(err); }
+      );
+    });
+  }
+
 }
