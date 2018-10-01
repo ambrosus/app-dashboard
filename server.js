@@ -29,8 +29,7 @@ const app = express();
 // gzip compression
 app.use(compress());
 
-// lets you use HTTP verbs such as PUT or DELETE
-// in places where the client doesn't support it
+// Enable HTTP CRUD methods (e.g. PUT, DELETE)
 app.use(methodOverride());
 
 // enable CORS - Cross Origin Resource Sharing
