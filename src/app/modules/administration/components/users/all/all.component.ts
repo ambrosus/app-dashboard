@@ -8,7 +8,7 @@ import * as moment from 'moment-timezone';
 @Component({
   selector: 'app-all',
   templateUrl: './all.component.html',
-  styleUrls: ['./all.component.scss']
+  styleUrls: ['./all.component.scss'],
 })
 export class AllComponent implements OnInit, OnDestroy {
   selectAllText = 'Select all';
@@ -41,7 +41,7 @@ export class AllComponent implements OnInit, OnDestroy {
         this.users = resp.data.map(user => {
 
           if (!user.role || !user.role.title) { user.role = { title: 'No role assigned yet' }; }
-          user.lastLogin = moment(user.lastLogin).tz(this.user.company.timeZone).fromNow();
+          user.lastLogin = moment.tz(user.lastLogin, this.user.company.timeZone).fromNow();
 
           return user;
         });
