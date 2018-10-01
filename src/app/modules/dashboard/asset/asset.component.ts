@@ -10,7 +10,7 @@ import { StorageService } from 'app/services/storage.service';
   selector: 'app-asset',
   templateUrl: './asset.component.html',
   styleUrls: ['./asset.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AssetComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
@@ -85,7 +85,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   openCreateEventDialog() {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
 
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
@@ -97,7 +97,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   openJsonDialog(): void {
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.data = this.events;

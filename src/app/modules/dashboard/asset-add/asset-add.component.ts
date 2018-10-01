@@ -4,7 +4,7 @@ import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } fr
   selector: 'app-asset-add',
   templateUrl: './asset-add.component.html',
   styleUrls: ['./asset-add.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AssetAddComponent implements OnInit {
   json;

@@ -11,20 +11,20 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
   sidebar = [
     {
       title: 'General',
       link: 'general',
-      icon: 'user'
+      icon: 'user',
     },
     {
       title: 'Security',
       link: 'security',
-      icon: 'lock'
-    }
+      icon: 'lock',
+    },
   ];
 
   constructor() { }

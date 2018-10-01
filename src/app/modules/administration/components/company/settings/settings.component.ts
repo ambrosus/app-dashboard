@@ -8,7 +8,7 @@ import * as moment from 'moment-timezone';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
   settingsForm: FormGroup;
@@ -37,7 +37,7 @@ export class SettingsComponent implements OnInit {
     this.settingsForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
       preview_app: new FormControl('', []),
-      timeZone: new FormControl('', [])
+      timeZone: new FormControl('', []),
     });
   }
 
@@ -75,13 +75,14 @@ export class SettingsComponent implements OnInit {
 
   editCompany() {
     this.resetForm();
+    const data = this.settingsForm.value;
     const body = {
-      title: this.settingsForm.get('title').value,
+      title: data.title,
       settings: JSON.stringify({
-        preview_app: this.settingsForm.get('preview_app').value,
-        timeZone: this.settingsForm.get('timeZone').value,
-        logo: this.croppedImage
-      })
+        preview_app: data.preview_app,
+        timeZone: data.timeZone,
+        logo: this.croppedImage,
+      }),
     };
 
     if (this.settingsForm.valid) {
@@ -107,7 +108,7 @@ export class SettingsComponent implements OnInit {
         err => {
           if (err.status === 401) { this.auth.logout(); }
           this.spinner = false;
-          this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
+          this.error = err.message;
           console.log('Edit company error: ', err);
         }
       );

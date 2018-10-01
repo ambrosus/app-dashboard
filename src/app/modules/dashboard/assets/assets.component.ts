@@ -17,7 +17,7 @@ import { AuthService } from 'app/services/auth.service';
   selector: 'app-assets',
   templateUrl: './assets.component.html',
   styleUrls: ['./assets.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSubscription: Subscription;
@@ -31,7 +31,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     perPage: 15,
     totalPages: 0,
     resultCount: 0,
-    resultLength: 0
+    resultLength: 0,
   };
   // Search
   searchActive = false;
@@ -136,7 +136,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       assets: true,
       token,
       page,
-      perPage
+      perPage,
     };
     switch (select) {
       case 'name':
@@ -179,7 +179,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   createEventsDialog() {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.assetIds = this.assetIds;

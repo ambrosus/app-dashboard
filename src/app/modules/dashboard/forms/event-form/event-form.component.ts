@@ -458,7 +458,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
           this.emit('event:created');
         },
         err => {
-          this.error = err;
+          this.error = err.message;
           this.spinner = false;
           console.error('Events create error: ', err);
         }

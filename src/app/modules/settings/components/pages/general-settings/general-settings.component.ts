@@ -8,7 +8,7 @@ import * as moment from 'moment-timezone';
 @Component({
   selector: 'app-general-settings',
   templateUrl: './general-settings.component.html',
-  styleUrls: ['./general-settings.component.scss']
+  styleUrls: ['./general-settings.component.scss'],
 })
 export class GeneralSettingsComponent implements OnInit {
   editProfileForm: FormGroup;
@@ -27,7 +27,7 @@ export class GeneralSettingsComponent implements OnInit {
   ngOnInit() {
     this.editProfileForm = new FormGroup({
       full_name: new FormControl('', [Validators.required]),
-      timeZone: new FormControl('', [])
+      timeZone: new FormControl('', []),
     });
 
     this.prefillEditProfile();
@@ -69,12 +69,13 @@ export class GeneralSettingsComponent implements OnInit {
 
   editProfile() {
     this.resetForm();
+    const data = this.editProfileForm.value;
     const body = {
-      full_name: this.editProfileForm.get('full_name').value,
-      settings: JSON.stringify({ timeZone: this.editProfileForm.get('timeZone').value }),
+      full_name: data.full_name,
+      settings: JSON.stringify({ timeZone: data.timeZone }),
       profile: {
-        image: this.croppedImage
-      }
+        image: this.croppedImage,
+      },
     };
 
     if (this.editProfileForm.valid) {
@@ -100,7 +101,7 @@ export class GeneralSettingsComponent implements OnInit {
         err => {
           if (err.status === 401) { this.auth.logout(); }
           this.spinner = false;
-          this.error = err.error.message && Object.keys(err.error.message).length ? err.error.message : err.statusText;
+          this.error = err.message;
           console.log('Edit profile error: ', err);
         }
       );
