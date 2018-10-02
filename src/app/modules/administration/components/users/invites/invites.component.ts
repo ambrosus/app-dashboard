@@ -7,7 +7,7 @@ import { InviteService } from 'app/services/invite.service';
 @Component({
   selector: 'app-invites',
   templateUrl: './invites.component.html',
-  styleUrls: ['./invites.component.scss']
+  styleUrls: ['./invites.component.scss'],
 })
 export class InvitesComponent implements OnInit, OnDestroy {
   selectAllText = 'Select all';
@@ -21,7 +21,7 @@ export class InvitesComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private authService: AuthService,
     private inviteService: InviteService
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.getInvites();
@@ -93,7 +93,12 @@ export class InvitesComponent implements OnInit, OnDestroy {
   onSelect(e, item) {
     const active = item.classList.contains('checkbox--checked');
     const action = active ? 'removeClass' : 'addClass';
+
     this.renderer[action](item, 'checkbox--checked');
-    if (active) { this.toggleId('remove', item.id); } else { this.toggleId('add', item.id); }
+    if (active) {
+      this.toggleId('remove', item.id);
+    } else {
+      this.toggleId('add', item.id);
+    }
   }
 }

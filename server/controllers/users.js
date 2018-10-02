@@ -5,10 +5,13 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+
+/* global _require */
+/* global logger */
+
 const utilsPassword = _require('/utils/password');
 const mongoose = require('mongoose');
 const config = _require('/config');
-const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
@@ -35,7 +38,7 @@ exports.create = (req, res, next) => {
   let email = user.email;
   let accessLevel = user.accessLevel || 1;
   let permissions = user.permissions || ['create_asset', 'create_event'];
-  let company = '';
+  let company = req.company;
 
   // invite
   if (inviteToken) {
@@ -44,10 +47,16 @@ exports.create = (req, res, next) => {
       email = _token['email'];
       accessLevel = _token['accessLevel'];
       company = _token['company'];
-      role = _token['role']['_id'];
-      if (_token['role']['title'] === 'admin') { permissions = ['register_accounts', 'create_asset', 'create_event'] }
-    } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
+
+      if (_token['role']['title'] === 'admin') {
+        permissions = ['register_accounts', 'create_asset', 'create_event'];
+      }
+
+    } catch (error) {
+      return res.status(400).json({ message: 'Invite token is invalid' });
+    }
   }
+
   const query = { $or: [{ email }, { address }] };
   const _user = {
     full_name,
@@ -55,7 +64,7 @@ exports.create = (req, res, next) => {
     address,
     token,
     password,
-    company: mongoose.Types.ObjectId(company)
+    company: mongoose.Types.ObjectId(company),
   };
 
   logger.info('User: ', _user);
@@ -69,13 +78,13 @@ exports.create = (req, res, next) => {
         const body = {
           address,
           permissions,
-          accessLevel
+          accessLevel,
         };
         generalUtils.create(`${hermes.url}/accounts`, body, config.token)
-          .then(userRegistered => {
+          .then(() => {
             if (inviteToken) {
               Invite.findOneAndRemove({ token: inviteToken })
-                .then(inviteDeleted => logger.info('Invite deleted'))
+                .then(() => logger.info('Invite deleted'))
                 .catch(error => logger.error('Invite delete error: ', error));
             }
 
@@ -85,7 +94,7 @@ exports.create = (req, res, next) => {
           }).catch(error => (logger.error(error), res.status(400).json({ message: error.data['reason'] })));
       } else { throw 'User exists'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'User creation error: ', error })));
-}
+};
 
 /**
  * Sets company ownership
@@ -102,9 +111,9 @@ exports.setOwnership = (req, res, next) => {
 
   if (user && company) {
     User.findById(user._id)
-      .then(_user => {
+      .then(() => {
         Company.findByIdAndUpdate(company._id, { owner: user._id })
-          .then(_saved => {
+          .then(() => {
             req.status = 200;
             return next();
           }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
@@ -114,7 +123,7 @@ exports.setOwnership = (req, res, next) => {
   } else if (!company) {
     return res.status(400).json({ message: '"company" object is required' });
   }
-}
+};
 
 /**
  * Get account details based on email address
@@ -133,12 +142,12 @@ exports.getAccount = (req, res, next) => {
       select: '-active -createdAt -updatedAt -__v -owner',
       populate: {
         path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public'
-      }
+        select: '-active -createdAt -updatedAt -__v -public',
+      },
     })
     .populate({
       path: 'role',
-      select: '-createdAt -updatedAt -__v'
+      select: '-createdAt -updatedAt -__v',
     })
     .select('-active -createdAt -updatedAt -__v')
     .then(user => {
@@ -149,7 +158,7 @@ exports.getAccount = (req, res, next) => {
         return next();
       } else { throw 'No user found'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get account error' })));
-}
+};
 
 /**
  * Get list of accounts based on the user's company
@@ -168,12 +177,12 @@ exports.getAccounts = (req, res, next) => {
       select: '-active -createdAt -updatedAt -__v -owner',
       populate: {
         path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public'
-      }
+        select: '-active -createdAt -updatedAt -__v -public',
+      },
     })
     .populate({
       path: 'role',
-      select: '-createdAt -updatedAt -__v'
+      select: '-createdAt -updatedAt -__v',
     })
     .select('-password -__v')
     .then(users => {
@@ -181,12 +190,12 @@ exports.getAccounts = (req, res, next) => {
         req.status = 200;
         req.json = {
           resultCount: users.length,
-          data: users
+          data: users,
         };
         return next();
       } else { throw 'No users found'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get accounts error' })));
-}
+};
 
 /**
  * Get settings of a particular user (query using email address)
@@ -208,9 +217,7 @@ exports.getSettings = (req, res, next) => {
         return next();
       } else { throw 'No accounts found'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get settings error' })));
-}
-
-exports.getNotifications = (req, res, next) => {}
+};
 
 /**
  * Update user details using the user email address
@@ -226,11 +233,11 @@ exports.edit = (req, res, next) => {
   const email = req.params.email;
   const query = req.body;
 
-  const update = {}
+  const update = {};
   const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) {
-      update[key] = query[key]
+      update[key] = query[key];
     }
   }
 
@@ -242,7 +249,7 @@ exports.edit = (req, res, next) => {
         return next();
       } else { throw 'Update data error'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'User update error' })));
-}
+};
 
 /**
  * Change password of a user using their email address
@@ -299,7 +306,7 @@ exports.changePassword = (req, res, next) => {
  * @returns Save success message on success with status code 200
  */
 exports.assignRole = (req, res, next) => {
-  const { email, role } = req.body
+  const { email, role } = req.body;
 
   if (email && role) {
     User.findOneAndUpdate({ email }, { role })

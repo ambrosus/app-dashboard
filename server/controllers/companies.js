@@ -5,7 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
+
+/* global _require */
+/* global logger */
 
 const Company = _require('/models/companies');
 
@@ -26,15 +28,14 @@ exports.create = (req, res, next) => {
   Company.create({
       title,
       settings,
-      hermes
+      hermes,
     })
     .then(company => {
       req.status = 200;
       req.company = company;
       return next();
     }).catch(error => {
-      if (error.code === 11000) { res.status(400).json({ message: 'Company with this title already exists' }); }
-      else { logger.error(error), res.status(400).json({ message: error }); }
+      logger.error(error), res.status(400).json({ message: error });
     });
 };
 
@@ -42,11 +43,11 @@ exports.edit = (req, res, next) => {
   const id = req.session.user.company || '';
   const query = req.body;
 
-  const update = {}
+  const update = {};
   const allowedToChange = ['title', 'settings'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) {
-      update[key] = query[key]
+      update[key] = query[key];
     }
   }
 
@@ -58,4 +59,4 @@ exports.edit = (req, res, next) => {
         return next();
       } else { throw 'Update data error'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-}
+};
