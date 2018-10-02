@@ -71,7 +71,7 @@ const users = mongoose.Schema({
   updatedAt: {
     type: Date,
     default: +new Date(),
-  }
+  },
 });
 
 users.plugin(findOrCreate);

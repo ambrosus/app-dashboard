@@ -8,10 +8,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
 
-const companiesSchema = mongoose.Schema({
+const company = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    auto: true,
   },
   title: {
     type: String,
@@ -26,15 +26,15 @@ const companiesSchema = mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users',
-    index: { unique: true }
+    index: { unique: true },
   },
   active: {
     type: Boolean,
-    default: true
+    default: true,
   },
   branding: {
     dasboard: String,
-    ambto: String
+    ambto: String,
   },
   settings: {
     type: String,
@@ -42,24 +42,32 @@ const companiesSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
-  }
+    default: +new Date(),
+  },
 });
 
-companiesSchema.plugin(findOrCreate);
+company.plugin(findOrCreate);
 
-companiesSchema.pre('update', function(next) {
+company.pre('update', function(next) {
   this.updatedAt = +new Date();
   next();
 });
 
-companiesSchema.pre('save', function(next) {
+company.pre('save', function(next) {
   this.createdAt = +new Date();
   next();
 });
 
-module.exports = mongoose.model('Companies', companiesSchema);
+company.post('save', function(error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('There was a duplicate key error'));
+  } else {
+    next();
+  }
+});
+
+module.exports = mongoose.model('Companies', company);
