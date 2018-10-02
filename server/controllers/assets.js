@@ -8,8 +8,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 
 const Asset = _require('/models/assets');
-const assetsUtils = _require('/utils/assets');
-const generalUtils = _require('/utils/general');
+const { findEvent } = _require('/utils/assets');
+const { httpGet, httpPost } = _require('/utils/requests');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 
 /**
  * 1. Gets paginated assets from dash db
@@ -23,16 +25,17 @@ const generalUtils = _require('/utils/general');
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getAssets = (req, res, next) => {
+exports.getAssets = async (req, res, next) => {
   const { page, perPage } = req.query;
   const user = req.session.user;
+  let err, assets;
 
-  Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' })
-    .then(assets => {
-      req.status = 200;
-      req.json = { assets };
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
+  [err, assets] = await to(Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
+  if (err) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message)); };
+
+  req.status = 200;
+  req.json = { assets };
+  next();
 }
 
 /**
@@ -48,38 +51,32 @@ exports.getAssets = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getAsset = (req, res, next) => {
+exports.getAsset = async (req, res, next) => {
   const { token } = req.query;
   const assetId = req.params.assetId;
   const user = req.session.user;
+  let err, asset, infoEvents, assetUpdate;
 
   // Get cached asset
-  Asset.findOne({ assetId })
-    .then(asset => {
-      if (asset) {
-        const updateAsset = new Promise((resolve, reject) => {
-          // Get info event
-          url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
-          generalUtils.get(url, token)
-            .then(resp => {
-              const infoEvent = assetsUtils.findEvent('info', resp.results);
-              if (infoEvent) { asset['infoEvent'] = JSON.stringify(infoEvent); }
+  [err, asset] = await to(Asset.findOne({ assetId }));
+  if (err) return next(new NotFoundError(err.message));
 
-              // Update the asset
-              Asset.findByIdAndUpdate(asset._id, asset)
-                .then(assetUpdated => {
-                  resolve(assetUpdated);
-                }).catch(error => (logger.error('Asset update error: ', error), resolve(asset)));
-            }).catch(error => (logger.error('Asset info event GET error: ', error)));
-        });
+  // Get info event
+  url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
-        updateAsset.then(a => {
-          req.status = 200;
-          req.json = a;
-          return next();
-        });
-      } else { throw 'No asset'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
+  [err, infoEvents] = await to(httpGet(url, token));
+  if (err) logger.error('Asset info event GET error: ', err.data['reason']);
+
+  // Update cached asset
+  const infoEvent = findEvent('info', infoEvents.results);
+  if (infoEvent) { asset['infoEvent'] = JSON.stringify(infoEvent); }
+
+  [err, assetUpdate] = await to(Asset.findByIdAndUpdate(asset._id, asset));
+  if (err) { logger.error('Asset update error: ', err.message), req.json = asset; };
+
+  req.status = 200;
+  req.json = assetUpdate;
+  next();
 }
 
 /**
@@ -115,7 +112,7 @@ exports.getEvents = (req, res, next) => {
   if (data) { url += `${decodeURI(data)}&`; }
   if (assetId) { url += `${decodeURI(assetId)}&`; }
 
-  generalUtils.get(url, token)
+  httpGet(url, token)
     .then(events => {
       if (assets) {
         // Extract unique assetIds
@@ -138,7 +135,7 @@ exports.getEvents = (req, res, next) => {
         Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) })
           .then(asset => {
             if (asset) {
-              const latestEvent = assetsUtils.findEvent('latest', events.results);
+              const latestEvent = findEvent('latest', events.results);
 
               let assetsLatestEvent = '';
               try { assetsLatestEvent = JSON.parse(asset.latestEvent); } catch (e) {}
@@ -178,7 +175,7 @@ exports.getEvent = (req, res, next) => {
 
   const url = `${user.hermes.url}/events/${eventId}`;
 
-  generalUtils.get(url, token)
+  httpGet(url, token)
     .then(event => {
       req.status = 200;
       req.json = event;
@@ -210,7 +207,7 @@ exports.createAsset = (req, res, next) => {
     const url = `${user.hermes.url}/assets`;
     const createAssets = new Promise((resolve, reject) => {
       assets.forEach((asset, index, array) => {
-        generalUtils.create(url, asset)
+        httpPost(url, asset)
           .then(assetCreated => {
             const _asset = new Asset({
               _id: new mongoose.Types.ObjectId(),
@@ -262,11 +259,11 @@ exports.createEvents = (req, res, next) => {
     const createEvents = new Promise((resolve, reject) => {
       events.forEach((event, index, array) => {
         const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
-        generalUtils.create(url, event)
+        httpPost(url, event)
           .then(eventCreated => {
             req.json.events.push(eventCreated);
-            const latestEvent = assetsUtils.findEvent('latest', [eventCreated]);
-            const infoEvent = assetsUtils.findEvent('info', [eventCreated]);
+            const latestEvent = findEvent('latest', [eventCreated]);
+            const infoEvent = findEvent('info', [eventCreated]);
 
             const asset = { assetId: eventCreated.content.idData.assetId };
             if (latestEvent) { asset['latestEvent'] = JSON.stringify(latestEvent); }

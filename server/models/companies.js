@@ -58,7 +58,7 @@ companiesSchema.pre('update', function(next) {
 });
 
 companiesSchema.pre('save', function(next) {
-  this.createdAt = +new Date();
+  this.updatedAt = +new Date();
   next();
 });
 

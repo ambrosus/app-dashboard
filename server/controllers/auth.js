@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const generalUtils = _require('/utils/general');
+const { httpGet } = _require('/utils/requests');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -79,7 +79,7 @@ exports.verifyAccount = (req, res, next) => {
   Company.findById(companyId)
     .populate('hermes')
     .then(company => {
-      generalUtils.get(`${company.hermes.url}/accounts/${address}`, token)
+      httpGet(`${company.hermes.url}/accounts/${address}`, token)
         .then(resp => {
           User.findOne({ address })
             .populate({

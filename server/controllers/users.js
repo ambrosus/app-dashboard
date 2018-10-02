@@ -8,11 +8,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const utilsPassword = _require('/utils/password');
 const mongoose = require('mongoose');
 const config = _require('/config');
-const axios = require('axios');
 const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
-const generalUtils = _require('/utils/general');
+const { httpPost } = _require('/utils/requests');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -71,7 +70,7 @@ exports.create = (req, res, next) => {
           permissions,
           accessLevel
         };
-        generalUtils.create(`${hermes.url}/accounts`, body, config.token)
+        httpPost(`${hermes.url}/accounts`, body, config.token)
           .then(userRegistered => {
             if (inviteToken) {
               Invite.findOneAndRemove({ token: inviteToken })
