@@ -5,6 +5,11 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+
+/* global _require */
+/* global logger */
+/* global Promise */
+
 const mongoose = require('mongoose');
 
 const Asset = _require('/models/assets');
@@ -33,7 +38,7 @@ exports.getAssets = (req, res, next) => {
       req.json = { assets };
       return next();
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
-}
+};
 
 /**
  * 1. Gets cached asset
@@ -57,9 +62,9 @@ exports.getAsset = (req, res, next) => {
   Asset.findOne({ assetId })
     .then(asset => {
       if (asset) {
-        const updateAsset = new Promise((resolve, reject) => {
+        const updateAsset = new Promise((resolve) => {
           // Get info event
-          url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
+          const url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
           generalUtils.get(url, token)
             .then(resp => {
               const infoEvent = assetsUtils.findEvent('info', resp.results);
@@ -80,7 +85,7 @@ exports.getAsset = (req, res, next) => {
         });
       } else { throw 'No asset'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
-}
+};
 
 /**
  * Used for searching assets and events
@@ -121,7 +126,7 @@ exports.getEvents = (req, res, next) => {
         // Extract unique assetIds
         const assetIds = events.results.reduce((_assetIds, event) => {
           let _assetId = '';
-          try { _assetId = event.content.idData.assetId; } catch (e) {}
+          try { _assetId = event.content.idData.assetId; } catch (e) { _assetId = ''; }
           if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
           return _assetIds;
         }, []);
@@ -141,7 +146,7 @@ exports.getEvents = (req, res, next) => {
               const latestEvent = assetsUtils.findEvent('latest', events.results);
 
               let assetsLatestEvent = '';
-              try { assetsLatestEvent = JSON.parse(asset.latestEvent); } catch (e) {}
+              try { assetsLatestEvent = JSON.parse(asset.latestEvent); } catch (e) { assetsLatestEvent = ''; }
 
               if (latestEvent && (!assetsLatestEvent || assetsLatestEvent.timestamp < latestEvent.timestamp)) {
                 asset.latestEvent = JSON.stringify(latestEvent);
@@ -157,7 +162,7 @@ exports.getEvents = (req, res, next) => {
         return next();
       }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Events GET error', error })));
-}
+};
 
 /**
  * 1. Gets event from Hermes
@@ -184,7 +189,7 @@ exports.getEvent = (req, res, next) => {
       req.json = event;
       return next();
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Event GET error', error })));
-}
+};
 
 /**
  * 1. Gets array of signed asset objects
@@ -208,7 +213,7 @@ exports.createAsset = (req, res, next) => {
   if (Array.isArray(assets) && assets.length > 0) {
     // Create an asset
     const url = `${user.hermes.url}/assets`;
-    const createAssets = new Promise((resolve, reject) => {
+    const createAssets = new Promise((resolve) => {
       assets.forEach((asset, index, array) => {
         generalUtils.create(url, asset)
           .then(assetCreated => {
@@ -217,7 +222,7 @@ exports.createAsset = (req, res, next) => {
               assetId: assetCreated.assetId,
               createdBy: assetCreated.content.idData.createdBy,
               updatedAt: assetCreated.content.idData.timestamp * 1000,
-              createdAt: assetCreated.content.idData.timestamp * 1000
+              createdAt: assetCreated.content.idData.timestamp * 1000,
             });
 
             _asset.save()
@@ -234,9 +239,9 @@ exports.createAsset = (req, res, next) => {
 
     createAssets.then(() => (req.status = 200, next()));
   } else if (!(Array.isArray(assets) && assets.length > 0)) {
-    return res.status(400).json({ message: '"assets" needs to be a non-empty array of signed asset objects' })
+    return res.status(400).json({ message: '"assets" needs to be a non-empty array of signed asset objects' });
   }
-}
+};
 
 /**
  * 1. Gets array of signed event objects
@@ -255,11 +260,15 @@ exports.createAsset = (req, res, next) => {
 exports.createEvents = (req, res, next) => {
   const events = req.body.events;
   const user = req.session.user;
-  if (req.json) { req.json['events'] = []; } else { req.json = { events: [] } }
+  if (req.json) {
+    req.json['events'] = [];
+  } else {
+    req.json = { events: [] };
+  }
 
   if (Array.isArray(events) && events.length > 0) {
 
-    const createEvents = new Promise((resolve, reject) => {
+    const createEvents = new Promise((resolve) => {
       events.forEach((event, index, array) => {
         const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
         generalUtils.create(url, event)
@@ -274,7 +283,7 @@ exports.createEvents = (req, res, next) => {
 
             // Update the asset
             Asset.findOneAndUpdate({ assetId: asset.assetId }, asset)
-              .then(assetUpdated => { if (index === array.length - 1) { resolve(); } })
+              .then(() => { if (index === array.length - 1) { resolve(); } })
               .catch(error => {
                 logger.error('Asset update error: ', error);
                 if (index === array.length - 1) { resolve(); }
@@ -288,4 +297,4 @@ exports.createEvents = (req, res, next) => {
 
     createEvents.then(() => (req.status = 200, next()));
   } else { return next(); }
-}
+};

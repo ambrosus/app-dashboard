@@ -15,7 +15,7 @@ exports.send = ({ from, to, subject, html }) => {
     from,
     to,
     subject,
-    html
+    html,
   };
 
   return sgMail.send(msg);
