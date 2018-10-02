@@ -16,7 +16,7 @@
   "end_with_comma": true,
   "js": {
     "end_with_comma": true,
-    "comma_first": true
+    "comma_first": false
   },
   "css": {
     "indent_size": 2,

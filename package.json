@@ -97,6 +97,7 @@
     "nodemon": "^1.18.4",
     "nyc": "^13.0.1",
     "protractor": "^5.4.0",
+    "sass-lint": "^1.12.1",
     "tracer": "^0.9.1",
     "ts-node": "~5.0.1",
     "tslint": "~5.9.1",
