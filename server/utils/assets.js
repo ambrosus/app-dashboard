@@ -1,4 +1,4 @@
-isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
+const isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1;
 
 exports.findEvent = (eventType, events) => {
   let e = false;
@@ -21,4 +21,4 @@ exports.findEvent = (eventType, events) => {
     } else { return false; }
   });
   return e;
-}
+};
