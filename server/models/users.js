@@ -89,7 +89,7 @@ usersSchema.pre('update', function(next) {
       this.updatedAt = +new Date();
       this.lastLogin = +new Date();
       next();
-    } else { next(new Error('Failure in password hashing')); }
+    } else { next(new ValidationError('Failure in password hashing', err)); }
   });
 });
 
@@ -102,7 +102,7 @@ usersSchema.pre('save', function(next) {
       this.updatedAt = +new Date();
       this.lastLogin = +new Date();
       next();
-    } else { next(new Error('Failure in password hashing')); }
+    } else { next(new ValidationError('Failure in password hashing', err)); }
   });
 });
 
