@@ -17,7 +17,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <span (click)="changePage('prev')">Previous</span>
     </li>
     <li class="pagination__item">
-      <span><input class="plain-input" type="number" #pageNumber [(ngModel)]="pagination.currentPage" (change)="changePage(pageNumber.value)" style="width: 40px; text-align: center; padding: 0px !important;"></span>
+      <span><input type="number" #pageNumber [(ngModel)]="pagination.currentPage" (change)="changePage(pageNumber.value)" style="width: 40px; text-align: center; padding: 0px !important;"></span>
       <span>/ {{ pagination.totalPages }}</span>
     </li>
     <li class="pagination__item" *ngIf="pagination.totalPages > 1 && pagination.currentPage !== pagination.totalPages">
