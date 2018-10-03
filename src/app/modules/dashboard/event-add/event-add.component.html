@@ -7,16 +7,16 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <main class="main m-t-50">
   <h1 class="center m-b-20">{{ prefill ? 'Edit event' : 'Create event' }}</h1>
-  <div class="tabs">
-    <div class="tab_header">
-      <p class="tab_header_item active" (click)="tabOpen('form', tabForm)" #tabForm>Form</p>
-      <p class="tab_header_item" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
-    </div>
-    <div class="tab_content">
-      <!-- FORM -->
-      <app-event-form [prefill]="prefill" [assetIds]="assetIds" *ngIf="!json"></app-event-form>
-      <!-- JSON -->
-      <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'events'" *ngIf="json"></app-json-form>
+  <div class="card" style="margin: 0 auto; width: 100%; padding: 0px !important;">
+    <div class="card__header">
+      <app-tabs>
+        <app-tab label="Form">
+          <app-event-form [prefill]="prefill" [assetIds]="assetIds"></app-event-form>
+        </app-tab>
+        <app-tab label="JSON">
+          <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'events'"></app-json-form>
+        </app-tab>
+      </app-tabs>
     </div>
   </div>
 </main>
