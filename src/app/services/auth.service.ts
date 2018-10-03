@@ -47,10 +47,9 @@ export class AuthService {
     return this.sdk.getToken(secret, validUntil);
   }
 
-  getAccount(email = null, address = null) {
+  getAccount(email) {
     return new Observable(observer => {
-      let url = `/api/users/${email}?`;
-      if (address) { url += `address=${address}`; }
+      const url = `/api/users/${email}`;
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
