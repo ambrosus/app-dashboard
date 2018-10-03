@@ -24,13 +24,13 @@ exports.create = async (req, res, next) => {
   let err, hermes;
 
   [err, hermes] = await to(Hermes.create({ title, url }));
-  if (err) {
-    if (err.code === 11000) return next(new ValidationError('Hermes URL already exists'));
+  if (err || !hermes) {
+    if (err.code === 11000) return next(new ValidationError('Hermes URL already exists', err));
     logger.error('Hermes create error: ', err);
-    return next(new ValidationError(err));
+    return next(new ValidationError(err.message, err));
   }
   req.status = 200;
-  req.company = hermes;
+  req.json = { data: hermes, message: 'Success', status: 200 };
   return next();
 };
 
@@ -45,13 +45,10 @@ exports.create = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
   let err, hermeses;
 
-  [err, hermeses] = await to(Hermes.find({ public: true }));
-  if (err) { logger.error('Hermes find error: ', err); return next(new NotFoundError(err.message)); }
+  [err, hermeses] = await to(Hermes.paginate({ public: true }));
+  if (err || !hermeses) { logger.error('Hermes find error: ', err); return next(new NotFoundError(err.message, err)); }
 
   req.status = 200;
-  req.json = {
-    totalCount: results.length,
-    data: hermeses
-  };
+  req.json = { data: hermeses, message: 'Success', status: 200 };
   return next();
 };

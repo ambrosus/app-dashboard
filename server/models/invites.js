@@ -7,6 +7,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const { ValidationError } = _require('/errors');
+const { extractErrorMessage } = _require('/utils/general');
 
 const invitesSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -40,6 +43,7 @@ const invitesSchema = mongoose.Schema({
 });
 
 invitesSchema.plugin(findOrCreate);
+invitesSchema.plugin(mongoosePaginate);
 
 invitesSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
@@ -49,6 +53,14 @@ invitesSchema.pre('update', function(next) {
 invitesSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
+});
+
+invitesSchema.post('save', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+invitesSchema.post('update', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
 });
 
 module.exports = mongoose.model('Invites', invitesSchema);

@@ -10,13 +10,16 @@ const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const { ValidationError } = _require('/errors');
+const { extractErrorMessage } = _require('/utils/general');
 
 const validateEmail = (email) => {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email);
 };
 
-const users = mongoose.Schema({
+const usersSchema = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
@@ -74,15 +77,10 @@ const users = mongoose.Schema({
   }
 });
 
-users.plugin(findOrCreate);
+usersSchema.plugin(findOrCreate);
+usersSchema.plugin(mongoosePaginate);
 
-users.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-users.pre('save', function(next) {
-
+usersSchema.pre('update', function(next) {
   if (!this.isModified('password')) return next();
 
   bcrypt.hash(this.password, 10, (err, hash) => {
@@ -93,15 +91,27 @@ users.pre('save', function(next) {
       next();
     } else { next(new Error('Failure in password hashing')); }
   });
-
 });
 
-users.post('save', function(error, doc, next) {
-  if (error.name === 'MongoError' && error.code === 11000) {
-    next(new Error('There was a duplicate key error'));
-  } else {
-    next();
-  }
+usersSchema.pre('save', function(next) {
+  if (!this.isModified('password')) return next();
+
+  bcrypt.hash(this.password, 10, (err, hash) => {
+    if (!err) {
+      this.password = hash;
+      this.updatedAt = +new Date();
+      this.lastLogin = +new Date();
+      next();
+    } else { next(new Error('Failure in password hashing')); }
+  });
 });
 
-module.exports = mongoose.model('Users', users);
+usersSchema.post('save', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+usersSchema.post('update', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+module.exports = mongoose.model('Users', usersSchema);

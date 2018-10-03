@@ -26,13 +26,13 @@ exports.create = async (req, res, next) => {
   let err, company;
 
   [err, company] = await to(Company.create({ title, settings, hermes }));
-  if (err) {
-    if (err.code === 11000) return next(new ValidationError('Company with this title already exists'));
+  if (err || !company) {
+    if (err.code === 11000) return next(new ValidationError('Company with this title already exists', err));
     logger.error('Company create error: ', err);
-    return next(new ValidationError(err));
+    return next(new ValidationError(err.message, err));
   }
   req.status = 200;
-  req.company = company;
+  req.json = { data: company, message: 'Success', status: 200 };
   return next();
 };
 
@@ -48,9 +48,9 @@ exports.edit = async (req, res, next) => {
   }
 
   [err, companyUpdated] = await to(Company.findByIdAndUpdate(id, update));
-  if (err) { logger.error('Company update error: ', err); return next(new ValidationError(err)); }
+  if (err || !companyUpdated) { logger.error('Company update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = { message: 'Company update success', data: companyUpdated };
+  req.json = { data: companyUpdated, message: 'Success', status: 200 };
   return next();
 }

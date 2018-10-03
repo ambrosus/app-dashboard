@@ -40,7 +40,7 @@ exports.login = async (req, res, next) => {
       })
       .select('-active -createdAt -updatedAt -__v')
     );
-    if (err) { logger.error('User GET error: ', err.message); return next(new NotFoundError(err.message)); }
+    if (err || !user) { logger.error('User GET error: ', err.message); return next(new NotFoundError(err.message, err)); }
 
     const valid = bcrypt.compareSync(password, user.password);
     if (!valid) return next(new ValidationError('User "password" is incorrect'));
@@ -53,7 +53,7 @@ exports.login = async (req, res, next) => {
 
     req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
     req.status = 200;
-    req.json = user
+    req.json = { data: user, message: 'Success', status: 200 };
     return next();
 
   } else if (!email) {
@@ -62,56 +62,6 @@ exports.login = async (req, res, next) => {
     next(new ValidationError('User "password" is required'));
   }
 };
-
-/**
- * Verifies a user by calling the API (hermes.url/accounts/address)
- *
- * @name verify
- * @route {POST} api/auth/verify
- * @bodyparam address, token, hermes
- * @returns Status code 400 on failure
- * @returns user Object on success with status code 200
- */
-exports.verifyAccount = (req, res, next) => {
-  const { address, token, deviceInfo } = req.body;
-  const companyId = req.session.user.company._id;
-
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      generalUtils.get(`${company.hermes.url}/accounts/${address}`, token)
-        .then(resp => {
-          User.findOne({ address })
-            .populate({
-              path: 'company',
-              select: '-active -createdAt -updatedAt -__v -owner',
-              populate: { path: 'hermes' }
-            })
-            .populate({
-              path: 'role',
-              select: '-createdAt -updatedAt -__v'
-            })
-            .select('-active -createdAt -updatedAt -password -__v')
-            .then(user => {
-              if (user) {
-                user.toObject();
-                delete user.password;
-
-                req.status = 200;
-                req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-                req.session.deviceInfo = deviceInfo;
-                req.json = user;
-                return next();
-              } else { throw 'No user found'; }
-            })
-            .catch(error => {
-              req.status = 200;
-              req.json = { message: 'No registered user' };
-              return next();
-            });
-        }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes account error' })));
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Company GET error', error })));
-}
 
 /**
  * Logs out a user by destroying the session
@@ -125,10 +75,10 @@ exports.logout = (req, res, next) => {
   req.session.destroy(error => {
     if (error) {
       logger.warn('User logout error: ', error);
-      return next(new ValidationError(`User logout error: ${error.message}`));
+      return next(new ValidationError(`User logout error: ${error.message}`, error));
     }
     req.status = 200;
-    req.json = { message: 'User logout success' };
+    req.json = { data: null, message: 'Success', status: 200 };
     return next();
   });
 }
@@ -155,9 +105,9 @@ exports.getActiveSessions = (req, res, next) => {
       });
 
       req.status = 200;
-      req.json = sessions;
+      req.json = { data: sessions, message: 'Success', status: 200 };
       return next();
-    } else { return next(new NotFoundError('No sessions were found')); }
+    } else { return next(new NotFoundError('No sessions were found', err)); }
   });
 }
 
@@ -176,9 +126,9 @@ exports.deleteSession = (req, res, next) => {
   collection.deleteOne({ _id: sessionId }, function(err, obj) {
     if (!err) {
       req.status = 200;
-      req.json = { message: "Success" };
+      req.json = { data: null, message: 'Success', status: 200 };
       return next();
-    } else { return next(new NotFoundError('Session was not found')); }
+    } else { return next(new NotFoundError('Session was not found', err)); }
   });
 }
 
@@ -195,9 +145,9 @@ exports.deleteSessions = (req, res, next) => {
     sessionsCollection.deleteMany({ 'session.user._id': userId, _id: { $ne: currentSession[0]._id } }, (err, response) => {
       if (!err) {
         req.status = 200;
-        req.json = { message: "Success" };
+        req.json = { data: null, message: 'Success', status: 200 };
         return next();
-      } else { return next(new ValidationError(err.message)); }
+      } else { return next(new ValidationError(err.message, err)); }
     });
   })
 }

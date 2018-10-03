@@ -29,10 +29,10 @@ exports.getAssets = async (req, res, next) => {
   let err, assets;
 
   [err, assets] = await to(Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
-  if (err) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message)); }
+  if (err || !assets) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = { assets };
+  req.json = { data: assets, message: 'Success', status: 200 };
   next();
 }
 
@@ -57,23 +57,23 @@ exports.getAsset = async (req, res, next) => {
 
   // Get cached asset
   [err, asset] = await to(Asset.findOne({ assetId }));
-  if (err) return next(new NotFoundError(err.message));
+  if (err || !asset) return next(new NotFoundError(err.message, err));
 
   // Get info event
   url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
   [err, infoEvents] = await to(httpGet(url, token));
-  if (err) logger.error('Asset info event GET error: ', err.data['reason']);
+  if (err || !infoEvents) logger.error('Asset info event GET error: ', err.data['reason']);
 
   // Update cached asset
   const infoEvent = findEvent('info', infoEvents.results);
   if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
   [err, assetUpdate] = await to(Asset.findByIdAndUpdate(asset._id, asset));
-  if (err)(logger.error('Asset update error: ', err.message), req.json = asset)
+  if (err || !assetUpdate)(logger.error('Asset update error: ', err.message), req.json = asset)
 
   req.status = 200;
-  req.json = assetUpdate;
+  req.json = { data: assetUpdate, message: 'Success', status: 200 };
   next();
 }
 
@@ -110,7 +110,7 @@ exports.getEvents = async (req, res, next) => {
   if (assetId) { url += `${decodeURI(assetId)}&`; }
 
   [err, events] = await to(httpGet(url, token));
-  if (err) { logger.error('Events GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'])); }
+  if (err || !events) { logger.error('Events GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'], err)); }
 
   if (assets) {
     // Extract unique assetIds
@@ -122,15 +122,15 @@ exports.getEvents = async (req, res, next) => {
     }, []);
 
     [err, cachedAssets] = await to(Asset.paginate({ assetId: { $in: assetIds } }, { limit: 500, sort: '-createdAt' }));
-    if (err) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message)); }
+    if (err || !cachedAssets) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
-    req.json = { assets: cachedAssets };
+    req.json = { data: cachedAssets, message: 'Success', status: 200 };
     return next();
   } else {
     // Update cached asset
     [err, cachedAsset] = await to(Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) }));
-    if (err) { logger.error('Asset GET error: ', err.message); return next(new ValidationError(err.message)); }
+    if (err || !cachedAsset) { logger.error('Asset GET error: ', err.message); return next(new ValidationError(err.message, err)); }
 
     const latestEvent = findEvent('latest', events.results);
     let cachedAssetsLatestEvent = '';
@@ -140,12 +140,12 @@ exports.getEvents = async (req, res, next) => {
       cachedAsset.latestEvent = JSON.stringify(latestEvent);
 
       [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
-      if (err) logger.error('Asset update error: ', err.message)
+      if (err || !updateCachedAsset) logger.error('Asset update error: ', err.message)
       if (updateCachedAsset) logger.info('Asset updated: ', updateCachedAsset)
     }
 
     req.status = 200;
-    req.json = { events };
+    req.json = { data: events, message: 'Success', status: 200 };
     return next();
   }
 }
@@ -171,10 +171,10 @@ exports.getEvent = async (req, res, next) => {
   const url = `${user.hermes.url}/events/${eventId}`;
 
   [err, event] = await to(httpGet(url, token));
-  if (err) { logger.error('Event GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'])); }
+  if (err || !event) { logger.error('Event GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'], err)); }
 
   req.status = 200;
-  req.json = event;
+  req.json = { data: event, message: 'Success', status: 200 };
   return next();
 }
 
@@ -195,7 +195,7 @@ exports.getEvent = async (req, res, next) => {
 exports.createAsset = async (req, res, next) => {
   const assets = req.body.assets;
   const user = req.session.user;
-  req.json = { assets: { docs: [] } };
+  req.json = { data: { assets: { docs: [] } } };
   let err, assetCreated, assetInserted;
 
   if (Array.isArray(assets) && assets.length > 0) {
@@ -203,7 +203,7 @@ exports.createAsset = async (req, res, next) => {
     const url = `${user.hermes.url}/assets`;
     assets.map(async (asset, index, array) => {
       [err, assetCreated] = await to(httpPost(url, asset));
-      if (err) logger.error('Asset create error: ', err.data['reason']);
+      if (err || !assetCreated) logger.error('Asset create error: ', err.data['reason']);
       if (assetCreated) {
         [err, assetInserted] = await to(Asset.create({
           assetId: assetCreated.assetId,
@@ -211,8 +211,8 @@ exports.createAsset = async (req, res, next) => {
           updatedAt: assetCreated.content.idData.timestamp * 1000,
           createdAt: assetCreated.content.idData.timestamp * 1000
         }));
-        if (assetInserted) req.json.assets.docs.push(assetInserted);
-        if (err) logger.error('Cached asset creation error: ', err.message);
+        if (err || !assetInserted) logger.error('Cached asset creation error: ', err.message);
+        if (assetInserted) req.json.data.assets.docs.push(assetInserted);
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
     });
@@ -237,16 +237,16 @@ exports.createAsset = async (req, res, next) => {
 exports.createEvents = async (req, res, next) => {
   const events = req.body.events;
   const user = req.session.user;
-  if (req.json) { req.json['events'] = []; } else { req.json = { events: [] } }
+  if (req.json && req.json.data) { req.json.data['events'] = [] } else { req.json = { data: { events: [] } } }
   let err, eventCreated, assetUpdated;
 
   if (Array.isArray(events) && events.length > 0) {
     events.map(async (event, index, array) => {
       const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
       [err, eventCreated] = await to(httpPost(url, event));
-      if (err) logger.error('Event create error: ', err.data['reason']);
+      if (err || !eventCreated) logger.error('Event create error: ', err.data['reason']);
       if (eventCreated) {
-        req.json.events.push(eventCreated);
+        req.json.data.events.push(eventCreated);
 
         // Update cached asset
         const latestEvent = findEvent('latest', [eventCreated]);
@@ -257,7 +257,7 @@ exports.createEvents = async (req, res, next) => {
         if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
         [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset));
-        if (err) logger.error('Asset update error: ', err.message);
+        if (err || !assetUpdated) logger.error('Asset update error: ', err.message);
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
     });

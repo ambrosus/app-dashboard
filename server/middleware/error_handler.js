@@ -21,5 +21,5 @@ module.exports = (err, req, res, next) => {
     status = 500;
   }
 
-  return res.status(status).json({ message: err.message });
+  return res.status(status).json({ data: err.data, message: err.message, status });
 };

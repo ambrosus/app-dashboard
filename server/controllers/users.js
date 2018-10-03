@@ -8,7 +8,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const utilsPassword = _require('/utils/password');
 const mongoose = require('mongoose');
 const config = _require('/config');
-const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
@@ -62,23 +61,23 @@ exports.create = async (req, res, next) => {
 
   // Insert user in dash db
   [err, userCreated] = await to(User.findOrCreate(query, _user));
-  if (err) { logger.error('User create error: ', err); return next(new ValidationError(err)); }
+  if (err || !userCreated) { logger.error('User create error: ', err); return next(new ValidationError(err.message, err)); }
   if (!userCreated.created) return next(new ValidationError('User already exists'));
 
   // Register user in the hermes
   const body = { address, permissions, accessLevel };
   [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
-  if (err) { logger.error('Hermes user registration error: ', err.data['reason']); return next(new ValidationError(err.data['reason'])); }
+  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err.data['reason']); return next(new ValidationError(err.data['reason'], err)); }
 
   // Delete invite token
   if (inviteToken) {
     [err, inviteRemoved] = await to(Invite.findOneAndRemove({ token: inviteToken }));
-    if (err) logger.error('Invite delete error: ', error);
+    if (err || !inviteRemoved) logger.error('Invite delete error: ', error);
     if (inviteRemoved) logger.info('Invited deleted');
   }
 
   req.status = 200;
-  req.user = doc;
+  req.json = { data: userCreated.doc, message: 'Success', status: 200 };
   return next();
 }
 
@@ -99,13 +98,14 @@ exports.setOwnership = async (req, res, next) => {
   if (user && company) {
     // Find user
     [err, _user] = await to(User.findById(user._id));
-    if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+    if (err || !_user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
     // Update company
     [err, companyUpdated] = await to(Company.findByIdAndUpdate(company._id, { owner: user._id }));
-    if (err) { logger.error('Company update error: ', err); return next(new ValidationError(err.message)); }
+    if (err || !companyUpdated) { logger.error('Company update error: ', err); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
+    req.json = { data: companyUpdated, message: 'Success', status: 200 };
     return next();
 
   } else if (!user) {
@@ -143,10 +143,10 @@ exports.getAccount = async (req, res, next) => {
     })
     .select('-active -createdAt -updatedAt -__v')
   );
-  if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   req.status = 200;
-  req.json = user;
+  req.json = { data: user, message: 'Success', status: 200 };
   return next();
 }
 
@@ -178,13 +178,10 @@ exports.getAccounts = async (req, res, next) => {
     })
     .select('-password -__v')
   );
-  if (err) { logger.error('Users GET error: ', err); return next(new NotFoundError(err.message)); }
+  if (err || !users) { logger.error('Users GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   req.status = 200;
-  req.json = {
-    resultCount: users.length,
-    data: users
-  };
+  req.json = { data: users, message: 'Success', status: 200 };
   return next();
 }
 
@@ -202,10 +199,10 @@ exports.getSettings = async (req, res, next) => {
   let err, user;
 
   [err, user] = await to(User.findOne({ email }));
-  if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   req.status = 200;
-  req.json = user.settings;
+  req.json = { data: user.settings, message: 'Success', status: 200 };
   return next();
 }
 
@@ -233,10 +230,10 @@ exports.edit = async (req, res, next) => {
   }
 
   [err, userUpdated] = await to(User.findOneAndUpdate({ email }, update));
-  if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
+  if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = { message: 'Update data success', data: updateResponse };
+  req.json = { data: userUpdated, message: 'Success', status: 200 };
   return next();
 }
 
@@ -255,7 +252,7 @@ exports.changePassword = async (req, res, next) => {
 
   if (email && oldPassword && newPassword) {
     [err, user] = await to(User.findOne({ email }));
-    if (err) { logger.error('User GET error: ', err); return next(new ValidationError(err.message)); }
+    if (err || !user) { logger.error('User GET error: ', err); return next(new ValidationError(err.message, err)); }
 
     try {
       const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
@@ -264,10 +261,10 @@ exports.changePassword = async (req, res, next) => {
       user.password = newPassword;
 
       [err, userUpdated] = await to(User.updateOne({ email }, user));
-      if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
+      if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
       req.status = 200;
-      req.json = { message: 'Password reset successful' };
+      req.json = { data: userUpdated, message: 'Success', status: 200 };
       return next();
     } catch (e) { return next(new ValidationError('Password is incorrect')); }
   } else if (!email) {
@@ -294,10 +291,10 @@ exports.assignRole = async (req, res, next) => {
 
   if (email && role) {
     [err, userUpdated] = await to(User.findOneAndUpdate({ email }, { role }));
-    if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
+    if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
-    req.json = { message: 'Role updated successfully', data: updateResponse };
+    req.json = { data: userUpdated, message: 'Success', status: 200 };
     return next();
 
   } else if (!email) {

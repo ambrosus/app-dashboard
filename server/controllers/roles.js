@@ -6,7 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError } = _require('/errors');
+const { ValidationError } = _require('/errors');
 
 const Role = _require('/models/roles');
 
@@ -33,10 +33,10 @@ exports.create = async (req, res, next) => {
       company: req.session.user.company
     })
   );
-  if (err) { logger.error('Role create error: ', err); return next(new ValidationError(err)); }
+  if (err || !role) { logger.error('Role create error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = role;
+  req.json = { data: role, message: 'Success', status: 200 };
   return next();
 };
 
@@ -59,10 +59,10 @@ exports.editRole = async (req, res, next) => {
   let err, role;
 
   [err, role] = await to(Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true }));
-  if (err) { logger.error('Role update error: ', err); return next(new ValidationError(err)); }
+  if (err || !role) { logger.error('Role update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = role;
+  req.json = { data: role, message: 'Success', status: 200 };
   return next();
 };
 
@@ -81,10 +81,10 @@ exports.deleteRole = async (req, res, next) => {
   let err, role;
 
   [err, role] = await to(Role.findByIdAndRemove({ _id }));
-  if (err) { logger.error('Role delete error: ', err); return next(new ValidationError(err)); }
+  if (err || !role) { logger.error('Role delete error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = { message: 'Role delete success' };
+  req.json = { data: role, message: 'Success', status: 200 };
   return next();
 };
 
@@ -100,10 +100,10 @@ exports.getRoles = async (req, res, next) => {
   const company = req.session.user.company;
   let err, roles;
 
-  [err, roles] = await to(Role.find({ company }));
-  if (err) { logger.error('Role GET error: ', err); return next(new ValidationError(err)); }
+  [err, roles] = await to(Role.paginate({ company }));
+  if (err || !roles) { logger.error('Role GET error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
-  req.json = roles;
+  req.json = { data: roles, message: 'Success', status: 200 };
   return next();
 };

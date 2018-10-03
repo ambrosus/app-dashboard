@@ -10,6 +10,9 @@ const findOrCreate = require('mongoose-findorcreate');
 const validateUrl = (url) => {
   return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(url);
 };
+const mongoosePaginate = require('mongoose-paginate');
+const { ValidationError } = _require('/errors');
+const { extractErrorMessage } = _require('/utils/general');
 
 const hermesesSchema = mongoose.Schema({
   _id: {
@@ -42,6 +45,7 @@ const hermesesSchema = mongoose.Schema({
 });
 
 hermesesSchema.plugin(findOrCreate);
+hermesesSchema.plugin(mongoosePaginate);
 
 hermesesSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
@@ -51,6 +55,14 @@ hermesesSchema.pre('update', function(next) {
 hermesesSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
+});
+
+hermesesSchema.post('save', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+hermesesSchema.post('update', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
 });
 
 module.exports = mongoose.model('Hermeses', hermesesSchema);

@@ -7,6 +7,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const { ValidationError } = _require('/errors');
+const { extractErrorMessage } = _require('/utils/general');
 
 const companiesSchema = mongoose.Schema({
   _id: {
@@ -51,6 +54,7 @@ const companiesSchema = mongoose.Schema({
 });
 
 companiesSchema.plugin(findOrCreate);
+companiesSchema.plugin(mongoosePaginate);
 
 companiesSchema.pre('update', function(next) {
   this.updatedAt = +new Date();
@@ -60,6 +64,14 @@ companiesSchema.pre('update', function(next) {
 companiesSchema.pre('save', function(next) {
   this.updatedAt = +new Date();
   next();
+});
+
+companiesSchema.post('save', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+companiesSchema.post('update', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
 });
 
 module.exports = mongoose.model('Companies', companiesSchema);

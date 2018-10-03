@@ -8,6 +8,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
 const findOrCreate = require('mongoose-findorcreate');
+const { ValidationError } = _require('/errors');
+const { extractErrorMessage } = _require('/utils/general');
 
 const assetsSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -21,5 +23,13 @@ const assetsSchema = mongoose.Schema({
 
 assetsSchema.plugin(mongoosePaginate);
 assetsSchema.plugin(findOrCreate);
+
+assetsSchema.post('save', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
+
+assetsSchema.post('update', function(err, doc, next) {
+  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
+});
 
 module.exports = mongoose.model('Assets', assetsSchema);
