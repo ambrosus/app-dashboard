@@ -17,11 +17,11 @@ const company = mongoose.Schema({
     type: String,
     required: [(value) => !value, 'Title field is required'],
     index: { unique: true },
-    minLength: 4
+    minLength: 4,
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hermeses'
+    ref: 'Hermeses',
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -38,7 +38,7 @@ const company = mongoose.Schema({
   },
   settings: {
     type: String,
-    default: JSON.stringify({ preview_app: 'https://amb.to' })
+    default: JSON.stringify({ preview_app: 'https://amb.to' }),
   },
   createdAt: {
     type: Date,
@@ -58,6 +58,9 @@ company.pre('update', function(next) {
 });
 
 company.pre('save', function(next) {
+  if (this.settings) {
+    this.settings = JSON.stringify(this.settings);
+  }
   this.createdAt = +new Date();
   next();
 });

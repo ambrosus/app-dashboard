@@ -33,7 +33,7 @@ import { HelpService } from './components/help/help.service';
       useClass: InterceptorService,
       multi: true,
     },
-    HelpService
+    HelpService,
   ],
 })
 export class CoreModule { }
