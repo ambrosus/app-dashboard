@@ -1,5 +1,5 @@
 export interface HttpResponse {
-    data: any;
-    status: number;
-    totalCount: number;
+  data: any;
+  status: number;
+  totalCount: number;
 }

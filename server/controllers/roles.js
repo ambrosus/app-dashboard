@@ -5,7 +5,10 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
+
+/* global _require */
+/* global logger */
+
 const Role = _require('/models/roles');
 
 /**
@@ -26,7 +29,7 @@ exports.create = (req, res, next) => {
       title,
       permissions,
       createdBy: req.session.user._id,
-      company: req.session.user.company
+      company: req.session.user.company,
     }).then(role => {
       req.status = 200;
       req.json = role;
@@ -80,9 +83,9 @@ exports.deleteRole = (req, res, next) => {
 
   Role.findByIdAndRemove({ _id })
     .then(role => {
-      if (updateResponse) {
+      if (role) {
         req.status = 200;
-        req.json = { message: 'Role deleted successfully' }
+        req.json = { message: 'Role deleted successfully' };
         return next();
       }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role delete error' })));

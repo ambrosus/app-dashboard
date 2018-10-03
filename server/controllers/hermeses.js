@@ -5,7 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
+
+/* global _require */
+/* global logger */
 
 const Hermes = _require('/models/hermeses');
 
@@ -24,15 +26,14 @@ exports.create = (req, res, next) => {
 
   Hermes.create({
       title,
-      url
+      url,
     })
     .then(hermes => {
       req.status = 200;
       req.hermes = hermes;
       return next();
     }).catch(error => {
-      if (error.code === 11000) { res.status(400).json({ message: 'Hermes URL already exists' }); }
-      else { logger.error(error), res.status(400).json({ message: error }); }
+      logger.error(error), res.status(400).json({ message: error });
     });
 };
 
@@ -46,11 +47,11 @@ exports.create = (req, res, next) => {
  */
 exports.getAll = (req, res, next) => {
   Hermes.find({ public: true })
-    .then(results => {
+    .then(data => {
       req.status = 200;
       req.json = {
-        totalCount: results.length,
-        data: results
+        totalCount: data.length,
+        data,
       };
 
       return next();
