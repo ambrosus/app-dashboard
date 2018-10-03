@@ -6,48 +6,44 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
 <mat-dialog-content style="min-height: 100vh;">
-<div class="wrapper">
-  <h2 class="card__title">Welcome</h2>
-  <p class="card__body">Please login to your account.</p>
-  <div class="card animated fadeInDown">
-    <div class="card__header">
+  <div class="wrapper">
+    <h2 class="card__title">Welcome</h2>
+    <p class="card__body">Please login to your account.</p>
+    <div class="card animated fadeInDown">
+      <div class="card__header">
 
-      <app-tabs>
-        <app-tab label="Email/Password">
-          <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
+        <app-tabs>
+          <app-tab label="Email/Password">
+            <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
 
-            <label>Email
-              <input formControlName="email" type="email" name="email" spellcheck="false">
-            </label>
+              <label>Email
+                <input formControlName="email" type="email" name="email" spellcheck="false">
+              </label>
 
-            <label>Password
-              <input formControlName="password" type="password" name="password" spellcheck="false">
-            </label>
+              <label>Password
+                <input formControlName="password" type="password" name="password" spellcheck="false">
+              </label>
 
-            <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
+              <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
 
-          </form>
-        </app-tab>
-        <app-tab label="Address/Secret">
+            </form>
+          </app-tab>
+          <app-tab label="Address/Secret">
 
-          <form [formGroup]="forms.addressForm" (ngSubmit)="verifyAccount()">
+            <form [formGroup]="forms.addressForm" (ngSubmit)="secretLogin()">
 
-            <label>Address
-              <input formControlName="address" type="text" name="address" spellcheck="false">
-            </label>
+              <label>Secret
+                <input formControlName="secret" type="password" name="secret" autocomplete="new-password" spellcheck="false">
+              </label>
 
-            <label>Secret
-              <input formControlName="secret" type="password" name="secret" autocomplete="new-password" spellcheck="false">
-            </label>
+              <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
+            </form>
 
-            <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
-          </form>
+          </app-tab>
+        </app-tabs>
 
-        </app-tab>
-      </app-tabs>
-
-      <p class="card_body" *ngIf="error">{{ error }}</p>
+        <p class="card_body" *ngIf="error">{{ error }}</p>
+      </div>
     </div>
   </div>
-</div>
 </mat-dialog-content>

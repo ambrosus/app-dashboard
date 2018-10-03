@@ -47,9 +47,10 @@ export class AuthService {
     return this.sdk.getToken(secret, validUntil);
   }
 
-  getAccount(email) {
+  getAccount(email = null, address = null) {
     return new Observable(observer => {
-      const url = `/api/users/${email}`;
+      let url = `/api/users/${email}?`;
+      if (address) { url += `address=${address}`; }
 
       this.http.get(url).subscribe(
         resp => observer.next(resp),
@@ -57,7 +58,6 @@ export class AuthService {
       );
     });
   }
-
 
   addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
@@ -89,27 +89,32 @@ export class AuthService {
     });
   }
 
-
-  verifyAccount(address, secret) {
-    let token = '';
-    try {
-      token = this.getToken(secret);
-    } catch (e) { }
-
+  secretLogin(secret) {
     return new Observable(observer => {
-      const deviceInfo = this.deviceService.getDeviceInfo();
-
-      this.http.post('/api/auth/verify', { address, token, deviceInfo }).subscribe(
-        user => {
-          this.storage.set('secret', secret);
-          this.storage.set('user', user);
-          this.storage.set('token', token);
-          this.addAccount(user);
-          this.emit('user:refresh');
-          return observer.next(user);
-        },
-        err => observer.error(err.error)
-      );
+      let address;
+      try {
+        address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
+        this.getAccount(null, address).subscribe(
+          (user: any) => {
+            user.address = address;
+            this.storage.set('secret', secret);
+            this.storage.set('user', user);
+            this.storage.set('token', this.getToken(secret));
+            this.addAccount(user);
+            this.emit('user:refresh');
+            observer.next(user);
+          },
+          err => {
+            const user = { address };
+            this.storage.set('secret', secret);
+            this.storage.set('user', user);
+            this.storage.set('token', this.getToken(secret));
+            this.addAccount(user);
+            this.emit('user:refresh');
+            observer.next(user);
+          }
+        );
+      } catch (e) { return observer.error(); }
     });
   }
 
@@ -167,5 +172,4 @@ export class AuthService {
     this.emit('user:refresh');
     this.router.navigate(['/login']);
   }
-
 }

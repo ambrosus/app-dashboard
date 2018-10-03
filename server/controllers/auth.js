@@ -64,56 +64,6 @@ exports.login = (req, res, next) => {
 };
 
 /**
- * Verifies a user by calling the API (hermes.url/accounts/address)
- *
- * @name verify
- * @route {POST} api/auth/verify
- * @bodyparam address, token, hermes
- * @returns Status code 400 on failure
- * @returns user Object on success with status code 200
- */
-exports.verifyAccount = (req, res, next) => {
-  const { address, token, deviceInfo } = req.body;
-  const companyId = req.session.user.company._id;
-
-  Company.findById(companyId)
-    .populate('hermes')
-    .then(company => {
-      generalUtils.get(`${company.hermes.url}/accounts/${address}`, token)
-        .then(resp => {
-          User.findOne({ address })
-            .populate({
-              path: 'company',
-              select: '-active -createdAt -updatedAt -__v -owner',
-              populate: { path: 'hermes' }
-            })
-            .populate({
-              path: 'role',
-              select: '-createdAt -updatedAt -__v'
-            })
-            .select('-active -createdAt -updatedAt -password -__v')
-            .then(user => {
-              if (user) {
-                user.toObject();
-                delete user.password;
-
-                req.status = 200;
-                req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-                req.session.deviceInfo = deviceInfo;
-                req.json = user;
-                return next();
-              } else { throw 'No user found'; }
-            })
-            .catch(error => {
-              req.status = 200;
-              req.json = { message: 'No registered user' };
-              return next();
-            });
-        }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes account error' })));
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Company GET error', error })));
-}
-
-/**
  * Logs out a user by destroying the session
  *
  * @name logout
