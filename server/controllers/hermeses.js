@@ -21,8 +21,8 @@ const Hermes = _require('/models/hermeses');
  * @returns hermes Object on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const title = req.body.hermes ? req.body.hermes.title : null;
-  const url = req.body.hermes ? req.body.hermes.url : null;
+  const title = req.body.hermes ? req.body.hermes.title : req.body.title;
+  const url = req.body.hermes ? req.body.hermes.url : req.body.url;
 
   Hermes.create({
       title,
@@ -33,7 +33,8 @@ exports.create = (req, res, next) => {
       req.hermes = hermes;
       return next();
     }).catch(error => {
-      logger.error(error), res.status(400).json({ message: error });
+      logger.error(error);
+      res.status(400).json({ message: error });
     });
 };
 
@@ -47,13 +48,17 @@ exports.create = (req, res, next) => {
  */
 exports.getAll = (req, res, next) => {
   Hermes.find({ public: true })
-    .then(data => {
+    .then((hermeses = []) => {
       req.status = 200;
       req.json = {
-        totalCount: data.length,
-        data,
+        totalCount: hermeses.length,
+        data: hermeses,
+        message: 'Success',
       };
 
       return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    }).catch(error => {
+      logger.error(error);
+      res.status(400).json({ message: error });
+    });
 };
