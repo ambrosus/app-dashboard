@@ -81,12 +81,12 @@ usersSchema.plugin(findOrCreate);
 usersSchema.plugin(mongoosePaginate);
 
 usersSchema.pre('update', function(next) {
+  this.updatedAt = +new Date();
   if (!this.isModified('password')) return next();
 
   bcrypt.hash(this.password, 10, (err, hash) => {
     if (!err) {
       this.password = hash;
-      this.updatedAt = +new Date();
       this.lastLogin = +new Date();
       next();
     } else { next(new ValidationError('Failure in password hashing', err)); }
