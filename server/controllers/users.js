@@ -135,13 +135,8 @@ exports.setOwnership = (req, res, next) => {
  */
 exports.getAccount = (req, res, next) => {
   const email = req.params.email;
-  const address = req.query.address;
 
-  const query = {};
-  if (email && JSON.parse(email)) query['email'] = email;
-  if (address) query['address'] = address;
-
-  User.findOne(query)
+  User.findOne({ email })
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
@@ -157,12 +152,7 @@ exports.getAccount = (req, res, next) => {
     .select('-active -createdAt -updatedAt -__v')
     .then(user => {
       if (user) {
-        if (address) {
-          user = user.toObject();
-          delete user.password;
-
-          req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-        }
+        logger.info(user);
         req.status = 200;
         req.json = user;
         return next();
