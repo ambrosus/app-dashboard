@@ -213,7 +213,7 @@ exports.createAsset = async (req, res, next) => {
           updatedAt: assetCreated.content.idData.timestamp * 1000,
           createdAt: assetCreated.content.idData.timestamp * 1000
         }));
-        if (assetInserted) req.json.assets.docs.push(inserted);
+        if (assetInserted) req.json.assets.docs.push(assetInserted);
         if (err) logger.error('Cached asset creation error: ', err.message);
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
