@@ -6,10 +6,12 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
 
-<div class="json_preview">
-  <div class="json_preview__header m-b-10">
-    <button type="button" class="button button--blue" (click)="downloadJSON()">Download JSON</button>
+<mat-dialog-content style="min-height: 100vh;">
+  <div class="json_preview">
+    <div class="json_preview__header m-b-10">
+      <button type="button" class="button button--blue" (click)="downloadJSON()">Download JSON</button>
+      <img (click)="closeDialog()" style="height: 20px; width: 20px; cursor: pointer; position: relative; right: -360px;" src="/assets/raster/close.png">
+    </div>
+    <pre *ngIf="data" wrap="soft" [innerHTML]="syntaxHighlight(stringify(data, null, 3))"></pre>
   </div>
-  <img (click)="closeDialog()" style="height: 20px; width: 20px; cursor: pointer; position: relative; left: 520; bottom: 40;" src="/assets/raster/close.png">
-  <pre *ngIf="data" wrap="soft" [innerHTML]="syntaxHighlight(stringify(data, null, 3))"></pre>
-</div>
+</mat-dialog-content>
