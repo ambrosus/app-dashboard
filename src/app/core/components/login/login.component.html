@@ -30,7 +30,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           </app-tab>
           <app-tab label="Secret">
 
-            <form [formGroup]="forms.addressForm" (ngSubmit)="secretLogin()">
+            <form [formGroup]="forms.addressForm" (ngSubmit)="verifyAccount()">
 
               <label>Secret
                 <input formControlName="secret" type="password" name="secret" autocomplete="new-password" spellcheck="false">
