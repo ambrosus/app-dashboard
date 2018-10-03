@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 declare let Web3: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DashboardService {
 
@@ -13,6 +13,15 @@ export class DashboardService {
 
   constructor(private http: HttpClient) {
     this.web3 = new Web3();
+  }
+
+  getHermeses() {
+    return new Observable(observer => {
+      this.http.get('/api/hermeses').subscribe(
+        (user: any) => { observer.next(user); },
+        err => { observer.error(err); }
+      );
+    });
   }
 
   initSetup(data) {
@@ -28,7 +37,7 @@ export class DashboardService {
         (resp: any) => {
           observer.next({
             address,
-            secret: privateKey
+            secret: privateKey,
           });
         },
         err => {

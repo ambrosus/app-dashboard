@@ -11,46 +11,54 @@ const validateUrl = (url) => {
   return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(url);
 };
 
-const hermesesSchema = mongoose.Schema({
+const hermeses = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    auto: true,
   },
   title: {
     type: String,
     required: [(value) => !value, 'Hermes "title" is required'],
-    minLength: 4
+    minLength: 4,
   },
   url: {
     type: String,
     required: [(value) => !value, 'Hermes "url" is required'],
     index: { unique: true },
-    validate: [validateUrl, 'URL format is not valid']
+    validate: [validateUrl, 'URL format is not valid'],
   },
   public: {
     type: Boolean,
-    default: true
+    default: true,
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
+  },
+});
+
+hermeses.plugin(findOrCreate);
+
+hermeses.pre('update', function(next) {
+  this.updatedAt = +new Date();
+  next();
+});
+
+hermeses.pre('save', function(next) {
+  this.updatedAt = +new Date();
+  next();
+});
+
+hermeses.post('save', function(error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('There was a duplicate key error'));
+  } else {
+    next();
   }
 });
 
-hermesesSchema.plugin(findOrCreate);
-
-hermesesSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-hermesesSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-module.exports = mongoose.model('Hermeses', hermesesSchema);
+module.exports = mongoose.model('Hermeses', hermeses);
