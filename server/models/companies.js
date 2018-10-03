@@ -37,8 +37,8 @@ const company = mongoose.Schema({
     ambto: String,
   },
   settings: {
-    type: String,
-    default: JSON.stringify({ preview_app: 'https://amb.to' }),
+    type: mongoose.Schema.Types.Mixed,
+    default: { 'preview_app': 'https://amb.to' },
   },
   createdAt: {
     type: Date,
@@ -58,9 +58,6 @@ company.pre('update', function(next) {
 });
 
 company.pre('save', function(next) {
-  if (this.settings) {
-    this.settings = JSON.stringify(this.settings);
-  }
   this.createdAt = +new Date();
   next();
 });

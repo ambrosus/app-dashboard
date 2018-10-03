@@ -23,8 +23,13 @@ const initialSetup = (req, res, next) => {
     req.body.user = {};
   }
 
-  req.body.user.accessLevel = 10;
-  req.body.user.permissions = ['register_account', 'create_entity'];
+  req.body.user.accessLevel = 1;
+  req.body.user.permissions = [
+    'manage_accounts',
+    'register_accounts',
+    'create_asset',
+    'create_event',
+  ];
 
   const roles = [
     { title: 'owner', permissions: 'change_permissions, change_role, create_role' },
