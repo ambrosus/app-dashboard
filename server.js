@@ -40,7 +40,7 @@ app.use(cors());
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
   .then(connected => (logger.info('MongoDB connected'), invitationsCron.start()))
-  .catch(error => console.log('Mongodb connection error: ', error));
+  .catch(error => logger.error('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({
@@ -49,7 +49,7 @@ const store = new MongoDBStore({
 });
 
 store.on('connected', () => (logger.info('MongoDB Session Store connected'), store.client));
-store.on('error', error => console.log('MongoDB Session Store connection error: ', error));
+store.on('error', error => logger.error('MongoDB Session Store connection error: ', error));
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));

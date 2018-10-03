@@ -10,7 +10,9 @@ const config = _require('/config');
 const tokenEncrypt = _require('/utils/password');
 const email = _require('/utils/email');
 const inviteTemplate = _require('/assets/templates/email/invite.template.html');
-const slug = require('slug')
+const slug = require('slug');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 
 const Invite = _require('/models/invites');
 const Company = _require('/models/companies');
@@ -25,46 +27,46 @@ const Company = _require('/models/companies');
  * @returns Status code 400 on failure
  * @returns success message on success with status code 200
  */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
   const { invites, user } = req.body;
+  let err, company, insertedInvites, emailSent;
 
   if (invites && invites.length !== 0 && user) {
-    Company.findById(user.company._id)
-      .then(company => {
-        if (company) {
-          invites.map(invite => {
-            invite['_id'] = new mongoose.Types.ObjectId();
-            invite['from'] = mongoose.Types.ObjectId(user._id);
-            invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, role: invite.role, createdAt: +new Date(), company: user.company._id }), config.secret);
+    [err, company] = await to(Company.findById(user.company._id));
+    if (err) { logger.error('Company GET error: ', err); return next(new NotFoundError(err.message)); }
 
-            const url = `https://${req.get('host')}/invite/${invite['token']}`;
-            const message = invite['message'] ? `<p style="text-align: left;width: 100%; color: #000; margin-bottom: 25px;">${invite['message']}</p>` : '<!-- Message -->';
-            invite['html'] = inviteTemplate.replace(/@url/g, url).replace(/@message/g, message);
-            invite['company'] = company;
-          });
+    invites.map(invite => {
+      invite['_id'] = new mongoose.Types.ObjectId();
+      invite['from'] = mongoose.Types.ObjectId(user._id);
+      invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, role: invite.role, createdAt: +new Date(), company: user.company._id }), config.secret);
 
-          Invite.insertMany(invites).then(invites => {
-            invites.forEach(invite => {
-              const invitation = JSON.parse(JSON.stringify(invite));
-              invitation.subject = `${user.full_name} invited you to join ${user.company.title} Dasbhoard`;
-              invitation.from = `no-reply@${slug(user.company.title)}.com`;
-              email.send(invitation)
-                .then(sent => logger.info('Email sent'))
-                .catch(error => logger.error('Email send error: ', error));
-            });
+      const url = `https://${req.get('host')}/invite/${invite['token']}`;
+      const message = invite['message'] ? `<p style="text-align: left;width: 100%; color: #000; margin-bottom: 25px;">${invite['message']}</p>` : '<!-- Message -->';
+      invite['html'] = inviteTemplate.replace(/@url/g, url).replace(/@message/g, message);
+      invite['company'] = company;
+    });
 
-            req.status = 200;
-            req.json = { message: 'Success' };
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Creating invites error' })));
+    [err, insertedInvites] = await to(Invite.insertMany(invites));
+    if (err) { logger.error('Invites insert error: ', err); return next(new ValidationError(err.message)); }
 
-        } else { throw 'No company found'; }
-      }).catch(error => (logger.error(error), res.status(400).json({ message: 'Company GET error' })));
+    insertedInvites.map(invite => {
+      const invitation = JSON.parse(JSON.stringify(invite));
+      invitation.subject = `${user.full_name} invited you to join ${user.company.title} Dasbhoard`;
+      invitation.from = `no-reply@${slug(user.company.title)}.com`;
+
+      [err, emailSent] = await to(email.send(invitation));
+      if (err) logger.error('Email send error: ', err);
+      if (emailSent) logger.error('Email send success: ', emailSent);
+    });
+
+    req.status = 200;
+    req.json = { message: 'Success' };
+    return next();
 
   } else if (!invites || invites.length === 0) {
-    return res.status(400).json({ message: '"invites" need to be a non-empty array.' })
+    next(new ValidationError('"invites" need to be a non-empty array'));
   } else if (!user) {
-    return res.status(400).json({ message: '"user" is required' })
+    next(new ValidationError('"user" is required'));
   }
 }
 
@@ -77,16 +79,17 @@ exports.create = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns success message with data object on success with status code 200
  */
-exports.delete = (req, res, next) => {
+exports.delete = async (req, res, next) => {
   const ids = req.body.ids || [];
   const userId = req.session.user._id;
+  let err, deleted;
 
-  Invite.deleteMany({ _id: { $in: ids }, from: userId })
-    .then(deleted => {
-      req.status = 200;
-      req.json = { message: 'Successfuly deleted', data: deleted };
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Delete invite error' })));
+  [err, deleted] = await to(Invite.deleteMany({ _id: { $in: ids }, from: userId }));
+  if (err) { logger.error('Invites delete error: ', err); return next(new ValidationError(err.message)); }
+
+  req.status = 200;
+  req.json = { message: 'Successfuly deleted', data: deleted };
+  return next();
 }
 
 /**
@@ -98,17 +101,16 @@ exports.delete = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns array of invites & number of invites (length) on success with status code 200
  */
-exports.getAll = (req, res, next) => {
+exports.getAll = async (req, res, next) => {
   const company = req.params.company;
+  let err, invites;
 
-  Invite.find({ company })
-    .populate('from')
-    .select('-__v')
-    .then(invites => {
-      req.status = 200;
-      req.json = { resultCount: invites.length, data: invites };
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Invites GET error' })));
+  [err, invites] = await to(Invite.find({ company }));
+  if (err) { logger.error('Invites GET error: ', err); return next(new NotFoundError(err.message)); }
+
+  req.status = 200;
+  req.json = { resultCount: invites.length, data: invites };
+  return next();
 }
 
 /**
@@ -120,27 +122,24 @@ exports.getAll = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns success message on success with status code 200
  */
-exports.verify = (req, res, next) => {
+exports.verify = async (req, res, next) => {
   const token = req.params.token;
-  let createdAt;
+  let createdAt, deleted, invite;
   try { createdAt = JSON.parse(tokenEncrypt.decrypt(token, config.secret))['createdAt']; } catch (error) {}
   const validUntil = 2 * 24 * 60 * 60 * 1000;
 
   if (createdAt) {
     if (+new Date() - createdAt > validUntil) {
-      Invite.findOneAndRemove({ token })
-        .then(deleted => {
-          return res.status(400).json({ message: 'Invitation expired' });
-        }).catch(error => (logger.error(error), res.status(400).json({ message: 'Invite remove error' })));
+      [err, deleted] = await to(Invite.findOneAndRemove({ token }));
+      if (err) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err.message)); }
+      return next(new ValidationError('Invite expired'));
     } else {
-      Invite.findOne({ token })
-        .then(invite => {
-          if (invite) {
-            req.status = 200;
-            req.json = { message: 'Token is valid' };
-            return next();
-          } else { throw 'No invite'; }
-        }).catch(error => (logger.error(error), res.status(404).json({ message: 'Invite GET error' })))
+      [err, invite] = await to(Invite.findOne({ token }));
+      if (err) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message)); }
+
+      req.status = 200;
+      req.json = { message: 'Token is valid' };
+      return next();
     }
-  } else { return res.status(400).json({ message: 'Token is invalid' }) }
+  } else { return next(new ValidationError('Token is invalid')); }
 }

@@ -5,8 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
-
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 const Hermes = _require('/models/hermeses');
 
 /**
@@ -18,22 +18,20 @@ const Hermes = _require('/models/hermeses');
  * @returns Status code 400 on failure
  * @returns hermes Object on success with status code 200
  */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
   const title = req.body.hermes ? req.body.hermes.title : null;
   const url = req.body.hermes ? req.body.hermes.url : null;
+  let err, hermes;
 
-  Hermes.create({
-      title,
-      url
-    })
-    .then(hermes => {
-      req.status = 200;
-      req.hermes = hermes;
-      return next();
-    }).catch(error => {
-      if (error.code === 11000) { res.status(400).json({ message: 'Hermes URL already exists' }); }
-      else { logger.error(error), res.status(400).json({ message: error }); }
-    });
+  [err, hermes] = await to(Hermes.create({ title, url }));
+  if (err) {
+    if (err.code === 11000) return next(new ValidationError('Hermes URL already exists'));
+    logger.error('Hermes create error: ', err);
+    return next(new ValidationError(err));
+  }
+  req.status = 200;
+  req.company = hermes;
+  return next();
 };
 
 /**
@@ -44,15 +42,16 @@ exports.create = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns array of hermeses & number of hermeses (length) on success with status code 200
  */
-exports.getAll = (req, res, next) => {
-  Hermes.find({ public: true })
-    .then(results => {
-      req.status = 200;
-      req.json = {
-        totalCount: results.length,
-        data: results
-      };
+exports.getAll = async (req, res, next) => {
+  let err, hermeses;
 
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+  [err, hermeses] = await to(Hermes.find({ public: true }));
+  if (err) { logger.error('Hermes find error: ', err); return next(new NotFoundError(err.message)); }
+
+  req.status = 200;
+  req.json = {
+    totalCount: results.length,
+    data: hermeses
+  };
+  return next();
 };

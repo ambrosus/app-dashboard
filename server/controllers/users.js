@@ -12,6 +12,8 @@ const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -26,7 +28,7 @@ const Invite = _require('/models/invites');
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
   const user = req.body.user || {};
   const { full_name, address, token, password } = user;
   const hermes = req.hermes || req.body.hermes;
@@ -35,6 +37,7 @@ exports.create = (req, res, next) => {
   let accessLevel = user.accessLevel || 1;
   let permissions = user.permissions || ['create_asset', 'create_event'];
   let company = '';
+  let err, userCreated, userRegistered, inviteRemoved;
 
   // invite
   if (inviteToken) {
@@ -57,33 +60,26 @@ exports.create = (req, res, next) => {
     company: mongoose.Types.ObjectId(company)
   };
 
-  logger.info('User: ', _user);
+  // Insert user in dash db
+  [err, userCreated] = await to(User.findOrCreate(query, _user));
+  if (err) { logger.error('User create error: ', err); return next(new ValidationError(err)); }
+  if (!userCreated.created) return next(new ValidationError('User already exists'));
 
-  User.findOrCreate(query, _user)
-    .then(({ doc, created }) => {
-      if (created) {
-        logger.info('User doc: ', doc, created);
+  // Register user in the hermes
+  const body = { address, permissions, accessLevel };
+  [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
+  if (err) { logger.error('Hermes user registration error: ', err.data['reason']); return next(new ValidationError(err.data['reason'])); }
 
-        // Register user in the hermes
-        const body = {
-          address,
-          permissions,
-          accessLevel
-        };
-        httpPost(`${hermes.url}/accounts`, body, config.token)
-          .then(userRegistered => {
-            if (inviteToken) {
-              Invite.findOneAndRemove({ token: inviteToken })
-                .then(inviteDeleted => logger.info('Invite deleted'))
-                .catch(error => logger.error('Invite delete error: ', error));
-            }
+  // Delete invite token
+  if (inviteToken) {
+    [err, inviteRemoved] = await to(Invite.findOneAndRemove({ token: inviteToken }));
+    if (err) logger.error('Invite delete error: ', error);
+    if (inviteRemoved) logger.info('Invited deleted');
+  }
 
-            req.status = 200;
-            req.user = doc;
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: error.data['reason'] })));
-      } else { throw 'User exists'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'User creation error: ', error })));
+  req.status = 200;
+  req.user = doc;
+  return next();
 }
 
 /**
@@ -95,23 +91,27 @@ exports.create = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Status code 200 on success
  */
-exports.setOwnership = (req, res, next) => {
+exports.setOwnership = async (req, res, next) => {
   const user = req.user || req.body.user;
   const company = req.company || req.body.company;
+  let err, _user, companyUpdated;
 
   if (user && company) {
-    User.findById(user._id)
-      .then(_user => {
-        Company.findByIdAndUpdate(company._id, { owner: user._id })
-          .then(_saved => {
-            req.status = 200;
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    // Find user
+    [err, _user] = await to(User.findById(user._id));
+    if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+
+    // Update company
+    [err, companyUpdated] = await to(Company.findByIdAndUpdate(company._id, { owner: user._id }));
+    if (err) { logger.error('Company update error: ', err); return next(new ValidationError(err.message)); }
+
+    req.status = 200;
+    return next();
+
   } else if (!user) {
-    return res.status(400).json({ message: '"user" object is required' });
+    return next(new ValidationError('"user" object is required'));
   } else if (!company) {
-    return res.status(400).json({ message: '"company" object is required' });
+    return next(new ValidationError('"company" object is required'));
   }
 }
 
@@ -123,10 +123,12 @@ exports.setOwnership = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
-exports.getAccount = (req, res, next) => {
+exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
+  let err, user;
 
-  User.findOne({ email })
+  [err, user] = await to(
+    User.findOne({ email })
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
@@ -140,14 +142,12 @@ exports.getAccount = (req, res, next) => {
       select: '-createdAt -updatedAt -__v'
     })
     .select('-active -createdAt -updatedAt -__v')
-    .then(user => {
-      if (user) {
-        logger.info(user);
-        req.status = 200;
-        req.json = user;
-        return next();
-      } else { throw 'No user found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get account error' })));
+  );
+  if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+
+  req.status = 200;
+  req.json = user;
+  return next();
 }
 
 /**
@@ -158,10 +158,12 @@ exports.getAccount = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns users Object & number of users (count) on success with status code 200
  */
-exports.getAccounts = (req, res, next) => {
+exports.getAccounts = async (req, res, next) => {
   const company = req.session.user.company || '';
+  let err, users;
 
-  User.find({ company })
+  [err, users] = await to(
+    User.find({ company })
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
@@ -175,16 +177,15 @@ exports.getAccounts = (req, res, next) => {
       select: '-createdAt -updatedAt -__v'
     })
     .select('-password -__v')
-    .then(users => {
-      if (users) {
-        req.status = 200;
-        req.json = {
-          resultCount: users.length,
-          data: users
-        };
-        return next();
-      } else { throw 'No users found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get accounts error' })));
+  );
+  if (err) { logger.error('Users GET error: ', err); return next(new NotFoundError(err.message)); }
+
+  req.status = 200;
+  req.json = {
+    resultCount: users.length,
+    data: users
+  };
+  return next();
 }
 
 /**
@@ -196,17 +197,16 @@ exports.getAccounts = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns userSettings (user.settings) Object on success with status code 200
  */
-exports.getSettings = (req, res, next) => {
+exports.getSettings = async (req, res, next) => {
   const email = req.params.email;
+  let err, user;
 
-  User.findOne({ email })
-    .then(user => {
-      if (user) {
-        req.status = 200;
-        req.json = user.settings;
-        return next();
-      } else { throw 'No accounts found'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Get settings error' })));
+  [err, user] = await to(User.findOne({ email }));
+  if (err) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message)); }
+
+  req.status = 200;
+  req.json = user.settings;
+  return next();
 }
 
 exports.getNotifications = (req, res, next) => {}
@@ -221,26 +221,23 @@ exports.getNotifications = (req, res, next) => {}
  * @returns Status code 400 on failure
  * @returns updateResponse Object on success with status code 200
  */
-exports.edit = (req, res, next) => {
+exports.edit = async (req, res, next) => {
   const email = req.params.email;
   const query = req.body;
+  let err, userUpdated;
 
   const update = {}
   const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) {
-      update[key] = query[key]
-    }
+    if (allowedToChange.indexOf(key) > -1) update[key] = query[key]
   }
 
-  User.findOneAndUpdate({ email }, update)
-    .then(updateResponse => {
-      if (updateResponse) {
-        req.status = 200;
-        req.json = { message: 'Update data success', data: updateResponse };
-        return next();
-      } else { throw 'Update data error'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'User update error' })));
+  [err, userUpdated] = await to(User.findOneAndUpdate({ email }, update));
+  if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
+
+  req.status = 200;
+  req.json = { message: 'Update data success', data: updateResponse };
+  return next();
 }
 
 /**
@@ -252,39 +249,33 @@ exports.edit = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Password success message on success with status code 200
  */
-exports.changePassword = (req, res, next) => {
+exports.changePassword = async (req, res, next) => {
   const { email, oldPassword, newPassword } = req.body;
+  let err, user, userUpdated;
 
   if (email && oldPassword && newPassword) {
-    User.findOne({ email })
-      .then(user => {
-        if (user) {
-          try {
-            const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
-            const encData = web3.eth.accounts.encrypt(decData.privateKey, newPassword);
-            user.token = JSON.stringify(encData);
-            bcrypt.hash(newPassword, 10, (err, hash) => {
-              user.password = hash;
-              User.updateOne({ email }, user)
-                .then(updateResponse => {
-                  if (updateResponse) {
-                    req.status = 200;
-                    req.json = { message: 'Password reset successful' };
-                    return next();
-                  } else { throw 'Error in updating password'; }
-                }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-            });
-          } catch (err) {
-            throw 'Incorrect password';
-          }
-        } else { throw 'No user found with this email address'; }
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    [err, user] = await to(User.findOne({ email }));
+    if (err) { logger.error('User GET error: ', err); return next(new ValidationError(err.message)); }
+
+    try {
+      const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
+      const encData = web3.eth.accounts.encrypt(decData.privateKey, newPassword);
+      user.token = JSON.stringify(encData);
+      user.password = newPassword;
+
+      [err, userUpdated] = await to(User.updateOne({ email }, user));
+      if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
+
+      req.status = 200;
+      req.json = { message: 'Password reset successful' };
+      return next();
+    } catch (e) { return next(new ValidationError('Password is incorrect')); }
   } else if (!email) {
-    return res.status(400).json({ message: '"email" is required' });
+    return next(new ValidationError('"email" is required'));
   } else if (!oldPassword) {
-    return res.status(400).json({ message: '"oldPassword" is required' });
+    return next(new ValidationError('"oldPassword" is required'));
   } else if (!newPassword) {
-    return res.status(400).json({ message: '"newPassword" is required' });
+    return next(new ValidationError('"newPassword" is required'));
   }
 };
 
@@ -297,22 +288,21 @@ exports.changePassword = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Save success message on success with status code 200
  */
-exports.assignRole = (req, res, next) => {
-  const { email, role } = req.body
+exports.assignRole = async (req, res, next) => {
+  const { email, role } = req.body;
+  let err, userUpdated;
 
   if (email && role) {
-    User.findOneAndUpdate({ email }, { role })
-      .then(updateResponse => {
-        if (updateResponse) {
-          req.status = 200;
-          req.json = { message: 'Role updated successfully', data: updateResponse };
-          return next();
-        } else { throw 'Update data error'; }
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-  } else if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  } else if (!role) {
-    return res.status(400).json({ message: 'Role ObjectID is required' });
-  }
+    [err, userUpdated] = await to(User.findOneAndUpdate({ email }, { role }));
+    if (err) { logger.error('User update error: ', err); return next(new ValidationError(err)); }
 
+    req.status = 200;
+    req.json = { message: 'Role updated successfully', data: updateResponse };
+    return next();
+
+  } else if (!email) {
+    return next(new ValidationError('"email" is required'));
+  } else if (!role) {
+    return next(new ValidationError('"role" objectID is required'));
+  }
 };

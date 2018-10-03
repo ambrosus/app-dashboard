@@ -7,10 +7,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const { httpGet } = _require('/utils/requests');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 
 const User = _require('/models/users');
-const Company = _require('/models/companies');
 
 /**
  * Logs in user
@@ -22,11 +22,13 @@ const Company = _require('/models/companies');
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
+  let err, user;
 
   if (email && password) {
-    User.findOne({ email })
+    [err, user] = await to(
+      User.findOne({ email })
       .populate({
         path: 'company',
         select: '-active -createdAt -updatedAt -__v -owner',
@@ -37,29 +39,27 @@ exports.login = (req, res, next) => {
         select: '-createdAt -updatedAt -__v'
       })
       .select('-active -createdAt -updatedAt -__v')
-      .then(user => {
-        if (user) {
-          const valid = bcrypt.compareSync(password, user.password);
-          if (valid) {
-            user.lastLogin = +new Date();
-            user.save();
+    );
+    if (err) { logger.error('User GET error: ', err.message); return next(new NotFoundError(err.message)); }
 
-            user = user.toObject();
-            delete user.password;
+    const valid = bcrypt.compareSync(password, user.password);
+    if (!valid) return next(new ValidationError('User "password" is incorrect'));
 
-            req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-            req.status = 200;
-            req.json = user
-            return next();
+    user.lastLogin = +new Date();
+    user.save();
 
-          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
-        } else { throw 'No user found'; }
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    user = user.toObject();
+    delete user.password;
+
+    req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+    req.status = 200;
+    req.json = user
+    return next();
 
   } else if (!email) {
-    return res.status(400).json({ message: 'User "email" is required' });
+    next(new ValidationError('User "email" is required'));
   } else if (!password) {
-    return res.status(400).json({ message: 'User "password" is required' });
+    next(new ValidationError('User "password" is required'));
   }
 };
 
@@ -79,7 +79,7 @@ exports.verifyAccount = (req, res, next) => {
   Company.findById(companyId)
     .populate('hermes')
     .then(company => {
-      httpGet(`${company.hermes.url}/accounts/${address}`, token)
+      generalUtils.get(`${company.hermes.url}/accounts/${address}`, token)
         .then(resp => {
           User.findOne({ address })
             .populate({
@@ -125,7 +125,7 @@ exports.logout = (req, res, next) => {
   req.session.destroy(error => {
     if (error) {
       logger.warn('User logout error: ', error);
-      return res.status(400).json({ message: 'User logout error' });
+      return next(new ValidationError(`User logout error: ${error.message}`));
     }
     req.status = 200;
     req.json = { message: 'User logout success' };
@@ -157,7 +157,7 @@ exports.getActiveSessions = (req, res, next) => {
       req.status = 200;
       req.json = sessions;
       return next();
-    } else { return res.status(401).json({ message: 'No sessions were found' }); }
+    } else { return next(new NotFoundError('No sessions were found')); }
   });
 }
 
@@ -178,7 +178,7 @@ exports.deleteSession = (req, res, next) => {
       req.status = 200;
       req.json = { message: "Success" };
       return next();
-    } else { return res.status(400).json({ message: 'Session was not found' }); }
+    } else { return next(new NotFoundError('Session was not found')); }
   });
 }
 
@@ -189,9 +189,7 @@ exports.deleteSessions = (req, res, next) => {
 
   sessionsCollection.find({ "session.user._id": userId }).toArray((err, sessions) => {
     const currentSession = sessions.filter(session => {
-      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) {
-        return session;
-      }
+      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) { return session; }
     });
 
     sessionsCollection.deleteMany({ 'session.user._id': userId, _id: { $ne: currentSession[0]._id } }, (err, response) => {
@@ -199,12 +197,7 @@ exports.deleteSessions = (req, res, next) => {
         req.status = 200;
         req.json = { message: "Success" };
         return next();
-      } else {
-        req.status = 400;
-        req.json = { message: "Error in deleting sessions." };
-        return next();
-      }
+      } else { return next(new ValidationError(err.message)); }
     });
-
   })
 }
