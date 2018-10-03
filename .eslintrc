@@ -6,11 +6,20 @@
   "rules": {
     "semi": ["error", "always"],
     "quotes": ["error", "single"],
-    "comma-dangle": ["error", "always-multiline"]
+    "comma-dangle": ["error", "always-multiline"],
+    "no-console": ["error", {
+      "allow": ["log", "warn", "error"]
+    }]
   },
   "env": {
     "browser": true,
     "amd": true,
     "node": true
+  },
+  "globals": {
+    "logger": true,
+    "_require": true,
+    "base_dir": true,
+    "abs_path": true
   }
 }

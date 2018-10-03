@@ -26,6 +26,8 @@ const APIRoutes = require('./server/routes/v1');
  */
 const app = express();
 
+app.use(helmet());
+
 // gzip compression
 app.use(compress());
 
@@ -38,15 +40,15 @@ app.use(cors());
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
-  .then(connected => {
-    logger.info('MongoDB connected')
+  .then(() => {
+    logger.info('MongoDB connected');
     invitationsCron.start();
   }).catch(error => console.log('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({
   uri: config.db,
-  collection: 'sessions'
+  collection: 'sessions',
 });
 
 store.on('connected', () => {
@@ -66,16 +68,16 @@ const sess = {
   saveUninitialized: true,
   store,
   cookie: {
-    maxAge
-  }
-}
+    maxAge,
+  },
+};
 
 if (config.production) {
   app.set('trust proxy', 1);
   sess.cookie.secure = true;
 }
 
-app.use(session(sess))
+app.use(session(sess));
 
 // Routes
 app.use('/api', APIRoutes);
