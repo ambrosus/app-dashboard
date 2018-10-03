@@ -16,7 +16,7 @@ export class AuthService {
     private router: Router,
     private storage: StorageService,
     private assets: AssetsService
-  ) {}
+  ) { }
 
   isLoggedIn() {
     const token = this.storage.get('token');
@@ -74,37 +74,22 @@ export class AuthService {
       this.getToken().subscribe(
         (resp: any) => {
           this.storage.set('token', resp.token);
-          // Address request
-          const url = `${environment.host}${environment.apiUrls.address}${address}`;
-          this.http.get(url).subscribe(
-            _resp => {
-              this.storage.set('address', address);
-              this.storage.set('isLoggedin', true);
-              this.assets.initSDK();
+          this.storage.set('address', address);
+          this.storage.set('isLoggedin', true);
+          this.assets.initSDK();
 
-              this.getAccountByAddress(address).subscribe(
-                (r: any) => {
-                  this.storage.set('email', r.data.email);
-                  this.storage.set('full_name', r.data.full_name);
-                  this.storage.set('has_account', true);
-                },
-                err => {
-                  this.storage.set('has_account', false);
-                }
-              );
-
-              observer.next('success');
+          this.getAccountByAddress(address).subscribe(
+            (r: any) => {
+              this.storage.set('email', r.data.email);
+              this.storage.set('full_name', r.data.full_name);
+              this.storage.set('has_account', true);
             },
-            err => {
-              observer.error(err);
-            }
+            err => this.storage.set('has_account', false)
           );
+
+          observer.next('success');
         },
-        err => {
-          this.storage.delete('secret');
-          observer.error(err);
-        }
-      );
+        err => observer.error());
     });
   }
 
