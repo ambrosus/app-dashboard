@@ -8,234 +8,233 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
-@import 'mixins';
+@import "mixins";
 
 html,
 body {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 body {
-  background: #f5f7fc;
-  font-size: 14px;
-  color: #121e3e;
-  font-family: 'Open Sans', sans-serif;
+    background: #f5f7fc;
+    font-size: 14px;
+    color: #121e3e;
+    font-family: 'Open Sans', sans-serif;
 }
 
 app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    align-items: stretch;
 }
 
 .card {
-  background: #fff;
-  padding: 30px;
-  border-radius: 4px;
-  box-shadow: 0px 2px 25px 2px rgba(237, 239, 243, 0.9),
-    0px 0px 1px 1px rgba(237, 239, 243, 0.6);
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 25px 2px rgba(237, 239, 243, 0.9), 0px 0px 1px 1px rgba(237, 239, 243, 0.6);
 
-  &__title {
-    color: #121e3e;
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
+    &__title {
+        color: #121e3e;
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
 
-  &__body {
-    color: #99a3ae;
-    font-weight: 100;
-    margin-bottom: 15px;
-    font-size: 1em;
-  }
+    &__body {
+        color: #5b5e63;
+        font-weight: 100;
+        margin-bottom: 15px;
+        font-size: 1em;
+    }
 }
 
 .wrapper {
-  max-width: 1100px;
-  padding: 0 15px;
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
+    max-width: 1100px;
+    padding: 0 15px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
 }
 
 .button {
-  padding: 0 30px;
-  border-radius: 1px;
-  background: transparent;
-  border: 1px solid #ddd;
-  height: 46px;
-  line-height: 46px;
-  text-align: center;
-  display: inline-block;
-  color: #55a8fd;
-  cursor: pointer;
-  word-break: keep-all;
-  user-select: none;
-  -webkit-touch-callout: none;
+    padding: 0 30px;
+    border-radius: 1px;
+    background: transparent;
+    border: 1px solid #ddd;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    display: inline-block;
+    color: #55a8fd;
+    cursor: pointer;
+    word-break: keep-all;
+    user-select: none;
+    -webkit-touch-callout: none;
 
-  &--blue {
-    @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));
-    color: #fff;
-    border: 0px;
-  }
+    &--blue {
+        @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));
 
-  &:disabled {
-    background: #e4e4e4;
-    border: 1px solid #e4e4e4;
-    color: #bfbfbf;
-    cursor: not-allowed;
-  }
+        color: #fff;
+        border: 0px;
+    }
+
+    &:disabled {
+        background: #e4e4e4;
+        border: 1px solid #e4e4e4;
+        color: #bfbfbf;
+        cursor: not-allowed;
+    }
 }
 
 a {
-  color: #54a6fe;
-  text-decoration: none;
+    color: #54a6fe;
+    text-decoration: none;
 }
 
 input,
 .input {
-  appearance: none;
-  -webkit-appearance: none;
-  display: block;
-  width: 100%;
-  font-weight: 400;
-  padding: 15px;
-  border: 1px solid #eceef3;
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    font-weight: 400;
+    padding: 15px;
+    border: 1px solid #eceef3;
 
-  &:disabled {
-    background: #f8f9fc;
-  }
+    &:disabled {
+        background: #f8f9fc;
+    }
 }
 
 label {
-  color: #aeb9c7;
-  text-align: left;
-  display: block;
-  width: 100%;
-  font-weight: 100;
-  font-size: 13px;
-  margin-bottom: 30px;
+    color: #5b5e63;
+    text-align: left;
+    display: block;
+    width: 100%;
+    font-weight: 100;
+    font-size: 13px;
+    margin-bottom: 30px;
 
-  input {
-    margin-top: 5px;
-  }
+    input {
+        margin-top: 5px;
+    }
 }
 
 .avatar {
-  position: relative;
-  height: 32px;
-  width: 32px;
-  background-color: #fcbc58;
-  border: 1px solid #fff;
-  border-radius: 100%;
-  background-size: 100%;
-  background-position: center center;
-  text-align: center;
-  line-height: 29px;
-  font-size: 16px;
-  font-weight: 500;
+    position: relative;
+    height: 32px;
+    width: 32px;
+    background-color: #fcbc58;
+    border: 1px solid #fff;
+    border-radius: 100%;
+    background-size: 100%;
+    background-position: center center;
+    text-align: center;
+    line-height: 29px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
 
 button .btn-spinner {
-  font-family: sans-serif;
-  font-weight: 100;
-  -webkit-animation: 1.25s linear infinite three-quarters;
-  animation: 1.25s linear infinite three-quarters;
-  border: 3px solid white;
-  border-right-color: transparent;
-  border-radius: 100%;
-  box-sizing: border-box;
-  display: inline-block;
-  position: relative;
-  vertical-align: middle;
-  overflow: hidden;
-  text-indent: -9999px;
-  width: 18px;
-  height: 18px
+    font-family: sans-serif;
+    font-weight: 100;
+    -webkit-animation: 1.25s linear infinite three-quarters;
+    animation: 1.25s linear infinite three-quarters;
+    border: 3px solid white;
+    border-right-color: transparent;
+    border-radius: 100%;
+    box-sizing: border-box;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: 18px;
+    height: 18px;
 }
 
 button .btn-spinner:not(:required) {
-  margin-left: -22px;
-  opacity: 0;
-  transition: .4s margin ease-out, .2s opacity ease-out
+    margin-left: -22px;
+    opacity: 0;
+    transition: 0.4s margin ease-out, 0.2s opacity ease-out;
 }
 
 button.is-loading .btn-spinner {
-  transition: .2s margin ease-in, .4s opacity ease-in;
-  margin-left: 20px;
-  opacity: 1
+    transition: .2s margin ease-in, .4s opacity ease-in;
+    margin-left: 20px;
+    opacity: 1;
 }
 
-
 .custom_checkbox {
-  visibility: hidden;
-  position: absolute;
-  opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    opacity: 0;
 
-  &__icon {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: #edf2fe;
-    margin-right: 8px;
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
+    &__icon {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background: #edf2fe;
+        margin-right: 8px;
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
 
-    &:after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      margin-left: -3px;
-      margin-top: -7px;
-      display: none;
-      width: 6px;
-      height: 10px;
-      border: solid darken(#edf2fe, 35);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
+        &:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -3px;
+            margin-top: -7px;
+            display: none;
+            width: 6px;
+            height: 10px;
+            border: solid darken(#edf2fe, 35);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
     }
-  }
 
-  &:checked {
-    + .custom_checkbox__icon {
-      &:after {
-        display: block;
-      }
+    &:checked {
+        + .custom_checkbox__icon {
+            &:after {
+                display: block;
+            }
+        }
     }
-  }
 }
 
 @-webkit-keyframes three-quarters {
-  0% {
-    -webkit-transform: rotate(0);
-    transform: rotate(0)
-  }
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
 
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg)
-  }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes three-quarters {
-  0% {
-    -webkit-transform: rotate(0);
-    transform: rotate(0)
-  }
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
 
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg)
-  }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

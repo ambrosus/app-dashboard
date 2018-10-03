@@ -25,11 +25,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <form [formGroup]="forms.hermes" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Hermes Title
-          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="1">
+          <input formControlName="title" type="text" spellcheck="false" appAutofocus>
         </label>
 
         <label>Hermes Gateway URL
-          <input formControlName="url" type="url" spellcheck="false" tabindex="2">
+          <input formControlName="url" type="url" spellcheck="false">
         </label>
 
         <button type="submit" class="button button--blue" [disabled]="!forms.hermes.valid">Next</button>
@@ -41,15 +41,15 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <form [formGroup]="forms.company" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Company Title
-          <input formControlName="title" type="text" spellcheck="false" autofocus tabindex="3">
+          <input formControlName="title" type="text" spellcheck="false" appAutofocus>
         </label>
 
         <label>Timezone
-          <ng-select [searchable]="true" [selectOnTab]="true" formControlName="timezone" [items]="timezones"></ng-select>
+          <ng-select [searchable]="true" [clearable]="false" [selectOnTab]="true" formControlName="timezone" [items]="timezones"></ng-select>
         </label>
 
         <label formGroupName="settings">Preview App <ins>(Optional)</ins>
-          <input formControlName="preview_app">
+          <input formControlName="preview_app" type="text" spellcheck="false">
         </label>
 
 
@@ -63,7 +63,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <form [formGroup]="forms.user" (ngSubmit)="currentStep = currentStep + 1">
 
         <label>Full name
-          <input formControlName="full_name" type="text" spellcheck="false" autofocus>
+          <input formControlName="full_name" type="text" spellcheck="false" appAutofocus>
         </label>
 
         <label>Email
