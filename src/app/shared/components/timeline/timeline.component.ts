@@ -53,7 +53,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   loadEvents(page = 0, perPage = 15) {
     const token = this.authService.getToken();
-    const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
+    const options = { assetId: encodeURI(`assetId=${this.assetId}`), token, page, perPage };
     this.searchActive = false;
 
     this.eventsResultsSub = this.assetsService._events.subscribe(results => this.events = this.assetsService.parseTimelineEvents({ results }).events);
