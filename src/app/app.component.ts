@@ -10,6 +10,7 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 export class AppComponent {
   navigationSub: Subscription;
   initialLoad = false;
+  _opened: Boolean = false;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private router: Router) {
     this.navigationSub = this.router.events.subscribe((e: any) => {
@@ -18,6 +19,10 @@ export class AppComponent {
         this.initialLoad = true;
       }
     });
+  }
+
+  public _toggleOpened() {
+    this._opened = !this._opened;
   }
 
   hideHeader() {

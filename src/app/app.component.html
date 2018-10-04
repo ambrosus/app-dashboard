@@ -1,5 +1,23 @@
-<app-header *ngIf="initialLoad && !hideHeader()"></app-header>
+<ng-sidebar-container style="height: 100vh !important;">
+  <ng-sidebar [(opened)]="_opened" [closeOnClickOutside]="true" [sidebarClass]="'sidebar-class'">
+    <div style="background: white; height: 100vh !important; box-shadow: 1px 1px 1px 1px #ccc;">
+    <p>Sidebar contents</p>
+    <button class="demo-control" (click)="_toggleOpened()">Close sidebar</button>
+    <p><a closeSidebar>This will close the sidebar too</a></p>
+    <hr>
+    <p>Throwup on your pillow.</p>
+    <p>Steal the warm chair right after you get up.</p>
+    <p>Use lap as chair hide head under blanket.</p>
+    <p>Walk on car leaving trail of paw prints on hood.</p>
+    <p>Steal the warm chair right after you get up.</p>
+  </div>
+  </ng-sidebar>
 
-<router-outlet></router-outlet>
+  <div ng-sidebar-content>
+    <button (click)="_toggleOpened()">Toggle sidebar</button>
+    <app-header *ngIf="initialLoad && !hideHeader()"></app-header>
+    <router-outlet></router-outlet>
+  </div>
+</ng-sidebar-container>
 
 <app-footer *ngIf="initialLoad"></app-footer>
