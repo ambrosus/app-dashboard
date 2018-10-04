@@ -64,7 +64,7 @@ exports.create = (req, res, next) => {
     address,
     token,
     password,
-    company: mongoose.Types.ObjectId(company),
+    company: mongoose.Types.ObjectId(company._id),
   };
 
   logger.info('User: ', _user);

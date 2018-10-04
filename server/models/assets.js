@@ -16,7 +16,7 @@ const assetsSchema = mongoose.Schema({
   infoEvent: String,
   latestEvent: String,
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
 });
 
 assetsSchema.plugin(mongoosePaginate);
