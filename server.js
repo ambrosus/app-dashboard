@@ -27,6 +27,8 @@ const APIRoutes = require('./server/routes/v1');
  */
 const app = express();
 
+app.use(helmet());
+
 // gzip compression
 app.use(compress());
 
@@ -45,7 +47,7 @@ mongoose.connect(config.db, { useNewUrlParser: true })
 // Session store
 const store = new MongoDBStore({
   uri: config.db,
-  collection: 'sessions'
+  collection: 'sessions',
 });
 
 store.on('connected', () => (logger.info('MongoDB Session Store connected'), store.client));
@@ -62,9 +64,9 @@ const sess = {
   saveUninitialized: true,
   store,
   cookie: {
-    maxAge
-  }
-}
+    maxAge,
+  },
+};
 
 if (config.production) {
   app.set('trust proxy', 1);

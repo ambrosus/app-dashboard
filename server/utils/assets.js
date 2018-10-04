@@ -28,4 +28,4 @@ exports.findEvent = (eventType, events) => {
     } else { return false; }
   });
   return e;
-}
+};

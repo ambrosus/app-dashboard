@@ -24,11 +24,8 @@ exports.create = async (req, res, next) => {
   let err, hermes;
 
   [err, hermes] = await to(Hermes.create({ title, url }));
-  if (err || !hermes) {
-    if (err.code === 11000) return next(new ValidationError('Hermes URL already exists', err));
-    logger.error('Hermes create error: ', err);
-    return next(new ValidationError(err.message, err));
-  }
+  if (err || !hermes) { logger.error('Hermes create error: ', err); return next(new ValidationError(err.message, err)); }
+
   req.status = 200;
   req.json = { data: hermes, message: 'Success', status: 200 };
   return next();

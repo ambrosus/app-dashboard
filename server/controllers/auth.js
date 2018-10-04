@@ -9,6 +9,8 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
+const { httpGet } = _require('/utils/requests');
+const config = _require('/config');
 
 const User = _require('/models/users');
 
@@ -23,7 +25,7 @@ const User = _require('/models/users');
  * @returns user Object on success with status code 200
  */
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, deviceInfo } = req.body;
   let err, user;
 
   if (email && password) {
@@ -40,7 +42,7 @@ exports.login = async (req, res, next) => {
       })
       .select('-active -createdAt -updatedAt -__v')
     );
-    if (err || !user) { logger.error('User GET error: ', err.message); return next(new NotFoundError(err.message, err)); }
+    if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
     const valid = bcrypt.compareSync(password, user.password);
     if (!valid) return next(new ValidationError('User "password" is incorrect'));
@@ -51,8 +53,9 @@ exports.login = async (req, res, next) => {
     user = user.toObject();
     delete user.password;
 
-    req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
     req.status = 200;
+    req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+    req.session.deviceInfo = deviceInfo;
     req.json = { data: user, message: 'Success', status: 200 };
     return next();
 
@@ -64,6 +67,53 @@ exports.login = async (req, res, next) => {
 };
 
 /**
+ * Verifies a user by calling the API (hermes.url/accounts/address)
+ *
+ * @name verify
+ * @route {POST} api/auth/verify
+ * @bodyparam address, token, hermes
+ * @returns Status code 400 on failure
+ * @returns user Object on success with status code 200
+ */
+exports.verifyAccount = async (req, res, next) => {
+  const { address, deviceInfo } = req.body;
+  const _user = req.session.user;
+  let err, verified, user;
+
+  [err, verified] = await to(httpGet.get(`${_user.hermes.url}/accounts/${address}`, config.token));
+  if (err || !verified) { logger.error('Hermes account GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
+
+  [err, user] = await to(
+    User.findOne({ address })
+    .populate({
+      path: 'company',
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: { path: 'hermes' }
+    })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-active -createdAt -updatedAt -password -__v')
+  );
+  if (err) { logger.error('User GET error: ', err); }
+  if (!user) {
+    req.status = 200;
+    req.json = { data: error, message: 'No registered user', status: 200 };
+    return next();
+  }
+
+  user.toObject();
+  delete user.password;
+
+  req.status = 200;
+  req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+  req.session.deviceInfo = deviceInfo;
+  req.json = { data: user, message: 'Success', status: 200 };
+  return next();
+}
+
+/**
  * Logs out a user by destroying the session
  *
  * @name logout
@@ -72,10 +122,10 @@ exports.login = async (req, res, next) => {
  * @returns success message with status code 200 on success
  */
 exports.logout = (req, res, next) => {
-  req.session.destroy(error => {
-    if (error) {
-      logger.warn('User logout error: ', error);
-      return next(new ValidationError(`User logout error: ${error.message}`, error));
+  req.session.destroy(err => {
+    if (err) {
+      logger.warn('User logout error: ', err);
+      return next(new ValidationError(`User logout error: ${err.message}`, err));
     }
     req.status = 200;
     req.json = { data: null, message: 'Success', status: 200 };

@@ -30,8 +30,8 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient, private storageService: StorageService, private authService: AuthService) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
-      password: new FormControl(null, [Validators.required]),
-      passwordConfirm: new FormControl(null, [Validators.required]),
+      newPassword: new FormControl(null, [Validators.required]),
+      newPasswordConfirm: new FormControl(null, [Validators.required]),
     });
   }
 
@@ -44,9 +44,9 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
     const url = `/api/auth/sessions`;
 
     this.getSessionsSub = this.http.get(url).subscribe(
-      resp => {
-        console.log('GET sessions: ', resp);
-        this.sessions = resp;
+      ({ data }: any) => {
+        console.log('GET sessions: ', data);
+        this.sessions = data;
       },
       err => {
         if (err.status === 401) { this.authService.logout(); }
@@ -77,8 +77,10 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
     this.resetErrors();
     const data = this.resetForm.value;
     const email = this.storageService.get('user')['email'];
+    data['email'] = email;
 
     if (!email || !this.resetForm.valid) { return this.error = 'All fields are required'; }
+    if (data.newPassword !== data.newPasswordConfirm) { return this.error = 'New password and confirm password do not match'; }
 
     this.spinner = true;
 
@@ -86,14 +88,15 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
     this.http.put(url, data).subscribe(
       resp => {
+        console.log('Password change success: ', resp);
         this.spinner = false;
         this.resetSuccess = true;
       },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
+      ({ error }: any) => {
+        if (error.status === 401) { this.authService.logout(); }
         this.spinner = false;
-        this.error = err.message;
-        console.log('Reset password error: ', err);
+        this.error = error.message;
+        console.log('Reset password error: ', error);
       }
     );
   }

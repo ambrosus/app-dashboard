@@ -5,14 +5,15 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const utilsPassword = _require('/utils/password');
+const bcrypt = require('bcrypt');
+const { decrypt } = _require('/utils/password');
 const mongoose = require('mongoose');
 const config = _require('/config');
 const Web3 = require('web3');
 const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError } = _require('/errors');
+const { ValidationError, NotFoundError, AuthenticationError } = _require('/errors');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -41,14 +42,20 @@ exports.create = async (req, res, next) => {
   // invite
   if (inviteToken) {
     try {
-      const _token = JSON.parse(utilsPassword.decrypt(inviteToken, config.secret));
+      const _token = JSON.parse(decrypt(inviteToken, config.secret));
       email = _token['email'];
       accessLevel = _token['accessLevel'];
       company = _token['company'];
-      role = _token['role']['_id'];
-      if (_token['role']['title'] === 'admin') { permissions = ['register_accounts', 'create_asset', 'create_event'] }
-    } catch (error) { return res.status(400).json({ message: 'Invite token is invalid' }); }
+
+      if (_token['role']['title'] === 'admin') {
+        permissions = ['register_accounts', 'create_asset', 'create_event'];
+      }
+
+    } catch (error) {
+      return res.status(400).json({ message: 'Invite token is invalid' });
+    }
   }
+
   const query = { $or: [{ email }, { address }] };
   const _user = {
     full_name,
@@ -56,24 +63,24 @@ exports.create = async (req, res, next) => {
     address,
     token,
     password,
-    company: mongoose.Types.ObjectId(company)
+    company: mongoose.Types.ObjectId(company._id),
   };
 
   // Insert user in dash db
   [err, userCreated] = await to(User.findOrCreate(query, _user));
   if (err || !userCreated) { logger.error('User create error: ', err); return next(new ValidationError(err.message, err)); }
-  if (!userCreated.created) return next(new ValidationError('User already exists'));
+  if (!userCreated.created) { return next(new ValidationError('User already exists')); }
 
   // Register user in the hermes
   const body = { address, permissions, accessLevel };
   [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
-  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err.data['reason']); return next(new ValidationError(err.data['reason'], err)); }
+  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err); return next(new ValidationError(err.data['reason'], err)); }
 
   // Delete invite token
   if (inviteToken) {
     [err, inviteRemoved] = await to(Invite.findOneAndRemove({ token: inviteToken }));
-    if (err || !inviteRemoved) logger.error('Invite delete error: ', error);
-    if (inviteRemoved) logger.info('Invited deleted');
+    if (err || !inviteRemoved) { logger.error('Invite delete error: ', err); }
+    if (inviteRemoved) { logger.info('Invited deleted'); }
   }
 
   req.status = 200;
@@ -113,7 +120,7 @@ exports.setOwnership = async (req, res, next) => {
   } else if (!company) {
     return next(new ValidationError('"company" object is required'));
   }
-}
+};
 
 /**
  * Get account details based on email address
@@ -134,12 +141,12 @@ exports.getAccount = async (req, res, next) => {
       select: '-active -createdAt -updatedAt -__v -owner',
       populate: {
         path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public'
-      }
+        select: '-active -createdAt -updatedAt -__v -public',
+      },
     })
     .populate({
       path: 'role',
-      select: '-createdAt -updatedAt -__v'
+      select: '-createdAt -updatedAt -__v',
     })
     .select('-active -createdAt -updatedAt -__v')
   );
@@ -169,12 +176,12 @@ exports.getAccounts = async (req, res, next) => {
       select: '-active -createdAt -updatedAt -__v -owner',
       populate: {
         path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public'
-      }
+        select: '-active -createdAt -updatedAt -__v -public',
+      },
     })
     .populate({
       path: 'role',
-      select: '-createdAt -updatedAt -__v'
+      select: '-createdAt -updatedAt -__v',
     })
     .select('-password -__v')
   );
@@ -223,13 +230,13 @@ exports.edit = async (req, res, next) => {
   const query = req.body;
   let err, userUpdated;
 
-  const update = {}
+  const update = {};
   const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) update[key] = query[key]
   }
 
-  [err, userUpdated] = await to(User.findOneAndUpdate({ email }, update));
+  [err, userUpdated] = await to(User.updateOne({ email }, update));
   if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
@@ -255,12 +262,16 @@ exports.changePassword = async (req, res, next) => {
     if (err || !user) { logger.error('User GET error: ', err); return next(new ValidationError(err.message, err)); }
 
     try {
+      const valid = bcrypt.compareSync(oldPassword, user.password);
+      if (!valid) return next(new ValidationError('User "password" is incorrect'));
+
       const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
       const encData = web3.eth.accounts.encrypt(decData.privateKey, newPassword);
       user.token = JSON.stringify(encData);
+
       user.password = newPassword;
 
-      [err, userUpdated] = await to(User.updateOne({ email }, user));
+      [err, userUpdated] = await to(user.save());
       if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
       req.status = 200;

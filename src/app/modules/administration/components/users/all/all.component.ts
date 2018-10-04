@@ -40,9 +40,9 @@ export class AllComponent implements OnInit, OnDestroy {
     try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { console.log(e); }
 
     this.usersSubscription = this.usersService.getUsers().subscribe(
-      (resp: any) => {
-        console.log('Users GET: ', resp);
-        this.users = resp.data.map(user => {
+      (users: any) => {
+        console.log('Users GET: ', users);
+        this.users = users.map(user => {
 
           if (!user.role || !user.role.title) { user.role = { title: 'No role assigned yet' }; }
           user.lastLogin = moment.tz(user.lastLogin, this.user.company.timeZone).fromNow();

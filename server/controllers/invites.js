@@ -5,6 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+
 const mongoose = require('mongoose');
 const config = _require('/config');
 const tokenEncrypt = _require('/utils/password');
@@ -49,13 +50,13 @@ exports.create = async (req, res, next) => {
     [err, insertedInvites] = await to(Invite.insertMany(invites));
     if (err || !insertedInvites) { logger.error('Invites insert error: ', err); return next(new ValidationError(err.message)); }
 
-    insertedInvites.map(invite => {
+    insertedInvites.map(async (invite) => {
       const invitation = JSON.parse(JSON.stringify(invite));
       invitation.subject = `${user.full_name} invited you to join ${user.company.title} Dasbhoard`;
       invitation.from = `no-reply@${slug(user.company.title)}.com`;
 
       [err, emailSent] = await to(email.send(invitation));
-      if (err || !emailSent) logger.error('Email send error: ', err);
+      if (err || !emailSent) { logger.error('Email send error: ', err); }
       if (emailSent) logger.error('Email send success: ', emailSent);
     });
 
@@ -68,7 +69,7 @@ exports.create = async (req, res, next) => {
   } else if (!user) {
     next(new ValidationError('"user" is required'));
   }
-}
+};
 
 /**
  * Delete multiple invites
@@ -105,7 +106,13 @@ exports.getAll = async (req, res, next) => {
   const company = req.params.company;
   let err, invites;
 
-  [err, invites] = await to(Invite.paginate({ company }));
+  [err, invites] = await to(
+    Invite.find({ company })
+    .populate({
+      path: 'from',
+      select: 'full_name email'
+    })
+  );
   if (err || !invites) { logger.error('Invites GET error: ', err); return next(new NotFoundError(err.message)); }
 
   req.status = 200;

@@ -8,70 +8,52 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
 const mongoosePaginate = require('mongoose-paginate');
-const { ValidationError } = _require('/errors');
-const { extractErrorMessage } = _require('/utils/general');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const companiesSchema = mongoose.Schema({
+const company = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    auto: true,
   },
   title: {
     type: String,
     required: [(value) => !value, 'Title field is required'],
     index: { unique: true },
-    minLength: 4
+    minLength: 4,
   },
   hermes: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hermeses'
+    ref: 'Hermeses',
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users',
-    index: { unique: true }
+    index: { unique: true },
   },
   active: {
     type: Boolean,
-    default: true
+    default: true,
   },
   branding: {
     dasboard: String,
-    ambto: String
+    ambto: String,
   },
   settings: {
-    type: String,
-    default: JSON.stringify({ preview_app: 'https://amb.to' })
+    type: mongoose.Schema.Types.Mixed,
+    default: { 'preview_app': 'https://amb.to' },
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
-  }
+    default: +new Date(),
+  },
 });
 
-companiesSchema.plugin(findOrCreate);
-companiesSchema.plugin(mongoosePaginate);
+company.plugin(findOrCreate);
+company.plugin(mongoosePaginate);
+company.plugin(updatesAndErrors);
 
-companiesSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-companiesSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-companiesSchema.post('save', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-companiesSchema.post('update', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-module.exports = mongoose.model('Companies', companiesSchema);
+module.exports = mongoose.model('Companies', company);

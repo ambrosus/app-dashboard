@@ -5,6 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+const mongoose = require('mongoose');
 const Asset = _require('/models/assets');
 const { findEvent } = _require('/utils/assets');
 const { httpGet, httpPost } = _require('/utils/requests');
@@ -29,7 +30,7 @@ exports.getAssets = async (req, res, next) => {
   let err, assets;
 
   [err, assets] = await to(Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
-  if (err || !assets) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message, err)); }
+  if (err || !assets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
   req.json = { data: assets, message: 'Success', status: 200 };
@@ -57,20 +58,23 @@ exports.getAsset = async (req, res, next) => {
 
   // Get cached asset
   [err, asset] = await to(Asset.findOne({ assetId }));
-  if (err || !asset) return next(new NotFoundError(err.message, err));
+  if (err || !asset) { logger.error('Asset GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   // Get info event
   url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
   [err, infoEvents] = await to(httpGet(url, token));
-  if (err || !infoEvents) logger.error('Asset info event GET error: ', err.data['reason']);
+  if (err || !infoEvents) { logger.error('Asset info event GET error: ', err); }
 
   // Update cached asset
   const infoEvent = findEvent('info', infoEvents.results);
   if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
   [err, assetUpdate] = await to(Asset.findByIdAndUpdate(asset._id, asset));
-  if (err || !assetUpdate)(logger.error('Asset update error: ', err.message), req.json = asset)
+  if (err || !assetUpdate) {
+    logger.error('Asset update error: ', err);
+    req.json = asset;
+  }
 
   req.status = 200;
   req.json = { data: assetUpdate, message: 'Success', status: 200 };
@@ -105,12 +109,14 @@ exports.getEvents = async (req, res, next) => {
   let err, events, cachedAssets, cachedAsset, updateCachedAsset;
 
   let url = `${user.hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
-  if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
-  if (data) { url += `${decodeURI(data)}&`; }
-  if (assetId) { url += `${decodeURI(assetId)}&`; }
+  try {
+    if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
+    if (data) { url += `${decodeURI(data)}&`; }
+    if (assetId) { url += `${decodeURI(assetId)}&`; }
+  } catch (e) {}
 
   [err, events] = await to(httpGet(url, token));
-  if (err || !events) { logger.error('Events GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'], err)); }
+  if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
   if (assets) {
     // Extract unique assetIds
@@ -122,7 +128,7 @@ exports.getEvents = async (req, res, next) => {
     }, []);
 
     [err, cachedAssets] = await to(Asset.paginate({ assetId: { $in: assetIds } }, { limit: 500, sort: '-createdAt' }));
-    if (err || !cachedAssets) { logger.error('Assets GET error: ', err.message); return next(new ValidationError(err.message, err)); }
+    if (err || !cachedAssets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
     req.json = { data: cachedAssets, message: 'Success', status: 200 };
@@ -130,7 +136,7 @@ exports.getEvents = async (req, res, next) => {
   } else {
     // Update cached asset
     [err, cachedAsset] = await to(Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) }));
-    if (err || !cachedAsset) { logger.error('Asset GET error: ', err.message); return next(new ValidationError(err.message, err)); }
+    if (err || !cachedAsset) { logger.error('Asset GET error: ', err); return next(new ValidationError(err.message, err)); }
 
     const latestEvent = findEvent('latest', events.results);
     let cachedAssetsLatestEvent = '';
@@ -140,8 +146,8 @@ exports.getEvents = async (req, res, next) => {
       cachedAsset.latestEvent = JSON.stringify(latestEvent);
 
       [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
-      if (err || !updateCachedAsset) logger.error('Asset update error: ', err.message)
-      if (updateCachedAsset) logger.info('Asset updated: ', updateCachedAsset)
+      if (err || !updateCachedAsset) { logger.error('Asset update error: ', err); }
+      if (updateCachedAsset) { logger.info('Asset updated: ', updateCachedAsset); }
     }
 
     req.status = 200;
@@ -171,7 +177,7 @@ exports.getEvent = async (req, res, next) => {
   const url = `${user.hermes.url}/events/${eventId}`;
 
   [err, event] = await to(httpGet(url, token));
-  if (err || !event) { logger.error('Event GET error: ', err.data['reason']); return next(new NotFoundError(err.data['reason'], err)); }
+  if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
   req.status = 200;
   req.json = { data: event, message: 'Success', status: 200 };
@@ -203,16 +209,19 @@ exports.createAsset = async (req, res, next) => {
     const url = `${user.hermes.url}/assets`;
     assets.map(async (asset, index, array) => {
       [err, assetCreated] = await to(httpPost(url, asset));
-      if (err || !assetCreated) logger.error('Asset create error: ', err.data['reason']);
+      if (err || !assetCreated) { logger.error('Asset create error: ', err); }
       if (assetCreated) {
-        [err, assetInserted] = await to(Asset.create({
-          assetId: assetCreated.assetId,
-          createdBy: assetCreated.content.idData.createdBy,
-          updatedAt: assetCreated.content.idData.timestamp * 1000,
-          createdAt: assetCreated.content.idData.timestamp * 1000
-        }));
-        if (err || !assetInserted) logger.error('Cached asset creation error: ', err.message);
-        if (assetInserted) req.json.data.assets.docs.push(assetInserted);
+        [err, assetInserted] = await to(
+          Asset.create({
+            _id: new mongoose.Types.ObjectId(),
+            assetId: assetCreated.assetId,
+            createdBy: assetCreated.content.idData.createdBy,
+            updatedAt: assetCreated.content.idData.timestamp * 1000,
+            createdAt: assetCreated.content.idData.timestamp * 1000
+          })
+        );
+        if (err || !assetInserted) { logger.error('Cached asset creation error: ', err); }
+        if (assetInserted) { req.json.data.assets.docs.push(assetInserted); }
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
     });
@@ -244,7 +253,7 @@ exports.createEvents = async (req, res, next) => {
     events.map(async (event, index, array) => {
       const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
       [err, eventCreated] = await to(httpPost(url, event));
-      if (err || !eventCreated) logger.error('Event create error: ', err.data['reason']);
+      if (err || !eventCreated) { logger.error('Event create error: ', err); }
       if (eventCreated) {
         req.json.data.events.push(eventCreated);
 
@@ -257,7 +266,7 @@ exports.createEvents = async (req, res, next) => {
         if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
         [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset));
-        if (err || !assetUpdated) logger.error('Asset update error: ', err.message);
+        if (err || !assetUpdated) { logger.error('Asset update error: ', err); }
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
     });

@@ -8,10 +8,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
 const mongoosePaginate = require('mongoose-paginate');
-const { ValidationError } = _require('/errors');
-const { extractErrorMessage } = _require('/utils/general');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const invitesSchema = mongoose.Schema({
+const invites = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   from: {
     type: mongoose.Schema.Types.ObjectId,
@@ -42,25 +41,8 @@ const invitesSchema = mongoose.Schema({
   }
 });
 
-invitesSchema.plugin(findOrCreate);
-invitesSchema.plugin(mongoosePaginate);
+invites.plugin(findOrCreate);
+invites.plugin(mongoosePaginate);
+invites.plugin(updatesAndErrors);
 
-invitesSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-invitesSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-invitesSchema.post('save', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-invitesSchema.post('update', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-module.exports = mongoose.model('Invites', invitesSchema);
+module.exports = mongoose.model('Invites', invites);

@@ -65,7 +65,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.loader = true;
     const token = this.authService.getToken();
     this.assetsSubscription = this.assetsService.getAssets({ page, perPage, token }).subscribe(
-      ({ assets }) => {
+      (assets: any) => {
         console.log(assets);
         this.loader = false;
         this.assets = assets.docs;
@@ -150,11 +150,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
         break;
     }
     this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
-      ({ assets, events }) => {
+      (assets: any) => {
         this.loader = false;
         this.assets = assets.docs;
-        this.pagination.resultCount = events.resultCount;
-        this.pagination.totalPages = Math.ceil(events.resultCount / perPage);
+        this.pagination.resultCount = assets.total;
+        this.pagination.totalPages = Math.ceil(assets.total / perPage);
         this.pagination.currentPage = page;
         this.pagination.perPage = perPage;
         this.pagination.resultLength = this.assets.length;

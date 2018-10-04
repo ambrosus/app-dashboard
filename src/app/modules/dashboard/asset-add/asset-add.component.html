@@ -5,18 +5,21 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<main class="main m-t-50">
-  <h1 class="center m-b-20">{{ prefill ? 'Edit info event' : 'Create asset' }}</h1>
-  <div class="tabs">
-    <div class="tab_header">
-      <p class="tab_header_item active" (click)="tabOpen('form', tabForm)" #tabForm>Form</p>
-      <p class="tab_header_item" (click)="tabOpen('json', tabJSON)" #tabJSON>JSON</p>
+
+<mat-dialog-content style="min-height: 100vh;">
+  <main class="main m-t-50">
+    <h1 class="center m-b-20">{{ prefill ? 'Edit info event' : 'Create asset' }}</h1>
+    <div class="card" style="margin: 0 auto; width: 50%; padding: 0px !important;">
+      <div class="card__header">
+        <app-tabs>
+          <app-tab label="Form">
+            <app-asset-form [prefill]="prefill" [assetId]="assetIds[0]"></app-asset-form>
+          </app-tab>
+          <app-tab label="JSON">
+            <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'assets'"></app-json-form>
+          </app-tab>
+        </app-tabs>
+      </div>
     </div>
-    <div class="tab_content">
-      <!-- FORM -->
-      <app-asset-form [prefill]="prefill" [assetId]="assetIds[0]" *ngIf="!json"></app-asset-form>
-      <!-- JSON -->
-      <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'assets'" *ngIf="json"></app-json-form>
-    </div>
-  </div>
-</main>
+  </main>
+</mat-dialog-content>

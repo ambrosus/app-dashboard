@@ -13,7 +13,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./pagination.component.scss']
 })
 export class PaginationComponent implements OnInit {
-  currentPage = 0;
+  currentPage: number;
 
   @Input() pagination: any;
   @Input() for = 'assets';
@@ -23,17 +23,21 @@ export class PaginationComponent implements OnInit {
 
   ngOnInit() {
     this.currentPage = this.pagination.currentPage;
-    if (this.for === 'events') { this.currentPage += 1; }
+    if (this.for === 'events') { this.currentPage = 1; }
   }
 
   changePage(value) {
     if (value === 'next') {
       this.pagination.currentPage += 1;
+      this.currentPage += 1;
     } else if (value === 'prev') {
       this.pagination.currentPage -= 1;
+      this.currentPage -= 1;
     } else {
       value = parseInt(value.toString().replace(/\D/g, '') || 1, 10) || 1;
       this.pagination.currentPage = value > this.pagination.totalPages ? this.pagination.totalPages : value;
+      if (this.for === 'events') { this.pagination.currentPage = this.pagination.currentPage - 1; }
+      this.currentPage = this.pagination.currentPage;
     }
 
     this.method(this.pagination.currentPage);

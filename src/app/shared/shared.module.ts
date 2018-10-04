@@ -36,6 +36,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
+import { AutofocusDirective } from './directives/auto-focus.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -48,6 +49,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,
+    AutofocusDirective,
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
@@ -73,6 +75,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     TabComponent,
     AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
+    AutofocusDirective,
     AccordionDirective,
     StickyDirective,
     LoopIncludePipe,

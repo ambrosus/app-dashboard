@@ -26,11 +26,8 @@ exports.create = async (req, res, next) => {
   let err, company;
 
   [err, company] = await to(Company.create({ title, settings, hermes }));
-  if (err || !company) {
-    if (err.code === 11000) return next(new ValidationError('Company with this title already exists', err));
-    logger.error('Company create error: ', err);
-    return next(new ValidationError(err.message, err));
-  }
+  if (err || !company) { logger.error('Company create error: ', err); return next(new ValidationError(err.message, err)); }
+
   req.status = 200;
   req.json = { data: company, message: 'Success', status: 200 };
   return next();
@@ -41,7 +38,7 @@ exports.edit = async (req, res, next) => {
   const query = req.body;
   let err, companyUpdated;
 
-  const update = {}
+  const update = {};
   const allowedToChange = ['title', 'settings'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) update[key] = query[key]

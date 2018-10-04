@@ -11,32 +11,31 @@ const Web3 = require('web3');
 const web3 = new Web3();
 const findOrCreate = require('mongoose-findorcreate');
 const mongoosePaginate = require('mongoose-paginate');
-const { ValidationError } = _require('/errors');
-const { extractErrorMessage } = _require('/utils/general');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const validateEmail = (email) => {
+const validateEmail = email => {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email);
 };
 
-const usersSchema = mongoose.Schema({
+const users = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
   },
   full_name: {
     type: String,
-    required: [(value) => !value, '"Full name" field is required'],
+    required: [value => !value, '"Full name" field is required'],
     minLength: 4,
   },
   email: {
     type: String,
-    required: [(value) => !value, '"Email" field is required'],
+    required: [value => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid'],
   },
   password: {
     type: String,
-    required: [(value) => !value, '"Password" field is required'],
+    required: [value => !value, '"Password" field is required']
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -44,12 +43,12 @@ const usersSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: [(value) => !value, '"Address" field is required'],
+    required: [value => !value, '"Address" field is required'],
     validate: [web3.utils.isAddress, 'Address format is not valid'],
   },
   token: {
     type: String,
-    required: [(value) => !value, '"Token" field is required'],
+    required: [value => !value, '"Token" field is required'],
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
@@ -74,44 +73,17 @@ const usersSchema = mongoose.Schema({
   updatedAt: {
     type: Date,
     default: +new Date(),
-  }
+  },
 });
 
-usersSchema.plugin(findOrCreate);
-usersSchema.plugin(mongoosePaginate);
+users.plugin(findOrCreate);
+users.plugin(mongoosePaginate);
+users.plugin(updatesAndErrors);
 
-usersSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
+users.pre('save', function(next) {
   if (!this.isModified('password')) return next();
-
-  bcrypt.hash(this.password, 10, (err, hash) => {
-    if (!err) {
-      this.password = hash;
-      this.lastLogin = +new Date();
-      next();
-    } else { next(new ValidationError('Failure in password hashing', err)); }
-  });
+  this.password = bcrypt.hashSync(this.password, 10);
+  next();
 });
 
-usersSchema.pre('save', function(next) {
-  if (!this.isModified('password')) return next();
-
-  bcrypt.hash(this.password, 10, (err, hash) => {
-    if (!err) {
-      this.password = hash;
-      this.updatedAt = +new Date();
-      this.lastLogin = +new Date();
-      next();
-    } else { next(new ValidationError('Failure in password hashing', err)); }
-  });
-});
-
-usersSchema.post('save', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-usersSchema.post('update', function(err, doc, next) {
-  if (err) { next(new ValidationError(extractErrorMessage(err), err)) } else { next(); }
-});
-
-module.exports = mongoose.model('Users', usersSchema);
+module.exports = mongoose.model('Users', users);

@@ -5,14 +5,22 @@ import { Observable } from 'rxjs';
 declare let Web3: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DashboardService {
-
   web3;
 
   constructor(private http: HttpClient) {
     this.web3 = new Web3();
+  }
+
+  getHermeses() {
+    return new Observable(observer => {
+      this.http.get('/api/hermeses').subscribe(
+        ({ data }: any) => { observer.next(data); },
+        err => { observer.error(err); }
+      );
+    });
   }
 
   initSetup(data) {
@@ -28,11 +36,11 @@ export class DashboardService {
         (resp: any) => {
           observer.next({
             address,
-            secret: privateKey
+            secret: privateKey,
           });
         },
         err => {
-          const error = err.error.message ? err.error.message : 'Setup error';
+          const error = err.message;
           console.log('Setup error: ', error);
           observer.error(error);
         }
