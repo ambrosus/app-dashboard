@@ -31,7 +31,6 @@ export class LoginComponent implements OnInit {
       password: new FormControl(null, [Validators.required]),
     });
     this.forms.addressForm = new FormGroup({
-      address: new FormControl(null, [Validators.required]),
       secret: new FormControl(null, [Validators.required]),
     });
   }
@@ -42,10 +41,10 @@ export class LoginComponent implements OnInit {
     this.error = false;
     const data = this.forms.addressForm.value;
 
-    if (!this.forms.addressForm.valid) { return this.error = 'All fields are required'; }
+    if (!this.forms.addressForm.valid) { return this.error = 'Secret is required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(data.address, data.secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(data.secret).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {

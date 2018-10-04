@@ -58,7 +58,6 @@ export class AuthService {
     });
   }
 
-
   addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
 
@@ -89,24 +88,23 @@ export class AuthService {
     });
   }
 
-
-  verifyAccount(address, secret) {
-    let token = '';
-    try {
-      token = this.getToken(secret);
-    } catch (e) { }
-
+  verifyAccount(secret) {
     return new Observable(observer => {
+      let address;
+      try {
+        address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
+      } catch (e) { return observer.error({ message: 'Invalid secret' }); }
+
       const deviceInfo = this.deviceService.getDeviceInfo();
 
-      this.http.post('/api/auth/verify', { address, token, deviceInfo }).subscribe(
-        user => {
+      this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
+        ({ data }: any) => {
           this.storage.set('secret', secret);
-          this.storage.set('user', user);
-          this.storage.set('token', token);
-          this.addAccount(user);
+          this.storage.set('token', this.getToken(secret));
+          this.storage.set('user', data);
+          this.addAccount(data);
           this.emit('user:refresh');
-          return observer.next(user);
+          return observer.next(data);
         },
         err => observer.error(err.error)
       );
@@ -167,5 +165,4 @@ export class AuthService {
     this.emit('user:refresh');
     this.router.navigate(['/login']);
   }
-
 }
