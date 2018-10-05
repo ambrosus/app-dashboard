@@ -1,6 +1,6 @@
 <h4 class="m-b-30">Invites</h4>
 
-<p *ngIf="!invites || invites.length < 1">No invites. Invite <a routerLink="/administration/users/invite">new members.</a></p>
+<p *ngIf="!invites || !invites.length">No invites. Invite <a routerLink="/administration/users/invite">new members.</a></p>
 
 <div class="table" style="padding: 0;" *ngIf="invites && invites.length > 0">
   <!-- Header -->

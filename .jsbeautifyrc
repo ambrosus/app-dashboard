@@ -26,9 +26,7 @@
   "html": {
     "wrap_attributes": "auto",
     "content_unformatted": [
-      "pre",
-      "textarea",
-      "code"
+      "pre", "textarea", "code"
     ]
   }
 }

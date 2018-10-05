@@ -7,11 +7,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const generalUtils = _require('/utils/general');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
+const { httpGet } = _require('/utils/requests');
 const config = _require('/config');
 
 const User = _require('/models/users');
-const Company = _require('/models/companies');
 
 /**
  * Logs in user
@@ -23,11 +24,13 @@ const Company = _require('/models/companies');
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
-exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+exports.login = async (req, res, next) => {
+  const { email, password, deviceInfo } = req.body;
+  let err, user;
 
   if (email && password) {
-    User.findOne({ email })
+    [err, user] = await to(
+      User.findOne({ email })
       .populate({
         path: 'company',
         select: '-active -createdAt -updatedAt -__v -owner',
@@ -38,29 +41,28 @@ exports.login = (req, res, next) => {
         select: '-createdAt -updatedAt -__v'
       })
       .select('-active -createdAt -updatedAt -__v')
-      .then(user => {
-        if (user) {
-          const valid = bcrypt.compareSync(password, user.password);
-          if (valid) {
-            user.lastLogin = +new Date();
-            user.save();
+    );
+    if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
-            user = user.toObject();
-            delete user.password;
+    const valid = bcrypt.compareSync(password, user.password);
+    if (!valid) return next(new ValidationError('User "password" is incorrect'));
 
-            req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-            req.status = 200;
-            req.json = user
-            return next();
+    user.lastLogin = +new Date();
+    user.save();
 
-          } else { return res.status(401).json({ message: 'User "password" is incorrect' }); }
-        } else { throw 'No user found'; }
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+    user = user.toObject();
+    delete user.password;
+
+    req.status = 200;
+    req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+    req.session.deviceInfo = deviceInfo;
+    req.json = { data: user, message: 'Success', status: 200 };
+    return next();
 
   } else if (!email) {
-    return res.status(400).json({ message: 'User "email" is required' });
+    next(new ValidationError('User "email" is required'));
   } else if (!password) {
-    return res.status(400).json({ message: 'User "password" is required' });
+    next(new ValidationError('User "password" is required'));
   }
 };
 
@@ -73,41 +75,42 @@ exports.login = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
-exports.verifyAccount = (req, res, next) => {
+exports.verifyAccount = async (req, res, next) => {
   const { address, deviceInfo } = req.body;
-  const user = req.session.user;
+  const _user = req.session.user;
+  let err, verified, user;
 
-  generalUtils.get(`${user.hermes.url}/accounts/${address}`, config.token)
-    .then(resp => {
-      User.findOne({ address })
-        .populate({
-          path: 'company',
-          select: '-active -createdAt -updatedAt -__v -owner',
-          populate: { path: 'hermes' }
-        })
-        .populate({
-          path: 'role',
-          select: '-createdAt -updatedAt -__v'
-        })
-        .select('-active -createdAt -updatedAt -password -__v')
-        .then(user => {
-          if (user) {
-            user.toObject();
-            delete user.password;
+  [err, verified] = await to(httpGet.get(`${_user.hermes.url}/accounts/${address}`, config.token));
+  if (err || !verified) { logger.error('Hermes account GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
-            req.status = 200;
-            req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
-            req.session.deviceInfo = deviceInfo;
-            req.json = { data: user, message: 'Success', status: 200 };
-            return next();
-          } else { throw 'No user found'; }
-        })
-        .catch(error => {
-          req.status = 200;
-          req.json = { data: error, message: 'No registered user', status: 200 };
-          return next();
-        });
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Hermes account error' })));
+  [err, user] = await to(
+    User.findOne({ address })
+    .populate({
+      path: 'company',
+      select: '-active -createdAt -updatedAt -__v -owner',
+      populate: { path: 'hermes' }
+    })
+    .populate({
+      path: 'role',
+      select: '-createdAt -updatedAt -__v'
+    })
+    .select('-active -createdAt -updatedAt -password -__v')
+  );
+  if (err) { logger.error('User GET error: ', err); }
+  if (!user) {
+    req.status = 200;
+    req.json = { data: error, message: 'No registered user', status: 200 };
+    return next();
+  }
+
+  user.toObject();
+  delete user.password;
+
+  req.status = 200;
+  req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+  req.session.deviceInfo = deviceInfo;
+  req.json = { data: user, message: 'Success', status: 200 };
+  return next();
 }
 
 /**
@@ -119,13 +122,13 @@ exports.verifyAccount = (req, res, next) => {
  * @returns success message with status code 200 on success
  */
 exports.logout = (req, res, next) => {
-  req.session.destroy(error => {
-    if (error) {
-      logger.warn('User logout error: ', error);
-      return res.status(400).json({ message: 'User logout error' });
+  req.session.destroy(err => {
+    if (err) {
+      logger.warn('User logout error: ', err);
+      return next(new ValidationError(`User logout error: ${err.message}`, err));
     }
     req.status = 200;
-    req.json = { message: 'User logout success' };
+    req.json = { data: null, message: 'Success', status: 200 };
     return next();
   });
 }
@@ -152,9 +155,9 @@ exports.getActiveSessions = (req, res, next) => {
       });
 
       req.status = 200;
-      req.json = sessions;
+      req.json = { data: sessions, message: 'Success', status: 200 };
       return next();
-    } else { return res.status(401).json({ message: 'No sessions were found' }); }
+    } else { return next(new NotFoundError('No sessions were found', err)); }
   });
 }
 
@@ -173,9 +176,9 @@ exports.deleteSession = (req, res, next) => {
   collection.deleteOne({ _id: sessionId }, function(err, obj) {
     if (!err) {
       req.status = 200;
-      req.json = { message: "Success" };
+      req.json = { data: null, message: 'Success', status: 200 };
       return next();
-    } else { return res.status(400).json({ message: 'Session was not found' }); }
+    } else { return next(new NotFoundError('Session was not found', err)); }
   });
 }
 
@@ -186,22 +189,15 @@ exports.deleteSessions = (req, res, next) => {
 
   sessionsCollection.find({ "session.user._id": userId }).toArray((err, sessions) => {
     const currentSession = sessions.filter(session => {
-      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) {
-        return session;
-      }
+      if (session.session.cookie.expires.toString() == req.session.cookie._expires.toString()) { return session; }
     });
 
     sessionsCollection.deleteMany({ 'session.user._id': userId, _id: { $ne: currentSession[0]._id } }, (err, response) => {
       if (!err) {
         req.status = 200;
-        req.json = { message: "Success" };
+        req.json = { data: null, message: 'Success', status: 200 };
         return next();
-      } else {
-        req.status = 400;
-        req.json = { message: "Error in deleting sessions." };
-        return next();
-      }
+      } else { return next(new ValidationError(err.message, err)); }
     });
-
   })
 }

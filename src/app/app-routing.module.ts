@@ -18,59 +18,59 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/login'
+    redirectTo: '/login',
   }, {
     path: 'setup',
     canActivate: [AuthGuard],
     component: SetupComponent,
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'login',
     canActivate: [AuthGuard],
     component: LoginComponent,
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'invite/:token',
     component: InviteComponent,
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'assets',
     canActivate: [AuthGuard],
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'administration',
     canActivate: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'settings',
     canActivate: [AuthGuard],
     loadChildren: 'app/modules/settings/settings.module#SettingsModule',
-    runGuardsAndResolvers: 'always'
+    runGuardsAndResolvers: 'always',
   }, {
     path: 'help',
     children: [{
       path: '**',
-      component: HelpComponent
-    }]
+      component: HelpComponent,
+    }],
   }, {
     path: 'terms',
-    component: TermsComponent
+    component: TermsComponent,
   }, {
     path: 'about',
-    component: AboutComponent
+    component: AboutComponent,
   }, {
     path: '**',
-    component: NotfoundComponent
-  }
+    component: NotfoundComponent,
+  },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' }),
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard]
+  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard],
 })
 export class AppRoutingModule { }

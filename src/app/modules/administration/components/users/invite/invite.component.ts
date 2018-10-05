@@ -5,6 +5,7 @@ import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { InviteService } from 'app/services/invite.service';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-invite',
@@ -23,7 +24,8 @@ export class InviteComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private storageService: StorageService,
     private authService: AuthService,
-    private inviteService: InviteService
+    private inviteService: InviteService,
+    private usersService: UsersService
   ) {
     this.initInviteForm();
   }
@@ -45,27 +47,14 @@ export class InviteComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getRoles();
+    console.log(this.roles);
   }
 
   ngOnDestroy() {
     if (this.getRolesSub) { this.getRolesSub.unsubscribe(); }
   }
 
-  getRoles() {
-    // Get roles
-    const url = `/api/users/roles`;
-
-    this.getRolesSub = this.http.get(url).subscribe(
-      (resp: any) => {
-        console.log('Roles GET: ', resp);
-        this.roles = resp.data;
-      },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.log('Roles GET error: ', err);
-      }
-    );
-  }
+  getRoles() { this.getRolesSub = this.usersService.roles.subscribe(roles => this.roles = roles); }
 
   // Methods for adding/removing new fields to the form
   remove(array, index: number) {

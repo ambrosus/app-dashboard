@@ -96,7 +96,7 @@ export class GeneralSettingsComponent implements OnInit {
               console.log('Get account error: ', err);
             }
           );
-          console.log('Edit profile: ', resp);
+          console.log('Edit profile: ', resp.data);
         },
         err => {
           if (err.status === 401) { this.authService.logout(); }

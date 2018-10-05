@@ -17,6 +17,7 @@ const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
+const error_handler = require('./server/middleware/error_handler');
 
 const APIRoutes = require('./server/routes/v1');
 
@@ -40,10 +41,8 @@ app.use(cors());
 // Mongoose
 mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
-  .then(() => {
-    logger.info('MongoDB connected');
-    invitationsCron.start();
-  }).catch(error => console.log('Mongodb connection error: ', error));
+  .then(connected => (logger.info('MongoDB connected'), invitationsCron.start()))
+  .catch(error => logger.error('Mongodb connection error: ', error));
 
 // Session store
 const store = new MongoDBStore({
@@ -51,11 +50,8 @@ const store = new MongoDBStore({
   collection: 'sessions',
 });
 
-store.on('connected', () => {
-  logger.info('MongoDB Session Store connected');
-  store.client;
-});
-store.on('error', error => console.log('MongoDB Session Store connection error: ', error));
+store.on('connected', () => (logger.info('MongoDB Session Store connected'), store.client));
+store.on('error', error => logger.error('MongoDB Session Store connection error: ', error));
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -81,13 +77,11 @@ app.use(session(sess));
 
 // Routes
 app.use('/api', APIRoutes);
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
-});
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist/index.html')));
+
+app.use(error_handler);
 
 const server = http.createServer(app);
-server.listen(config.port, () => {
-  logger.info('Server running...');
-});
+server.listen(config.port, () => logger.info('Server running...'));
 
 module.exports = app;

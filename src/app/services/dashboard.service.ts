@@ -8,7 +8,6 @@ declare let Web3: any;
   providedIn: 'root',
 })
 export class DashboardService {
-
   web3;
 
   constructor(private http: HttpClient) {
@@ -18,7 +17,7 @@ export class DashboardService {
   getHermeses() {
     return new Observable(observer => {
       this.http.get('/api/hermeses').subscribe(
-        (user: any) => { observer.next(user); },
+        ({ data }: any) => { observer.next(data); },
         err => { observer.error(err); }
       );
     });
@@ -41,7 +40,7 @@ export class DashboardService {
           });
         },
         err => {
-          const error = err.error.message ? err.error.message : 'Setup error';
+          const error = err.message;
           console.log('Setup error: ', error);
           observer.error(error);
         }

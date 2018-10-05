@@ -10,8 +10,10 @@ const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const validateEmail = (email) => {
+const validateEmail = email => {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email);
 };
@@ -23,17 +25,17 @@ const users = mongoose.Schema({
   },
   full_name: {
     type: String,
-    required: [(value) => !value, '"Full name" field is required'],
+    required: [value => !value, '"Full name" field is required'],
     minLength: 4,
   },
   email: {
     type: String,
-    required: [(value) => !value, '"Email" field is required'],
+    required: [value => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid'],
   },
   password: {
     type: String,
-    required: [(value) => !value, '"Password" field is required'],
+    required: [value => !value, '"Password" field is required']
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -41,12 +43,12 @@ const users = mongoose.Schema({
   },
   address: {
     type: String,
-    required: [(value) => !value, '"Address" field is required'],
+    required: [value => !value, '"Address" field is required'],
     validate: [web3.utils.isAddress, 'Address format is not valid'],
   },
   token: {
     type: String,
-    required: [(value) => !value, '"Token" field is required'],
+    required: [value => !value, '"Token" field is required'],
   },
   role: {
     type: mongoose.Schema.Types.ObjectId,
@@ -75,33 +77,13 @@ const users = mongoose.Schema({
 });
 
 users.plugin(findOrCreate);
-
-users.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
+users.plugin(mongoosePaginate);
+users.plugin(updatesAndErrors);
 
 users.pre('save', function(next) {
-
   if (!this.isModified('password')) return next();
-
-  bcrypt.hash(this.password, 10, (err, hash) => {
-    if (!err) {
-      this.password = hash;
-      this.updatedAt = +new Date();
-      this.lastLogin = +new Date();
-      next();
-    } else { next(new Error('Failure in password hashing')); }
-  });
-
-});
-
-users.post('save', function(error, doc, next) {
-  if (error.name === 'MongoError' && error.code === 11000) {
-    next(new Error('There was a duplicate key error'));
-  } else {
-    next();
-  }
+  this.password = bcrypt.hashSync(this.password, 10);
+  next();
 });
 
 module.exports = mongoose.model('Users', users);

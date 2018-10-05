@@ -5,10 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
-/* global _require */
-/* global logger */
-
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 const Hermes = _require('/models/hermeses');
 
 /**
@@ -20,22 +18,17 @@ const Hermes = _require('/models/hermeses');
  * @returns Status code 400 on failure
  * @returns hermes Object on success with status code 200
  */
-exports.create = (req, res, next) => {
-  const title = req.body.hermes ? req.body.hermes.title : req.body.title;
-  const url = req.body.hermes ? req.body.hermes.url : req.body.url;
+exports.create = async (req, res, next) => {
+  const title = req.body.hermes ? req.body.hermes.title : null;
+  const url = req.body.hermes ? req.body.hermes.url : null;
+  let err, hermes;
 
-  Hermes.create({
-      title,
-      url,
-    })
-    .then(hermes => {
-      req.status = 200;
-      req.hermes = hermes;
-      return next();
-    }).catch(error => {
-      logger.error(error);
-      res.status(400).json({ message: error });
-    });
+  [err, hermes] = await to(Hermes.create({ title, url }));
+  if (err || !hermes) { logger.error('Hermes create error: ', err); return next(new ValidationError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: hermes, message: 'Success', status: 200 };
+  return next();
 };
 
 /**
@@ -46,19 +39,13 @@ exports.create = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns array of hermeses & number of hermeses (length) on success with status code 200
  */
-exports.getAll = (req, res, next) => {
-  Hermes.find({ public: true })
-    .then((hermeses = []) => {
-      req.status = 200;
-      req.json = {
-        totalCount: hermeses.length,
-        data: hermeses,
-        message: 'Success',
-      };
+exports.getAll = async (req, res, next) => {
+  let err, hermeses;
 
-      return next();
-    }).catch(error => {
-      logger.error(error);
-      res.status(400).json({ message: error });
-    });
+  [err, hermeses] = await to(Hermes.paginate({ public: true }));
+  if (err || !hermeses) { logger.error('Hermes find error: ', err); return next(new NotFoundError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: hermeses, message: 'Success', status: 200 };
+  return next();
 };

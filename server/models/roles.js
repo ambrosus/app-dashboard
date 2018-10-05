@@ -7,8 +7,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const rolesSchema = mongoose.Schema({
+const roles = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
     auto: true
@@ -40,16 +42,8 @@ const rolesSchema = mongoose.Schema({
   }
 });
 
-rolesSchema.plugin(findOrCreate);
+roles.plugin(findOrCreate);
+roles.plugin(mongoosePaginate);
+roles.plugin(updatesAndErrors);
 
-rolesSchema.pre('updateOne', function(next) {
-  this.updatedAt = +new Date();
-  if (!this.getQuery()._id) { next(new Error('_id field is required to update role').toString()); } else if (!this.getUpdate().title) { next(new Error('Title field is required to update role').toString()); } else if (!this.getUpdate().permissions) { next(new Error('Permissions field is required to update role').toString()); } else if (this.getUpdate().permissions.length === 0) { next(new Error('Permissions array cannot be empty').toString()); } else { next(); }
-});
-
-rolesSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-module.exports = mongoose.model('Roles', rolesSchema);
+module.exports = mongoose.model('Roles', roles);

@@ -42,9 +42,10 @@ export class AuthService {
     return user && user.address && secret && token;
   }
 
-  getToken(secret = this.storage.get('secret')) {
+  getToken(secret = null) {
+    const _secret = secret || this.storage.get('secret');
     const validUntil = moment().add(5, 'days').format();
-    return this.sdk.getToken(secret, validUntil);
+    return this.sdk.getToken(_secret, validUntil);
   }
 
   getAccount(email) {
@@ -52,7 +53,7 @@ export class AuthService {
       const url = `/api/users/${email}`;
 
       this.http.get(url).subscribe(
-        resp => observer.next(resp),
+        ({ data }: any) => observer.next(data),
         err => observer.error(err.error)
       );
     });
@@ -88,47 +89,51 @@ export class AuthService {
     });
   }
 
-  verifyAccount(secret) {
-    return new Observable(observer => {
-      let address;
-      try {
-        address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
-      } catch (e) { return observer.error({ message: 'Invalid secret' }); }
+  // verifyAccount(secret) {
+  //   return new Observable(observer => {
+  //     let address;
+  //     try {
+  //       address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
+  //     } catch (e) { return observer.error({ message: 'Invalid secret' }); }
 
-      const deviceInfo = this.deviceService.getDeviceInfo();
+  //     const deviceInfo = this.deviceService.getDeviceInfo();
 
-      this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
-        ({ data }: any) => {
-          this.storage.set('secret', secret);
-          this.storage.set('token', this.getToken(secret));
-          this.storage.set('user', data);
-          this.addAccount(data);
-          this.emit('user:refresh');
-          return observer.next(data);
-        },
-        err => observer.error(err.error)
-      );
-    });
-  }
+  //     this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
+  //       ({ data }: any) => {
+  //         this.storage.set('secret', secret);
+  //         this.storage.set('token', this.getToken(secret));
+  //         this.storage.set('user', data);
+  //         this.addAccount(data);
+  //         this.emit('user:refresh');
+  //         return observer.next(data);
+  //       },
+  //       err => observer.error(err.error)
+  //     );
+  //   });
+  // }
 
   login(email: string, password: string) {
     return new Observable(observer => {
       const deviceInfo = this.deviceService.getDeviceInfo();
 
       this.http.post('/api/auth/login', { email, password, deviceInfo }).subscribe(
-        (user: any) => {
-          const token = JSON.parse(user.token);
-          const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
+        ({ data }: any) => {
+          console.log(data);
+          const token = JSON.parse(data.token);
+          try {
+            const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
 
-          user.address = address;
+            data.address = address;
 
-          this.storage.set('secret', privateKey);
-          this.storage.set('user', user);
-          this.storage.set('token', this.getToken(privateKey));
+            this.storage.set('secret', privateKey);
+            this.storage.set('user', data);
+            this.storage.set('token', this.getToken(privateKey));
 
-          this.addAccount(user);
-          this.emit('user:refresh');
-          observer.next('success');
+            this.addAccount(data);
+            this.emit('user:refresh');
+            observer.next('success');
+
+          } catch (e) { return observer.error({ message: 'Password is incorrect.' }); }
         },
         err => observer.error(err.error)
       );
@@ -164,5 +169,14 @@ export class AuthService {
     this.storage.clear();
     this.emit('user:refresh');
     this.router.navigate(['/login']);
+  }
+
+  getHermeses() {
+    return new Observable(observer => {
+      this.http.get('/api/hermeses').subscribe(
+        ({ data }: any) => { observer.next(data); },
+        err => { observer.error(err); }
+      );
+    });
   }
 }

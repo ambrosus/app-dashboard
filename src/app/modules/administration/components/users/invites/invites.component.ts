@@ -32,9 +32,8 @@ export class InvitesComponent implements OnInit, OnDestroy {
     const user: any = this.storage.get('user') || {};
 
     this.invitesSubscription = this.inviteService.getInvites(user).subscribe(
-      (resp: any) => { console.log('Invites GET: ', resp); this.invites = resp.data; },
+      (resp: any) => { console.log('Invites GET: ', resp); this.invites = resp; },
       err => { if (err.status === 401) { this.authService.logout(); } console.log('Invites GET error: ', err); }
-
     );
   }
 

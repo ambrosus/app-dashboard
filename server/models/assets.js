@@ -8,8 +8,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
 const findOrCreate = require('mongoose-findorcreate');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const assetsSchema = mongoose.Schema({
+const assets = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   assetId: String,
   createdBy: String,
@@ -19,7 +20,8 @@ const assetsSchema = mongoose.Schema({
   updatedAt: Date,
 });
 
-assetsSchema.plugin(mongoosePaginate);
-assetsSchema.plugin(findOrCreate);
+assets.plugin(mongoosePaginate);
+assets.plugin(findOrCreate);
+assets.plugin(updatesAndErrors);
 
-module.exports = mongoose.model('Assets', assetsSchema);
+module.exports = mongoose.model('Assets', assets);

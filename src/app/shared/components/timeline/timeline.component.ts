@@ -56,16 +56,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token, page, perPage };
     this.searchActive = false;
 
-    this.eventsResultsSub = this.assetsService._events.subscribe(results => this.events = this.assetsService.parseTimelineEvents({ results }).events);
+    this.eventsResultsSub = this.assetsService._events.subscribe(events => this.events = this.assetsService.parseTimelineEvents(events).events);
 
     this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        this.unchangedEvents = JSON.parse(JSON.stringify(resp.events.results));
+        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
         this.pagination.currentPage = page;
         this.pagination.perPage = perPage;
-        this.pagination.resultCount = resp.events.resultCount;
-        this.pagination.resultLength = resp.events.results.length;
-        this.pagination.totalPages = Math.ceil(resp.events.resultCount / perPage);
+        this.pagination.resultCount = resp.resultCount;
+        this.pagination.resultLength = resp.results.length;
+        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
       },
       err => {
         this.events = [];
