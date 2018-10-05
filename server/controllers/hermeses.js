@@ -25,9 +25,9 @@ exports.create = (req, res, next) => {
   const url = req.body.hermes ? req.body.hermes.url : req.body.url;
 
   Hermes.create({
-      title,
-      url,
-    })
+    title,
+    url,
+  })
     .then(hermes => {
       req.status = 200;
       req.hermes = hermes;

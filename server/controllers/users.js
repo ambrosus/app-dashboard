@@ -57,42 +57,37 @@ exports.create = (req, res, next) => {
     }
   }
 
-  const query = { $or: [{ email }, { address }] };
-  const _user = {
+
+
+  User.create({
     full_name,
     email,
     address,
     token,
     password,
     company: mongoose.Types.ObjectId(company._id),
-  };
+  })
+    .then((err, _user) => {
 
-  logger.info('User: ', _user);
+      const body = {
+        address,
+        permissions,
+        accessLevel,
+      };
 
-  User.findOrCreate(query, _user)
-    .then(({ doc, created }) => {
-      if (created) {
-        logger.info('User doc: ', doc, created);
+      generalUtils.create(`${hermes.url}/accounts`, body, config.token)
+        .then(() => {
+          if (inviteToken) {
+            Invite.findOneAndRemove({ token: inviteToken })
+              .then(() => logger.info('Invite deleted'))
+              .catch(error => logger.error('Invite delete error: ', error));
+          }
 
-        // Register user in the hermes
-        const body = {
-          address,
-          permissions,
-          accessLevel,
-        };
-        generalUtils.create(`${hermes.url}/accounts`, body, config.token)
-          .then(() => {
-            if (inviteToken) {
-              Invite.findOneAndRemove({ token: inviteToken })
-                .then(() => logger.info('Invite deleted'))
-                .catch(error => logger.error('Invite delete error: ', error));
-            }
+          req.status = 200;
+          req.user = _user;
+          return next();
+        }).catch(error => (logger.error(error), res.status(400).json({ message: error.data['reason'] })));
 
-            req.status = 200;
-            req.user = doc;
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: error.data['reason'] })));
-      } else { throw 'User exists'; }
     }).catch(error => (logger.error(error), res.status(400).json({ message: 'User creation error: ', error })));
 };
 
@@ -106,23 +101,17 @@ exports.create = (req, res, next) => {
  * @returns Status code 200 on success
  */
 exports.setOwnership = (req, res, next) => {
-  const user = req.user || req.body.user;
+  const user = req.user;
   const company = req.company || req.body.company;
 
-  if (user && company) {
-    User.findById(user._id)
-      .then(() => {
-        Company.findByIdAndUpdate(company._id, { owner: user._id })
-          .then(() => {
-            req.status = 200;
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-      }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
-  } else if (!user) {
-    return res.status(400).json({ message: '"user" object is required' });
-  } else if (!company) {
-    return res.status(400).json({ message: '"company" object is required' });
-  }
+  const query = [company._id, { owner: user._id }];
+
+  Company.findByIdAndUpdate(...query)
+    .then(() => {
+      req.status = 200;
+      return next();
+    }).catch(error => (logger.error(error), res.status(400).json({ message: error })));
+
 };
 
 /**

@@ -11,40 +11,50 @@ const findOrCreate = require('mongoose-findorcreate');
 const rolesSchema = mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    auto: true,
   },
   title: {
     type: String,
-    required: [(value) => !value, 'Title field is required']
+    required: [(value) => !value, 'Title field is required'],
   },
   permissions: {
     type: [String],
     required: true,
-    validate: [(value) => value.length > 0, 'Permissions cannot be blank']
+    validate: [(value) => value.length > 0, 'Permissions cannot be blank'],
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users'
+    ref: 'Users',
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies'
+    ref: 'Companies',
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
-  }
+    default: +new Date(),
+  },
 });
 
 rolesSchema.plugin(findOrCreate);
 
 rolesSchema.pre('updateOne', function(next) {
   this.updatedAt = +new Date();
-  if (!this.getQuery()._id) { next(new Error('_id field is required to update role').toString()); } else if (!this.getUpdate().title) { next(new Error('Title field is required to update role').toString()); } else if (!this.getUpdate().permissions) { next(new Error('Permissions field is required to update role').toString()); } else if (this.getUpdate().permissions.length === 0) { next(new Error('Permissions array cannot be empty').toString()); } else { next(); }
+  if (!this.getQuery()._id) {
+    next(new Error('_id field is required to update role').toString());
+  } else if (!this.getUpdate().title) {
+    next(new Error('Title field is required to update role').toString());
+  } else if (!this.getUpdate().permissions) {
+    next(new Error('Permissions field is required to update role').toString());
+  } else if (this.getUpdate().permissions.length === 0) {
+    next(new Error('Permissions array cannot be empty').toString());
+  } else {
+    next();
+  }
 });
 
 rolesSchema.pre('save', function(next) {

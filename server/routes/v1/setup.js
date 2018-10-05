@@ -23,7 +23,7 @@ const initialSetup = (req, res, next) => {
     req.body.user = {};
   }
 
-  req.body.user.accessLevel = 1;
+  req.body.user.accessLevel = 0;
   req.body.user.permissions = [
     'manage_accounts',
     'register_accounts',
@@ -36,13 +36,19 @@ const initialSetup = (req, res, next) => {
     { title: 'admin', permissions: 'create_role' },
     { title: 'user', permissions: '' },
   ];
-  Role.insertMany(roles)
+
+  Role.create(roles)
     .then(() => { return next(); })
     .catch(error => res.status(400).json({ message: error }));
+
 };
 
 // Routes
 SetupRoutes.post('/', initialSetup, HermesesController.create, CompaniesController.create, UsersController.create, UsersController.setOwnership,
-  (req, res) => { res.status(req.status).json(req.json); });
+  (req, res) => {
+
+    req.locals.transaction.commitTransaction();
+    res.status(req.status).json(req.json);
+  });
 
 module.exports = SetupRoutes;

@@ -21,8 +21,8 @@ const Company = _require('/models/companies');
  * @returns company Object on success with status code 200
  */
 exports.create = (req, res, next) => {
-  const title = req.body.company ? req.body.company.title : null;
-  const settings = req.body.company ? req.body.company.settings : '';
+  const title = req.body.company ? req.body.company.title : req.body.title;
+  const settings = req.body.company ? req.body.company.settings : req.body.settings;
   const hermes = req.hermes || req.body.hermes;
 
   Company.create({
@@ -35,7 +35,8 @@ exports.create = (req, res, next) => {
       req.company = company;
       return next();
     }).catch(error => {
-      logger.error(error), res.status(400).json({ message: error });
+      logger.error(error);
+      res.status(400).json({ message: error });
     });
 };
 
