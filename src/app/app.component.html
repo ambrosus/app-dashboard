@@ -2,35 +2,47 @@
   <ng-sidebar [(opened)]="_opened" [closeOnClickOutside]="true" [sidebarClass]="'sidebar-class'">
     <div style="background: white; height: 100vh !important; box-shadow: 1px 1px 1px 1px #ccc;">
       <div style="padding: 120px 90px 30px 90px;">
-        <a (click)="_toggleOpened()" routerLink="/assets/new">
+        <a (click)="_toggleOpened()" routerLink="/assets">
           <div style="display: inline;">
             <div class="m-r-10" style="display:inline;">
               <app-svg-icon name="blue-stack" width="30px" height="30px"></app-svg-icon>
             </div>
-              <h2 style="color: black; display: inline;">Assets</h2>
+            <h2 style="color: black; display: inline;">All Assets</h2>
           </div>
         </a>
         <hr>
+
         <a (click)="_toggleOpened()" routerLink="/assets/new">
-          <h2 style="color: black;">Events</h2>
+          <div style="display: inline;">
+            <div class="m-r-10" style="display:inline;">
+              <app-svg-icon name="pencil" width="30px" height="30px"></app-svg-icon>
+            </div>
+            <h2 style="color: black; display: inline;">Create Assets</h2>
+          </div>
         </a>
         <hr>
-        <a (click)="_toggleOpened()" routerLink="/assets/new">
-          <h2 style="color: black;">Settings</h2>
+
+        <a (click)="_toggleOpened()" routerLink="/settings/general">
+          <div style="display: inline;">
+            <div class="m-r-10" style="display:inline;">
+              <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
+            </div>
+            <h2 style="color: black; display: inline;">Settings</h2>
+          </div>
         </a>
+        <hr>
+
       </div>
     </div>
   </ng-sidebar>
 
   <div ng-sidebar-content>
-    <!-- <button (click)="_toggleOpened()">Toggle sidebar</button> -->
     <div *ngIf="initialLoad && !hideHeader()">
       <header class="header">
-
         <div class="header-container wrapper">
           <div class="flex flex-direction-r justify-content-fs align-items-c">
-            <a (click)="_toggleOpened()" class="header-logo m-r-40" routerLink="/">
-              <app-svg-icon name="blue-stack" width="30px"></app-svg-icon>
+            <a (click)="_toggleOpened()" class="header-logo m-r-20" *ngIf="isLoggedin">
+              <app-svg-icon name="menu-icon" height="30px" width="30px"></app-svg-icon>
             </a>
             <a class="header-logo m-r-40" routerLink="/">
               <app-svg-icon name="logo" width="100px"></app-svg-icon>

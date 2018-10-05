@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 @import 'var';
 
-app-header{
+app-component{
   flex-shrink: 0;
 }
 
@@ -181,4 +181,12 @@ app-header{
     padding: 0;
     height: 100%;
   }
+}
+
+.a-hover {
+  &:hover{
+    transform: translateY(100) !important;
+    color: red !important;
+  }
+
 }
