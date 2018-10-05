@@ -12,7 +12,7 @@ import { MatDialogRef } from '@angular/material/dialog';
   selector: 'app-json-preview',
   templateUrl: './json-preview.component.html',
   styleUrls: ['./json-preview.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class JsonPreviewComponent implements OnInit {
   @Input() data;
@@ -56,15 +56,15 @@ export class JsonPreviewComponent implements OnInit {
     copy.map(obj => {
       obj.content.idData.assetId = '{{ assetId }}';
       obj.content.idData.createdBy = '{{ userAddress }}';
-        
+
       delete obj.eventId;
       delete obj.metadata;
       delete obj.content.idData.dataHash;
       delete obj.content.signature;
-      
+
       obj.content.data.map(eventObj => {
-        
-        ['timestamp', 'author', 'action', 'eventId'].forEach(e => delete eventObj[e]);
+
+        ['timestamp', 'author', 'action', 'eventId', 'createdBy'].forEach(e => delete eventObj[e]);
 
         const type = eventObj.type.split('.').pop();
         if (type !== 'location') { delete eventObj.location; }
@@ -84,8 +84,5 @@ export class JsonPreviewComponent implements OnInit {
     }
   }
 
-  closeDialog() {
-    this.dialogRef.close();
-  }
-
+  closeDialog() { this.dialogRef.close(); }
 }

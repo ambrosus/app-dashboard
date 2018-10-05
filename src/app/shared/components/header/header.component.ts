@@ -16,7 +16,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent implements OnInit {
   isLoggedin;
@@ -55,26 +55,19 @@ export class HeaderComponent implements OnInit {
     this.dialog.closeAll();
   }
 
-  switchAccount(address) {
-    this.authService.switchAccount(address);
-  }
+  switchAccount(address) { this.authService.switchAccount(address); }
 
-  logout() {
-    this.authService.logout();
-  }
+  logout() { this.authService.logout(); }
 
-  logoutAll() {
-    this.authService.logoutAll();
-  }
+  logoutAll() { this.authService.logoutAll(); }
 
   addAccountDialog() {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: '600px',
-      position: { right: '0' }
+      position: { right: '0' },
+      height: '100vh',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 }
