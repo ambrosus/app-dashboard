@@ -87,38 +87,6 @@
         </div>
       </header>
 
-      <div class="container p-h-10" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
-        <div class="header-container wrapper">
-          <div class="flex flex-direction-r justify-content-fs align-items-c">
-            <ul class="header-menu">
-
-              <div routerLink="/assets" class="header-submenu__item" routerLinkActive="active">
-                <span class="header-menu__item p-v-10">
-                  <app-svg-icon name="blue-stack" fill="black" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-                  <span class="hide-all display-480-inline-block">Assets</span>
-                </span>
-              </div>
-
-              <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/users" class="header-submenu__item" routerLinkActive="active">
-                <span class="header-menu__item p-v-10">
-                  <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-                  <span class="hide-all display-480-inline-block">Users</span>
-                </span>
-              </div>
-
-              <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/company" class="header-submenu__item" routerLinkActive="active">
-                <span class="header-menu__item p-v-10">
-                  <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-                  <span class="hide-all display-480-inline-block">Company</span>
-                </span>
-              </div>
-
-            </ul>
-          </div>
-
-        </div>
-      </div>
-
     </div>
     <router-outlet></router-outlet>
   </div>
