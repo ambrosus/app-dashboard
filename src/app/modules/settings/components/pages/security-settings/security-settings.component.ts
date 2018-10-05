@@ -11,6 +11,7 @@ import { StorageService } from 'app/services/storage.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-security-settings',
@@ -18,16 +19,17 @@ import { AuthService } from 'app/services/auth.service';
   styleUrls: ['./security-settings.component.scss'],
 })
 export class SecuritySettingsComponent implements OnInit, OnDestroy {
-  sessions;
-  spinner: Boolean = false;
-  resetForm: FormGroup;
-  resetSuccess: Boolean = false;
-  error;
   getSessionsSub: Subscription;
   logoutSessionSub: Subscription;
   logoutDevicesSub: Subscription;
+  changePasswordSub: Subscription;
+  resetForm: FormGroup;
+  spinner;
+  success;
+  error;
+  sessions;
 
-  constructor(private http: HttpClient, private storageService: StorageService, private authService: AuthService) {
+  constructor(private storageService: StorageService, private authService: AuthService, private usersService: UsersService) {
     this.resetForm = new FormGroup({
       oldPassword: new FormControl(null, [Validators.required]),
       newPassword: new FormControl(null, [Validators.required]),
@@ -39,42 +41,16 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
     this.getSessions();
   }
 
-  getSessions() {
-    const email = this.storageService.get('user')['email'];
-    const url = `/api/auth/sessions`;
-
-    this.getSessionsSub = this.http.get(url).subscribe(
-      ({ data }: any) => {
-        console.log('GET sessions: ', data);
-        this.sessions = data;
-      },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.log('GET sessions error: ', err);
-      }
-    );
-  }
-
-  logoutSession(sessionId) {
-    const url = `/api/auth/session/${sessionId}`;
-
-    this.logoutSessionSub = this.http.delete(url).subscribe(
-      resp => this.getSessions(),
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.log('DELETE session error: ', err);
-      }
-    );
-  }
-
   ngOnDestroy() {
     if (this.getSessionsSub) { this.getSessionsSub.unsubscribe(); }
     if (this.logoutSessionSub) { this.logoutSessionSub.unsubscribe(); }
     if (this.logoutDevicesSub) { this.logoutDevicesSub.unsubscribe(); }
+    if (this.changePasswordSub) { this.changePasswordSub.unsubscribe(); }
   }
 
   changePassword() {
-    this.resetErrors();
+    this.error = null;
+    this.success = null;
     const data = this.resetForm.value;
     const email = this.storageService.get('user')['email'];
     data['email'] = email;
@@ -84,33 +60,48 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
 
     this.spinner = true;
 
-    const url = `/api/users/password`;
-
-    this.http.put(url, data).subscribe(
+    this.changePasswordSub = this.usersService.changePassword(data).subscribe(
       resp => {
-        console.log('Password change success: ', resp);
         this.spinner = false;
-        this.resetSuccess = true;
+        this.success = 'Password updated';
+        console.log('Password UPDATE success: ', resp);
       },
-      ({ error }: any) => {
-        if (error.status === 401) { this.authService.logout(); }
+      err => {
+        if (err.status === 401) { this.authService.logout(); }
         this.spinner = false;
-        this.error = error.message;
-        console.log('Reset password error: ', error);
+        this.error = err.message;
+        console.log('Password UPADTE error: ', err.message);
       }
     );
   }
 
-  resetErrors() {
-    this.error = false;
-    this.resetSuccess = false;
+  getSessions() {
+    this.getSessionsSub = this.usersService.getSessions().subscribe(
+      resp => {
+        this.sessions = resp;
+        console.log('Sessions GET success: ', resp);
+      },
+      err => {
+        if (err.status === 401) { this.authService.logout(); }
+        console.error('Sessions GET error: ', err.message);
+      }
+    );
+  }
+
+  logoutSession(sessionId) {
+    this.logoutSessionSub = this.usersService.logoutSession(sessionId).subscribe(
+      resp => this.getSessions(),
+      err => {
+        if (err.status === 401) { this.authService.logout(); }
+        console.error('Session DELETE error: ', err.message);
+      }
+    );
   }
 
   logoutOfAllDevices() {
-    const url = `/api/auth/sessions/`;
-    this.logoutDevicesSub = this.http.delete(url).subscribe(
+    this.logoutDevicesSub = this.usersService.logoutOfAllDevices().subscribe(
       resp => this.getSessions(),
-      err => console.log('DELETE session error: ', err)
+      err => console.error('Sessions DELETE error: ', err.message)
     );
   }
 }

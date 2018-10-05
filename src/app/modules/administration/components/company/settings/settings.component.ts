@@ -4,6 +4,7 @@ import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import * as moment from 'moment-timezone';
 import { CompaniesService } from 'app/services/companies.service';
+import { UsersService } from 'app/services/users.service';
 
 @Component({
   selector: 'app-settings',
@@ -27,7 +28,8 @@ export class SettingsComponent implements OnInit {
   constructor(
     private storageService: StorageService,
     private authService: AuthService,
-    private companiesService: CompaniesService
+    private companiesService: CompaniesService,
+    private usersService: UsersService
   ) { }
 
   ngOnInit() {
@@ -96,7 +98,7 @@ export class SettingsComponent implements OnInit {
         (resp: any) => {
           this.spinner = false;
           this.success = true;
-          this.authService.getAccount(this.user.email).subscribe(
+          this.usersService.getUser(this.user.email).subscribe(
             user => {
               this.storageService.set('user', user);
               this.emit('user:refresh');
