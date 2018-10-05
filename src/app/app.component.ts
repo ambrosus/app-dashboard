@@ -17,7 +17,7 @@ import { LoginComponent } from './core/components/login/login.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   navigationSub: Subscription;
@@ -51,18 +51,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.headerInit();
-    window.addEventListener('user:refresh', () => {
-      this.headerInit();
-    });
+    window.addEventListener('user:refresh', () => this.headerInit());
   }
 
-  public _toggleOpened() {
-    this._opened = !this._opened;
-  }
+  public _toggleOpened() { this._opened = !this._opened; }
 
-  hideHeader() {
-    return location.pathname === '/login' || location.pathname === '/setup';
-  }
+  hideHeader() { return location.pathname === '/login' || location.pathname === '/setup'; }
 
   // Dropdown close on click outside of it
   @HostListener('click', ['$event'])
@@ -89,27 +83,19 @@ export class AppComponent implements OnInit {
     this.dialog.closeAll();
   }
 
-  switchAccount(address) {
-    this.authService.switchAccount(address);
-  }
+  switchAccount(address) { this.authService.switchAccount(address); }
 
-  logout() {
-    this.authService.logout();
-  }
+  logout() { this.authService.logout(); }
 
-  logoutAll() {
-    this.authService.logoutAll();
-  }
+  logoutAll() { this.authService.logoutAll(); }
 
   addAccountDialog() {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: '600px',
       position: { right: '0' },
+      height: '100vh',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
-
 }
