@@ -5,6 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+const { to } = _require('/utils/general');
+const { ValidationError } = _require('/errors');
 
 const Role = _require('/models/roles');
 
@@ -19,20 +21,23 @@ const Role = _require('/models/roles');
  * @returns Status code 400 on failure
  * @returns New role saved successfully message on success with status code 200
  */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
   const { title, permissions } = req.body;
+  let err, role;
 
-  Role.create({
+  [err, role] = await to(
+    Role.create({
       title,
       permissions,
       createdBy: req.session.user._id,
-      company: req.session.user.company,
-    }).then(role => {
-      req.status = 200;
-      req.json = role;
-      return next();
+      company: req.session.user.company
     })
-    .catch(error => (logger.error(error), res.status(400).json({ message: 'Role create error' })));
+  );
+  if (err || !role) { logger.error('Role create error: ', err); return next(new ValidationError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: role, message: 'Success', status: 200 };
+  return next();
 };
 
 /**
@@ -48,20 +53,17 @@ exports.create = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Changed role successfully message on success with status code 200
  */
-exports.editRole = (req, res, next) => {
+exports.editRole = async (req, res, next) => {
   const { _id } = req.params;
   const { title, permissions } = req.body;
+  let err, role;
 
-  Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true })
-    .then(role => {
-      logger.info(role);
+  [err, role] = await to(Role.findByIdAndUpdate({ _id }, { title, permissions }, { new: true }));
+  if (err || !role) { logger.error('Role update error: ', err); return next(new ValidationError(err.message, err)); }
 
-      if (role) {
-        req.status = 200;
-        req.json = role;
-        return next();
-      }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role edit error' })));
+  req.status = 200;
+  req.json = { data: role, message: 'Success', status: 200 };
+  return next();
 };
 
 /**
@@ -74,18 +76,16 @@ exports.editRole = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Deleted role successfully message on success with status code 200
  */
-exports.deleteRole = (req, res, next) => {
+exports.deleteRole = async (req, res, next) => {
   const { _id } = req.params;
-  logger.info(_id);
+  let err, role;
 
-  Role.findByIdAndRemove({ _id })
-    .then(role => {
-      if (role) {
-        req.status = 200;
-        req.json = { message: 'Role deleted successfully' };
-        return next();
-      }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Role delete error' })));
+  [err, role] = await to(Role.findByIdAndRemove({ _id }));
+  if (err || !role) { logger.error('Role delete error: ', err); return next(new ValidationError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: role, message: 'Success', status: 200 };
+  return next();
 };
 
 /**
@@ -96,13 +96,14 @@ exports.deleteRole = (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Roles array on success with status code 200
  */
-exports.getRoles = (req, res, next) => {
+exports.getRoles = async (req, res, next) => {
   const company = req.session.user.company;
-  Role.find({ company })
-    .then(roles => {
-      req.status = 200;
-      req.json = roles;
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Roles GET error' })));
+  let err, roles;
 
+  [err, roles] = await to(Role.paginate({ company }));
+  if (err || !roles) { logger.error('Role GET error: ', err); return next(new ValidationError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: roles, message: 'Success', status: 200 };
+  return next();
 };

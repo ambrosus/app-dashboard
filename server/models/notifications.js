@@ -7,8 +7,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const findOrCreate = require('mongoose-findorcreate');
+const mongoosePaginate = require('mongoose-paginate');
+const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const notificationsSchema = mongoose.Schema({
+const notifications = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   message: {
     type: String,
@@ -26,16 +28,8 @@ const notificationsSchema = mongoose.Schema({
   updatedAt: { type: Date, default: +new Date() }
 });
 
-notificationsSchema.plugin(findOrCreate);
+notifications.plugin(findOrCreate);
+notifications.plugin(mongoosePaginate);
+notifications.plugin(updatesAndErrors);
 
-notificationsSchema.pre('update', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-notificationsSchema.pre('save', function(next) {
-  this.updatedAt = +new Date();
-  next();
-});
-
-module.exports = mongoose.model('Notifications', notificationsSchema);
+module.exports = mongoose.model('Notifications', notifications);

@@ -19,20 +19,20 @@ const routes: Routes = [
       {
         path: ':assetid',
         component: AssetComponent,
-        resolve: { asset: AssetResolver }
+        resolve: { asset: AssetResolver },
       },
       { path: 'events/new', component: EventAddComponent },
       {
         path: ':assetid/events/:eventid',
         component: EventComponent,
-        resolve: { event: EventResolver }
-      }
-    ]
-  }
+        resolve: { event: EventResolver },
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class DashboardRoutingModule { }

@@ -11,7 +11,7 @@ declare let Web3: any;
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  _events: BehaviorSubject<any> = new BehaviorSubject([]);
+  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [], resultCount: 0 });
   hermes;
   ambrosus;
   web3;
@@ -47,7 +47,7 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        resp => observer.next(resp),
+        ({ data }: any) => observer.next(data),
         err => observer.error(err.error)
       );
     });
@@ -57,11 +57,13 @@ export class AssetsService {
     return new Observable(observer => {
       let url = `/api/assets/events?`;
       Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
+      console.log(url);
 
       this.http.get(url).subscribe(
-        (resp: any) => {
-          this._events.next(resp.events.results);
-          observer.next(resp);
+        ({ data }: any) => {
+          console.log(data);
+          this._events.next(data);
+          observer.next(data);
         },
         err => observer.error(err.error)
       );
@@ -74,7 +76,7 @@ export class AssetsService {
       const url = `/api/assets/${assetId}?token=${token}`;
 
       this.http.get(url).subscribe(
-        resp => observer.next(resp),
+        ({ data }: any) => observer.next(data),
         err => observer.error(err.error)
       );
     });
@@ -86,7 +88,7 @@ export class AssetsService {
       const url = `/api/assets/events/${eventId}?token=${token}`;
 
       this.http.get(url).subscribe(
-        resp => observer.next(resp),
+        ({ data }: any) => observer.next(data),
         err => observer.error(err.error)
       );
     });
@@ -146,7 +148,7 @@ export class AssetsService {
       const body = { assets, events };
 
       this.http.post(url, body).subscribe(
-        resp => observer.next(resp),
+        ({ data }: any) => observer.next(data),
         err => observer.error(err.error)
       );
     });
@@ -159,11 +161,12 @@ export class AssetsService {
       const body = { events };
 
       this.http.post(url, body).subscribe(
-        (resp: any) => {
-          this._events.next([...this._events.getValue()].concat(resp.events));
-          const u = `/assets/${resp.events[0].content.idData.assetId}/events/${resp.events[0].eventId}`;
+        ({ data }: any) => {
+          console.log(data);
+          this._events.next({ results: [...this._events.getValue().results].concat(data.events) });
+          const u = `/assets/${data.events[0].content.idData.assetId}/events/${data.events[0].eventId}`;
           if (location.pathname.includes('/events/')) { this.router.navigate([u]); }
-          observer.next(resp);
+          observer.next(data);
         },
         err => observer.error(err.error)
       );

@@ -11,7 +11,7 @@
           <label for="{{ i + 'accessLevel' }}">Access Level</label>
           <input formControlName="accessLevel" type="number" min="0" id="{{ i + 'accessLevel' }}" spellcheck="false" appInput>
         </div>
-        <div class="form-text m-b-20 w-50">
+        <div class="form-text m-b-20 w-50" *ngIf="roles.length">
           <label for="role">Role</label>
           <select formControlName="role" id="role">
             <option *ngFor="let role of roles" value="{{ stringify(role) }}">{{ role.title }}</option>

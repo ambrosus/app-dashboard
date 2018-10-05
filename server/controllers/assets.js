@@ -5,16 +5,12 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
-/* global _require */
-/* global logger */
-/* global Promise */
-
 const mongoose = require('mongoose');
-
 const Asset = _require('/models/assets');
-const assetsUtils = _require('/utils/assets');
-const generalUtils = _require('/utils/general');
+const { findEvent } = _require('/utils/assets');
+const { httpGet, httpPost } = _require('/utils/requests');
+const { to } = _require('/utils/general');
+const { ValidationError, NotFoundError } = _require('/errors');
 
 /**
  * 1. Gets paginated assets from dash db
@@ -28,17 +24,18 @@ const generalUtils = _require('/utils/general');
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getAssets = (req, res, next) => {
+exports.getAssets = async (req, res, next) => {
   const { page, perPage } = req.query;
   const user = req.session.user;
+  let err, assets;
 
-  Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' })
-    .then(assets => {
-      req.status = 200;
-      req.json = { assets };
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
-};
+  [err, assets] = await to(Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
+  if (err || !assets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
+
+  req.status = 200;
+  req.json = { data: assets, message: 'Success', status: 200 };
+  next();
+}
 
 /**
  * 1. Gets cached asset
@@ -53,39 +50,36 @@ exports.getAssets = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getAsset = (req, res, next) => {
+exports.getAsset = async (req, res, next) => {
   const { token } = req.query;
   const assetId = req.params.assetId;
   const user = req.session.user;
+  let err, asset, infoEvents, assetUpdate;
 
   // Get cached asset
-  Asset.findOne({ assetId })
-    .then(asset => {
-      if (asset) {
-        const updateAsset = new Promise((resolve) => {
-          // Get info event
-          const url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
-          generalUtils.get(url, token)
-            .then(resp => {
-              const infoEvent = assetsUtils.findEvent('info', resp.results);
-              if (infoEvent) { asset['infoEvent'] = JSON.stringify(infoEvent); }
+  [err, asset] = await to(Asset.findOne({ assetId }));
+  if (err || !asset) { logger.error('Asset GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
-              // Update the asset
-              Asset.findByIdAndUpdate(asset._id, asset)
-                .then(assetUpdated => {
-                  resolve(assetUpdated);
-                }).catch(error => (logger.error('Asset update error: ', error), resolve(asset)));
-            }).catch(error => (logger.error('Asset info event GET error: ', error)));
-        });
+  // Get info event
+  url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
-        updateAsset.then(a => {
-          req.status = 200;
-          req.json = a;
-          return next();
-        });
-      } else { throw 'No asset'; }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
-};
+  [err, infoEvents] = await to(httpGet(url, token));
+  if (err || !infoEvents) { logger.error('Asset info event GET error: ', err); }
+
+  // Update cached asset
+  const infoEvent = findEvent('info', infoEvents.results);
+  if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
+
+  [err, assetUpdate] = await to(Asset.findByIdAndUpdate(asset._id, asset));
+  if (err || !assetUpdate) {
+    logger.error('Asset update error: ', err);
+    req.json = asset;
+  }
+
+  req.status = 200;
+  req.json = { data: assetUpdate, message: 'Success', status: 200 };
+  next();
+}
 
 /**
  * Used for searching assets and events
@@ -109,60 +103,58 @@ exports.getAsset = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getEvents = (req, res, next) => {
+exports.getEvents = async (req, res, next) => {
   const { createdBy, data, assetId, page, perPage, assets, token } = req.query;
   const user = req.session.user;
+  let err, events, cachedAssets, cachedAsset, updateCachedAsset;
 
-  let url = `${user.hermes.url}/events?`;
-  url += `page=${page || 0}&`;
-  url += `perPage=${perPage || 15}&`;
-  if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
-  if (data) { url += `${decodeURI(data)}&`; }
-  if (assetId) { url += `${decodeURI(assetId)}&`; }
+  let url = `${user.hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
+  try {
+    if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
+    if (data) { url += `${decodeURI(data)}&`; }
+    if (assetId) { url += `${decodeURI(assetId)}&`; }
+  } catch (e) {}
 
-  generalUtils.get(url, token)
-    .then(events => {
-      if (assets) {
-        // Extract unique assetIds
-        const assetIds = events.results.reduce((_assetIds, event) => {
-          let _assetId = '';
-          try { _assetId = event.content.idData.assetId; } catch (e) { _assetId = ''; }
-          if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
-          return _assetIds;
-        }, []);
+  [err, events] = await to(httpGet(url, token));
+  if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
-        // Find cached assets
-        Asset.paginate({ assetId: { $in: assetIds } }, { limit: 500, sort: '-createdAt' })
-          .then(_assets => {
-            req.status = 200;
-            req.json = { assets: _assets, events };
-            return next();
-          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Cached Assets GET error', error })));
-      } else {
-        // Timeline array of events
-        Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) })
-          .then(asset => {
-            if (asset) {
-              const latestEvent = assetsUtils.findEvent('latest', events.results);
+  if (assets) {
+    // Extract unique assetIds
+    const assetIds = events.results.reduce((_assetIds, event) => {
+      let _assetId = '';
+      try { _assetId = event.content.idData.assetId; } catch (e) {}
+      if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
+      return _assetIds;
+    }, []);
 
-              let assetsLatestEvent = '';
-              try { assetsLatestEvent = JSON.parse(asset.latestEvent); } catch (e) { assetsLatestEvent = ''; }
+    [err, cachedAssets] = await to(Asset.paginate({ assetId: { $in: assetIds } }, { limit: 500, sort: '-createdAt' }));
+    if (err || !cachedAssets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
 
-              if (latestEvent && (!assetsLatestEvent || assetsLatestEvent.timestamp < latestEvent.timestamp)) {
-                asset.latestEvent = JSON.stringify(latestEvent);
-                Asset.findByIdAndUpdate(asset._id, asset)
-                  .then(updated => logger.info('Asset updated: ', updated))
-                  .catch(error => logger.error('Asset update error: ', error));
-              }
-            } else { throw 'No asset'; }
-          }).catch(error => (logger.error(error), res.status(400).json({ message: 'Asset GET error', error })));
+    req.status = 200;
+    req.json = { data: cachedAssets, message: 'Success', status: 200 };
+    return next();
+  } else {
+    // Update cached asset
+    [err, cachedAsset] = await to(Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) }));
+    if (err || !cachedAsset) { logger.error('Asset GET error: ', err); return next(new ValidationError(err.message, err)); }
 
-        req.status = 200;
-        req.json = { events };
-        return next();
-      }
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Events GET error', error })));
-};
+    const latestEvent = findEvent('latest', events.results);
+    let cachedAssetsLatestEvent = '';
+    try { cachedAssetsLatestEvent = JSON.parse(cachedAsset.latestEvent); } catch (e) {}
+
+    if (latestEvent && (!cachedAssetsLatestEvent || cachedAssetsLatestEvent.timestamp < latestEvent.timestamp)) {
+      cachedAsset.latestEvent = JSON.stringify(latestEvent);
+
+      [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
+      if (err || !updateCachedAsset) { logger.error('Asset update error: ', err); }
+      if (updateCachedAsset) { logger.info('Asset updated: ', updateCachedAsset); }
+    }
+
+    req.status = 200;
+    req.json = { data: events, message: 'Success', status: 200 };
+    return next();
+  }
+}
 
 /**
  * 1. Gets event from Hermes
@@ -176,20 +168,21 @@ exports.getEvents = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.getEvent = (req, res, next) => {
+exports.getEvent = async (req, res, next) => {
   const { token } = req.query;
   const eventId = req.params.eventId;
   const user = req.session.user;
+  let err, event;
 
   const url = `${user.hermes.url}/events/${eventId}`;
 
-  generalUtils.get(url, token)
-    .then(event => {
-      req.status = 200;
-      req.json = event;
-      return next();
-    }).catch(error => (logger.error(error), res.status(400).json({ message: 'Event GET error', error })));
-};
+  [err, event] = await to(httpGet(url, token));
+  if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
+
+  req.status = 200;
+  req.json = { data: event, message: 'Success', status: 200 };
+  return next();
+}
 
 /**
  * 1. Gets array of signed asset objects
@@ -205,43 +198,36 @@ exports.getEvent = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.createAsset = (req, res, next) => {
+exports.createAsset = async (req, res, next) => {
   const assets = req.body.assets;
   const user = req.session.user;
-  req.json = { assets: { docs: [] } };
+  req.json = { data: { assets: { docs: [] } } };
+  let err, assetCreated, assetInserted;
 
   if (Array.isArray(assets) && assets.length > 0) {
-    // Create an asset
+    // Create asset
     const url = `${user.hermes.url}/assets`;
-    const createAssets = new Promise((resolve) => {
-      assets.forEach((asset, index, array) => {
-        generalUtils.create(url, asset)
-          .then(assetCreated => {
-            const _asset = new Asset({
-              _id: new mongoose.Types.ObjectId(),
-              assetId: assetCreated.assetId,
-              createdBy: assetCreated.content.idData.createdBy,
-              updatedAt: assetCreated.content.idData.timestamp * 1000,
-              createdAt: assetCreated.content.idData.timestamp * 1000,
-            });
-
-            _asset.save()
-              .then(inserted => {
-                req.json.assets.docs.push(inserted);
-                if (index === array.length - 1) { resolve(); }
-              }).catch(error => {
-                logger.error('Cached asset creation error: ', error);
-                if (index === array.length - 1) { resolve(); }
-              });
-          });
-      });
+    assets.map(async (asset, index, array) => {
+      [err, assetCreated] = await to(httpPost(url, asset));
+      if (err || !assetCreated) { logger.error('Asset create error: ', err); }
+      if (assetCreated) {
+        [err, assetInserted] = await to(
+          Asset.create({
+            _id: new mongoose.Types.ObjectId(),
+            assetId: assetCreated.assetId,
+            createdBy: assetCreated.content.idData.createdBy,
+            updatedAt: assetCreated.content.idData.timestamp * 1000,
+            createdAt: assetCreated.content.idData.timestamp * 1000
+          })
+        );
+        if (err || !assetInserted) { logger.error('Cached asset creation error: ', err); }
+        if (assetInserted) { req.json.data.assets.docs.push(assetInserted); }
+      }
+      if (index === array.length - 1) { req.status = 200; return next(); }
     });
 
-    createAssets.then(() => (req.status = 200, next()));
-  } else if (!(Array.isArray(assets) && assets.length > 0)) {
-    return res.status(400).json({ message: '"assets" needs to be a non-empty array of signed asset objects' });
-  }
-};
+  } else { next(new ValidationError('"assets" needs to be a non-empty array of signed asset objects')) }
+}
 
 /**
  * 1. Gets array of signed event objects
@@ -257,44 +243,32 @@ exports.createAsset = (req, res, next) => {
  * @returns 400 on error
  * @returns 200 and next() on success
  */
-exports.createEvents = (req, res, next) => {
+exports.createEvents = async (req, res, next) => {
   const events = req.body.events;
   const user = req.session.user;
-  if (req.json) {
-    req.json['events'] = [];
-  } else {
-    req.json = { events: [] };
-  }
+  if (req.json && req.json.data) { req.json.data['events'] = [] } else { req.json = { data: { events: [] } } }
+  let err, eventCreated, assetUpdated;
 
   if (Array.isArray(events) && events.length > 0) {
+    events.map(async (event, index, array) => {
+      const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
+      [err, eventCreated] = await to(httpPost(url, event));
+      if (err || !eventCreated) { logger.error('Event create error: ', err); }
+      if (eventCreated) {
+        req.json.data.events.push(eventCreated);
 
-    const createEvents = new Promise((resolve) => {
-      events.forEach((event, index, array) => {
-        const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
-        generalUtils.create(url, event)
-          .then(eventCreated => {
-            req.json.events.push(eventCreated);
-            const latestEvent = assetsUtils.findEvent('latest', [eventCreated]);
-            const infoEvent = assetsUtils.findEvent('info', [eventCreated]);
+        // Update cached asset
+        const latestEvent = findEvent('latest', [eventCreated]);
+        const infoEvent = findEvent('info', [eventCreated]);
 
-            const asset = { assetId: eventCreated.content.idData.assetId };
-            if (latestEvent) { asset['latestEvent'] = JSON.stringify(latestEvent); }
-            if (infoEvent) { asset['infoEvent'] = JSON.stringify(infoEvent); }
+        const asset = { assetId: eventCreated.content.idData.assetId };
+        if (latestEvent) asset['latestEvent'] = JSON.stringify(latestEvent);
+        if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
-            // Update the asset
-            Asset.findOneAndUpdate({ assetId: asset.assetId }, asset)
-              .then(() => { if (index === array.length - 1) { resolve(); } })
-              .catch(error => {
-                logger.error('Asset update error: ', error);
-                if (index === array.length - 1) { resolve(); }
-              });
-          }).catch(error => {
-            logger.error('Event create error: ', error);
-            if (index === array.length - 1) { resolve(); }
-          });
-      });
+        [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset));
+        if (err || !assetUpdated) { logger.error('Asset update error: ', err); }
+      }
+      if (index === array.length - 1) { req.status = 200; return next(); }
     });
-
-    createEvents.then(() => (req.status = 200, next()));
-  } else { return next(); }
-};
+  } else { return next() }
+}

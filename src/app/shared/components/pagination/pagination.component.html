@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <div *ngIf="pagination.resultLength !== 0">
   <div>
-    Showing {{ currentPage === 1 ? currentPage : (currentPage * pagination.perPage) + 1 }}
+    Showing {{ currentPage === 1 ? currentPage : ((currentPage-1) * pagination.perPage) + 1 }}
     to {{ currentPage * pagination.perPage > pagination.resultCount ? pagination.resultCount : currentPage * pagination.perPage }}
     of {{ pagination.resultCount }} {{ for }}
   </div>
@@ -17,10 +17,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <span (click)="changePage('prev')">Previous</span>
     </li>
     <li class="pagination__item">
-      <span><input type="number" #pageNumber [(ngModel)]="pagination.currentPage" (change)="changePage(pageNumber.value)" style="width: 30px; text-align: center;"></span>
+      <span><input type="number" #pageNumber [(ngModel)]="currentPage" (change)="changePage(pageNumber.value)" style="width: 40px; text-align: center; padding: 0px !important;"></span>
       <span>/ {{ pagination.totalPages }}</span>
     </li>
-    <li class="pagination__item" *ngIf="pagination.totalPages > 1 && pagination.currentPage !== pagination.totalPages">
+    <li class="pagination__item" *ngIf="pagination.totalPages > 1 && currentPage !== pagination.totalPages">
       <span (click)="changePage('next')">Next</span>
     </li>
   </ul>

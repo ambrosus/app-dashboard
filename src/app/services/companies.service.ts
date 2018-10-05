@@ -10,7 +10,7 @@ export class CompaniesService {
 
     return new Observable(observer => {
       this.http.put(url, body).subscribe(
-        (resp: any) => { observer.next(resp); },
+        ({ data }: any) => { observer.next(data); },
         err => { observer.error(err); }
       );
     });

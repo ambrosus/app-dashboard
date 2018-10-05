@@ -3,8 +3,6 @@ import { Router, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from 'app/services/auth.service';
 import { DashboardService } from 'app/services/dashboard.service';
 
-import { HttpResponse } from './response.interface';
-
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
@@ -20,15 +18,14 @@ export class AuthGuard implements CanActivate {
     console.log('canActivate@AuthGuard');
 
     return new Promise((resolve) => {
-      this.dashboard.getHermeses().subscribe((hermeses: HttpResponse) => {
-
-        if (state.url === '/login' && hermeses.totalCount === 0) {
+      this.dashboard.getHermeses().subscribe((hermeses: any) => {
+        if (state.url === '/login' && hermeses.total === 0) {
           this.router.navigate(['/setup']);
           resolve(false);
-        } else if (state.url === '/setup' && hermeses.totalCount > 0) {
+        } else if (state.url === '/setup' && hermeses.total > 0) {
           this.router.navigate(['/login']);
           resolve(false);
-        } else if (state.url === '/login' && hermeses.totalCount > 0 && this.auth.isLoggedIn()) {
+        } else if (state.url === '/login' && hermeses.total > 0 && this.auth.isLoggedIn()) {
           this.router.navigate(['/assets']);
           resolve(true);
         }
