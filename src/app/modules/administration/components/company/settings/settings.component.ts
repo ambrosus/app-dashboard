@@ -101,15 +101,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
               this.storageService.set('user', user);
               this.emit('user:refresh');
             },
-            err => {
-              if (err.status === 401) { this.authService.logout(); }
-              console.error('Account GET error: ', err);
-            }
+            err => console.error('Account GET error: ', err)
           );
           console.log('Company UPDATE success: ', resp);
         },
         err => {
-          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.message;
           console.error('Company UPDATE error: ', err);

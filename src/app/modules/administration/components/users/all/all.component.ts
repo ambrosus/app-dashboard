@@ -12,7 +12,7 @@ import { UsersService } from 'app/services/users.service';
 })
 export class AllComponent implements OnInit, OnDestroy {
   selectAllText = 'Select all';
-  usersSubscription: Subscription;
+  getUsersSub: Subscription;
   users = [];
   ids = [];
   user;
@@ -31,29 +31,23 @@ export class AllComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.usersSubscription) { this.usersSubscription.unsubscribe(); }
+    if (this.getUsersSub) { this.getUsersSub.unsubscribe(); }
   }
 
   getUsers() {
-    // Get users
     let companySettings: any = {};
     try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { console.log(e); }
 
-    this.usersSubscription = this.usersService.getUsers().subscribe(
+    this.getUsersSub = this.usersService.getUsers().subscribe(
       (users: any) => {
         console.log('Users GET: ', users);
         this.users = users.map(user => {
-
-          if (!user.role || !user.role.title) { user.role = { title: 'No role assigned yet' }; }
+          if (!user.role || !user.role.title) { user.role = { title: 'No role assigned' }; }
           user.lastLogin = moment.tz(user.lastLogin, this.user.company.timeZone).fromNow();
-
           return user;
         });
       },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.log('Users GET error: ', err);
-      }
+      err => console.error('Users GET error: ', err)
     );
   }
 

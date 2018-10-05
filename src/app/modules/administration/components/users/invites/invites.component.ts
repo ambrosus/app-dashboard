@@ -10,10 +10,11 @@ import { InviteService } from 'app/services/invite.service';
   styleUrls: ['./invites.component.scss'],
 })
 export class InvitesComponent implements OnInit, OnDestroy {
+  invitesSub: Subscription;
+  revokeInvitesSub: Subscription;
   selectAllText = 'Select all';
   invites;
   ids = [];
-  invitesSubscription: Subscription;
 
   constructor(
     private storage: StorageService,
@@ -27,32 +28,32 @@ export class InvitesComponent implements OnInit, OnDestroy {
     this.getInvites();
   }
 
-  getInvites() {
-    // Get invites
-    const user: any = this.storage.get('user') || {};
-
-    this.invitesSubscription = this.inviteService.getInvites(user).subscribe(
-      (resp: any) => { console.log('Invites GET: ', resp); this.invites = resp; },
-      err => { if (err.status === 401) { this.authService.logout(); } console.log('Invites GET error: ', err); }
-    );
+  ngOnDestroy() {
+    if (this.invitesSub) { this.invitesSub.unsubscribe(); }
+    if (this.revokeInvitesSub) { this.revokeInvitesSub.unsubscribe(); }
   }
 
-  ngOnDestroy() {
-    if (this.invitesSubscription) { this.invitesSubscription.unsubscribe(); }
+  getInvites() {
+    const user: any = this.storage.get('user') || {};
+
+    this.invitesSub = this.inviteService.getInvites(user).subscribe(
+      (resp: any) => {
+        this.invites = resp;
+        console.log('Invites GET: ', resp);
+      },
+      err => console.error('Invites GET error: ', err)
+    );
   }
 
   bulkActions(action) {
     switch (action.value) {
       case 'revoke':
-        this.inviteService.revokeInvites(this.ids).subscribe(
+        this.revokeInvitesSub = this.inviteService.revokeInvites(this.ids).subscribe(
           (resp: any) => {
-            console.log('Invites DELETE: ', resp);
             this.getInvites();
+            console.log('Invites DELETE: ', resp);
           },
-          err => {
-            if (err.status === 401) { this.authService.logout(); }
-            console.log('Invites DELETE error: ', err);
-          }
+          err => console.error('Invites DELETE error: ', err.message)
         );
         break;
     }

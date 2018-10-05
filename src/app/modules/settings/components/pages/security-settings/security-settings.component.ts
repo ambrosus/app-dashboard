@@ -67,10 +67,9 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         console.log('Password UPDATE success: ', resp);
       },
       err => {
-        if (err.status === 401) { this.authService.logout(); }
         this.spinner = false;
         this.error = err.message;
-        console.log('Password UPADTE error: ', err.message);
+        console.error('Password UPADTE error: ', err.message);
       }
     );
   }
@@ -81,10 +80,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         this.sessions = resp;
         console.log('Sessions GET success: ', resp);
       },
-      err => {
-        if (err.status === 401) { this.authService.logout(); }
-        console.error('Sessions GET error: ', err.message);
-      }
+      err => console.error('Sessions GET error: ', err.message)
     );
   }
 

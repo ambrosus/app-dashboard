@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -14,14 +13,14 @@ import { UsersService } from 'app/services/users.service';
 })
 export class InviteComponent implements OnInit, OnDestroy {
   inviteForm: FormGroup;
-  spinner = false;
+  getRolesSub: Subscription;
+  sendInvitesSub: Subscription;
+  spinner;
   error;
   success;
   roles = [];
-  getRolesSub: Subscription;
 
   constructor(
-    private http: HttpClient,
     private storageService: StorageService,
     private authService: AuthService,
     private inviteService: InviteService,
@@ -47,19 +46,16 @@ export class InviteComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getRoles();
-    console.log(this.roles);
   }
 
   ngOnDestroy() {
     if (this.getRolesSub) { this.getRolesSub.unsubscribe(); }
+    if (this.sendInvitesSub) { this.sendInvitesSub.unsubscribe(); }
   }
 
   getRoles() { this.getRolesSub = this.usersService.roles.subscribe(roles => this.roles = roles); }
 
-  // Methods for adding/removing new fields to the form
-  remove(array, index: number) {
-    (<FormArray>this.inviteForm.get(array)).removeAt(index);
-  }
+  remove(array, index: number) { (<FormArray>this.inviteForm.get(array)).removeAt(index); }
 
   addMember() {
     (<FormArray>this.inviteForm.get('members')).push(
@@ -86,19 +82,18 @@ export class InviteComponent implements OnInit, OnDestroy {
     if (this.inviteForm.valid && body.invites.length > 0) {
       this.spinner = true;
 
-      this.inviteService.sendInvite(body).subscribe(
+      this.sendInvitesSub = this.inviteService.sendInvite(body).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Invites sent';
         },
         err => {
-          if (err.status === 401) { this.authService.logout(); }
-          console.log('Invites error: ', err);
           this.error = 'Invites failed';
+          console.error('Invites SEND error: ', err);
         }
       );
     } else {
-      this.error = 'Need at least one invite';
+      this.error = 'Send at least one invite';
     }
   }
 

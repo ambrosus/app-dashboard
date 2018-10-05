@@ -95,17 +95,13 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
               this.storageService.set('user', user);
               this.emit('user:refresh');
             },
-            err => {
-              if (err.status === 401) { this.authService.logout(); }
-              console.log('Account GET error: ', err);
-            }
+            err => console.error('Account GET error: ', err)
           );
         },
         err => {
-          if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.message;
-          console.log('Profile UPDATE error: ', err);
+          console.error('Profile UPDATE error: ', err);
         }
       );
     } else {
