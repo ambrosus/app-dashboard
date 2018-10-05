@@ -118,9 +118,11 @@ exports.getEvents = async (req, res, next) => {
   [err, events] = await to(httpGet(url, token));
   if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
+  const eventsCopy = JSON.parse(JSON.stringify(events));
+
   if (assets) {
     // Extract unique assetIds
-    const assetIds = events.results.reduce((_assetIds, event) => {
+    const assetIds = eventsCopy.results.reduce((_assetIds, event) => {
       let _assetId = '';
       try { _assetId = event.content.idData.assetId; } catch (e) {}
       if (_assetIds.indexOf(_assetId) === -1) { _assetIds.push(_assetId); }
@@ -138,7 +140,7 @@ exports.getEvents = async (req, res, next) => {
     [err, cachedAsset] = await to(Asset.findOne({ assetId: assetId.substring(assetId.indexOf('=') + 1) }));
     if (err || !cachedAsset) { logger.error('Asset GET error: ', err); return next(new ValidationError(err.message, err)); }
 
-    const latestEvent = findEvent('latest', events.results);
+    const latestEvent = findEvent('latest', eventsCopy.results);
     let cachedAssetsLatestEvent = '';
     try { cachedAssetsLatestEvent = JSON.parse(cachedAsset.latestEvent); } catch (e) {}
 
