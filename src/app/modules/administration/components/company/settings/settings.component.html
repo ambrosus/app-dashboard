@@ -1,4 +1,5 @@
 <h4 class="m-b-30">Settings</h4>
+
 <form [formGroup]="settingsForm" (ngSubmit)="editCompany()" class="m-w-4">
   <div class="form-text m-b-20">
     <label for="title">Company title</label>
@@ -30,4 +31,4 @@
   </div>
 </form>
 <h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-<h5 class="m-v-20" *ngIf="success" style="color: #57b846">Success</h5>
+<h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>

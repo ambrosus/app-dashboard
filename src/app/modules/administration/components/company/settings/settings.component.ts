@@ -1,21 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AuthService } from 'app/services/auth.service';
 import * as moment from 'moment-timezone';
 import { CompaniesService } from 'app/services/companies.service';
 import { UsersService } from 'app/services/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
   settingsForm: FormGroup;
-  spinner = false;
+  editCompanySub: Subscription;
+  userGetSub: Subscription;
+  spinner;
   error;
-  success = false;
+  success;
   timezones = [];
   showCropper;
   user;
@@ -39,6 +42,11 @@ export class SettingsComponent implements OnInit {
     this.timezones = moment.tz.names();
   }
 
+  ngOnDestroy() {
+    if (this.editCompanySub) { this.editCompanySub.unsubscribe(); }
+    if (this.userGetSub) { this.userGetSub.unsubscribe(); }
+  }
+
   initSettingsForm() {
     this.settingsForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
@@ -50,9 +58,7 @@ export class SettingsComponent implements OnInit {
   prefillSettings() {
     this.user = this.storageService.get('user') || {};
     this.company = this.user['company'] || {};
-    try {
-      this.settings = JSON.parse(this.company.settings);
-    } catch (e) { }
+    try { this.settings = JSON.parse(this.company.settings); } catch (e) { }
 
     this.settingsForm.get('title').setValue(this.company['title']);
     this.settingsForm.get('preview_app').setValue(this.settings['preview_app']);
@@ -65,22 +71,14 @@ export class SettingsComponent implements OnInit {
     this.showCropper = true;
   }
 
-  imageCropped(image: string) {
-    this.croppedImage = image;
-  }
+  imageCropped(image: string) { this.croppedImage = image; }
 
-  emit(type) {
-    window.dispatchEvent(new Event(type));
-  }
-
-  resetForm() {
-    this.error = false;
-    this.success = false;
-    this.showCropper = false;
-  }
+  emit(type) { window.dispatchEvent(new Event(type)); }
 
   editCompany() {
-    this.resetForm();
+    this.error = null;
+    this.success = null;
+    this.showCropper = null;
     const data = this.settingsForm.value;
     const body = {
       title: data.title,
@@ -94,27 +92,27 @@ export class SettingsComponent implements OnInit {
     if (this.settingsForm.valid) {
       this.spinner = true;
 
-      this.companiesService.editCompany(body).subscribe(
+      this.editCompanySub = this.companiesService.editCompany(body).subscribe(
         (resp: any) => {
           this.spinner = false;
-          this.success = true;
-          this.usersService.getUser(this.user.email).subscribe(
+          this.success = 'Settings update success';
+          this.userGetSub = this.usersService.getUser(this.user.email).subscribe(
             user => {
               this.storageService.set('user', user);
               this.emit('user:refresh');
             },
             err => {
               if (err.status === 401) { this.authService.logout(); }
-              console.log('Get account error: ', err);
+              console.error('Account GET error: ', err);
             }
           );
-          console.log('Edit company: ', resp);
+          console.log('Company UPDATE success: ', resp);
         },
         err => {
           if (err.status === 401) { this.authService.logout(); }
           this.spinner = false;
           this.error = err.message;
-          console.log('Edit company error: ', err);
+          console.error('Company UPDATE error: ', err);
         }
       );
     } else {
