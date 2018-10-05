@@ -41,7 +41,7 @@ exports.edit = async (req, res, next) => {
   const update = {};
   const allowedToChange = ['title', 'settings'];
   for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) update[key] = query[key]
+    if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
 
   [err, companyUpdated] = await to(Company.findByIdAndUpdate(id, update));
