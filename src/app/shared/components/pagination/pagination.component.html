@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <div *ngIf="pagination.resultLength !== 0">
   <div>
-    Showing {{ currentPage === 1 ? currentPage : (currentPage * pagination.perPage) + 1 }}
+    Showing {{ currentPage === 1 ? currentPage : ((currentPage-1) * pagination.perPage) + 1 }}
     to {{ currentPage * pagination.perPage > pagination.resultCount ? pagination.resultCount : currentPage * pagination.perPage }}
     of {{ pagination.resultCount }} {{ for }}
   </div>
