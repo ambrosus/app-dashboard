@@ -35,7 +35,7 @@ exports.create = async (req, res, next) => {
   if (invites && invites.length !== 0 && user) {
     [err, company] = await to(Company.findById(user.company._id));
     if (err || !company) { logger.error('Company GET error: ', err); return next(new NotFoundError(err.message)); }
-
+    
     invites.map(invite => {
       invite['_id'] = new mongoose.Types.ObjectId();
       invite['from'] = mongoose.Types.ObjectId(user._id);
@@ -57,7 +57,7 @@ exports.create = async (req, res, next) => {
 
       [err, emailSent] = await to(email.send(invitation));
       if (err || !emailSent) { logger.error('Email send error: ', err); }
-      if (emailSent) logger.error('Email send success: ', emailSent);
+      if (emailSent) logger.info('Email send success: ', emailSent);
     });
 
     req.status = 200;
@@ -138,14 +138,14 @@ exports.verify = async (req, res, next) => {
   if (createdAt) {
     if (+new Date() - createdAt > validUntil) {
       [err, deleted] = await to(Invite.findOneAndRemove({ token }));
-      if (err || !deleted) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err.message, err)); }
+      if (err || !deleted) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err, err)); }
       return next(new ValidationError('Invite expired'));
     } else {
       [err, invite] = await to(Invite.findOne({ token }));
-      if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
+      if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err, err)); }
 
       req.status = 200;
-      req.json = { data: null, message: 'Token is valid', status: 200 };
+      req.json = { data: invite, message: 'Token is valid', status: 200 };
       return next();
     }
   } else { return next(new ValidationError('Token is invalid')); }

@@ -49,7 +49,7 @@ export class InviteComponent implements OnInit {
       this.token = params.token;
 
       this.inviteService.validateInvite(this.token).subscribe(
-        (resp: any) => console.log('Invite is valid'),
+        (resp: any) => this.storage.set('user', resp),
         error => { console.log('Invite verify error: ', error); this.router.navigate(['/login']); }
       );
     });

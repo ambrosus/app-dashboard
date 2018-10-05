@@ -18,6 +18,7 @@ const { ValidationError, NotFoundError, AuthenticationError } = _require('/error
 const User = _require('/models/users');
 const Company = _require('/models/companies');
 const Invite = _require('/models/invites');
+const Hermes = _require('/models/hermeses');
 
 /**
  * Create a new user.
@@ -31,7 +32,6 @@ const Invite = _require('/models/invites');
 exports.create = async (req, res, next) => {
   const user = req.body.user || {};
   const { full_name, address, token, password } = user;
-  const hermes = req.hermes || req.body.hermes;
   const inviteToken = req.query.token;
   let email = user.email;
   let accessLevel = user.accessLevel || 1;
@@ -63,9 +63,13 @@ exports.create = async (req, res, next) => {
     address,
     token,
     password,
-    company: mongoose.Types.ObjectId(company._id),
+    company: mongoose.Types.ObjectId(company),
   };
 
+  [err, hermesObj] = await to(Hermes.find());
+  if (err || !hermesObj) { logger.error('Hermes find error: ', err); return next(new ValidationError(err.message, err)); }
+
+  const hermes = hermesObj[0];
   // Insert user in dash db
   [err, userCreated] = await to(User.findOrCreate(query, _user));
   if (err || !userCreated) { logger.error('User create error: ', err); return next(new ValidationError(err.message, err)); }
