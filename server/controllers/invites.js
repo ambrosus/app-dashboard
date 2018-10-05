@@ -35,7 +35,7 @@ exports.create = async (req, res, next) => {
   if (invites && invites.length !== 0 && user) {
     [err, company] = await to(Company.findById(user.company._id));
     if (err || !company) { logger.error('Company GET error: ', err); return next(new NotFoundError(err.message)); }
-    
+
     invites.map(invite => {
       invite['_id'] = new mongoose.Types.ObjectId();
       invite['from'] = mongoose.Types.ObjectId(user._id);
