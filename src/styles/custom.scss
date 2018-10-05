@@ -238,3 +238,7 @@ button.is-loading .btn-spinner {
         transform: rotate(360deg);
     }
 }
+
+.ng-sidebar--left[_ngcontent-c2] {
+    box-shadow: 1px 1px 1px 1px #ccc !important;
+}
