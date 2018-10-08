@@ -37,6 +37,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
+import { IconLeftDirective, IconRightDirective } from './directives/icon.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -67,6 +68,8 @@ import { AutofocusDirective } from './directives/auto-focus.directive';
     FooterComponent,
     SidebarComponent,
     HeaderComponent,
+    IconLeftDirective,
+    IconRightDirective,
   ],
   declarations: [
     InputDirective,
@@ -92,7 +95,9 @@ import { AutofocusDirective } from './directives/auto-focus.directive';
     FooterComponent,
     SidebarComponent,
     HeaderComponent,
+    IconLeftDirective,
+    IconRightDirective,
   ],
-  entryComponents: [ JsonPreviewComponent, EventAddComponent ],
+  entryComponents: [JsonPreviewComponent, EventAddComponent],
 })
 export class SharedModule { }

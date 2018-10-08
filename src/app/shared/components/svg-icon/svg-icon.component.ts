@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-svg-icon',
   template: `<ng-content></ng-content>`,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgIconComponent implements OnInit {
   path;

@@ -50,28 +50,16 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </header>
   <ul class="sidebar__menu">
     <li>
-      <a routerLink="/assets" routerLinkActive="active">
-        <app-svg-icon name="blue-stack" class="p-r-15" width="20px" height="20px"></app-svg-icon>
-        <span>Assets</span>
-      </a>
+      <a routerLink="/assets" routerLinkActive="active" appIconLeft="blue-stack">Assets</a>
     </li>
     <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
-      <a routerLink="/administration/users" routerLinkActive="active">
-        <app-svg-icon name="header-user" class="p-r-15" width="20px" height="20px"></app-svg-icon>
-        <span>Users</span>
-      </a>
+      <a routerLink="/administration/users" routerLinkActive="active" appIconLeft="header-user">Users</a>
     </li>
     <li *ngIf="(user | checkIf: 'user.role.id' ) && (user.role.id===1 || user.role.id===2)">
-      <a routerLink="/administration/company" routerLinkActive="active">
-        <app-svg-icon name="settings-gear" class="p-r-15" width="20px" height="20px"></app-svg-icon>
-        <span>Company</span>
-      </a>
+      <a routerLink="/administration/company" routerLinkActive="active" appIconLeft="settings-gear">Company</a>
     </li>
     <li>
-      <a routerLink="/settings" routerLinkActive="active">
-        <app-svg-icon name="cog" class="p-r-15" width="20px" height="20px"></app-svg-icon>
-        <span>Settings</span>
-      </a>
+      <a routerLink="/settings" routerLinkActive="active" appIconLeft="cog">Settings</a>
     </li>
   </ul>
 </aside>

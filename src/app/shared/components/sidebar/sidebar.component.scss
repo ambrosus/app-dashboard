@@ -66,21 +66,24 @@
         padding-left: 20px;
       }
 
-      &.active {
-        color: #fff;
-        background: $ablue;
+      &--menu {
+        &.active {
+          color: #fff;
+          background: $ablue;
 
-        .arrow {
-          transform: rotate(90deg);
-          transform-origin: 50% 50%;
+          svg {
+            transform: rotate(90deg);
+            transform-origin: 50% 50%;
+          }
         }
-      }
 
-      .arrow {
-        position: absolute;
-        right: 15px;
-        top: calc(50% - 6px);
-        transition: transform .2s;
+        svg {
+          height: 12px;
+          position: absolute;
+          right: 15px;
+          top: calc(50% - 6px);
+          transition: transform .2s;
+        }
       }
     }
 
