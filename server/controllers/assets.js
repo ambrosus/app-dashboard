@@ -11,6 +11,7 @@ const { findEvent } = _require('/utils/assets');
 const { httpGet, httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
+const { hermes } = _require('/config');
 
 /**
  * 1. Gets paginated assets from dash db
@@ -53,7 +54,6 @@ exports.getAssets = async (req, res, next) => {
 exports.getAsset = async (req, res, next) => {
   const { token } = req.query;
   const assetId = req.params.assetId;
-  const user = req.session.user;
   let err, asset, infoEvents, assetUpdate;
 
   // Get cached asset
@@ -61,7 +61,7 @@ exports.getAsset = async (req, res, next) => {
   if (err || !asset) { logger.error('Asset GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   // Get info event
-  url = `${user.hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
+  url = `${hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
   [err, infoEvents] = await to(httpGet(url, token));
   if (err || !infoEvents) { logger.error('Asset info event GET error: ', err); }
@@ -108,7 +108,7 @@ exports.getEvents = async (req, res, next) => {
   const user = req.session.user;
   let err, events, cachedAssets, cachedAsset, updateCachedAsset;
 
-  let url = `${user.hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
+  let url = `${hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
   try {
     if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
     if (data) { url += `${decodeURI(data)}&`; }
@@ -149,7 +149,6 @@ exports.getEvents = async (req, res, next) => {
 
       [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
       if (err || !updateCachedAsset) { logger.error('Asset update error: ', err); }
-      if (updateCachedAsset) { logger.info('Asset updated: ', updateCachedAsset); }
     }
 
     req.status = 200;
@@ -173,10 +172,9 @@ exports.getEvents = async (req, res, next) => {
 exports.getEvent = async (req, res, next) => {
   const { token } = req.query;
   const eventId = req.params.eventId;
-  const user = req.session.user;
   let err, event;
 
-  const url = `${user.hermes.url}/events/${eventId}`;
+  const url = `${hermes.url}/events/${eventId}`;
 
   [err, event] = await to(httpGet(url, token));
   if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
@@ -202,13 +200,12 @@ exports.getEvent = async (req, res, next) => {
  */
 exports.createAsset = async (req, res, next) => {
   const assets = req.body.assets;
-  const user = req.session.user;
   req.json = { data: { assets: { docs: [] } } };
   let err, assetCreated, assetInserted;
 
   if (Array.isArray(assets) && assets.length > 0) {
     // Create asset
-    const url = `${user.hermes.url}/assets`;
+    const url = `${hermes.url}/assets`;
     assets.map(async (asset, index, array) => {
       [err, assetCreated] = await to(httpPost(url, asset));
       if (err || !assetCreated) { logger.error('Asset create error: ', err); }
@@ -247,13 +244,12 @@ exports.createAsset = async (req, res, next) => {
  */
 exports.createEvents = async (req, res, next) => {
   const events = req.body.events;
-  const user = req.session.user;
   if (req.json && req.json.data) { req.json.data['events'] = [] } else { req.json = { data: { events: [] } } }
   let err, eventCreated, assetUpdated;
 
   if (Array.isArray(events) && events.length > 0) {
     events.map(async (event, index, array) => {
-      const url = `${user.hermes.url}/assets/${event.content.idData.assetId}/events`;
+      const url = `${hermes.url}/assets/${event.content.idData.assetId}/events`;
       [err, eventCreated] = await to(httpPost(url, event));
       if (err || !eventCreated) { logger.error('Event create error: ', err); }
       if (eventCreated) {

@@ -15,17 +15,16 @@ const Company = _require('/models/companies');
  *
  * @name createCompany
  * @route {POST} api/companies
- * @bodyparam company: { title, timeZone }, hermes
+ * @bodyparam company: { title, timeZone }
  * @returns Status code 400 on failure
  * @returns company Object on success with status code 200
  */
 exports.create = async (req, res, next) => {
   const title = req.body.company ? req.body.company.title : req.body.title;
   const settings = req.body.company ? req.body.company.settings : req.body.settings;
-  const hermes = req.hermes || req.body.hermes;
   let err, company;
 
-  [err, company] = await to(Company.create({ title, settings, hermes }));
+  [err, company] = await to(Company.create({ title, settings }));
   if (err || !company) { logger.error('Company create error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;

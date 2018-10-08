@@ -6,7 +6,7 @@ declare let QRCode: any;
 @Component({
   selector: 'app-qr-code',
   template: '',
-  styleUrls: ['./qr-code.component.scss']
+  styleUrls: ['./qr-code.component.scss'],
 })
 export class QrCodeComponent implements OnInit {
   logo;

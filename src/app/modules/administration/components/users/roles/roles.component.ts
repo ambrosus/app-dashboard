@@ -6,7 +6,7 @@ import { UsersService } from 'app/services/users.service';
 @Component({
   selector: 'app-roles',
   templateUrl: './roles.component.html',
-  styleUrls: ['./roles.component.scss']
+  styleUrls: ['./roles.component.scss'],
 })
 export class RolesComponent implements OnInit {
 
@@ -18,7 +18,7 @@ export class RolesComponent implements OnInit {
     const dialogRef = this.dialog.open(RoleDialogComponent, {
       width: '600px',
       position: { right: '0' },
-      data: { role }
+      data: { role },
     });
 
     dialogRef.afterClosed().subscribe(result => {

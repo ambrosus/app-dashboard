@@ -29,7 +29,7 @@ export class InviteComponent implements OnInit {
     private storage: StorageService,
     private inviteService: InviteService,
     private usersService: UsersService
-    ) {
+  ) {
     this.initCreateAccountForm();
     this.web3 = new Web3();
   }
@@ -60,7 +60,6 @@ export class InviteComponent implements OnInit {
     this.success = null;
 
     const body: any = {
-      hermes: this.storage.get('user')['company']['hermes'],
       user: this.createAccountForm.value,
     };
 

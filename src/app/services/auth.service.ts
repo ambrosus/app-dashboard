@@ -22,9 +22,7 @@ export class AuthService {
     private storage: StorageService,
     private deviceService: DeviceDetectorService
   ) {
-    const hermes = <any>this.storage.get('hermes') || <any>{};
     this.sdk = new AmbrosusSDK({
-      apiEndpoint: hermes.url,
       Web3,
     });
     this.web3 = new Web3();
@@ -158,14 +156,5 @@ export class AuthService {
     this.storage.clear();
     this.emit('user:refresh');
     this.router.navigate(['/login']);
-  }
-
-  getHermeses() {
-    return new Observable(observer => {
-      this.http.get('/api/hermeses').subscribe(
-        ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
-      );
-    });
   }
 }

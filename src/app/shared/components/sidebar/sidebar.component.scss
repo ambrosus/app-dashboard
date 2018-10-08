@@ -62,8 +62,17 @@
       display: inline-block;
       width: 100%;
 
+      & svg {
+        margin-right: 12px;
+      }
+
       &:hover {
         padding-left: 20px;
+      }
+
+      &.active {
+        background-color: $ablue;
+        color: #fff;
       }
 
       &--menu {
@@ -83,6 +92,7 @@
           right: 15px;
           top: calc(50% - 6px);
           transition: transform .2s;
+          margin-right: 0;
         }
       }
     }

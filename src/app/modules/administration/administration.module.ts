@@ -32,6 +32,6 @@ import { CompaniesService } from 'app/services/companies.service';
   ],
   providers: [UsersService, InviteService, CompaniesService],
   declarations: [CompanyComponent, SettingsComponent, UsersComponent, AdministrationComponent, AllComponent, InviteComponent, InvitesComponent, RolesComponent, RoleDialogComponent],
-  entryComponents: [RoleDialogComponent]
+  entryComponents: [RoleDialogComponent],
 })
 export class AdministrationModule { }

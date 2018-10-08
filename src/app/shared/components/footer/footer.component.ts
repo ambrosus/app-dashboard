@@ -4,7 +4,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class FooterComponent implements OnInit {
 
@@ -14,16 +14,16 @@ export class FooterComponent implements OnInit {
     this.menu = [
       {
         title: 'Help',
-        url: '/help'
+        url: '/help',
       },
       {
         title: 'About',
-        url: '/about'
-      },{
+        url: '/about',
+      }, {
         title: 'Terms and Conditions',
-        url: '/terms'
-      }
-    ]
+        url: '/terms',
+      },
+    ];
   }
 
   ngOnInit() { }
