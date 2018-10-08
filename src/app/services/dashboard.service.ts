@@ -14,15 +14,6 @@ export class DashboardService {
     this.web3 = new Web3();
   }
 
-  getHermeses() {
-    return new Observable(observer => {
-      this.http.get('/api/hermeses').subscribe(
-        ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
-      );
-    });
-  }
-
   initSetup(data) {
 
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));

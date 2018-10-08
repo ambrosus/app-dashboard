@@ -14,6 +14,7 @@ const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError, AuthenticationError } = _require('/errors');
+const { hermes } = _require('/config');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -24,14 +25,13 @@ const Invite = _require('/models/invites');
  *
  * @name createUser
  * @route {POST} api/users/
- * @bodyparam user: {email, accessLevel, permissions}, hermes
+ * @bodyparam user: {email, accessLevel, permissions}
  * @returns Status code 400 on failure
  * @returns user Object on success with status code 200
  */
 exports.create = async (req, res, next) => {
   const user = req.body.user || {};
   const { full_name, address, token, password } = user;
-  const hermes = req.hermes || req.body.hermes;
   const inviteToken = req.query.token;
   let email = user.email;
   let accessLevel = user.accessLevel || 1;
@@ -131,10 +131,6 @@ exports.getAccount = async (req, res, next) => {
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
-      populate: {
-        path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public',
-      },
     })
     .populate({
       path: 'role',
@@ -166,10 +162,6 @@ exports.getAccounts = async (req, res, next) => {
     .populate({
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
-      populate: {
-        path: 'hermes',
-        select: '-active -createdAt -updatedAt -__v -public',
-      },
     })
     .populate({
       path: 'role',

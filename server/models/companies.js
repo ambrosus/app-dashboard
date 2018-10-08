@@ -21,10 +21,6 @@ const company = mongoose.Schema({
     index: { unique: true },
     minLength: 4,
   },
-  hermes: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hermeses',
-  },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users',

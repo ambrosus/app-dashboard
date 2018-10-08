@@ -12,7 +12,7 @@ import { Component, ViewEncapsulation, AfterContentInit, QueryList, ContentChild
 @Component({
   selector: 'app-tab',
   template: '<div class="tabs__tab" [hidden]="!active"><ng-content></ng-content></div>',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class TabComponent {
   @Input() label: string;
@@ -26,7 +26,7 @@ export class TabComponent {
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class TabsComponent implements AfterContentInit {
 
@@ -42,7 +42,7 @@ export class TabsComponent implements AfterContentInit {
   }
 
   selectTab(tab: TabComponent) {
-    this.tabList.forEach(tab => (tab.active = false));
+    this.tabList.forEach(_tab => (_tab.active = false));
     tab.active = true;
   }
 

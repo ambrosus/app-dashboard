@@ -13,5 +13,8 @@ module.exports = {
   token: process.env.TOKEN,
   email: {
     API_KEY: process.env.EMAIL_API_KEY,
-  }
+  },
+  hermes: {
+    url: process.env.HERMES_URL,
+  },
 };

@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
 const { httpGet } = _require('/utils/requests');
-const config = _require('/config');
+const { token, hermes } = _require('/config');
 
 const User = _require('/models/users');
 
@@ -33,8 +33,7 @@ exports.login = async (req, res, next) => {
       User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner',
-        populate: { path: 'hermes' }
+        select: '-active -createdAt -updatedAt -__v -owner'
       })
       .populate({
         path: 'role',
@@ -54,7 +53,7 @@ exports.login = async (req, res, next) => {
     delete user.password;
 
     req.status = 200;
-    req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+    req.session.user = { _id: user._id, address: user.address, company: user.company };
     req.session.deviceInfo = deviceInfo;
     req.json = { data: user, message: 'Success', status: 200 };
     return next();
@@ -77,18 +76,16 @@ exports.login = async (req, res, next) => {
  */
 exports.verifyAccount = async (req, res, next) => {
   const { address, deviceInfo } = req.body;
-  const _user = req.session.user;
   let err, verified, user;
 
-  [err, verified] = await to(httpGet(`${_user.hermes.url}/accounts/${address}`, config.token));
+  [err, verified] = await to(httpGet(`${hermes.url}/accounts/${address}`, token));
   if (err || !verified) { logger.error('Hermes account GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
   [err, user] = await to(
     User.findOne({ address })
     .populate({
       path: 'company',
-      select: '-active -createdAt -updatedAt -__v -owner',
-      populate: { path: 'hermes' }
+      select: '-active -createdAt -updatedAt -__v -owner'
     })
     .populate({
       path: 'role',
@@ -107,7 +104,7 @@ exports.verifyAccount = async (req, res, next) => {
   delete user.password;
 
   req.status = 200;
-  req.session.user = { _id: user._id, address: user.address, company: user.company, hermes: user.company.hermes };
+  req.session.user = { _id: user._id, address: user.address, company: user.company };
   req.session.deviceInfo = deviceInfo;
   req.json = { data: user, message: 'Success', status: 200 };
   return next();

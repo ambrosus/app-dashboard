@@ -12,22 +12,22 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: '/settings/general'
+        redirectTo: '/settings/general',
       },
       {
         path: 'general',
-        component: GeneralSettingsComponent
+        component: GeneralSettingsComponent,
       },
       {
         path: 'security',
-        component: SecuritySettingsComponent
-      }
-    ]
-  }
+        component: SecuritySettingsComponent,
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class SettingsRoutingModule { }

@@ -12,7 +12,6 @@ declare let Web3: any;
 export class AssetsService {
   inputChanged = new Subject();
   _events: BehaviorSubject<any> = new BehaviorSubject({ results: [], resultCount: 0 });
-  hermes;
   ambrosus;
   web3;
 
@@ -27,12 +26,10 @@ export class AssetsService {
   emit(type) { window.dispatchEvent(new Event(type)); }
 
   initSDK() {
-    this.hermes = <any>this.storage.get('hermes') || <any>{};
     const secret = this.storage.get('secret');
     const token = this.storage.get('token');
 
     this.ambrosus = new AmbrosusSDK({
-      apiEndpoint: this.hermes.url,
       secret,
       Web3,
       headers: {
