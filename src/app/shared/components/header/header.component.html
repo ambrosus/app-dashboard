@@ -5,11 +5,10 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-
-
-<div #sidebar class="sidebar-slide-in" *ngIf="sidebar && isLoggedin">
+<div class="sidebar" *ngIf="sidebar && isLoggedin">
 
   <div style="padding: 100px 50px; text-align: left;">
+    
     <a (click)="toggleSidebar()" routerLink="/assets">
       <div style="display: inline;">
         <div class="m-r-10" style="display:inline;">
