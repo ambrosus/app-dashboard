@@ -26,6 +26,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always',
   }, {
     path: 'register',
+    canActivate: [AuthGuard],
     component: RegisterComponent,
     runGuardsAndResolvers: 'always',
   }, {

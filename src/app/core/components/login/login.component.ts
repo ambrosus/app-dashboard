@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
 
   verifyAccount() {
     this.error = false;
+    this.forgotPassword = false;
     const data = this.forms.addressForm.value;
 
     if (!this.forms.addressForm.valid) { return this.error = 'Secret is required'; }
@@ -57,6 +58,7 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.error = false;
+    this.forgotPassword = false;
     const data = this.forms.loginForm.value;
 
     if (!this.forms.loginForm.valid) { return this.error = 'All fields are required'; }

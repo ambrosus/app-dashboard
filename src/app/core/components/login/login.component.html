@@ -35,13 +35,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         </app-tab>
       </app-tabs>
 
-      <p class="card_body" *ngIf="error">{{ error }}</p>
+      <p class="card_body" *ngIf="error || forgotPassword">{{ forgotPassword ? 'Login using secret and change the password inside user settings' : error }}</p>
     </div>
 
-    <p class="card_body" *ngIf="forgotPassword">Login using the secret and change the password inside user settings</p>
-
     <div class="additional-options">
-      <a (click)="forgotPassword = !forgotPassword">Forgot your password?</a>
+      <a (click)="forgotPassword = !forgotPassword; error = false;">Forgot your password?</a>
       <a routerLink="/register">I want to register</a>
     </div>
   </div>
