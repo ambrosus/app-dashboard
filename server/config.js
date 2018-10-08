@@ -6,7 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 module.exports = {
-  db: 'mongodb://localhost:27017/dash',
+  db: process.env.MONGODB_URI,
   port: process.env.PORT || 5000,
   production: process.env.NODE_ENV ? process.env.NODE_ENV === 'production' : false,
   secret: process.env.SECRET,
