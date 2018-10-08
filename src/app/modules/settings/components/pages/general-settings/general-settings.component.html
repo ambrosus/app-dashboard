@@ -1,6 +1,6 @@
 <h4 class="m-b-30">Edit profile</h4>
 
-<form [formGroup]="editProfileForm" (ngSubmit)="editProfile()" class="m-w-4">
+<form [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()" class="m-w-4">
   <div class="form-text m-b-20">
     <label for="full_name">Full name</label>
     <input formControlName="full_name" type="text" id="full_name" spellcheck="false" appInput>
@@ -23,8 +23,8 @@
   </div>
   <div class="flex flex-direction-r justify-content-fe align-items-c">
     <app-spinner *ngIf="spinner"></app-spinner>
-    <button type="submit" class="button button--blue m-l-20" [disabled]="!editProfileForm.valid">Edit profile</button>
+    <button type="submit" class="button button--blue m-l-20" [disabled]="!updateProfileForm.valid">Edit profile</button>
   </div>
 </form>
 <h5 class="m-v-30" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-<h5 class="m-v-30" *ngIf="success" style="color: #57b846">Success!</h5>
+<h5 class="m-v-30" *ngIf="success" style="color: #57b846">{{ success }}</h5>

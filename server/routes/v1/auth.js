@@ -19,6 +19,6 @@ AuthRoutes.route('/sessions')
   .get(AuthController.getActiveSessions, (req, res) => { res.status(req.status).json(req.json); })
   .delete(AuthController.deleteSessions, (req, res) => { res.status(req.status).json(req.json); });
 
-AuthRoutes.delete('/session/:sessionId', AuthController.deleteSession, (req, res) => { res.status(req.status).json(req.json); });
+AuthRoutes.delete('/sessions/:sessionId', AuthController.deleteSession, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = AuthRoutes;

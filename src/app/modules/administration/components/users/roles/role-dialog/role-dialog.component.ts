@@ -63,7 +63,7 @@ export class RoleDialogComponent implements OnInit {
       this.message = {
         type: 'error',
         text: 'Title is incorrect.',
-      }
+      };
       return false;
     }
 
@@ -71,7 +71,7 @@ export class RoleDialogComponent implements OnInit {
       this.message = {
         type: 'error',
         text: 'No permissions selected.',
-      }
+      };
       return false;
     }
 
