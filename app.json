@@ -19,6 +19,9 @@
     },
     "TOKEN": {
       "required": true
+    },
+    "HERMES_URL": {
+      "required": true
     }
   },
   "formation": {
