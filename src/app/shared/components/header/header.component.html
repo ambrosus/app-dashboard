@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 
 
-<div class="sidebar-slide-in" *ngIf="sidebar && isLoggedin">
+<div #sidebar class="sidebar-slide-in" *ngIf="sidebar && isLoggedin">
 
   <div style="padding: 100px 50px; text-align: left;">
     <a (click)="toggleSidebar()" routerLink="/assets">
