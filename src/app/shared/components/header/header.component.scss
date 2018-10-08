@@ -179,6 +179,12 @@ app-header {
         &.active {
           color: $ablue;
         }
+
+        svg {
+          width: 20px;
+          height: 20px;
+          margin-right: 14px;
+        }
       }
     }
   }
