@@ -7,18 +7,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <header class="header">
   <div class="header-container wrapper">
-    <div class="flex flex-direction-r justify-content-fs align-items-c">
-      <a class="header-logo m-r-40" routerLink="/">
+    <div>
+      <app-svg-icon class="m-r-20" name="menu" width="20px" (click)="sidebar = !sidebar"></app-svg-icon>
+      <a class="header-logo" routerLink="/">
         <app-svg-icon name="logo" width="100px"></app-svg-icon>
       </a>
     </div>
     <a routerLink="/login" *ngIf="!isLoggedin">Login</a>
     <ul class="header-menu" *ngIf="isLoggedin && user">
-      <li class="header-menu__item">
-        <a routerLink="/settings" routerLinkActive="active">
-          <app-svg-icon name="cog" class="p-r-10" width="20px" height="20px"></app-svg-icon>
-        </a>
-      </li>
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
         <div class="avatar" *ngIf="user.full_name || (user.profile && user.profile.image)" [style.backgroundImage]="profile_image">
           <span *ngIf="!profile_image">{{ user.full_name.charAt(0) }}</span>
@@ -43,29 +39,41 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </ul>
   </div>
 </header>
-<div class="container p-h-10" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
-  <div class="header-container wrapper">
-    <div class="flex flex-direction-r justify-content-fs align-items-c">
-      <ul class="header-menu">
-        <div routerLink="/assets" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="blue-stack" fill="black" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Assets</span>
-          </span>
-        </div>
-        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/users" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Users</span>
-          </span>
-        </div>
-        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/company" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Company</span>
-          </span>
-        </div>
-      </ul>
-    </div>
-  </div>
-</div>
+
+<!-- Sidebar -->
+<aside class="sidebar" *ngIf="isLoggedin" [ngClass]="{active: sidebar}">
+  <header class="sidebar__header">
+    <a routerLink="/">
+      <img src="/assets/raster/amb-logo.png" style="height: 18px;" alt="Ambrosus Logo">
+    </a>
+    <app-svg-icon name="arrow-left" height="15px" (click)="sidebar = !sidebar"></app-svg-icon>
+  </header>
+  <ul class="sidebar__menu">
+    <li>
+      <a routerLink="/assets" routerLinkActive="active">
+        <app-svg-icon name="blue-stack" class="p-r-15" width="20px" height="20px"></app-svg-icon>
+        <span>Assets</span>
+      </a>
+    </li>
+    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+      <a routerLink="/administration/users" routerLinkActive="active">
+        <app-svg-icon name="header-user" class="p-r-15" width="20px" height="20px"></app-svg-icon>
+        <span>Users</span>
+      </a>
+    </li>
+    <li *ngIf="(user | checkIf: 'user.role.id' ) && (user.role.id===1 || user.role.id===2)">
+      <a routerLink="/administration/company" routerLinkActive="active">
+        <app-svg-icon name="settings-gear" class="p-r-15" width="20px" height="20px"></app-svg-icon>
+        <span>Company</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/settings" routerLinkActive="active">
+        <app-svg-icon name="cog" class="p-r-15" width="20px" height="20px"></app-svg-icon>
+        <span>Settings</span>
+      </a>
+    </li>
+  </ul>
+</aside>
+
+<div class="overlay" *ngIf="sidebar" (click)="sidebar = !sidebar"></div>

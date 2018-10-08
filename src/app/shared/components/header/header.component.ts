@@ -11,12 +11,13 @@ import { StorageService } from 'app/services/storage.service';
 import { LoginComponent } from 'app/core/components/login/login.component';
 import { MatDialog } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 
 export class HeaderComponent implements OnInit {
@@ -27,45 +28,51 @@ export class HeaderComponent implements OnInit {
   user;
   profile_image;
   addAccount;
-   constructor(
+  sidebar;
+
+  constructor(
     private authService: AuthService,
     private storageService: StorageService,
     private dialog: MatDialog,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) { }
-   ngOnInit() {
+
+  ngOnInit() {
     this.headerInit();
     window.addEventListener('user:refresh', () => {
       this.headerInit();
     });
+    this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationStart) {
+        this.sidebar = false;
+      }
+    });
   }
-   headerInit() {
+
+  headerInit() {
     this.user = this.storageService.get('user') || {};
     this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
     this.profile_image = '';
-     if (this.user && this.user.profile && this.user.profile.image) {
+    if (this.user && this.user.profile && this.user.profile.image) {
       this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
     }
-     this.isLoggedin = this.authService.isLoggedIn();
+    this.isLoggedin = this.authService.isLoggedIn();
     this.users = this.storageService.get('accounts') || [];
     this.dialog.closeAll();
   }
-   switchAccount(address) {
-    this.authService.switchAccount(address);
-  }
-   logout() {
-    this.authService.logout();
-  }
-   logoutAll() {
-    this.authService.logoutAll();
-  }
-   addAccountDialog() {
+
+  switchAccount(address) { this.authService.switchAccount(address); }
+
+  logout() { this.authService.logout(); }
+
+  logoutAll() { this.authService.logoutAll(); }
+
+  addAccountDialog() {
     const dialogRef = this.dialog.open(LoginComponent, {
       width: '600px',
       position: { right: '0' },
     });
-     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 }
