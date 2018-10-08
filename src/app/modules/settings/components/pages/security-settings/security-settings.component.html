@@ -1,6 +1,6 @@
 <h4 class="m-b-30">Reset password</h4>
 
-<form class="m-w-4" [formGroup]="resetForm" (ngSubmit)="changePassword()" [ngClass]="{ error: error }">
+<form class="m-w-4" [formGroup]="resetForm" (ngSubmit)="changePassword()">
   <div class="form-text m-b-20">
     <label for="passwordConfirm">Old Password *</label>
     <input formControlName="oldPassword" type="password" name="oldPassword" id="oldPassword" spellcheck="false" appInput>
@@ -19,7 +19,7 @@
   </div>
   <div class="m-t-30 center">
     <h5 *ngIf="error" style="color: #ea7070;">{{ error }}</h5>
-    <h5 *ngIf="resetSuccess" style="color: green;">Password changed successfully!</h5>
+    <h5 *ngIf="success" style="color: green;">{{ success }}</h5>
   </div>
 </form>
 
@@ -30,7 +30,6 @@
 
   <div class="p-t-20">
     <table style="width: 100%;">
-
       <tr>
         <th></th>
         <th>
@@ -40,7 +39,6 @@
           <h4>Browser</h4>
         </th>
       </tr>
-
       <tr *ngFor="let session of sessions">
         <td><img src="/assets/images/macbook.png" width="50px"></td>
         <td>
@@ -48,14 +46,16 @@
           <div *ngIf="session.current">(current)</div>
         </td>
         <td>{{ (session.session.deviceInfo ? session.session.deviceInfo.browser : 'unknown') | uppercase }}</td>
-        <td><a *ngIf="!session.current" class="abtn m-l-20 btn-solid-ablue" (click)="logoutSession(session._id)">Logout</a></td>
+        <td>
+          <h6 *ngIf="session.current">Current session</h6>
+          <button type="button" *ngIf="!session.current" class="button m-l-20" (click)="logoutSession(session._id)">Logout</button>
+        </td>
       </tr>
-
       <tr *ngIf="sessions.length > 1">
         <td></td>
         <td></td>
         <td></td>
-        <td><a class="abtn m-l-20 btn-solid-aorange" (click)="logoutOfAllDevices()">Logout of all devices</a></td>
+        <td><button type="button" class="button button--blue m-l-20" (click)="logoutOfAllDevices()">Logout of all devices</button></td>
       </tr>
 
     </table>

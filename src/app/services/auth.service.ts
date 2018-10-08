@@ -48,17 +48,6 @@ export class AuthService {
     return this.sdk.getToken(_secret, validUntil);
   }
 
-  getAccount(email) {
-    return new Observable(observer => {
-      const url = `/api/users/${email}`;
-
-      this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
-      );
-    });
-  }
-
   addAccount(user) {
     const accounts: any = this.storage.get('accounts') || [];
 

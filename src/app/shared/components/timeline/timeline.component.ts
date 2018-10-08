@@ -56,11 +56,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token, page, perPage };
     this.searchActive = false;
 
-    this.eventsResultsSub = this.assetsService._events.subscribe(events => this.events = this.assetsService.parseTimelineEvents(events).events);
+    this.eventsResultsSub = this.assetsService._events.subscribe(
+      events => {
+        this.unchangedEvents = JSON.parse(JSON.stringify(events.results));
+        this.events = this.assetsService.parseTimelineEvents(events).events;
+      }
+    );
 
     this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
         this.pagination.currentPage = page;
         this.pagination.perPage = perPage;
         this.pagination.resultCount = resp.resultCount;
@@ -93,7 +97,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        this.unchangedEvents = JSON.parse(JSON.stringify(resp.results));
         this.events = this.assetsService.parseTimelineEvents(resp).events;
         this.pagination.currentPage = page;
         this.pagination.perPage = perPage;
