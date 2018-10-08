@@ -1,7 +1,7 @@
 {
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 2017
   },
   "rules": {
     "semi": ["error", "always"],
@@ -20,6 +20,7 @@
     "logger": true,
     "_require": true,
     "base_dir": true,
-    "abs_path": true
+    "abs_path": true,
+    "to": true
   }
 }

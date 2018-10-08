@@ -34,10 +34,6 @@ const company = mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  branding: {
-    dasboard: String,
-    ambto: String,
-  },
   settings: {
     type: mongoose.Schema.Types.Mixed,
     default: { 'preview_app': 'https://amb.to' },

@@ -110,7 +110,7 @@ exports.getAll = async (req, res, next) => {
     Invite.find({ company })
     .populate({
       path: 'from',
-      select: 'full_name email'
+      select: 'full_name email',
     })
   );
   if (err || !invites) { logger.error('Invites GET error: ', err); return next(new NotFoundError(err.message)); }
@@ -118,7 +118,7 @@ exports.getAll = async (req, res, next) => {
   req.status = 200;
   req.json = { data: invites, message: 'Success', status: 200 };
   return next();
-}
+};
 
 /**
  * Verify an invite
@@ -131,22 +131,21 @@ exports.getAll = async (req, res, next) => {
  */
 exports.verify = async (req, res, next) => {
   const token = req.params.token;
-  let createdAt, deleted, invite;
-  try { createdAt = JSON.parse(tokenEncrypt.decrypt(token, config.secret))['createdAt']; } catch (error) {}
+  let err, createdAt, deleted, invite;
+  try { createdAt = JSON.parse(tokenEncrypt.decrypt(token, config.secret))['createdAt']; } catch (error) { return next(new ValidationError('Token is invalid')); }
   const validUntil = 2 * 24 * 60 * 60 * 1000;
 
-  if (createdAt) {
-    if (+new Date() - createdAt > validUntil) {
-      [err, deleted] = await to(Invite.findOneAndRemove({ token }));
-      if (err || !deleted) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err.message, err)); }
-      return next(new ValidationError('Invite expired'));
-    } else {
-      [err, invite] = await to(Invite.findOne({ token }));
-      if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
+  if (+new Date() - createdAt > validUntil) {
+    [err, deleted] = await to(Invite.findOneAndRemove({ token }));
+    if (err || !deleted) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err.message, err)); }
+    return next(new ValidationError('Invite expired'));
+  } else {
+    [err, invite] = await to(Invite.findOne({ token }));
+    if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
-      req.status = 200;
-      req.json = { data: null, message: 'Token is valid', status: 200 };
-      return next();
-    }
-  } else { return next(new ValidationError('Token is invalid')); }
-}
+    req.status = 200;
+    req.json = { data: null, message: 'Token is valid', status: 200 };
+    return next();
+  }
+
+};

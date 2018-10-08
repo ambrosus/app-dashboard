@@ -56,16 +56,6 @@ exports.create = async (req, res, next) => {
     }
   }
 
-  const query = { $or: [{ email }, { address }] };
-  const _user = {
-    full_name,
-    email,
-    address,
-    token,
-    password,
-    company: mongoose.Types.ObjectId(company._id),
-  };
-
   // Insert user in dash db
   [err, userCreated] = await to(User.findOrCreate(query, _user));
   if (err || !userCreated) { logger.error('User create error: ', err); return next(new ValidationError(err.message, err)); }
@@ -86,7 +76,7 @@ exports.create = async (req, res, next) => {
   req.status = 200;
   req.json = { data: userCreated.doc, message: 'Success', status: 200 };
   return next();
-}
+};
 
 /**
  * Sets company ownership
@@ -97,8 +87,9 @@ exports.create = async (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Status code 200 on success
  */
+
 exports.setOwnership = async (req, res, next) => {
-  const user = req.user || req.body.user;
+  const user = req.user;
   const company = req.company || req.body.company;
   let err, _user, companyUpdated;
 
@@ -120,6 +111,7 @@ exports.setOwnership = async (req, res, next) => {
   } else if (!company) {
     return next(new ValidationError('"company" object is required'));
   }
+
 };
 
 /**
@@ -155,7 +147,7 @@ exports.getAccount = async (req, res, next) => {
   req.status = 200;
   req.json = { data: user, message: 'Success', status: 200 };
   return next();
-}
+};
 
 /**
  * Get list of accounts based on the user's company
@@ -190,7 +182,7 @@ exports.getAccounts = async (req, res, next) => {
   req.status = 200;
   req.json = { data: users, message: 'Success', status: 200 };
   return next();
-}
+};
 
 /**
  * Get settings of a particular user (query using email address)
@@ -211,9 +203,7 @@ exports.getSettings = async (req, res, next) => {
   req.status = 200;
   req.json = { data: user.settings, message: 'Success', status: 200 };
   return next();
-}
-
-exports.getNotifications = (req, res, next) => {}
+};
 
 /**
  * Update user details using the user email address
@@ -233,7 +223,7 @@ exports.edit = async (req, res, next) => {
   const update = {};
   const allowedToChange = ['full_name', 'settings', 'profile'];
   for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) update[key] = query[key]
+    if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
 
   [err, userUpdated] = await to(User.updateOne({ email }, update));
@@ -242,7 +232,7 @@ exports.edit = async (req, res, next) => {
   req.status = 200;
   req.json = { data: userUpdated, message: 'Success', status: 200 };
   return next();
-}
+};
 
 /**
  * Change password of a user using their email address

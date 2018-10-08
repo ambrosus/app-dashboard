@@ -12,4 +12,4 @@ exports.extractErrorMessage = error => {
   let message = '';
   Object.keys(error.errors).map(key => message += `${error.errors[key].message}. `);
   return message;
-}
+};

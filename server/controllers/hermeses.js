@@ -19,8 +19,8 @@ const Hermes = _require('/models/hermeses');
  * @returns hermes Object on success with status code 200
  */
 exports.create = async (req, res, next) => {
-  const title = req.body.hermes ? req.body.hermes.title : null;
-  const url = req.body.hermes ? req.body.hermes.url : null;
+  const title = req.body.hermes ? req.body.hermes.title : req.body.title;
+  const url = req.body.hermes ? req.body.hermes.url : req.body.url;
   let err, hermes;
 
   [err, hermes] = await to(Hermes.create({ title, url }));

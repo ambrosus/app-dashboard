@@ -18,21 +18,16 @@ export class AuthGuard implements CanActivate {
     console.log('canActivate@AuthGuard');
 
     return new Promise((resolve) => {
-      this.dashboard.getHermeses().subscribe((hermeses: any) => {
-        if (state.url === '/login' && hermeses.total === 0) {
-          this.router.navigate(['/setup']);
-          resolve(false);
-        } else if (state.url === '/setup' && hermeses.total > 0) {
-          this.router.navigate(['/login']);
-          resolve(false);
-        } else if (state.url === '/login' && hermeses.total > 0 && this.auth.isLoggedIn()) {
-          this.router.navigate(['/assets']);
-          resolve(true);
-        }
 
-        resolve(true);
+      if (state.url === '/login' && this.auth.isLoggedIn()) {
+        this.router.navigate(['/assets']);
+        return resolve(false);
+      } else if (state.url !== '/login' && !this.auth.isLoggedIn()) {
+        this.router.navigate(['/login']);
+        return resolve(false);
+      }
 
-      });
+      resolve(true);
     });
 
   }

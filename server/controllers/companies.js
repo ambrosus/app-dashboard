@@ -20,8 +20,8 @@ const Company = _require('/models/companies');
  * @returns company Object on success with status code 200
  */
 exports.create = async (req, res, next) => {
-  const title = req.body.company ? req.body.company.title : null;
-  const settings = req.body.company ? req.body.company.settings : '';
+  const title = req.body.company ? req.body.company.title : req.body.title;
+  const settings = req.body.company ? req.body.company.settings : req.body.settings;
   const hermes = req.hermes || req.body.hermes;
   let err, company;
 
@@ -41,7 +41,7 @@ exports.edit = async (req, res, next) => {
   const update = {};
   const allowedToChange = ['title', 'settings'];
   for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) update[key] = query[key]
+    if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
 
   [err, companyUpdated] = await to(Company.findByIdAndUpdate(id, update));

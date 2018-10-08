@@ -16,7 +16,7 @@ const RolesController = _require('/controllers/roles');
 
 const routes = express.Router();
 
-// Roles sub-route 
+// Roles sub-route
 routes.route('/roles')
   .get(RolesController.getRoles, (req, res) => { res.status(req.status).json(req.json); })
   .post(checkPermission('roles'), RolesController.create, (req, res) => { res.status(req.status).json(req.json); });
@@ -34,6 +34,6 @@ routes.get('/settings/:email', UsersController.getSettings, (req, res) => { res.
 routes.route('/:email')
   .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
   .put(checkAddress, UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
-routes.route(checkPermission('invites'), '/role').post(UsersController.assignRole, (req, res) => { res.status(req.status).json(req.json); })
+routes.route(checkPermission('invites'), '/role').post(UsersController.assignRole, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = routes;

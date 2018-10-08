@@ -5,13 +5,11 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
-const findOrCreate = require('mongoose-findorcreate');
-const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const assets = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+const db = require('mongoose');
+
+const assets = db.Schema({
+  _id: db.Schema.Types.ObjectId,
   assetId: String,
   createdBy: String,
   infoEvent: String,
@@ -20,8 +18,8 @@ const assets = mongoose.Schema({
   updatedAt: Date,
 });
 
-assets.plugin(mongoosePaginate);
-assets.plugin(findOrCreate);
-assets.plugin(updatesAndErrors);
+assets.plugin(require('mongoose-paginate'));
+assets.plugin(require('mongoose-findorcreate'));
+assets.plugin(_require('/models/pluggins/updatesAndErrors'));
 
-module.exports = mongoose.model('Assets', assets);
+module.exports = db.model('Assets', assets);

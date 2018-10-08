@@ -20,11 +20,6 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: '/login',
   }, {
-    path: 'setup',
-    canActivate: [AuthGuard],
-    component: SetupComponent,
-    runGuardsAndResolvers: 'always',
-  }, {
     path: 'login',
     canActivate: [AuthGuard],
     component: LoginComponent,
