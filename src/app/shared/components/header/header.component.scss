@@ -191,7 +191,8 @@ app-header {
   top: 0;
   left: 0;
   background: white;
-  width: 25%;
+  max-width: 300px;
+  width: 100%;
   z-index: 999;
   transition: all 0.5s ease;
   transform: translateX(0%);
