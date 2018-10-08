@@ -5,9 +5,55 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
+<div class="sidebar" *ngIf="sidebar && isLoggedin">
+
+  <!-- <div class="sidebar__body" style="padding: 100px 50px; text-align: left;"> -->
+  <div class="sidebar__body">
+
+    <ul class="sidebar__list">
+      <li>
+        <a routerLink="/assets">
+          <app-svg-icon class="m-r-10" name="blue-stack" width="30px" height="30px"></app-svg-icon>
+          <h2>All Assets</h2><hr>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/assets/new">
+          <app-svg-icon class="m-r-10" name="pencil" width="30px" height="30px"></app-svg-icon>
+          <h2>Create Assets</h2><hr>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/settings/general">
+          <app-svg-icon class="m-r-10" name="settings-gear" width="30px" height="30px"></app-svg-icon>
+          <h2>Settings</h2><hr>
+        </a>
+      </li>
+    </ul>
+
+    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+      <a routerLink="/administration/users">
+        <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
+        <h2>Users</h2><hr>
+      </a>
+    </li>
+
+    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+      <a routerLink="/administration/company">
+        <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
+        <h2>Company</h2><hr>
+      </a>
+    </li>
+
+  </div>
+</div>
+
 <header class="header">
   <div class="header-container wrapper">
     <div class="flex flex-direction-r justify-content-fs align-items-c">
+      <a (click)="toggleSidebar()" class="header-logo m-r-20" *ngIf="isLoggedin">
+        <app-svg-icon name="menu-icon" height="30px" width="30px"></app-svg-icon>
+      </a>
       <a class="header-logo m-r-40" routerLink="/">
         <app-svg-icon name="logo" width="100px"></app-svg-icon>
       </a>
@@ -43,29 +89,3 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </ul>
   </div>
 </header>
-<div class="container p-h-10" style="height: 50px; background-color: #F6F8FE;" *ngIf="isLoggedin">
-  <div class="header-container wrapper">
-    <div class="flex flex-direction-r justify-content-fs align-items-c">
-      <ul class="header-menu">
-        <div routerLink="/assets" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="blue-stack" fill="black" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Assets</span>
-          </span>
-        </div>
-        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/users" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="header-user" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Users</span>
-          </span>
-        </div>
-        <div *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/company" class="header-submenu__item" routerLinkActive="active">
-          <span class="header-menu__item p-v-10">
-            <app-svg-icon name="settings-gear" class="p-r-10" width="25px" height="25px"></app-svg-icon>
-            <span class="hide-all display-480-inline-block">Company</span>
-          </span>
-        </div>
-      </ul>
-    </div>
-  </div>
-</div>

@@ -184,3 +184,31 @@ app-header {
     height: 100%;
   }
 }
+
+.sidebar {
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: white;
+  max-width: 300px;
+  width: 100%;
+  z-index: 999;
+  transition: all 0.5s ease;
+  transform: translateX(0%);
+  box-shadow: 1px 1px 1px 1px #ccc !important;
+
+  &__body {
+    padding: 100px 50px; text-align: left;
+  }
+
+  &__list {
+    app-svg-icon {
+      display: inline;
+    }
+    h2 {
+      display: inline;
+    }
+  }
+
+}
