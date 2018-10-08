@@ -14,6 +14,8 @@ import { InviteComponent } from './components/invite/invite.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { HelpService } from './components/help/help.service';
+import { InviteService } from 'app/services/invite.service';
+import { UsersService } from '../services/users.service';
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, NgSelectModule, ReactiveFormsModule, Angular2PromiseButtonModule.forRoot()],
@@ -34,6 +36,8 @@ import { HelpService } from './components/help/help.service';
       multi: true,
     },
     HelpService,
+    InviteService,
+    UsersService,
   ],
 })
 export class CoreModule { }

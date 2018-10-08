@@ -57,7 +57,7 @@ exports.create = async (req, res, next) => {
 
       [err, emailSent] = await to(email.send(invitation));
       if (err || !emailSent) { logger.error('Email send error: ', err); }
-      if (emailSent) logger.error('Email send success: ', emailSent);
+      if (emailSent) logger.info('Email send success: ', emailSent);
     });
 
     req.status = 200;
@@ -145,7 +145,7 @@ exports.verify = async (req, res, next) => {
       if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
       req.status = 200;
-      req.json = { data: null, message: 'Token is valid', status: 200 };
+      req.json = { data: invite, message: 'Token is valid', status: 200 };
       return next();
     }
   } else { return next(new ValidationError('Token is invalid')); }
