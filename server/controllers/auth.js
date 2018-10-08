@@ -41,7 +41,7 @@ exports.login = async (req, res, next) => {
       })
       .select('-active -createdAt -updatedAt -__v')
     );
-    if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
+    if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err ? err.message : 'No user', err)); }
 
     const valid = bcrypt.compareSync(password, user.password);
     if (!valid) return next(new ValidationError('User "password" is incorrect'));

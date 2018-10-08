@@ -76,28 +76,28 @@ export class AuthService {
     });
   }
 
-  // verifyAccount(secret) {
-  //   return new Observable(observer => {
-  //     let address;
-  //     try {
-  //       address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
-  //     } catch (e) { return observer.error({ message: 'Invalid secret' }); }
+  verifyAccount(secret) {
+    return new Observable(observer => {
+      let address;
+      try {
+        address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
+      } catch (e) { return observer.error({ message: 'Invalid secret' }); }
 
-  //     const deviceInfo = this.deviceService.getDeviceInfo();
+      const deviceInfo = this.deviceService.getDeviceInfo();
 
-  //     this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
-  //       ({ data }: any) => {
-  //         this.storage.set('secret', secret);
-  //         this.storage.set('token', this.getToken(secret));
-  //         this.storage.set('user', data);
-  //         this.addAccount(data);
-  //         this.emit('user:refresh');
-  //         return observer.next(data);
-  //       },
-  //       err => observer.error(err.error)
-  //     );
-  //   });
-  // }
+      this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
+        ({ data }: any) => {
+          this.storage.set('secret', secret);
+          this.storage.set('token', this.getToken(secret));
+          this.storage.set('user', data);
+          this.addAccount(data);
+          this.emit('user:refresh');
+          return observer.next(data);
+        },
+        err => observer.error(err.error)
+      );
+    });
+  }
 
   login(email: string, password: string) {
     return new Observable(observer => {

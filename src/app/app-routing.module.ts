@@ -6,13 +6,13 @@ import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { LoginComponent } from './core/components/login/login.component';
-import { SetupComponent } from './core/components/setup/setup.component';
 import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
 import { AuthLoginGuard } from './guards/auth-login.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
+import { RegisterComponent } from './core/components/register/register.component';
 
 const routes: Routes = [
   {
@@ -23,6 +23,10 @@ const routes: Routes = [
     path: 'login',
     canActivate: [AuthGuard],
     component: LoginComponent,
+    runGuardsAndResolvers: 'always',
+  }, {
+    path: 'register',
+    component: RegisterComponent,
     runGuardsAndResolvers: 'always',
   }, {
     path: 'invite/:token',
