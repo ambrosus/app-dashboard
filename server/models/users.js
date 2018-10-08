@@ -35,7 +35,7 @@ const users = mongoose.Schema({
   },
   password: {
     type: String,
-    required: [value => !value, '"Password" field is required']
+    required: [value => !value, '"Password" field is required'],
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
