@@ -11,6 +11,7 @@ import { StorageService } from 'app/services/storage.service';
 import { LoginComponent } from 'app/core/components/login/login.component';
 import { MatDialog } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router, Event, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -33,8 +34,13 @@ export class HeaderComponent implements OnInit {
     private authService: AuthService,
     private storageService: StorageService,
     private dialog: MatDialog,
-    private sanitizer: DomSanitizer
-  ) { }
+    private sanitizer: DomSanitizer,
+    private router: Router
+  ) {
+    this.router.events.subscribe( (event: Event) => {
+      if (event instanceof NavigationEnd) { this.sidebar = false; }
+    });
+  }
    ngOnInit() {
     this.headerInit();
     window.addEventListener('user:refresh', () => {
