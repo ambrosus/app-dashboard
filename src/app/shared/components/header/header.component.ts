@@ -27,7 +27,9 @@ export class HeaderComponent implements OnInit {
   user;
   profile_image;
   addAccount;
-   constructor(
+  sidebar: Boolean = false;
+
+  constructor(
     private authService: AuthService,
     private storageService: StorageService,
     private dialog: MatDialog,
@@ -68,4 +70,9 @@ export class HeaderComponent implements OnInit {
       console.log('The dialog was closed');
     });
   }
+
+  toggleSidebar() {
+    this.sidebar = !this.sidebar;
+  }
+
 }

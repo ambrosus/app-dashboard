@@ -184,3 +184,13 @@ app-header {
     height: 100%;
   }
 }
+
+.sidebar-slide-in {
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: white;
+  width: 25%;
+  z-index: 999;
+}
