@@ -7,57 +7,43 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <div class="sidebar" *ngIf="sidebar && isLoggedin">
 
-  <div style="padding: 100px 50px; text-align: left;">
-    
-    <a (click)="toggleSidebar()" routerLink="/assets">
-      <div style="display: inline;">
-        <div class="m-r-10" style="display:inline;">
-          <app-svg-icon name="blue-stack" width="30px" height="30px"></app-svg-icon>
-        </div>
-        <h2 style="color: black; display: inline;">All Assets</h2>
-      </div>
-      <hr>
-    </a>
+  <!-- <div class="sidebar__body" style="padding: 100px 50px; text-align: left;"> -->
+  <div class="sidebar__body">
 
-    <a (click)="toggleSidebar()" routerLink="/assets/new">
-      <div style="display: inline;">
-        <div class="m-r-10" style="display:inline;">
-          <app-svg-icon name="pencil" width="30px" height="30px"></app-svg-icon>
-        </div>
-        <h2 style="color: black; display: inline;">Create Assets</h2>
-      </div>
-      <hr>
-    </a>
+    <ul class="sidebar__list">
+      <li>
+        <a routerLink="/assets">
+          <app-svg-icon class="m-r-10" name="blue-stack" width="30px" height="30px"></app-svg-icon>
+          <h2>All Assets</h2><hr>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/assets/new">
+          <app-svg-icon class="m-r-10" name="pencil" width="30px" height="30px"></app-svg-icon>
+          <h2>Create Assets</h2><hr>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/settings/general">
+          <app-svg-icon class="m-r-10" name="settings-gear" width="30px" height="30px"></app-svg-icon>
+          <h2>Settings</h2><hr>
+        </a>
+      </li>
+    </ul>
 
-    <a (click)="toggleSidebar()" routerLink="/settings/general">
-      <div style="display: inline;">
-        <div class="m-r-10" style="display:inline;">
-          <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
-        </div>
-        <h2 style="color: black; display: inline;">Settings</h2>
-      </div>
-      <hr>
-    </a>
+    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+      <a routerLink="/administration/users">
+        <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
+        <h2>Users</h2><hr>
+      </a>
+    </li>
 
-    <a (click)="toggleSidebar()" *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/users">
-      <div style="display: inline;">
-        <div class="m-r-10" style="display:inline;">
-          <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
-        </div>
-        <h2 style="color: black; display: inline;">Users</h2>
-      </div>
-      <hr>
-    </a>
-
-    <a (click)="toggleSidebar()" *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)" routerLink="/administration/company">
-      <div style="display: inline;">
-        <div class="m-r-10" style="display:inline;">
-          <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
-        </div>
-        <h2 style="color: black; display: inline;">Company</h2>
-      </div>
-      <hr>
-    </a>
+    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+      <a routerLink="/administration/company">
+        <app-svg-icon name="settings-gear" width="30px" height="30px"></app-svg-icon>
+        <h2>Company</h2><hr>
+      </a>
+    </li>
 
   </div>
 </div>
