@@ -32,14 +32,14 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
+import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
-import { SidebarModule } from 'ng-sidebar';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule, SidebarModule.forRoot()],
+  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
   exports: [
     CommonModule,
     InputDirective,
@@ -66,7 +66,7 @@ import { SidebarModule } from 'ng-sidebar';
     CustomCheckboxDirective,
     FooterComponent,
     SidebarComponent,
-    SidebarModule,
+    HeaderComponent,
   ],
   declarations: [
     InputDirective,
@@ -91,6 +91,7 @@ import { SidebarModule } from 'ng-sidebar';
     CustomCheckboxDirective,
     FooterComponent,
     SidebarComponent,
+    HeaderComponent,
   ],
   entryComponents: [ JsonPreviewComponent, EventAddComponent ],
 })

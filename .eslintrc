@@ -20,6 +20,7 @@
     "logger": true,
     "_require": true,
     "base_dir": true,
-    "abs_path": true
+    "abs_path": true,
+    "to": true
   }
 }

@@ -57,11 +57,9 @@ export class AssetsService {
     return new Observable(observer => {
       let url = `/api/assets/events?`;
       Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
-      console.log(url);
 
       this.http.get(url).subscribe(
         ({ data }: any) => {
-          console.log(data);
           this._events.next(data);
           observer.next(data);
         },

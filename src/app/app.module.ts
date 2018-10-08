@@ -23,7 +23,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,11 +40,11 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
       disableBtn: true,
       btnLoadingClass: 'is-loading',
       handleCurrentBtnOnly: false,
-    })
+    }),
   ],
   providers: [
     DeviceDetectorService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

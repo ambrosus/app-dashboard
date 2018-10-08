@@ -80,7 +80,7 @@ exports.verifyAccount = async (req, res, next) => {
   const _user = req.session.user;
   let err, verified, user;
 
-  [err, verified] = await to(httpGet.get(`${_user.hermes.url}/accounts/${address}`, config.token));
+  [err, verified] = await to(httpGet(`${_user.hermes.url}/accounts/${address}`, config.token));
   if (err || !verified) { logger.error('Hermes account GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
 
   [err, user] = await to(
