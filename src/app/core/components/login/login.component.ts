@@ -14,7 +14,7 @@ import { AuthService } from 'app/services/auth.service';
 export class LoginComponent implements OnInit {
   forms: {
     loginForm?: FormGroup,
-    addressForm?: FormGroup
+    secretForm?: FormGroup
   } = {};
 
   error;
@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
       email: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.forms.addressForm = new FormGroup({
+    this.forms.secretForm = new FormGroup({
       secret: new FormControl(null, [Validators.required]),
     });
   }
@@ -41,9 +41,9 @@ export class LoginComponent implements OnInit {
   verifyAccount() {
     this.error = false;
     this.forgotPassword = false;
-    const data = this.forms.addressForm.value;
+    const data = this.forms.secretForm.value;
 
-    if (!this.forms.addressForm.valid) { return this.error = 'Secret is required'; }
+    if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
       this.authService.verifyAccount(data.secret).subscribe((resp: any) => {

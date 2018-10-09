@@ -31,7 +31,7 @@ export class AppComponent {
     });
   }
 
-  hideHeader() { return location.pathname === '/login' || location.pathname === '/register'; }
+  hideHeader() { return location.pathname === '/login' || location.pathname === '/signup'; }
 
   // Dropdown close on click outside of it
   @HostListener('click', ['$event'])

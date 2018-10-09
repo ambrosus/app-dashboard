@@ -14,7 +14,7 @@ import { InviteComponent } from './components/invite/invite.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { HelpService } from './components/help/help.service';
-import { RegisterComponent } from './components/register/register.component';
+import { SignupComponent } from './components/signup/signup.component';
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, NgSelectModule, ReactiveFormsModule, Angular2PromiseButtonModule.forRoot()],
@@ -27,7 +27,7 @@ import { RegisterComponent } from './components/register/register.component';
     LoginComponent,
     SetupComponent,
     InviteComponent,
-    RegisterComponent,
+    SignupComponent,
   ],
   providers: [
     {

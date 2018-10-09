@@ -12,7 +12,7 @@ import { InviteComponent } from './core/components/invite/invite.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthLoginGuard } from './guards/auth-login.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
-import { RegisterComponent } from './core/components/register/register.component';
+import { SignupComponent } from './core/components/signup/signup.component';
 
 const routes: Routes = [
   {
@@ -25,9 +25,9 @@ const routes: Routes = [
     component: LoginComponent,
     runGuardsAndResolvers: 'always',
   }, {
-    path: 'register',
+    path: 'signup',
     canActivate: [AuthGuard],
-    component: RegisterComponent,
+    component: SignupComponent,
     runGuardsAndResolvers: 'always',
   }, {
     path: 'invite/:token',

@@ -19,10 +19,10 @@ export class AuthGuard implements CanActivate {
 
     return new Promise((resolve) => {
 
-      if ((state.url === '/login' || state.url === '/register') && this.auth.isLoggedIn()) {
+      if ((state.url === '/login' || state.url === '/signup') && this.auth.isLoggedIn()) {
         this.router.navigate(['/assets']);
         return resolve(false);
-      } else if (!(state.url === '/login' || state.url === '/register') && !this.auth.isLoggedIn()) {
+      } else if (!(state.url === '/login' || state.url === '/signup') && !this.auth.isLoggedIn()) {
         this.router.navigate(['/login']);
         return resolve(false);
       }

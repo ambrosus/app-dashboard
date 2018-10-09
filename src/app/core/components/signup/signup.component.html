@@ -1,0 +1,101 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<div class="wrapper">
+
+  <!-- STEP 1 -->
+  <div *ngIf="steps.currentStep === 1">
+    <h2 class="card__title">Registration</h2>
+    <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+
+    <div class="card animated fadeInDown">
+      <div class="card__header center" style="padding: 30px 30px 0;">
+        <button type="button" class="button button--blue" (click)="steps.currentStep = 2; steps.step_1 = true;">Register my own key</button>
+        <p style="margin: 10px 0;">OR</p>
+        <button type="button" class="button button--blue" (click)="generateKeys()">Generate keys for me</button>
+        <small style="margin: 10px 0; display: block;">By proceeding I agree to your Terms of Service.</small>
+        <p class="card_body" *ngIf="error">{{ error }}</p>
+      </div>
+
+      <div class="additional-options">
+        <a></a>
+        <a routerLink="/login">I want to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div *ngIf="steps.currentStep === 2">
+    <h2 class="card__title">Registration</h2>
+    <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+
+    <div class="card animated fadeInDown">
+      <div class="card__header">
+        <app-tabs>
+          <app-tab label="Private/public keys">
+            <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
+              <label>Secret
+                <input formControlName="secret" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
+              </label>
+              <label>Address
+                <input formControlName="address" type="text" spellcheck="false" disabled>
+              </label>
+              <button type="button" class="button" (click)="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</button>
+              <label for="keys" style="margin: 10px 0; user-select: none;"><input type="checkbox" [checked]="saved" (change)="saved = !saved" id="keys" style="margin-right: 7px;">I saved my keys</label>
+              <button type="submit" class="button button--blue" [disabled]="!saved || !forms.secretForm.valid" [promiseBtn]="promiseAction">Next</button>
+            </form>
+          </app-tab>
+        </app-tabs>
+        <p class="card_body" *ngIf="error">{{ error }}</p>
+      </div>
+
+      <div class="additional-options">
+        <a></a>
+        <a routerLink="/login">I want to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div *ngIf="steps.currentStep === 3">
+    <h2 class="card__title">Almost done...</h2>
+    <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
+
+    <div class="card animated fadeInDown">
+      <div class="card__header">
+        <app-tabs>
+          <app-tab label="User information">
+            <form [formGroup]="forms.userForm" (ngSubmit)="registerUser()">
+              <label>Your organization (optional)
+                <input formControlName="organization" type="text" spellcheck="false">
+              </label>
+              <label>Your full name
+                <input formControlName="full_name" type="text" spellcheck="false">
+              </label>
+              <label>Your email
+                <input formControlName="email" type="email" spellcheck="false">
+              </label>
+              <label>Your password
+                <input formControlName="password" type="password" spellcheck="false">
+              </label>
+              <label>Your password again
+                <input formControlName="password_confirm" type="password" spellcheck="false">
+              </label>
+              <button type="submit" class="button button--blue" [disabled]="!forms.userForm.valid" [promiseBtn]="promiseAction">Continue</button>
+            </form>
+          </app-tab>
+        </app-tabs>
+        <p class="card_body" *ngIf="error">{{ error }}</p>
+      </div>
+
+      <div class="additional-options">
+        <a (click)="steps.currentStep = 2">Back to keys</a>
+        <a routerLink="/login">I want to sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
