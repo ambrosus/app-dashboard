@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
@@ -30,8 +30,6 @@ export class SignupComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private el: ElementRef,
-    private renderer: Renderer2
   ) {
     this.web3 = new Web3();
   }
