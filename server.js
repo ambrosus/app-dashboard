@@ -7,8 +7,6 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const config = require('./server/config');
 const mongoose = require('mongoose');
-const session = require('express-session');
-const MongoDBStore = require('connect-mongodb-session')(session);
 const invitationsCron = require('./server/cron/invitation-cron');
 // use log, trace, debug, info, warn, error when logging with *logger*
 global.logger = require('tracer').colorConsole();
@@ -46,39 +44,9 @@ mongoose.connect(config.db, { useNewUrlParser: true })
     invitationsCron.start();
   }).catch(error => logger.error('Mongodb connection error: ', error));
 
-// Session store
-const store = new MongoDBStore({
-  uri: config.db,
-  collection: 'sessions',
-});
-
-store.on('connected', () => {
-  logger.info('MongoDB Session Store connected');
-  store.client;
-});
-store.on('error', error => logger.error('MongoDB Session Store connection error: ', error));
-
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-const maxAge = 2 * 24 * 60 * 60 * 1000; // 2 days
-const sess = {
-  secret: config.secret,
-  resave: false,
-  saveUninitialized: true,
-  store,
-  cookie: {
-    maxAge,
-  },
-};
-
-if (config.production) {
-  app.set('trust proxy', 1);
-  sess.cookie.secure = true;
-}
-
-app.use(session(sess));
 
 // Routes
 app.use('/api', APIRoutes);

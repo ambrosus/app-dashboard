@@ -14,7 +14,5 @@ export class CompaniesService {
         err => { observer.error(err); }
       );
     });
-
   }
-
 }

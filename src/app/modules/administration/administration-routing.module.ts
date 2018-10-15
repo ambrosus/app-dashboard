@@ -7,7 +7,6 @@ import { UsersComponent } from './components/users/users/users.component';
 import { AllComponent } from './components/users/all/all.component';
 import { InviteComponent } from './components/users/invite/invite.component';
 import { InvitesComponent } from './components/users/invites/invites.component';
-import { RolesComponent } from './components/users/roles/roles.component';
 
 const routes: Routes = [
   {
@@ -54,10 +53,6 @@ const routes: Routes = [
           {
             path: 'invites',
             component: InvitesComponent,
-          },
-          {
-            path: 'roles',
-            component: RolesComponent,
           },
         ],
       },

@@ -13,9 +13,9 @@ const InvitesController = _require('/controllers/invites');
 const InvitesRoutes = express.Router();
 
 // Routes
-InvitesRoutes.post('/', checkPermission('invites'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); });
-InvitesRoutes.get('/company/:company', checkPermission('invites'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.post('/', checkPermission('manage_accounts'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.get('/company/:company', checkPermission('manage_accounts'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
 InvitesRoutes.get('/verify/:token', InvitesController.verify, (req, res) => { res.status(req.status).json(req.json); });
-InvitesRoutes.post('/delete', checkPermission('invites'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.post('/delete', checkPermission('manage_accounts'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = InvitesRoutes;

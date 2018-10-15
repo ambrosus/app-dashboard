@@ -26,7 +26,6 @@ export class HeaderComponent implements OnInit {
   overlay = false;
   users;
   user;
-  profile_image;
   addAccount;
   sidebar;
 
@@ -53,10 +52,6 @@ export class HeaderComponent implements OnInit {
   headerInit() {
     this.user = this.storageService.get('user') || {};
     this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
-    this.profile_image = '';
-    if (this.user && this.user.profile && this.user.profile.image) {
-      this.profile_image = this.sanitizer.bypassSecurityTrustStyle(`url(${this.user.profile.image || ''})`);
-    }
     this.isLoggedin = this.authService.isLoggedIn();
     this.users = this.storageService.get('accounts') || [];
     this.dialog.closeAll();
@@ -74,5 +69,9 @@ export class HeaderComponent implements OnInit {
       position: { right: '0' },
     });
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
+  }
+
+  checkPermission(routePermission: string[]): boolean {
+    return routePermission.every(route_permission => this.user.permissions.some(user_permission => user_permission === route_permission));
   }
 }

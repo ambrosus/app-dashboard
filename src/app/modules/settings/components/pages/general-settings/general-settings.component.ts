@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
-import { AuthService } from 'app/services/auth.service';
 import * as moment from 'moment-timezone';
 import { UsersService } from 'app/services/users.service';
 import { Subscription } from 'rxjs';
+
+declare let Web3: any;
 
 @Component({
   selector: 'app-general-settings',
@@ -20,21 +21,25 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
   spinner = false;
   user;
   timezones = [];
-  showCropper;
+  web3;
 
-  imageChangedEvent: any = '';
-  croppedImage: any = '';
-
-  constructor(private storageService: StorageService, private authService: AuthService,
-    private usersService: UsersService) { }
+  constructor(
+    private storageService: StorageService,
+    private usersService: UsersService
+  ) {
+    this.web3 = new Web3();
+  }
 
   ngOnInit() {
     this.updateProfileForm = new FormGroup({
-      full_name: new FormControl('', [Validators.required]),
-      timeZone: new FormControl('', []),
+      full_name: new FormControl('', []),
+      email: new FormControl('', [Validators.required]),
+      timeZone: new FormControl('', [Validators.required]),
+      password: new FormControl('', []),
+      passwordConfirm: new FormControl('', []),
     });
 
-    this.prefillupdateProfile();
+    this.prefillUpdateProfile();
     this.timezones = moment.tz.names();
   }
 
@@ -43,45 +48,33 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
     if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
   }
 
-  fileChangeEvent(event: any): void {
-    this.imageChangedEvent = event;
-    this.showCropper = true;
-  }
-
-  imageCropped(image: string) { this.croppedImage = image; }
-
   emit(type) { window.dispatchEvent(new Event(type)); }
 
-  prefillupdateProfile() {
+  prefillUpdateProfile() {
     this.user = this.storageService.get('user') || {};
-    this.updateProfileForm.get('full_name').setValue(this.user.full_name);
-    let companySettings: any = {};
-    try { companySettings = JSON.parse(this.user.settings); } catch (e) { console.log(e); }
-    this.updateProfileForm.get('timeZone').setValue(companySettings.timeZone);
-
-    try {
-      this.croppedImage = this.user.profile.image;
-    } catch (e) {
-      this.croppedImage = '';
-    }
-  }
-
-  resetForm() {
-    this.error = false;
-    this.success = false;
-    this.showCropper = false;
+    this.updateProfileForm.get('full_name').setValue(this.user.full_name || '');
+    this.updateProfileForm.get('email').setValue(this.user.email || '');
+    this.updateProfileForm.get('timeZone').setValue(this.user.timeZone || '');
   }
 
   updateProfile() {
-    this.resetForm();
+    this.error = false;
+    this.success = false;
+    const secret = this.storageService.get('secret');
     const data = this.updateProfileForm.value;
+
+    if (data.password && (data.password !== data.passwordConfirm)) { return this.error = 'Password and password confirm do not match'; }
+
     const body = {
       full_name: data.full_name,
-      settings: JSON.stringify({ timeZone: data.timeZone }),
-      profile: {
-        image: this.croppedImage,
-      },
+      email: data.email,
+      timeZone: data.timeZone,
     };
+
+    if (data.password) {
+      body['password'] = data.password;
+      body['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password));
+    }
 
     if (this.updateProfileForm.valid) {
       this.spinner = true;

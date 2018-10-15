@@ -2,20 +2,14 @@
 <form [formGroup]="inviteForm" (ngSubmit)="invite()" class="form-group m-w-6" style="padding: 0;">
   <div formArrayName="members">
     <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i" class="right m-b-30">
-      <div class="form-text m-b-20">
-        <label for="{{ i + 'email' }}">Email</label>
-        <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
-      </div>
       <div class="form-fields-coupled">
-        <div class="form-text m-b-20 m-r-10 w-50">
+        <div class="form-text m-b-20 m-r-10 w-70">
+          <label for="{{ i + 'email' }}">Email</label>
+          <input formControlName="email" type="email" id="{{ i + 'email' }}" spellcheck="false" appInput>
+        </div>
+        <div class="form-text m-b-20 w-30">
           <label for="{{ i + 'accessLevel' }}">Access Level</label>
           <input formControlName="accessLevel" type="number" min="0" id="{{ i + 'accessLevel' }}" spellcheck="false" appInput>
-        </div>
-        <div class="form-text m-b-20 w-50" *ngIf="roles.length">
-          <label for="role">Role</label>
-          <select formControlName="role" id="role">
-            <option *ngFor="let role of roles" value="{{ stringify(role) }}">{{ role.title }}</option>
-          </select>
         </div>
         <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&#8855;</a>
       </div>

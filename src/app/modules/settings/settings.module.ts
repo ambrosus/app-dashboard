@@ -13,7 +13,6 @@ import { SharedModule } from '../../shared/shared.module';
 import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './components/settings/settings.component';
 import { GeneralSettingsComponent } from './components/pages/general-settings/general-settings.component';
-import { SecuritySettingsComponent } from './components/pages/security-settings/security-settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -26,6 +25,9 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     ReactiveFormsModule,
     ImageCropperModule,
   ],
-  declarations: [SettingsComponent, GeneralSettingsComponent, SecuritySettingsComponent]
+  declarations: [
+    SettingsComponent,
+    GeneralSettingsComponent,
+  ],
 })
 export class SettingsModule { }

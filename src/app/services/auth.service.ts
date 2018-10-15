@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
-import { DeviceDetectorService } from 'ngx-device-detector';
 import * as moment from 'moment-timezone';
 
 declare let AmbrosusSDK: any;
@@ -19,8 +18,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService,
-    private deviceService: DeviceDetectorService
+    private storage: StorageService
   ) {
     this.sdk = new AmbrosusSDK({
       Web3,
@@ -61,7 +59,6 @@ export class AuthService {
 
     accounts.map((account, index) => {
       if (account.address === address) {
-        this.logoutAPI();
         accounts.splice(index, 1);
         accounts.unshift(account);
         this.storage.set('accounts', accounts);
@@ -101,9 +98,8 @@ export class AuthService {
 
   login(email: string, password: string) {
     return new Observable(observer => {
-      const deviceInfo = this.deviceService.getDeviceInfo();
 
-      this.http.post('/api/auth/login', { email, password, deviceInfo }).subscribe(
+      this.http.post('/api/auth/login', { email, password }).subscribe(
         ({ data }: any) => {
           console.log(data);
           const token = JSON.parse(data.token);
@@ -127,15 +123,6 @@ export class AuthService {
     });
   }
 
-  // Deletes current session
-  logoutAPI() {
-
-    this.http.delete('/api/auth/logout').subscribe(
-      () => console.log('User API logout success'),
-      () => console.log('User API logout error')
-    );
-  }
-
   logout() {
     const accounts: any = this.storage.get('accounts') || [];
     accounts.shift();
@@ -144,7 +131,6 @@ export class AuthService {
     if (accounts.length === 0) {
       this.logoutAll();
     } else {
-      this.logoutAPI();
       this.storage.set('user', accounts[0]);
       this.emit('user:refresh');
       this.router.navigate(['/assets']);
@@ -152,7 +138,6 @@ export class AuthService {
   }
 
   logoutAll() {
-    this.logoutAPI();
     this.storage.clear();
     this.emit('user:refresh');
     this.router.navigate(['/login']);

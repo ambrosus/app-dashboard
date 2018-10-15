@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { SettingsComponent } from './components/settings/settings.component';
 import { GeneralSettingsComponent } from './components/pages/general-settings/general-settings.component';
-import { SecuritySettingsComponent } from './components/pages/security-settings/security-settings.component';
 
 const routes: Routes = [
   {
@@ -17,10 +16,6 @@ const routes: Routes = [
       {
         path: 'general',
         component: GeneralSettingsComponent,
-      },
-      {
-        path: 'security',
-        component: SecuritySettingsComponent,
       },
     ],
   },

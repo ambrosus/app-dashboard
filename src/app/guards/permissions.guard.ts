@@ -1,21 +1,28 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { HttpResponse } from './response.interface';
-import { UsersService } from './../services/users.service';
+import { UsersService } from 'app/services/users.service';
 import { StorageService } from 'app/services/storage.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private router: Router, private storageService: StorageService, private http: HttpClient, private userService: UsersService) { }
+  constructor(private router: Router, private storageService: StorageService, private userService: UsersService) { }
 
-  routePermission = {
-    '/administration/users/all': 'users',
-    '/administration/users/invite': 'invites',
-    '/administration/users/invites': 'invites',
-    '/administration/users/roles': 'roles',
+  routesPermissions = {
+    '/administration': 'manage_organization',
+    '/administration/users': 'manage_accounts',
   };
+
+  getRoutePermissions(routeURL) {
+    return Object.keys(this.routesPermissions).reduce((permissions, key, index, array) => {
+      if (routeURL.includes(key)) { permissions.push(this.routesPermissions[key]); }
+      return permissions;
+    }, []);
+  }
+
+  checkPermission(userPermissions: string[], routePermission: string[]): boolean {
+    return routePermission.every(route_permission => userPermissions.some(user_permission => user_permission === route_permission));
+  }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
 
@@ -23,24 +30,11 @@ export class PermissionsGuard implements CanActivate {
     const user: any = this.storageService.get('user');
 
     return new Promise(resolve => {
-      this.userService.getUser(user.email).subscribe((res: HttpResponse) => {
-        // this.http.get('/api/users').subscribe((res: HttpResponse) => {
-        resolve(true);
-        // if (res.data[0].role && res.data[0].role.permissions) {
-        //   const permissions = res.data[0].role.permissions;
-        //   if (this.checkPermission(permissions, this.routePermission[state.url])) {
-        //     resolve(true);
-        //   } else {
-        //     this.router.navigate(['/assets']);
-        //     resolve(false);
-        //   }
-        // } else { resolve(false); }
+      this.userService.getUser(user.email).subscribe((_user: any) => {
+        if (this.checkPermission(_user.permissions, this.getRoutePermissions(state.url))) { return resolve(true); }
+        this.router.navigate(['/']);
+        resolve(false);
       });
     });
   }
-
-  checkPermission(permissions: string[], routePermission: string): boolean {
-    return permissions.find(permission => permission === routePermission) ? true : false;
-  }
-
 }
