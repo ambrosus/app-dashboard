@@ -111,9 +111,10 @@ exports.getEvents = async (req, res, next) => {
     if (data) { url += `${decodeURI(data)}&`; }
     if (assetId) { url += `${decodeURI(assetId)}&`; }
   } catch (e) {}
+  console.log('URL', url);
 
   [err, events] = await to(httpGet(url, token));
-  if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'])); }
+  if (err || !events) { return next(new NotFoundError(err.data['reason'])); }
 
   const eventsCopy = JSON.parse(JSON.stringify(events));
 
