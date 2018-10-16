@@ -6,7 +6,6 @@ import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { LoginComponent } from './core/components/login/login.component';
-import { SetupComponent } from './core/components/setup/setup.component';
 import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
@@ -36,8 +35,10 @@ const routes: Routes = [
   }, {
     path: 'administration',
     canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always',
+    data: { permissions: ['manage_organization'] },
   }, {
     path: 'settings',
     canActivate: [AuthGuard],

@@ -36,6 +36,7 @@ const routes: Routes = [
       {
         path: 'users',
         component: UsersComponent,
+        data: { permissions: ['manage_accounts'] },
         children: [
           {
             path: '',
