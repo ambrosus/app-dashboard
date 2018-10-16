@@ -50,3 +50,14 @@ exports.edit = async (req, res, next) => {
   req.json = { data: companyUpdated, message: 'Success', status: 200 };
   return next();
 }
+
+exports.check = async (req, res, next) => {
+  const { title } = req.query;
+  let err, company;
+
+  [err, company] = await to(Company.findOne({ title }));
+
+  req.status = company ? 400 : 200;
+  req.json = { data: null, message: `${company ? 'Organization exists' : 'No organization'}`, status: req.status };
+  return next();
+}

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
+import { Subscription } from 'rxjs';
+import { CompaniesService } from 'app/services/companies.service';
 
 declare let Web3: any;
 
@@ -12,12 +14,13 @@ declare let Web3: any;
   styleUrls: ['./signup.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   forms: {
     secretForm?: FormGroup,
     userForm?: FormGroup
   } = {};
 
+  organizationCheck: Subscription;
   error;
   success;
   promiseAction;
@@ -30,6 +33,7 @@ export class SignupComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private companiesService: CompaniesService
   ) {
     this.web3 = new Web3();
   }
@@ -38,14 +42,18 @@ export class SignupComponent implements OnInit {
     this.forms.secretForm = new FormGroup({
       secret: new FormControl(null, [Validators.required]),
       address: new FormControl(null, [Validators.required]),
+      saved: new FormControl(null, [Validators.requiredTrue]),
     });
     this.forms.userForm = new FormGroup({
       organization: new FormControl(null, []),
-      full_name: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required]),
-      password: new FormControl(null, [Validators.required]),
-      password_confirm: new FormControl(null, [Validators.required]),
+      reason: new FormControl(null, [Validators.required]),
+      terms: new FormControl(null, [Validators.requiredTrue]),
     });
+  }
+
+  ngOnDestroy() {
+    if (this.organizationCheck) { this.organizationCheck.unsubscribe(); }
   }
 
   generateKeys() {
@@ -108,10 +116,20 @@ export class SignupComponent implements OnInit {
     const data = this.forms.userForm.value;
 
     if (!this.forms.userForm.valid) { return this.error = 'Please fill all required fields'; }
-    if (data.password !== data.password_confirm) { return this.error = 'Password and password again do not match'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      resolve();
+      // Check if organization exists
+      this.organizationCheck = this.companiesService.checkCompany({ title: data.organization }).subscribe(
+        res => {
+          // Register a user
+          resolve();
+          this.steps.currentStep = 4;
+        },
+        err => {
+          reject();
+          this.error = 'Organization with this name already exists';
+        }
+      );
     });
   }
 }

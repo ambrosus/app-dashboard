@@ -45,8 +45,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
                 <input formControlName="address" type="text" spellcheck="false" disabled>
               </label>
               <button type="button" class="button" (click)="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</button>
-              <label for="keys" style="margin: 10px 0; user-select: none;"><input type="checkbox" [checked]="saved" (change)="saved = !saved" id="keys" style="margin-right: 7px;">I saved my keys</label>
-              <button type="submit" class="button button--blue" [disabled]="!saved || !forms.secretForm.valid" [promiseBtn]="promiseAction">Next</button>
+              <label style="margin: 10px 0; user-select: none;">
+                <input type="checkbox" formControlName="saved"> I saved my keys
+              </label>
+              <button type="submit" class="button button--blue" [disabled]="!forms.secretForm.valid" [promiseBtn]="promiseAction">Next</button>
             </form>
           </app-tab>
         </app-tabs>
@@ -73,17 +75,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
               <label>Your organization (optional)
                 <input formControlName="organization" type="text" spellcheck="false">
               </label>
-              <label>Your full name
-                <input formControlName="full_name" type="text" spellcheck="false">
-              </label>
               <label>Your email
                 <input formControlName="email" type="email" spellcheck="false">
               </label>
-              <label>Your password
-                <input formControlName="password" type="password" spellcheck="false">
+              <label>What makes you interested in our solution?
+                <textarea formControlName="reason" style="max-width: 100%;"></textarea>
               </label>
-              <label>Your password again
-                <input formControlName="password_confirm" type="password" spellcheck="false">
+              <label style="user-select: none;">
+                <input formControlName="terms" type="checkbox"> I have read and accepted your Terms of Service
               </label>
               <button type="submit" class="button button--blue" [disabled]="!forms.userForm.valid" [promiseBtn]="promiseAction">Continue</button>
             </form>
@@ -97,5 +96,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         <a routerLink="/login">I want to sign in</a>
       </div>
     </div>
+  </div>
+
+  <!-- STEP 4 - SUCCESS -->
+  <div class="card animated fadeInDown" *ngIf="steps.currentStep === 4" style="padding: 30px;">
+    <h2 class="card__title">Thank you!</h2>
+    <p class="card__body">Your application has been successfully submitted for approval. Once reviewed, we will send you an e-mail.</p>
+    <hr>
   </div>
 </div>

@@ -108,6 +108,11 @@ input:not([type="checkbox"]),
   }
 }
 
+textarea {
+  @extend .input;
+  margin-top: 5px;
+}
+
 label {
   color: #5b5e63;
   text-align: left;
