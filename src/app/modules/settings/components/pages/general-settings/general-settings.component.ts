@@ -31,16 +31,23 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.user = this.storageService.get('user') || {};
+
     this.updateProfileForm = new FormGroup({
-      full_name: new FormControl('', []),
-      email: new FormControl('', [Validators.required]),
-      timeZone: new FormControl('', [Validators.required]),
+      full_name: new FormControl(this.user.full_name, []),
+      email: new FormControl(this.user.email, [Validators.required]),
+      timeZone: new FormControl(this.user.timeZone, [Validators.required]),
       password: new FormControl('', []),
-      passwordConfirm: new FormControl('', []),
+      passwordConfirm: new FormControl('', [this.comparePasswords]),
     });
 
-    this.prefillUpdateProfile();
     this.timezones = moment.tz.names();
+  }
+
+  comparePasswords(fieldControl: FormControl) {
+    try {
+      return fieldControl.value === this.updateProfileForm.value.password ? null : { NotEqual: true };
+    } catch (e) { return null; }
   }
 
   ngOnDestroy() {
@@ -49,13 +56,6 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
   }
 
   emit(type) { window.dispatchEvent(new Event(type)); }
-
-  prefillUpdateProfile() {
-    this.user = this.storageService.get('user') || {};
-    this.updateProfileForm.get('full_name').setValue(this.user.full_name || '');
-    this.updateProfileForm.get('email').setValue(this.user.email || '');
-    this.updateProfileForm.get('timeZone').setValue(this.user.timeZone || '');
-  }
 
   updateProfile() {
     this.error = false;

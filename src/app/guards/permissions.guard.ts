@@ -15,13 +15,13 @@ export class PermissionsGuard implements CanActivate {
 
   getRoutePermissions(routeURL) {
     return Object.keys(this.routesPermissions).reduce((permissions, key, index, array) => {
-      if (routeURL.includes(key)) { permissions.push(this.routesPermissions[key]); }
+      if (routeURL.indexOf(key) > -1) { permissions.push(this.routesPermissions[key]); }
       return permissions;
     }, []);
   }
 
-  checkPermission(userPermissions: string[], routePermission: string[]): boolean {
-    return routePermission.every(route_permission => userPermissions.some(user_permission => user_permission === route_permission));
+  checkPermission(userPermissions: string[], routePermissions: string[]): boolean {
+    return routePermissions.every(routePermission => userPermissions.some(userPermission => userPermission === routePermission));
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
@@ -31,7 +31,12 @@ export class PermissionsGuard implements CanActivate {
 
     return new Promise(resolve => {
       this.userService.getUser(user.email).subscribe((_user: any) => {
-        if (this.checkPermission(_user.permissions, this.getRoutePermissions(state.url))) { return resolve(true); }
+        const routePermissions = this.getRoutePermissions(state.url) || [];
+
+        if (routePermissions.length) {
+          return resolve(this.checkPermission(_user.permissions, routePermissions));
+        }
+
         this.router.navigate(['/']);
         resolve(false);
       });
