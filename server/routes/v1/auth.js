@@ -14,12 +14,5 @@ const AuthRoutes = express.Router();
 // Routes
 AuthRoutes.post('/login', AuthController.login, (req, res) => { res.status(req.status).json(req.json); });
 AuthRoutes.post('/verify', AuthController.verifyAccount, (req, res) => { res.status(req.status).json(req.json); });
-AuthRoutes.post('/logout', AuthController.logout, (req, res) => { res.status(req.status).json(req.json); });
-
-AuthRoutes.route('/sessions')
-  .get(AuthController.getActiveSessions, (req, res) => { res.status(req.status).json(req.json); })
-  .delete(AuthController.deleteSessions, (req, res) => { res.status(req.status).json(req.json); });
-
-AuthRoutes.delete('/sessions/:sessionId', AuthController.deleteSession, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = AuthRoutes;

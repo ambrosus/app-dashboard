@@ -15,7 +15,12 @@ export class AssetsService {
   ambrosus;
   web3;
 
-  constructor(private storage: StorageService, private http: HttpClient, private auth: AuthService, private router: Router) {
+  constructor(
+    private storageService: StorageService,
+    private http: HttpClient,
+    private auth: AuthService,
+    private router: Router
+  ) {
     this.initSDK();
     this.web3 = new Web3();
     window.addEventListener('user:refresh', () => this.initSDK());
@@ -26,8 +31,8 @@ export class AssetsService {
   emit(type) { window.dispatchEvent(new Event(type)); }
 
   initSDK() {
-    const secret = this.storage.get('secret');
-    const token = this.storage.get('token');
+    const secret = this.storageService.get('secret');
+    const token = this.storageService.get('token');
 
     this.ambrosus = new AmbrosusSDK({
       secret,
@@ -52,7 +57,8 @@ export class AssetsService {
 
   getEvents(options) {
     return new Observable(observer => {
-      let url = `/api/assets/events?`;
+      const { address } = <any>this.storageService.get('user');
+      let url = `/api/assets/events?address="${address}"`;
       Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
 
       this.http.get(url).subscribe(

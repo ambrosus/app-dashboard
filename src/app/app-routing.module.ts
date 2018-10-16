@@ -41,8 +41,10 @@ const routes: Routes = [
   }, {
     path: 'administration',
     canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
     runGuardsAndResolvers: 'always',
+    data: { permissions: ['manage_organization'] },
   }, {
     path: 'settings',
     canActivate: [AuthGuard],

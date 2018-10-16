@@ -23,6 +23,10 @@ const users = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
   },
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Companies',
+  },
   full_name: {
     type: String,
     required: [value => !value, '"Full name" field is required'],
@@ -37,10 +41,6 @@ const users = mongoose.Schema({
     type: String,
     required: [value => !value, '"Password" field is required'],
   },
-  company: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies',
-  },
   address: {
     type: String,
     required: [value => !value, '"Address" field is required'],
@@ -50,18 +50,8 @@ const users = mongoose.Schema({
     type: String,
     required: [value => !value, '"Token" field is required'],
   },
-  role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Roles',
-  },
-  profile: {
-    image: String,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-  settings: String,
+  permissions: ['create_asset', 'create_event'],
+  timeZone: String,
   lastLogin: {
     type: Date,
     default: +new Date(),

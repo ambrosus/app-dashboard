@@ -33,7 +33,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.edit = async (req, res, next) => {
-  const id = req.session.user.company || '';
+  const id = req.query.company || '';
   const query = req.body;
   let err, companyUpdated;
 

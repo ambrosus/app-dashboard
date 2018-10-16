@@ -12,6 +12,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AuthService } from 'app/services/auth.service';
+import { StorageService } from 'app/services/storage.service';
 
 @Component({
   selector: 'app-assets',
@@ -47,7 +48,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private storageService: StorageService
   ) {
     this.assetsSubscription = this.router.events.subscribe((e: any) => { if (e instanceof NavigationEnd) { this.loadAssets(); } });
   }
@@ -64,7 +66,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.resetLoadAssets();
     this.loader = true;
     const token = this.authService.getToken();
-    this.assetsSubscription = this.assetsService.getAssets({ page, perPage, token }).subscribe(
+    const { address } = <any>this.storageService.get('user');
+    this.assetsSubscription = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
       (assets: any) => {
         console.log(assets);
         this.loader = false;

@@ -13,7 +13,7 @@ const Web3 = require('web3');
 const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError, AuthenticationError } = _require('/errors');
+const { ValidationError, NotFoundError } = _require('/errors');
 const { hermes } = _require('/config');
 
 const User = _require('/models/users');
@@ -46,11 +46,6 @@ exports.create = async (req, res, next) => {
       email = _token['email'];
       accessLevel = _token['accessLevel'];
       company = _token['company'];
-
-      if (_token['role']['title'] === 'admin') {
-        permissions = ['register_accounts', 'create_asset', 'create_event'];
-      }
-
     } catch (error) {
       return res.status(400).json({ message: 'Invite token is invalid' });
     }
@@ -89,9 +84,9 @@ exports.create = async (req, res, next) => {
  */
 
 exports.setOwnership = async (req, res, next) => {
-  const user = req.user;
+  const user = req.user || req.body.company;
   const company = req.company || req.body.company;
-  let err, _user, companyUpdated;
+  let err, _user, companyUpdated, userUpdated;
 
   if (user && company) {
     // Find user
@@ -102,8 +97,13 @@ exports.setOwnership = async (req, res, next) => {
     [err, companyUpdated] = await to(Company.findByIdAndUpdate(company._id, { owner: user._id }));
     if (err || !companyUpdated) { logger.error('Company update error: ', err); return next(new ValidationError(err.message, err)); }
 
+    // Update user
+    _user.company = companyUpdated._id;
+    [err, userUpdated] = await to(_user.save());
+    if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
+
     req.status = 200;
-    req.json = { data: companyUpdated, message: 'Success', status: 200 };
+    req.json = { data: userUpdated, message: 'Success', status: 200 };
     return next();
 
   } else if (!user) {
@@ -111,7 +111,6 @@ exports.setOwnership = async (req, res, next) => {
   } else if (!company) {
     return next(new ValidationError('"company" object is required'));
   }
-
 };
 
 /**
@@ -132,10 +131,6 @@ exports.getAccount = async (req, res, next) => {
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
     })
-    .populate({
-      path: 'role',
-      select: '-createdAt -updatedAt -__v',
-    })
     .select('-active -createdAt -updatedAt -__v')
   );
   if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
@@ -154,7 +149,7 @@ exports.getAccount = async (req, res, next) => {
  * @returns users Object & number of users (count) on success with status code 200
  */
 exports.getAccounts = async (req, res, next) => {
-  const company = req.session.user.company || '';
+  const company = req.query.company || '';
   let err, users;
 
   [err, users] = await to(
@@ -163,37 +158,12 @@ exports.getAccounts = async (req, res, next) => {
       path: 'company',
       select: '-active -createdAt -updatedAt -__v -owner',
     })
-    .populate({
-      path: 'role',
-      select: '-createdAt -updatedAt -__v',
-    })
     .select('-password -__v')
   );
   if (err || !users) { logger.error('Users GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   req.status = 200;
   req.json = { data: users, message: 'Success', status: 200 };
-  return next();
-};
-
-/**
- * Get settings of a particular user (query using email address)
- *
- * @name getSettings
- * @route {GET} /settings/:email
- * @queryparam email
- * @returns Status code 400 on failure
- * @returns userSettings (user.settings) Object on success with status code 200
- */
-exports.getSettings = async (req, res, next) => {
-  const email = req.params.email;
-  let err, user;
-
-  [err, user] = await to(User.findOne({ email }));
-  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
-
-  req.status = 200;
-  req.json = { data: user.settings, message: 'Success', status: 200 };
   return next();
 };
 
@@ -210,89 +180,20 @@ exports.getSettings = async (req, res, next) => {
 exports.edit = async (req, res, next) => {
   const email = req.params.email;
   const query = req.body;
-  let err, userUpdated;
+  let err, user, userUpdated;
 
-  const update = {};
-  const allowedToChange = ['full_name', 'settings', 'profile'];
+  [err, user] = await to(User.findOne({ email }));
+  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
+
+  const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token'];
   for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
+    if (allowedToChange.indexOf(key) > -1) { user[key] = query[key]; }
   }
 
-  [err, userUpdated] = await to(User.updateOne({ email }, update));
+  [err, userUpdated] = await to(user.save());
   if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
   req.json = { data: userUpdated, message: 'Success', status: 200 };
   return next();
-};
-
-/**
- * Change password of a user using their email address
- *
- * @name changePassword
- * @route {PUT} /users/password
- * @bodyparam email, oldPassword, newPassword
- * @returns Status code 400 on failure
- * @returns Password success message on success with status code 200
- */
-exports.changePassword = async (req, res, next) => {
-  const { email, oldPassword, newPassword } = req.body;
-  let err, user, userUpdated;
-
-  if (email && oldPassword && newPassword) {
-    [err, user] = await to(User.findOne({ email }));
-    if (err || !user) { logger.error('User GET error: ', err); return next(new ValidationError(err.message, err)); }
-
-    try {
-      const valid = bcrypt.compareSync(oldPassword, user.password);
-      if (!valid) return next(new ValidationError('User "password" is incorrect'));
-
-      const decData = web3.eth.accounts.decrypt(JSON.parse(user.token), oldPassword);
-      const encData = web3.eth.accounts.encrypt(decData.privateKey, newPassword);
-      user.token = JSON.stringify(encData);
-
-      user.password = newPassword;
-
-      [err, userUpdated] = await to(user.save());
-      if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
-
-      req.status = 200;
-      req.json = { data: userUpdated, message: 'Success', status: 200 };
-      return next();
-    } catch (e) { return next(new ValidationError('Password is incorrect')); }
-  } else if (!email) {
-    return next(new ValidationError('"email" is required'));
-  } else if (!oldPassword) {
-    return next(new ValidationError('"oldPassword" is required'));
-  } else if (!newPassword) {
-    return next(new ValidationError('"newPassword" is required'));
-  }
-};
-
-/**
- * Assign roles (role ObjectID) to users using their email address
- *
- * @name assignRole
- * @route {POST} api/users/role
- * @bodyparam email, role (Mongoose objectID)
- * @returns Status code 400 on failure
- * @returns Save success message on success with status code 200
- */
-exports.assignRole = async (req, res, next) => {
-  const { email, role } = req.body;
-  let err, userUpdated;
-
-  if (email && role) {
-    [err, userUpdated] = await to(User.findOneAndUpdate({ email }, { role }));
-    if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
-
-    req.status = 200;
-    req.json = { data: userUpdated, message: 'Success', status: 200 };
-    return next();
-
-  } else if (!email) {
-    return next(new ValidationError('"email" is required'));
-  } else if (!role) {
-    return next(new ValidationError('"role" objectID is required'));
-  }
 };

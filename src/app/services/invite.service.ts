@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { StorageService } from './storage.service';
 
 export class InviteService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private storageService: StorageService) { }
 
   validateInvite(token) {
     const url = `/api/invites/verify/${token}`;
@@ -29,7 +30,8 @@ export class InviteService {
   }
 
   revokeInvites(ids) {
-    const url = `/api/invites/delete`;
+    const user = <any>this.storageService.get('user');
+    const url = `/api/invites/delete?user=${user._id}`;
 
     return new Observable(observer => {
       this.http.post(url, { ids }).subscribe(

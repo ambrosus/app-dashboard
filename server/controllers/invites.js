@@ -81,7 +81,7 @@ exports.create = async (req, res, next) => {
  */
 exports.delete = async (req, res, next) => {
   const ids = req.body.ids || [];
-  const userId = req.session.user._id;
+  const userId = req.query.user;
   let err, deleted;
 
   [err, deleted] = await to(Invite.deleteMany({ _id: { $in: ids }, from: userId }));
