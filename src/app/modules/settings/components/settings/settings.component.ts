@@ -14,18 +14,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  sidebar = [
-    {
-      title: 'General',
-      link: 'general',
-      icon: 'user',
-    },
-    {
-      title: 'Security',
-      link: 'security',
-      icon: 'lock',
-    },
-  ];
 
   constructor() { }
 

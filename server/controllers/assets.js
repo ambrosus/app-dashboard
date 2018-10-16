@@ -21,16 +21,15 @@ const { hermes } = _require('/config');
  * @route { GET } api/assets/
  * @param { String } page - pagination page to get
  * @param { String } perPage - assets perPage to get
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
 exports.getAssets = async (req, res, next) => {
   const { page, perPage } = req.query;
-  const user = req.session.user;
+  const address = req.query.address;
   let err, assets;
 
-  [err, assets] = await to(Asset.paginate({ createdBy: user.address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
+  [err, assets] = await to(Asset.paginate({ createdBy: address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
   if (err || !assets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
@@ -47,7 +46,6 @@ exports.getAssets = async (req, res, next) => {
  * @route { GET } api/assets/:assetId
  * @param { String } assetId
  * @param { String } token - for getting public and private assets/events
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
@@ -99,18 +97,17 @@ exports.getAsset = async (req, res, next) => {
  * @param { String } data - data for Hermes events query
  * @param { String } identifier - identifier for Hermes events query
  * @param { String } token - for getting public and private assets/events
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
 exports.getEvents = async (req, res, next) => {
   const { createdBy, data, assetId, page, perPage, assets, token } = req.query;
-  const user = req.session.user;
+  const address = req.query.address;
   let err, events, cachedAssets, cachedAsset, updateCachedAsset;
 
   let url = `${hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
   try {
-    if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${user.address}&`; }
+    if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${address}&`; }
     if (data) { url += `${decodeURI(data)}&`; }
     if (assetId) { url += `${decodeURI(assetId)}&`; }
   } catch (e) {}
@@ -165,7 +162,6 @@ exports.getEvents = async (req, res, next) => {
  * @route { GET } api/assets/:assetId/events/:eventId
  * @param { String } token - for getting public and private assets/events
  * @param { String } eventId
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
@@ -194,7 +190,6 @@ exports.getEvent = async (req, res, next) => {
  * @route { POST } api/assets/
  * @param { String } token - for creating public and private assets/events
  * @param { Object[] } assets
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */
@@ -238,7 +233,6 @@ exports.createAsset = async (req, res, next) => {
  * @route { POST } api/assets/:assetId/events/
  * @param { String } token - for creating public and private assets/events
  * @param { Object[] } events
- * @param { Object } session - logged in user session
  * @returns 400 on error
  * @returns 200 and next() on success
  */

@@ -18,11 +18,9 @@ export class InviteComponent implements OnInit, OnDestroy {
   spinner;
   error;
   success;
-  roles = [];
 
   constructor(
     private storageService: StorageService,
-    private authService: AuthService,
     private inviteService: InviteService,
     private usersService: UsersService
   ) {
@@ -44,16 +42,12 @@ export class InviteComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    this.getRoles();
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     if (this.getRolesSub) { this.getRolesSub.unsubscribe(); }
     if (this.sendInvitesSub) { this.sendInvitesSub.unsubscribe(); }
   }
-
-  getRoles() { this.getRolesSub = this.usersService.roles.subscribe(roles => this.roles = roles); }
 
   remove(array, index: number) { (<FormArray>this.inviteForm.get(array)).removeAt(index); }
 

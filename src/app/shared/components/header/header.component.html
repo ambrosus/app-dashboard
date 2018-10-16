@@ -16,8 +16,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <a routerLink="/login" *ngIf="!isLoggedin">Login</a>
     <ul class="header-menu" *ngIf="isLoggedin && user">
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        <div class="avatar" *ngIf="user.full_name || (user.profile && user.profile.image)" [style.backgroundImage]="profile_image">
-          <span *ngIf="!profile_image">{{ user.full_name.charAt(0) }}</span>
+        <div class="avatar" *ngIf="user.full_name || user.email">
+          <span>{{ user.full_name ? user.full_name.charAt(0) : user.email ? user.email.chartAt(0) : 'A' }}</span>
         </div>
         {{ greeting }}
         <ul class="dropdown-menu">
@@ -52,10 +52,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <li>
       <a routerLink="/assets" routerLinkActive="active" appIconLeft="blue-stack">Assets</a>
     </li>
-    <li *ngIf="(user | checkIf: 'user.role.id') && (user.role.id === 1 || user.role.id === 2)">
+    <li *ngIf="checkPermission(['manage_accounts'])">
       <a routerLink="/administration/users" routerLinkActive="active" appIconLeft="header-user">Users</a>
     </li>
-    <li *ngIf="(user | checkIf: 'user.role.id' ) && (user.role.id===1 || user.role.id===2)">
+    <li *ngIf="checkPermission(['manage_organization'])">
       <a routerLink="/administration/company" routerLinkActive="active" appIconLeft="settings-gear">Company</a>
     </li>
     <li>
