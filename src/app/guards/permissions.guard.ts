@@ -18,19 +18,16 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     const user: any = this.storageService.get('user');
 
     return new Promise(resolve => {
-      this.userService.getUser(user.email).subscribe((_user: any) => {
-        console.log(route, route.data);
-        const requiredPermissions = route.data.permissions || [];
-        const userPermissions = _user.permissions || [];
+      const requiredPermissions = route.data.permissions || [];
+      const userPermissions = user.permissions || [];
 
-        const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
-        if (!requiredPermissions.length || hasPermissions) {
-          return resolve(true);
-        } else if (hasPermissions) {
-          this.router.navigate(['/']);
-          return resolve(false);
-        }
-      });
+      const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
+      if (!requiredPermissions.length || hasPermissions) {
+        return resolve(true);
+      } else if (hasPermissions) {
+        this.router.navigate(['/']);
+        return resolve(false);
+      }
     });
   }
 
@@ -40,19 +37,16 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     const user: any = this.storageService.get('user');
 
     return new Promise(resolve => {
-      this.userService.getUser(user.email).subscribe((_user: any) => {
-        console.log(route, route.data);
-        const requiredPermissions = route.data.permissions || [];
-        const userPermissions = _user.permissions || [];
+      const requiredPermissions = route.data.permissions || [];
+      const userPermissions = user.permissions || [];
 
-        const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
-        if (!requiredPermissions.length || hasPermissions) {
-          return resolve(true);
-        } else if (hasPermissions) {
-          this.router.navigate(['/']);
-          return resolve(false);
-        }
-      });
+      const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
+      if (!requiredPermissions.length || hasPermissions) {
+        return resolve(true);
+      } else if (hasPermissions) {
+        this.router.navigate(['/']);
+        return resolve(false);
+      }
     });
   }
 }
