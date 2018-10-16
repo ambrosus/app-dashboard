@@ -24,7 +24,7 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
       const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
       if (!requiredPermissions.length || hasPermissions) {
         return resolve(true);
-      } else if (hasPermissions) {
+      } else if (!hasPermissions) {
         this.router.navigate(['/']);
         return resolve(false);
       }
@@ -43,7 +43,7 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
       const hasPermissions = this.checkPermission(userPermissions, requiredPermissions);
       if (!requiredPermissions.length || hasPermissions) {
         return resolve(true);
-      } else if (hasPermissions) {
+      } else if (!hasPermissions) {
         this.router.navigate(['/']);
         return resolve(false);
       }
