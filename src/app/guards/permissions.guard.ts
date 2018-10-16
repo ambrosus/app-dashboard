@@ -13,9 +13,14 @@ export class PermissionsGuard implements CanActivate {
     '/administration/users': 'manage_accounts',
   };
 
-  getRoutePermissions(routeURL) {
+  /**
+   * Returns required permission
+   * @param {string} url - The url of the route being accessed.
+   * @returns {String} - An array of strings.
+   */
+  getRoutePermissions(url) { // /administration/users
     return Object.keys(this.routesPermissions).reduce((permissions, key, index, array) => {
-      if (routeURL.indexOf(key) > -1) { permissions.push(this.routesPermissions[key]); }
+      if (url.indexOf(key) > -1) { permissions.push(this.routesPermissions[key]); }
       return permissions;
     }, []);
   }
