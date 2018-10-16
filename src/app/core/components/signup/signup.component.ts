@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { CompaniesService } from 'app/services/companies.service';
+import { UsersService } from 'app/services/users.service';
 
 declare let Web3: any;
 
@@ -21,6 +21,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   } = {};
 
   organizationCheck: Subscription;
+  userRegister: Subscription;
   error;
   success;
   promiseAction;
@@ -32,8 +33,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private companiesService: CompaniesService
+    private companiesService: CompaniesService,
+    private usersService: UsersService
   ) {
     this.web3 = new Web3();
   }
@@ -54,6 +55,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.organizationCheck) { this.organizationCheck.unsubscribe(); }
+    if (this.userRegister) { this.userRegister.unsubscribe(); }
   }
 
   generateKeys() {
@@ -95,35 +97,52 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   verifyAccount() {
     this.error = false;
-    const data = this.forms.secretForm.value;
+    const { secret } = this.forms.secretForm.value;
 
     if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(data.secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(secret).subscribe((resp: any) => {
         this.error = 'This account is already registered, please insert another secret';
         resolve();
       }, err => {
         this.steps.currentStep = 3;
         reject();
-        this.promiseAction = false;
       });
     });
   }
 
   registerUser() {
     this.error = false;
-    const data = this.forms.userForm.value;
+    const { address, secret } = this.forms.secretForm.value;
+    const { organization, email } = this.forms.userForm.value;
+    const data = {
+      company: {
+        title: organization,
+      },
+      user: {
+        address,
+        email,
+      },
+    };
 
     if (!this.forms.userForm.valid) { return this.error = 'Please fill all required fields'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
       // Check if organization exists
-      this.organizationCheck = this.companiesService.checkCompany({ title: data.organization }).subscribe(
+      this.organizationCheck = this.companiesService.checkCompany({ title: organization }).subscribe(
         res => {
           // Register a user
-          resolve();
-          this.steps.currentStep = 4;
+          this.userRegister = this.usersService.createUser(data).subscribe(
+            _res => {
+              this.steps.currentStep = 4;
+              resolve();
+            },
+            err => {
+              console.error('User register error: ', err);
+              reject();
+            }
+          );
         },
         err => {
           reject();

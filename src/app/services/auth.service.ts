@@ -80,16 +80,16 @@ export class AuthService {
         address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
       } catch (e) { return observer.error({ message: 'Invalid secret' }); }
 
-      const deviceInfo = this.deviceService.getDeviceInfo();
-
-      this.http.post('/api/auth/verify', { address, deviceInfo }).subscribe(
-        ({ data }: any) => {
-          this.storage.set('secret', secret);
-          this.storage.set('token', this.getToken(secret));
-          this.storage.set('user', data);
-          this.addAccount(data);
-          this.emit('user:refresh');
-          return observer.next(data);
+      this.http.post('/api/auth/verify', { address }).subscribe(
+        (res: any) => {
+          if (res.data) {
+            this.storage.set('secret', secret);
+            this.storage.set('token', this.getToken(secret));
+            this.storage.set('user', res.data);
+            this.addAccount(res.data);
+            this.emit('user:refresh');
+            return observer.next(res.data);
+          } else { return observer.next(res); }
         },
         err => observer.error(err.error)
       );

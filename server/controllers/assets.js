@@ -113,7 +113,7 @@ exports.getEvents = async (req, res, next) => {
   } catch (e) {}
 
   [err, events] = await to(httpGet(url, token));
-  if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
+  if (err || !events) { logger.error('Events GET error: ', err); return next(new NotFoundError(err.data['reason'])); }
 
   const eventsCopy = JSON.parse(JSON.stringify(events));
 
@@ -173,7 +173,7 @@ exports.getEvent = async (req, res, next) => {
   const url = `${hermes.url}/events/${eventId}`;
 
   [err, event] = await to(httpGet(url, token));
-  if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
+  if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'])); }
 
   req.status = 200;
   req.json = { data: event, message: 'Success', status: 200 };

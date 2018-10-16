@@ -5,16 +5,14 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const bcrypt = require('bcrypt');
-const { decrypt } = _require('/utils/password');
 const mongoose = require('mongoose');
 const config = _require('/config');
-const Web3 = require('web3');
-const web3 = new Web3();
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
 const { hermes } = _require('/config');
+const emailService = _require('/utils/email');
+const accountCreatedTemplate = _require('/assets/templates/email/accountCreated.template.html');
 
 const User = _require('/models/users');
 const Company = _require('/models/companies');
@@ -31,35 +29,33 @@ const Invite = _require('/models/invites');
  */
 exports.create = async (req, res, next) => {
   const user = req.body.user || {};
-  const { full_name, address, token, password } = user;
+  const { email, address } = user;
   const inviteToken = req.query.token;
-  let email = user.email;
-  let accessLevel = user.accessLevel || 1;
-  let permissions = user.permissions || ['create_asset', 'create_event'];
-  let company = '';
-  let err, userCreated, userRegistered, inviteRemoved;
+  let err, userFound, userCreated, inviteRemoved, emailSent;
 
-  // invite
-  if (inviteToken) {
-    try {
-      const _token = JSON.parse(decrypt(inviteToken, config.secret));
-      email = _token['email'];
-      accessLevel = _token['accessLevel'];
-      company = _token['company'];
-    } catch (error) {
-      return res.status(400).json({ message: 'Invite token is invalid' });
-    }
+  [err, userFound] = await to(User.findOne({ email, address }));
+  if (err) { logger.error('User get error: ', err); return next(new ValidationError(err.message, err)); }
+  if (userFound) { return next(new ValidationError('User with this email or address already exists')); }
+
+  const _user = new User(user);
+  _user['_id'] = new mongoose.Types.ObjectId();
+  if (!inviteToken) {
+    _user['permissions'] = ['manage_organization', 'manage_accounts', 'create_asset', 'create_events'];
   }
 
-  // Insert user in dash db
-  [err, userCreated] = await to(User.findOrCreate(query, _user));
+  [err, userCreated] = await to(_user.save());
   if (err || !userCreated) { logger.error('User create error: ', err); return next(new ValidationError(err.message, err)); }
-  if (!userCreated.created) { return next(new ValidationError('User already exists')); }
 
-  // Register user in the hermes
-  const body = { address, permissions, accessLevel };
-  [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
-  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err); return next(new ValidationError(err.data['reason'], err)); }
+  // Send a confirmation email to user
+  const confirmationEmail = {};
+  const url = `https://${req.get('host')}/login`;
+  confirmationEmail.html = accountCreatedTemplate.replace(/@url/g, url);
+  confirmationEmail.subject = `Your account has been approved for using Ambrosus Dashboard`;
+  confirmationEmail.to = userCreated.email;
+  confirmationEmail.from = `no-reply@ambrosus.com`;
+  [err, emailSent] = await to(emailService.send(confirmationEmail));
+  if (err || !emailSent) { logger.error('Email send error: ', err); }
+  if (emailSent) logger.error('Email send success: ', emailSent);
 
   // Delete invite token
   if (inviteToken) {
@@ -69,9 +65,32 @@ exports.create = async (req, res, next) => {
   }
 
   req.status = 200;
-  req.json = { data: userCreated.doc, message: 'Success', status: 200 };
+  req.body.user = userCreated;
   return next();
-};
+}
+
+/**
+ * Hermes account register
+ *
+ * @name hermesAccountRegister
+ * @bodyparam user
+ * @returns Status code 400 on failure
+ * @returns Status code 200 on success
+ */
+exports.hermesAccountRegister = async (req, res, next) => {
+  const user = req.body.user || {};
+  const { address } = user;
+  const accessLevel = user.accessLevel || 1;
+  const permissions = user.permissions || ['create_asset', 'create_event'];
+  let err, userRegistered;
+
+  const body = { address, accessLevel, permissions };
+  [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
+  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err); return next(new ValidationError(err.data['reason'])); }
+
+  req.status = 200;
+  return next();
+}
 
 /**
  * Sets company ownership
@@ -82,10 +101,9 @@ exports.create = async (req, res, next) => {
  * @returns Status code 400 on failure
  * @returns Status code 200 on success
  */
-
 exports.setOwnership = async (req, res, next) => {
-  const user = req.user || req.body.company;
-  const company = req.company || req.body.company;
+  const user = req.body.user || {};
+  const company = req.body.company || {};
   let err, _user, companyUpdated, userUpdated;
 
   if (user && company) {
@@ -103,7 +121,7 @@ exports.setOwnership = async (req, res, next) => {
     if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
-    req.json = { data: userUpdated, message: 'Success', status: 200 };
+    req.json = { data: { user: userUpdated, company: companyUpdated }, message: 'Success', status: 200 };
     return next();
 
   } else if (!user) {

@@ -20,14 +20,18 @@ const Company = _require('/models/companies');
  * @returns company Object on success with status code 200
  */
 exports.create = async (req, res, next) => {
-  const title = req.body.company ? req.body.company.title : req.body.title;
-  const settings = req.body.company ? req.body.company.settings : req.body.settings;
-  let err, company;
+  const company = req.body.company || {};
+  const { title, settings } = company;
+  let err, companyCreated;
 
-  [err, company] = await to(Company.create({ title, settings }));
-  if (err || !company) { logger.error('Company create error: ', err); return next(new ValidationError(err.message, err)); }
+  const query = {};
+  if (title) { query.title = title; }
+  if (settings) { query.settings = settings; }
+  [err, companyCreated] = await to(Company.create(query));
+  if (err || !companyCreated) { logger.error('Company create error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
+  req.body.company = companyCreated;
   req.json = { data: company, message: 'Success', status: 200 };
   return next();
 };

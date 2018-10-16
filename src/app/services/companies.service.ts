@@ -1,9 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { StorageService } from './storage.service';
 
 export class CompaniesService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) { }
 
   checkCompany(query) {
     return new Observable(observer => {
@@ -18,7 +22,8 @@ export class CompaniesService {
   }
 
   editCompany(body) {
-    const url = `/api/companies`;
+    const { _id } = <any>this.storageService.get('user')['company'] || { _id: '' };
+    const url = `/api/companies?company=${_id}`;
 
     return new Observable(observer => {
       this.http.put(url, body).subscribe(

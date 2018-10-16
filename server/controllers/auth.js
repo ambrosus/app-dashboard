@@ -72,7 +72,7 @@ exports.verifyAccount = async (req, res, next) => {
   let err, verified, user;
 
   [err, verified] = await to(httpGet(`${hermes.url}/accounts/${address}`, token));
-  if (err || !verified) { logger.error('Hermes account GET error: ', err); return next(new NotFoundError(err.data['reason'], err)); }
+  if (err || !verified) { return next(new NotFoundError(err.data['reason'])); }
 
   [err, user] = await to(
     User.findOne({ address })
@@ -85,7 +85,7 @@ exports.verifyAccount = async (req, res, next) => {
   if (err) { logger.error('User GET error: ', err); }
   if (!user) {
     req.status = 200;
-    req.json = { data: error, message: 'No registered user', status: 200 };
+    req.json = { data: null, message: 'User verified, with no user account', status: 200 };
     return next();
   }
 
