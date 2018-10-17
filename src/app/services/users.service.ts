@@ -7,6 +7,7 @@ import { StorageService } from './storage.service';
   providedIn: 'root',
 })
 export class UsersService {
+  _user = new BehaviorSubject({});
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
 
@@ -23,8 +24,10 @@ export class UsersService {
   }
 
   createUser(body, token = null) {
-    let url = `/api/users?`;
-    if (token) { url += `token=${token}`; }
+    let url = `/api/users`;
+    if (token) {
+      url += `?token=${token}`;
+    }
 
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
@@ -39,7 +42,10 @@ export class UsersService {
       const url = `/api/users/${email}`;
 
       this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
+        ({ data }: any) => {
+          this._user.next(data);
+          return observer.next(data);
+        },
         err => observer.error(err.error)
       );
     });

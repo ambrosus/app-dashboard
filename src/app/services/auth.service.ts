@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable } from 'rxjs';
 import * as moment from 'moment-timezone';
+import { UsersService } from './users.service';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
@@ -18,7 +19,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService
+    private storageService: StorageService,
+    private userService: UsersService
   ) {
     this.sdk = new AmbrosusSDK({
       Web3,
@@ -26,51 +28,18 @@ export class AuthService {
     this.web3 = new Web3();
   }
 
-  emit(type) {
-    window.dispatchEvent(new Event(type));
-  }
-
   isLoggedIn() {
-    const user: any = this.storage.get('user');
-    const token = this.storage.get('token');
-    const secret = this.storage.get('secret');
+    const user = <any>this.storageService.get('user');
+    const token = this.storageService.get('token');
+    const secret = this.storageService.get('secret');
 
     return user && user.address && secret && token;
   }
 
   getToken(secret = null) {
-    const _secret = secret || this.storage.get('secret');
+    const _secret = secret || this.storageService.get('secret');
     const validUntil = moment().add(5, 'days').format();
-    return this.sdk.getToken(_secret, validUntil);
-  }
-
-  addAccount(user) {
-    const accounts: any = this.storage.get('accounts') || [];
-
-    if (!accounts.some((account) => account.address === user.address)) {
-      user.secret = this.storage.get('secret');
-      accounts.unshift(user);
-      this.storage.set('accounts', accounts);
-    }
-  }
-
-  switchAccount(address) {
-    const accounts: any = this.storage.get('accounts') || [];
-
-    accounts.map((account, index) => {
-      if (account.address === address) {
-        accounts.splice(index, 1);
-        accounts.unshift(account);
-        this.storage.set('accounts', accounts);
-        this.login(address, account.secret).subscribe(
-          resp => {
-            console.log('Login success: ', resp);
-            this.router.navigate(['/assets']);
-          },
-          err => console.log('Login error: ', err)
-        );
-      }
-    });
+    return _secret ? this.sdk.getToken(_secret, validUntil) : {};
   }
 
   verifyAccount(secret) {
@@ -83,11 +52,10 @@ export class AuthService {
       this.http.post('/api/auth/verify', { address }).subscribe(
         (res: any) => {
           if (res.data) {
-            this.storage.set('secret', secret);
-            this.storage.set('token', this.getToken(secret));
-            this.storage.set('user', res.data);
-            this.addAccount(res.data);
-            this.emit('user:refresh');
+            this.storageService.set('secret', secret);
+            this.storageService.set('token', this.getToken(secret));
+            this.storageService.set('user', res.data);
+            this.userService._user.next(res.data);
             return observer.next(res.data);
           } else { return observer.next(res); }
         },
@@ -105,17 +73,14 @@ export class AuthService {
           const token = JSON.parse(data.token);
           try {
             const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
-
             data.address = address;
 
-            this.storage.set('secret', privateKey);
-            this.storage.set('user', data);
-            this.storage.set('token', this.getToken(privateKey));
+            this.storageService.set('secret', privateKey);
+            this.storageService.set('user', data);
+            this.storageService.set('token', this.getToken(privateKey));
 
-            this.addAccount(data);
-            this.emit('user:refresh');
+            this.userService._user.next(data);
             observer.next('success');
-
           } catch (e) { return observer.error({ message: 'Password is incorrect.' }); }
         },
         err => observer.error(err.error)
@@ -124,22 +89,7 @@ export class AuthService {
   }
 
   logout() {
-    const accounts: any = this.storage.get('accounts') || [];
-    accounts.shift();
-    this.storage.set('accounts', accounts);
-
-    if (accounts.length === 0) {
-      this.logoutAll();
-    } else {
-      this.storage.set('user', accounts[0]);
-      this.emit('user:refresh');
-      this.router.navigate(['/assets']);
-    }
-  }
-
-  logoutAll() {
-    this.storage.clear();
-    this.emit('user:refresh');
+    this.storageService.clear();
     this.router.navigate(['/login']);
   }
 }

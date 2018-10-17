@@ -22,8 +22,8 @@ export class CompaniesService {
   }
 
   editCompany(body) {
-    const { _id } = <any>this.storageService.get('user')['company'] || { _id: '' };
-    const url = `/api/companies?company=${_id}`;
+    const companyID = this.storageService.get('user')['company']['_id'] || null;
+    const url = `/api/companies/${companyID}`;
 
     return new Observable(observer => {
       this.http.put(url, body).subscribe(

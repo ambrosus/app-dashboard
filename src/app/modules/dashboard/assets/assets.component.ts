@@ -21,9 +21,9 @@ import { StorageService } from 'app/services/storage.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class AssetsComponent implements OnInit, OnDestroy {
-  navigationSubscription: Subscription;
-  assetsSubscription: Subscription;
-  eventsSubscription: Subscription;
+  navigationSub: Subscription;
+  assetsSub: Subscription;
+  eventsSub: Subscription;
   assets: any[] = [];
   assetIds: String[] = [];
   // Pagination
@@ -51,23 +51,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private storageService: StorageService
   ) {
-    this.assetsSubscription = this.router.events.subscribe((e: any) => { if (e instanceof NavigationEnd) { this.loadAssets(); } });
+    this.navigationSub = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
+    });
   }
 
   ngOnInit() { }
 
   ngOnDestroy() {
-    if (this.assetsSubscription) { this.assetsSubscription.unsubscribe(); }
-    if (this.eventsSubscription) { this.eventsSubscription.unsubscribe(); }
-    if (this.navigationSubscription) { this.navigationSubscription.unsubscribe(); }
+    if (this.assetsSub) { this.assetsSub.unsubscribe(); }
+    if (this.eventsSub) { this.eventsSub.unsubscribe(); }
+    if (this.navigationSub) { this.navigationSub.unsubscribe(); }
   }
 
   loadAssets(page = 1, perPage = 15) {
     this.resetLoadAssets();
     this.loader = true;
     const token = this.authService.getToken();
-    const { address } = <any>this.storageService.get('user');
-    this.assetsSubscription = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
+    const user = <any>this.storageService.get('user') || {};
+    const { address } = user;
+    this.assetsSub = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
       (assets: any) => {
         console.log(assets);
         this.loader = false;
@@ -152,7 +155,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
         options['data'] = `data[type]=${searchValues[0].trim()}`;
         break;
     }
-    this.eventsSubscription = this.assetsService.getEvents(options).subscribe(
+    this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (assets: any) => {
         this.loader = false;
         this.assets = assets.docs;

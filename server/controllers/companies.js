@@ -37,7 +37,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.edit = async (req, res, next) => {
-  const id = req.query.company || '';
+  const id = req.params.id;
   const query = req.body;
   let err, companyUpdated;
 

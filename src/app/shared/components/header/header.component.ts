@@ -5,13 +5,11 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
-import { StorageService } from 'app/services/storage.service';
-import { LoginComponent } from 'app/core/components/login/login.component';
-import { MatDialog } from '@angular/material';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { UsersService } from 'app/services/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -19,8 +17,9 @@ import { Router, NavigationEnd, NavigationStart } from '@angular/router';
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+  userSub: Subscription;
+  navSub: Subscription;
   isLoggedin;
   greeting = 'Hi, welcome!';
   overlay = false;
@@ -31,47 +30,34 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private storageService: StorageService,
-    private dialog: MatDialog,
-    private sanitizer: DomSanitizer,
-    private router: Router
+    private router: Router,
+    private usersService: UsersService
   ) { }
 
   ngOnInit() {
-    this.headerInit();
-    window.addEventListener('user:refresh', () => {
-      this.headerInit();
-    });
-    this.router.events.subscribe((e: any) => {
+    this.navSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.sidebar = false;
       }
     });
+
+    this.userSub = this.usersService._user.subscribe((res: any) => {
+      this.user = res;
+      this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
+      this.isLoggedin = this.authService.isLoggedIn();
+    });
   }
 
-  headerInit() {
-    this.user = this.storageService.get('user') || {};
-    this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
-    this.isLoggedin = this.authService.isLoggedIn();
-    this.users = this.storageService.get('accounts') || [];
-    this.dialog.closeAll();
+  ngOnDestroy() {
+    if (this.userSub) { this.userSub.unsubscribe(); }
+    if (this.navSub) { this.navSub.unsubscribe(); }
   }
-
-  switchAccount(address) { this.authService.switchAccount(address); }
 
   logout() { this.authService.logout(); }
 
-  logoutAll() { this.authService.logoutAll(); }
-
-  addAccountDialog() {
-    const dialogRef = this.dialog.open(LoginComponent, {
-      width: '600px',
-      position: { right: '0' },
-    });
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
-  }
-
-  checkPermission(routePermission: string[]): boolean {
-    return routePermission.every(route_permission => this.user.permissions.some(user_permission => user_permission === route_permission));
+  checkPermission(routePermissions: string[]): boolean {
+    if (!this.user.permissions) {
+      return false;
+    } else { return routePermissions.every(routePermission => this.user.permissions.some(userPermission => userPermission === routePermission)); }
   }
 }
