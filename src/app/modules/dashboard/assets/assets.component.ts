@@ -5,7 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, ElementRef, OnInit, Renderer2, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-assets',
@@ -24,9 +25,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
   navigationSub: Subscription;
   assetsSub: Subscription;
   eventsSub: Subscription;
-  assets: any[] = [];
-  assetIds: String[] = [];
+  forms: {
+    table?: FormGroup,
+    search?: FormGroup
+  } = {};
   // Pagination
+  assets: any[] = [];
   pagination = {
     currentPage: 1,
     perPage: 15,
@@ -36,21 +40,22 @@ export class AssetsComponent implements OnInit, OnDestroy {
   };
   // Search
   searchActive = false;
-  searchPlaceholder = 'ie. Green apple';
   // Other
   error = false;
-  selectAllText = 'Select all';
   loader = false;
+  selectButton = 'Select all';
+  selected;
 
   constructor(
     private assetsService: AssetsService,
     private authService: AuthService,
     private el: ElementRef,
-    private renderer: Renderer2,
     private router: Router,
     public dialog: MatDialog,
     private storageService: StorageService
   ) {
+    this.initTableForm();
+    this.initSearchForm();
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
     });
@@ -64,37 +69,16 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (this.navigationSub) { this.navigationSub.unsubscribe(); }
   }
 
-  loadAssets(page = 1, perPage = 15) {
-    this.resetLoadAssets();
-    this.loader = true;
-    const token = this.authService.getToken();
-    const user = <any>this.storageService.get('user') || {};
-    const { address } = user;
-    this.assetsSub = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
-      (assets: any) => {
-        console.log(assets);
-        this.loader = false;
-        this.assets = assets.docs;
-        this.pagination.currentPage = assets.page;
-        this.pagination.perPage = perPage;
-        this.pagination.resultCount = assets.total;
-        this.pagination.resultLength = this.assets.length;
-        this.pagination.totalPages = Math.ceil(assets.total / perPage);
-      },
-      err => {
-        this.loader = false;
-        console.log('Assets GET failed: ', err);
-      }
-    );
+  initTableForm() {
+    this.forms.table = new FormGroup({
+      assets: new FormArray([]),
+    });
   }
 
-  resetLoadAssets() {
-    this.searchActive = false;
-    this.el.nativeElement.querySelector('#search').value = '';
-    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
-    this.selectAllText = 'Select all';
-    this.assets = [];
-    this.loadAssets = this.loadAssets.bind(this);
+  initSearchForm() {
+    this.forms.search = new FormGroup({
+      input: new FormControl(null, [Validators.required]),
+    });
   }
 
   JSONparse(value) {
@@ -112,31 +96,89 @@ export class AssetsComponent implements OnInit, OnDestroy {
     } catch (e) { return alternative; }
   }
 
-  bulkActions(action) {
-    switch (action.value) {
-      case 'createEvent':
-        if (this.assetIds.length === 0) {
-          alert(`You didn\'t select any assets. Please do so first.`);
-        } else {
-          this.createEventsDialog();
-        }
-        break;
-    }
+  getImage(asset) {
+    try {
+      const info = JSON.parse(asset.value.infoEvent);
+      return info.images.default.url;
+    } catch (e) { return '/assets/raster/logotip.jpg'; }
+  }
 
-    action.value = 'default';
+  select() {
+    this.selected = !this.selected;
+    this.selectButton = this.selected ? 'Unselect all' : 'Select all';
+    this.forms.table.get('assets')['controls'].map(asset => asset.get('selected').setValue(this.selected));
+  }
+
+  bulkEvent() {
+    const assetIds = [];
+    this.forms.table.get('assets')['controls'].map(asset => {
+      if (asset.value.selected) { assetIds.push(asset.value.assetId); }
+    });
+    if (!assetIds.length) { return alert(`You didn\'t select any assets. Please do so first.`); }
+    const dialogRef = this.dialog.open(EventAddComponent, {
+      width: '600px',
+      position: { right: '0' },
+    });
+    const instance = dialogRef.componentInstance;
+    instance.assetIds = assetIds;
+    dialogRef.afterClosed().subscribe(result => console.log('Bulk event dialog was closed'));
+  }
+
+  resetLoadAssets() {
+    this.searchActive = false;
+    this.el.nativeElement.querySelector('#search').value = '';
+    this.assets = [];
+    this.loadAssets = this.loadAssets.bind(this);
+  }
+
+  loadAssets(page = 1, perPage = 15) {
+    this.resetLoadAssets();
+    this.loader = true;
+    const token = this.authService.getToken();
+    const user = <any>this.storageService.get('user') || {};
+    const { address } = user;
+    this.assetsSub = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
+      (assets: any) => {
+        console.log(assets);
+        this.loader = false;
+        this.forms.table = new FormGroup({
+          assets: new FormArray([]),
+        });
+        this.assets = assets.docs || [];
+
+        // Table form
+        this.assets.map(asset => {
+          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
+            assetId: new FormControl(asset.assetId),
+            infoEvent: new FormControl(asset.infoEvent),
+            latestEvent: new FormControl(asset.latestEvent),
+            createdAt: new FormControl(asset.createdAt),
+            selected: new FormControl(null),
+          }));
+        });
+
+        // Pagination
+        this.pagination.currentPage = page;
+        this.pagination.perPage = perPage;
+        this.pagination.resultCount = assets.total;
+        this.pagination.resultLength = this.assets.length;
+        this.pagination.totalPages = Math.ceil(assets.total / perPage);
+      },
+      err => {
+        this.loader = false;
+        console.log('Assets GET failed: ', err);
+      }
+    );
   }
 
   search(page = 0, perPage = 15) {
-    const search = this.el.nativeElement.querySelector('#search').value;
-    const select = this.el.nativeElement.querySelector('#select').value;
-    if (search.length === 0) {
-      if (this.searchActive) { this.loadAssets(); } else { this.searchPlaceholder = 'Please type something first'; }
-      return;
-    }
-    this.resetSearch();
-    this.loader = true;
+    this.searchActive = true;
+    this.selectButton = 'Select all';
+    const data = this.forms.search.value;
 
-    const searchValues = search.split(',');
+    if (!data.input.length) { return this.loadAssets(); }
+
+    this.loader = true;
     const token = this.authService.getToken();
     const options = {
       assets: true,
@@ -144,24 +186,33 @@ export class AssetsComponent implements OnInit, OnDestroy {
       page,
       perPage,
     };
-    switch (select) {
-      case 'name':
-        options['data'] = `data[name]=${searchValues[0].trim()}`;
-        break;
-      case 'createdBy':
-        options['createdBy'] = `createdBy=${searchValues[0].trim()}`;
-        break;
-      case 'type':
-        options['data'] = `data[type]=${searchValues[0].trim()}`;
-        break;
-    }
+    // Search by name
+    options['data'] = `data[name]=${data.input.trim()}`;
+
     this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (assets: any) => {
+        console.log(assets);
         this.loader = false;
-        this.assets = assets.docs;
+        this.forms.table = new FormGroup({
+          assets: new FormArray([]),
+        });
+        this.assets = assets.docs || [];
+
+        // Table form
+        this.assets.map(asset => {
+          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
+            assetId: new FormControl(asset.assetId),
+            infoEvent: new FormControl(asset.infoEvent),
+            latestEvent: new FormControl(asset.latestEvent),
+            createdAt: new FormControl(asset.createdAt),
+            selected: new FormControl(null),
+          }));
+        });
+
+        // Pagination
         this.pagination.resultCount = assets.total;
         this.pagination.totalPages = Math.ceil(assets.total / perPage);
-        this.pagination.currentPage = page;
+        this.pagination.currentPage = page + 1;
         this.pagination.perPage = perPage;
         this.pagination.resultLength = this.assets.length;
       },
@@ -172,59 +223,5 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.pagination['resultLength'] = 0;
       }
     );
-  }
-
-  resetSearch() {
-    this.searchActive = true;
-    this.renderer.removeClass(this.el.nativeElement.querySelector('#selectAll').parentNode.parentNode.parentNode, 'checkbox--checked');
-    this.selectAllText = 'Select all';
-    this.assets = [];
-    this.searchPlaceholder = 'ie. Green apple';
-  }
-
-  createEventsDialog() {
-    const dialogRef = this.dialog.open(EventAddComponent, {
-      width: '600px',
-      position: { right: '0' },
-    });
-    const instance = dialogRef.componentInstance;
-    instance.assetIds = this.assetIds;
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
-  }
-
-  toggleId(action, id) {
-    const index = this.assetIds.indexOf(id);
-    switch (action) {
-      case 'add':
-        if (index === -1) { this.assetIds.push(id); }
-        break;
-      default:
-        if (index > -1) { this.assetIds.splice(index, 1); }
-    }
-  }
-
-  onSelectAll(e, input) {
-    let table = this.el.nativeElement.querySelectorAll('.table__item.table');
-    table = Array.from(table);
-    if (input.checked) {
-      this.selectAllText = 'Unselect all';
-      table.map((item) => {
-        this.renderer.addClass(item, 'checkbox--checked');
-        this.toggleId('add', item.id);
-      });
-    } else {
-      this.selectAllText = 'Select all';
-      table.map((item) => {
-        this.renderer.removeClass(item, 'checkbox--checked');
-        this.toggleId('remove', item.id);
-      });
-    }
-  }
-
-  onSelect(e, item) {
-    const active = item.classList.contains('checkbox--checked');
-    const action = active ? 'removeClass' : 'addClass';
-    this.renderer[action](item, 'checkbox--checked');
-    if (active) { this.toggleId('remove', item.id); } else { this.toggleId('add', item.id); }
   }
 }

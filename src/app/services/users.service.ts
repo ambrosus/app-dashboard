@@ -9,7 +9,10 @@ import { StorageService } from './storage.service';
 export class UsersService {
   _user = new BehaviorSubject({});
 
-  constructor(private http: HttpClient, private storageService: StorageService) { }
+  constructor(private http: HttpClient, private storageService: StorageService) {
+    const user = <any>this.storageService.get('user') || {};
+    this._user.next(user);
+  }
 
   /* User */
 

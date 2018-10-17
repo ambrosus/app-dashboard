@@ -72,6 +72,7 @@ app-root {
   word-break: keep-all;
   user-select: none;
   -webkit-touch-callout: none;
+  white-space: nowrap;
 
   &--blue {
     @include gradient-horizontal(#55a8fd, darken(#55a8fd, 10));
@@ -241,5 +242,75 @@ button.is-loading .btn-spinner {
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  color: #333;
+
+  & div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+
+    &:hover {
+      background-color: #e9e9e9;
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  &__item {
+    border: 2px solid $ablue;
+    color: $ablue;
+    font-size: 12px;
+    margin-right: 5px;
+    line-height: 1;
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .2s;
+
+    & span {
+      display: inline-block;
+      padding: 3px 5px;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      background-color: #f6f8fe;
+    }
+
+    &.active {
+      background-color: $ablue;
+      color: #fff;
+    }
+
+    &.dots {
+      border-color: #fff;
+    }
+  }
+
+  @include min-1024 {
+    justify-content: flex-end;
   }
 }
