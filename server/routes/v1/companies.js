@@ -12,6 +12,8 @@ const CompaniesRoutes = express.Router();
 
 // Routes
 CompaniesRoutes.post('/', CompaniesController.create, (req, res) => { res.status(req.status).json(req.json); });
-CompaniesRoutes.put('/', CompaniesController.edit, (req, res) => { res.status(req.status).json(req.json); });
+CompaniesRoutes.get('/check', CompaniesController.check, (req, res) => { res.status(req.status).json(req.json); });
+CompaniesRoutes.route('/:id')
+  .put(CompaniesController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = CompaniesRoutes;

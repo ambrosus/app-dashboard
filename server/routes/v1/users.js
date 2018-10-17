@@ -5,17 +5,19 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 const express = require('express');
 
 const UsersController = _require('/controllers/users');
+const InvitesController = _require('/controllers/invites');
+const CompaniesController = _require('/controllers/companies');
 
 const routes = express.Router();
 
 // Routes
 routes.route('/')
-  .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); })
-  .post(UsersController.create, (req, res) => { res.status(req.status).json(req.json); });
+  .post(InvitesController.extract, UsersController.hermesAccountRegister, UsersController.create,
+    CompaniesController.create, UsersController.setOwnership, (req, res) => { res.status(req.status).json(req.json); })
+  .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
 
 routes.route('/:email')
   .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })

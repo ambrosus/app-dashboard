@@ -58,7 +58,7 @@ export class AssetsService {
   getEvents(options) {
     return new Observable(observer => {
       const { address } = <any>this.storageService.get('user');
-      let url = `/api/assets/events?address="${address}"`;
+      let url = `/api/assets/events?address=${address}&`;
       Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
 
       this.http.get(url).subscribe(

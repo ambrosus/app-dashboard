@@ -27,29 +27,19 @@ const users = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Companies',
   },
-  full_name: {
-    type: String,
-    required: [value => !value, '"Full name" field is required'],
-    minLength: 4,
-  },
+  full_name: String,
   email: {
     type: String,
     required: [value => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid'],
   },
-  password: {
-    type: String,
-    required: [value => !value, '"Password" field is required'],
-  },
+  password: String,
   address: {
     type: String,
     required: [value => !value, '"Address" field is required'],
     validate: [web3.utils.isAddress, 'Address format is not valid'],
   },
-  token: {
-    type: String,
-    required: [value => !value, '"Token" field is required'],
-  },
+  token: String,
   permissions: ['create_asset', 'create_event'],
   timeZone: String,
   lastLogin: {

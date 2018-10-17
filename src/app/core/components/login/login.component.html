@@ -8,40 +8,39 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 <div class="wrapper">
   <h2 class="card__title">Welcome</h2>
   <p class="card__body">Please login to your account.</p>
+
   <div class="card animated fadeInDown">
     <div class="card__header">
 
       <app-tabs>
         <app-tab label="Email/Password">
           <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
-
             <label>Email
               <input formControlName="email" type="email" name="email" spellcheck="false">
             </label>
-
             <label>Password
               <input formControlName="password" type="password" name="password" spellcheck="false">
             </label>
-
             <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
-
           </form>
         </app-tab>
-        <!-- <app-tab label="Secret">
 
-          <form [formGroup]="forms.addressForm" (ngSubmit)="verifyAccount()">
-
+        <app-tab label="Secret">
+          <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
             <label>Secret
               <input formControlName="secret" type="password" name="secret" autocomplete="new-password" spellcheck="false">
             </label>
-
             <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
           </form>
-
-        </app-tab> -->
+        </app-tab>
       </app-tabs>
 
-      <p class="card_body" *ngIf="error">{{ error }}</p>
+      <p class="card_body" *ngIf="error || forgotPassword">{{ forgotPassword ? 'Login using secret and change the password inside user settings' : error }}</p>
+    </div>
+
+    <div class="additional-options">
+      <a (click)="forgotPassword = !forgotPassword; error = false;">Forgot your password?</a>
+      <a routerLink="/signup">I want to register</a>
     </div>
   </div>
 </div>

@@ -38,7 +38,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initSettingsForm();
 
-    this.prefillSettings();
     this.timezones = moment.tz.names();
   }
 
@@ -48,22 +47,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   initSettingsForm() {
-    this.settingsForm = new FormGroup({
-      title: new FormControl('', [Validators.required]),
-      preview_app: new FormControl('', []),
-      timeZone: new FormControl('', []),
-    });
-  }
-
-  prefillSettings() {
     this.user = this.storageService.get('user') || {};
     this.company = this.user['company'] || {};
-    try { this.settings = JSON.parse(this.company.settings); } catch (e) { }
 
-    this.settingsForm.get('title').setValue(this.company['title']);
-    this.settingsForm.get('preview_app').setValue(this.settings['preview_app']);
-    this.settingsForm.get('timeZone').setValue(this.settings['timeZone']);
-    this.croppedImage = this.settings['logo'] || '';
+    this.settingsForm = new FormGroup({
+      title: new FormControl(this.company.title, [Validators.required]),
+      preview_app: new FormControl(this.company.settings['preview_app'], []),
+      timeZone: new FormControl(this.company.settings['timeZone'], []),
+    });
+
+    this.croppedImage = this.company.settings['logo'] || '';
   }
 
   fileChangeEvent(event: any): void {
@@ -82,11 +75,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const data = this.settingsForm.value;
     const body = {
       title: data.title,
-      settings: JSON.stringify({
+      settings: {
         preview_app: data.preview_app,
         timeZone: data.timeZone,
         logo: this.croppedImage,
-      }),
+      },
     };
 
     if (this.settingsForm.valid) {

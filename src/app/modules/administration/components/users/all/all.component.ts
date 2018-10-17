@@ -36,7 +36,7 @@ export class AllComponent implements OnInit, OnDestroy {
 
   getUsers() {
     let companySettings: any = {};
-    try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { console.log(e); }
+    try { companySettings = JSON.parse(this.user.company.settings); } catch (e) { }
 
     this.getUsersSub = this.usersService.getUsers().subscribe(
       (users: any) => {

@@ -13,6 +13,7 @@ const inviteTemplate = _require('/assets/templates/email/invite.template.html');
 const slug = require('slug');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
+const { decrypt } = _require('/utils/password');
 
 const Invite = _require('/models/invites');
 const Company = _require('/models/companies');
@@ -69,6 +70,30 @@ exports.create = async (req, res, next) => {
     next(new ValidationError('"user" is required'));
   }
 };
+
+/**
+ * Extracts token info on user signup
+ *
+ * @name extract
+ * @bodyparam user
+ * @queryparam inviteToken
+ * @returns calls next();
+ */
+exports.extract = async (req, res, next) => {
+  const inviteToken = req.query.token;
+  if (!req.body.user.accessLevel) { req.body.user.accessLevel = 1; }
+  if (!req.body.user.permissions) { req.body.user.permissions = ['create_asset', 'create_event']; }
+
+  if (inviteToken) {
+    try {
+      const token = JSON.parse(decrypt(inviteToken, config.secret));
+      if (token.email) { req.body.user.email = token.email; }
+      if (token.accessLevel) { req.body.user.accessLevel = token.accessLevel; }
+      if (token.company) { req.body.user.company = token.company; }
+      return next();
+    } catch (error) { return next(next(new ValidationError('Invite token is invalid'))); }
+  } else { return next(); }
+}
 
 /**
  * Delete multiple invites
