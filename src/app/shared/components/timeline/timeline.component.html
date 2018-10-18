@@ -5,40 +5,14 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<div class="m-b-20 flex flex-direction-r justify-content-fe align-items-c">
-  <div class="table__label__select color-ablue--base m-r-20">
-    <select id="selectBulkActions" (change)="bulkActions(selectBulkActions)" #selectBulkActions style="padding: 3px 5px; border-radius: 5px;">
-      <option value="default" disabled>Bulk actions</option>
-      <option value="exportEvents">Export events, page: {{ pagination.currentPage + 1 }}</option>
-    </select>
-  </div>
-
-  <app-svg-icon name="search" width="15" height="15" fill="#4a4a4a" (click)="showSearch = !showSearch"></app-svg-icon>
-</div>
-
-<div class="search m-b-20" *ngIf="showSearch">
-  <select id="select">
-    <option value="type" selected>type</option>
-  </select>
-  <input type="text" id="search" placeholder="{{ searchPlaceholder }}">
-  <button type="button" class="button button--blue" (click)="search()">Search</button>
-</div>
-
-<div class="events">
-  <div class="event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
-    <p>
-      <span style="color: #4f77f1;">{{ event.type || '' }}</span> {{ event.name || event.type }}
-      <span class="event__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name }}
+<ul class="timeline">
+  <li class="timeline__event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+    <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'EEE, MMM d, yyyy' }}</p>
+    <div class="timeline__event__info">
+      <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'HH:mm' }}</p>
+      <h5 class="timeline__event__info__title">{{ event.name || event.type }}</h5>
+      <span class="timeline__event__info__location" *ngIf="event.location">{{ event.location.city || event.city || '' }}, {{ event.location.country || event.country || event.location.name }}
       </span>
-    </p>
-    <p class="right">{{ event.timestamp * 1000 | date:'d MMM yyyy HH:mm' }} ({{ event.timestamp }})</p>
-  </div>
-</div>
-
-<!-- Pagination -->
-<div class="block-center m-w-12 m-t-10 p-h-10">
-  <!-- Search pagination -->
-  <app-pagination *ngIf="searchActive" [pagination]="pagination" [method]="search" [for]="'events'"></app-pagination>
-  <!-- Asset pagination -->
-  <app-pagination *ngIf="!searchActive" [pagination]="pagination" [method]="loadEvents" [for]="'events'"></app-pagination>
-</div>
+    </div>
+  </li>
+</ul>

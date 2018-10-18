@@ -103,5 +103,6 @@ export class AssetComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => console.log('Event add dialog was closed'));
     const instance = dialogRef.componentInstance;
+    instance.assetIds = [this.assetId];
   }
 }

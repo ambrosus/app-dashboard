@@ -12,7 +12,7 @@
 
     <!-- Identifiers -->
     <div class="object__identifiers" *ngIf="asset | checkIf: 'asset.infoEvent.identifiers.identifiers'">
-      <h5>Identifiers</h5>
+      <h5 class="object__subtitle">Identifiers</h5>
 
       <ul>
         <li class="item" *ngFor="let key of objectKeys(asset.infoEvent.identifiers.identifiers)">
@@ -24,14 +24,14 @@
 
     <!-- Images -->
     <div class="object__images" *ngIf="asset | checkIf: 'asset.infoEvent.images'">
-      <h5>Images</h5>
+      <h5 class="object__subtitle">Images</h5>
 
       <img *ngFor="let image of objectKeys(asset.infoEvent.images)" src="{{ asset.infoEvent.images[image]['url'] }}">
     </div>
 
     <!-- Properties -->
     <div class="object__properties" *ngIf="asset.infoEvent.properties && asset.infoEvent.properties.length">
-      <h5>Properties</h5>
+      <h5 class="object__subtitle">Properties</h5>
 
       <ul>
         <li class="item" *ngFor="let property of asset.infoEvent.properties">
@@ -44,7 +44,7 @@
     <!-- Groups -->
     <div class="object__groups" *ngIf="asset.infoEvent.groups && asset.infoEvent.groups.length">
       <div *ngFor="let group of asset.infoEvent.groups">
-        <h5>{{ group.key }}</h5>
+        <h5 class="object__subtitle">{{ group.key }}</h5>
 
         <ul>
           <li class="item" *ngFor="let property of objectKeys(group.value)">
@@ -58,8 +58,8 @@
   </main>
 
   <!-- Events -->
-  <div>
-    <h3 class="m-v-20">Events</h3>
+  <div class="p-a-30">
+    <h3 class="m-b-20">Events <button type="button" (click)="openAddEventDialog()">+</button></h3>
 
     <app-timeline [assetId]="assetId" [name]="asset && asset.infoEvent ? asset.infoEvent.name : null"></app-timeline>
   </div>
