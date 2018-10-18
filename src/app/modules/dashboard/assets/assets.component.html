@@ -33,13 +33,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <tbody formArrayName="assets">
         <tr *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
           <td class="table__checkbox"><input formControlName="selected" type="checkbox"></td>
-          <td class="table__image" routerLink="/assets/{{ asset.value.assetId }}"><img src="{{ getImage(asset) }}"></td>
+          <td class="table__image" routerLink="/assets/{{ asset.value.assetId }}"><img src="{{ getAsssetImage(asset) }}"></td>
           <td class="table__info" routerLink="/assets/{{ asset.value.assetId }}">
-            <p class="table__info__title">{{ getName(asset.value.infoEvent, 'No title') }}</p>
+            <p class="table__info__title">{{ getAssetTitle(asset.value.infoEvent, 'No title') }}</p>
             <small class="table__info__meta">{{ asset.value.assetId }}</small>
           </td>
           <td class="table__status" routerLink="/assets/{{ asset.value.assetId }}">
-            <span class="table__status__event">{{ getName(asset.value.latestEvent, 'Created') }}</span>
+            <span class="table__status__event">{{ getAssetTitle(asset.value.latestEvent, 'Created') }}</span>
             <p class="table__status__timestamp">{{ asset.value.createdAt | date:'d MMM yyyy HH:mm' }}</p>
           </td>
         </tr>

@@ -50,15 +50,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private assetsService: AssetsService,
     private authService: AuthService,
     private el: ElementRef,
-    private router: Router,
     public dialog: MatDialog,
     private storageService: StorageService
   ) {
     this.initTableForm();
     this.initSearchForm();
-    this.navigationSub = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
-    });
+
+    this.loadAssets();
   }
 
   ngOnInit() { }
@@ -81,13 +79,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     });
   }
 
-  JSONparse(value) {
-    try {
-      return JSON.parse(value);
-    } catch (e) { return false; }
-  }
-
-  getName(eventObject, alternative = '') {
+  getAssetTitle(eventObject, alternative = '') {
     try {
       const obj = JSON.parse(eventObject);
       const name = obj.name;
@@ -96,7 +88,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     } catch (e) { return alternative; }
   }
 
-  getImage(asset) {
+  getAssetImage(asset) {
     try {
       const info = JSON.parse(asset.value.infoEvent);
       return info.images.default.url;
