@@ -39,6 +39,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.eventsResultsSub) { this.eventsResultsSub.unsubscribe(); }
   }
 
+  getLocation(event) {
+    const obj = event.location || event;
+    const city = obj.city;
+    const country = obj.country || obj.name || '';
+    return city || country ? city ? `${city}, ${country}` : `${country}` : 'No place attached';
+  }
+
   loadEvents(page = 0, perPage = 15) {
     const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token, page, perPage };
