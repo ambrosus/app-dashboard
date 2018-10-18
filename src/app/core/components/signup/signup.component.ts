@@ -27,9 +27,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   promiseAction;
   web3;
   saved;
-  steps = {
-    currentStep: 1,
-  };
+  step = 'keysOptions';
 
   constructor(
     private authService: AuthService,
@@ -42,7 +40,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.forms.secretForm = new FormGroup({
       secret: new FormControl(null, [Validators.required]),
-      address: new FormControl(null, [Validators.required]),
+      address: new FormControl({ value: null, disabled: true }, [Validators.required]),
       saved: new FormControl(null, [Validators.requiredTrue]),
     });
     this.forms.userForm = new FormGroup({
@@ -62,7 +60,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
     this.forms.secretForm.get('secret').setValue(privateKey);
     this.forms.secretForm.get('address').setValue(address);
-    this.steps.currentStep = 2;
+    this.step = 'keysGenerate';
   }
 
   generateAddress(secret) {
@@ -106,7 +104,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.error = 'This account is already registered, please insert another secret';
         resolve();
       }, err => {
-        this.steps.currentStep = 3;
+        this.step = 'signupForm';
         reject();
       });
     });
@@ -135,7 +133,7 @@ export class SignupComponent implements OnInit, OnDestroy {
           // Register a user
           this.userRegister = this.usersService.createUser(data).subscribe(
             _res => {
-              this.steps.currentStep = 4;
+              this.step = 'success';
               resolve();
             },
             err => {

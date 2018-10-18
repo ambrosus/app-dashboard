@@ -8,13 +8,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 <div class="wrapper">
 
   <!-- STEP 1 -->
-  <div *ngIf="steps.currentStep === 1">
+  <div *ngIf="step === 'keysOptions'">
     <h2 class="card__title">Registration</h2>
     <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
 
     <div class="card animated fadeInDown">
       <div class="card__header center" style="padding: 30px 30px 0;">
-        <button type="button" class="button button--blue" (click)="steps.currentStep = 2; steps.step_1 = true;">Register my own key</button>
+        <button type="button" class="button button--blue" (click)="step = 'keysGenerate'">Register my own key</button>
         <p style="margin: 10px 0;">OR</p>
         <button type="button" class="button button--blue" (click)="generateKeys()">Generate keys for me</button>
         <small style="margin: 10px 0; display: block;">By proceeding I agree to your Terms of Service.</small>
@@ -29,7 +29,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
 
   <!-- STEP 2 -->
-  <div *ngIf="steps.currentStep === 2">
+  <div *ngIf="step === 'keysGenerate'">
     <h2 class="card__title">Registration</h2>
     <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
 
@@ -42,7 +42,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
                 <input formControlName="secret" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
               </label>
               <label>Address
-                <input formControlName="address" type="text" spellcheck="false" disabled>
+                <input formControlName="address" type="text" spellcheck="false">
               </label>
               <button type="button" class="button" (click)="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</button>
               <label style="margin: 10px 0; user-select: none;">
@@ -63,7 +63,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
 
   <!-- STEP 3 -->
-  <div *ngIf="steps.currentStep === 3">
+  <div *ngIf="step === 'signupForm'">
     <h2 class="card__title">Almost done...</h2>
     <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
 
@@ -92,14 +92,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </div>
 
       <div class="additional-options">
-        <a (click)="steps.currentStep = 2">Back to keys</a>
+        <a (click)="step = 'keysGenerate'">Back to keys</a>
         <a routerLink="/login">I want to sign in</a>
       </div>
     </div>
   </div>
 
   <!-- STEP 4 - SUCCESS -->
-  <div class="card animated fadeInDown" *ngIf="steps.currentStep === 4" style="padding: 30px;">
+  <div class="card animated fadeInDown" *ngIf="step === 'success'" style="padding: 30px;">
     <h2 class="card__title">Thank you!</h2>
     <p class="card__body">Your application has been successfully submitted for approval. Once reviewed, we will send you an e-mail.</p>
     <hr>
