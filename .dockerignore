@@ -4,6 +4,5 @@ dist
 node_modules
 test
 .travis.yml
-apiary.apib
 .DS_Store
 .git
