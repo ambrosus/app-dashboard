@@ -250,6 +250,7 @@ button.is-loading .btn-spinner {
   cursor: pointer;
   flex: 0 0 120px;
   transition: opacity .3s;
+  margin-right: 20px;
 
   & img {
     height: 120px;
@@ -277,7 +278,6 @@ button.is-loading .btn-spinner {
   }
 
   &__title {
-    margin-left: 20px;
 
     :first-child {
       margin-bottom: 7px;

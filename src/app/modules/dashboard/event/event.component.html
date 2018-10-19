@@ -1,90 +1,86 @@
-<!--
-Copyright: Ambrosus Technologies GmbH
-Email: tech@ambrosus.com
-This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
-This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
--->
-<main class="main">
+<div class="object" *ngIf="event">
 
-  <!-- Asset header -->
-  <div class="block-center m-w-12">
-    <div class="view-header">
-      <div class="flex flex-direction-r align-items-fe">
-        <button type="button" class="button button--blue m-r-20 back" routerLink="/assets/{{ event.content.idData.assetId }}">Back to asset</button>
-        <app-qr-code class="qr" [value]="previewAppUrl + '/' + event.content.idData.assetId + '/events/' + event.eventId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+  <div *ngFor="let eventObject of eventObjects">
+    <header class="object__header">
+      <div class="object__title">
+        <h3>{{ getName(eventObject, 'No title') }}</h3>
+        <p>{{ eventId }}</p>
       </div>
-      <div class="m-t-10">
-        <a href="{{ previewAppUrl }}/{{ event.content.idData.assetId }}/events/{{ event.eventId }}" class="center m-v-20 p-h-20" target="_blank" style="word-break: break-word;">View on {{ previewAppUrl.replace('https://', '') }}</a>
-        <button type="button" class="button m-r-10" (click)="openJSONPreviewDialog()">View JSON</button>
-        <button type="button" class="button" (click)="openDialog()">Edit</button>
+    </header>
+
+    <main class="object__body">
+
+      <!-- Identifiers -->
+      <div class="object__identifiers" *ngIf="eventObject | checkIf: 'eventObject.identifiers.identifiers'">
+        <h5 class="object__subtitle">Identifiers</h5>
+
+        <ul>
+          <li class="item" *ngFor="let key of objectKeys(eventObject.identifiers.identifiers)">
+            <span class="item__title">{{ key }}</span>
+            <span class="item__value">{{ eventObject.identifiers.identifiers[key][0] }}</span>
+          </li>
+        </ul>
       </div>
-    </div>
+
+      <!-- Documents -->
+      <div class="object__images" *ngIf="eventObject.documents">
+        <h5 class="object__subtitle">Documents</h5>
+
+        <a *ngFor="let document of objectKeys(eventObject.documents)" href="{{ eventObject.documents[document]['url'] }}" target="_blank">
+          <img src="/assets/raster/documents.png">
+        </a>
+      </div>
+
+      <!-- Properties -->
+      <div class="object__properties" *ngIf="eventObject.properties && eventObject.properties.length">
+        <h5 class="object__subtitle">Properties</h5>
+
+        <ul>
+          <li class="item" *ngFor="let property of eventObject.properties">
+            <span class="item__title" *ngIf="!isArray(property.value)">{{ property.key }}</span>
+            <span class="item__value" [ngClass]="{ 'item__value--json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Groups -->
+      <div class="object__groups" *ngIf="eventObject.groups && eventObject.groups.length">
+        <div *ngFor="let group of eventObject.groups">
+          <h5 class="object__subtitle">{{ group.key }}</h5>
+
+          <ul>
+            <li class="item" *ngFor="let property of objectKeys(group.value)">
+              <span class="item__title" *ngIf="!isArray(group.value[property])">{{ property }}</span>
+              <span class="item__value" [ngClass]="{ 'item__value--json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- Event details -->
-  <div class="block-center m-w-12 p-h-20" *ngIf="event">
-    <div class="layout-split">
+  <!-- Basic info -->
+  <div class="p-a-30" *ngIf="event | checkIf: 'event.content.idData'">
+    <h3 class="m-b-20 color-ablue--base">Event metadata</h3>
 
-      <!-- Event objects -->
-      <div class="layout-split__col1">
-        <h3 class="m-t-10 m-b-30 p-h-10">Event data objects</h3>
+    <p>Timestamp</p>
+    <p class="m-b-10 color-blacks--base">{{ event.content.idData.timestamp }} ({{ event.content.idData.timestamp * 1000 | date:'EEE, MMM d yyyy hh:mm' }})</p>
 
-        <div class="event-object" *ngFor="let eventObject of event.content.data">
+    <p>Event ID</p>
+    <p class="m-b-10 color-blacks--base">{{ eventId }}</p>
 
-          <!-- key - value -->
-          <div *ngFor="let key of objectKeys(eventObject)">
-            <div class="item" *ngIf="!isObject(eventObject[key])">
-              <p class="item__cell__title" *ngIf="!isArray(eventObject[key])">{{ key }}: </p>
-              <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key]) }" [innerHtml]="isObject(eventObject[key]) ? valueJSON(stringify(eventObject[key], null, 5)) : eventObject[key]"></p>
-            </div>
-          </div>
+    <p>Asset ID</p>
+    <p class="m-b-10 color-blacks--base">{{ assetId }}</p>
 
-          <!-- Groups -->
-          <div *ngFor="let key of objectKeys(eventObject)">
-            <div *ngIf="isObject(eventObject[key])">
-              <h5 class="m-t-20 m-b-10 p-h-10">{{ key }}</h5>
+    <p>Access level</p>
+    <p class="m-b-10 color-blacks--base">{{ event.content.idData.accessLevel }}</p>
 
-              <div class="item" *ngFor="let k of objectKeys(eventObject[key])">
-                <p class="item__cell__title" *ngIf="!isArray(eventObject[key])">{{ k }}:</p>
-                <p class="item__cell" [ngClass]="{ 'item__cell--json': isObject(eventObject[key][k]) }" [innerHtml]="isObject(eventObject[key][k]) ? valueJSON(stringify(eventObject[key][k], null, 5)) : eventObject[key][k]"></p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <p>Created by</p>
+    <p class="m-b-10 color-blacks--base">{{ event.content.idData.createdBy }}</p>
 
-      </div>
-
-      <!-- Basic info -->
-      <div class="layout-split__col1 ">
-        <h3 class="m-t-10 m-b-30 p-h-10 ">Basic info</h3>
-
-        <!-- timestamp -->
-        <div class="item" *ngIf="event | checkIf: 'event.content.idData.timestamp'">
-          <p class="item__cell__title ">timestamp: </p>
-          <p class="item__cell ">{{ event.content.idData.timestamp * 1000 | date:'d MMM yyyy' }} ({{ event.content.idData.timestamp }})</p>
-        </div>
-
-        <div class="item" *ngIf="event.eventId">
-          <p class="item__cell__title ">eventId: </p>
-          <p class="item__cell ">{{ event.eventId }}</p>
-        </div>
-
-        <div *ngIf="event | checkIf: 'event.content.idData'">
-          <div class="item" *ngFor="let key of objectKeys(event.content.idData) | loopExclude:[ 'timestamp']">
-            <p class="item__cell__title ">{{ key }}: </p>
-            <p class="item__cell ">{{ event.content.idData[key] }}</p>
-          </div>
-        </div>
-
-        <div class="item ">
-          <p class="item__cell__title ">Check Event Validations</p>
-          <a href="https://ambrosus.github.io/app-checker/?eventId={{eventId}}" target="_blank" class="item__cell item__click-here">Click Here</a>
-        </div>
-
-      </div>
-
-    </div>
+    <p>Data hash</p>
+    <p class="m-b-10 color-blacks--base">{{ event.content.idData.dataHash }}</p>
   </div>
 
-</main>
+</div>

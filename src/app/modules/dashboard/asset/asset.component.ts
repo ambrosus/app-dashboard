@@ -57,8 +57,6 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.asset.infoEvent[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
       }
     });
-
-    console.log(3, this.asset);
   }
 
   ngOnDestroy() {
