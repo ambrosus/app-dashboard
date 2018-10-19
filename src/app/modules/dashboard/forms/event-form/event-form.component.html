@@ -5,12 +5,12 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<div class="m-w-6 block-center p-v-20" [ngClass]="{error: error, success: success}">
+<div class="p-v-20">
 
   <h4 class="center p-h-40 m-b-30" *ngIf="error" style="color: #ea7070">{{ error }}</h4>
   <h4 class="center p-h-40 m-b-30" *ngIf="success" style="color: #5cb85c">{{ success }}</h4>
 
-  <form [formGroup]="eventForm" (ngSubmit)="save()" class="form-group" autocomplete="off">
+  <form [formGroup]="eventForm" (ngSubmit)="save()">
 
     <div class="accordions">
 
