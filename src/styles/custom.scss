@@ -329,38 +329,3 @@ button.is-loading .btn-spinner {
     border: none;
   }
 }
-
-// .item {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: flex-start;
-//   justify-content: flex-start;
-//   flex-wrap: wrap;
-//   padding: 3px 10px;
-
-//   @include min-1024 {
-//     flex-direction: row;
-//   }
-
-//   &__cell {
-//     color: #777;
-//     word-break: break-word;
-
-//     &__title {
-//       color: #333;
-//       margin-right: 5px;
-//     }
-
-//     &--json {
-//       white-space: pre-wrap;
-//       text-indent: 16px;
-//       margin-left: -16px;
-//       width: 100%;
-//     }
-//   }
-
-//   & img {
-//     width: 100%;
-//     max-width: 400px;
-//   }
-// }
