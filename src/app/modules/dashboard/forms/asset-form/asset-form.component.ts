@@ -193,7 +193,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
 
     // Images
     const images = assetForm.images;
-    console.log(1, images);
     if (images.length > 0) {
       const _images = {};
       images.map((image, index, array) => {
@@ -202,7 +201,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
           _images[image.name]['url'] = image.url;
         }
       });
-      console.log(2, _images);
 
       if (Object.keys(_images).length) { info['images'] = _images; }
     }
@@ -265,8 +263,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
 
       const asset = this.generateAsset();
       const infoEvent = this.generateInfoEvent(asset.assetId);
-      console.log('Asset: ', JSON.stringify(asset, null, 3));
-      console.log('Info event: ', JSON.stringify(infoEvent, null, 3));
       this.createAssetsSub = this.assetsService.createAssets([asset], [infoEvent]).subscribe(
         (resp: any) => {
           this.spinner = false;
