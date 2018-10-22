@@ -20,7 +20,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI', 'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'];
   sequenceNumber = 0;
 
-  @Input() prefill;
   @Input() assetId: String;
 
   isObject(value) { return typeof value === 'object'; }

@@ -7,15 +7,16 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <mat-dialog-content style="min-height: 100vh;">
   <div class="m-w-6 block-center m-t-50">
-    <h3 class="m-b-20">{{ prefill ? 'Edit event' : 'Create event' }}</h3>
+    <h3 class="m-b-30">New event</h3>
+
     <div class="card" style="padding: 0">
       <div class="card__header">
         <app-tabs>
           <app-tab label="Form">
-            <app-event-form [prefill]="prefill" [assetIds]="assetIds"></app-event-form>
+            <app-event-form [assetIds]="assetIds"></app-event-form>
           </app-tab>
           <app-tab label="JSON">
-            <app-json-form [prefill]="prefill" [assetIds]="assetIds" [for]="'events'"></app-json-form>
+            <app-json-form [assetIds]="assetIds" [for]="'events'"></app-json-form>
           </app-tab>
         </app-tabs>
       </div>

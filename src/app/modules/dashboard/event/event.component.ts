@@ -112,7 +112,6 @@ export class EventComponent implements OnInit, OnDestroy {
       position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
-    instance.prefill = this.event;
     instance.assetIds = [this.assetId];
     instance.isDialog = true;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
@@ -124,7 +123,6 @@ export class EventComponent implements OnInit, OnDestroy {
       position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
-    instance.prefill = this.event;
     instance.assetIds = [this.assetId];
     instance.isDialog = true;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
