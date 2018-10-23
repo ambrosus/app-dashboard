@@ -10,39 +10,41 @@ const findOrCreate = require('mongoose-findorcreate');
 const mongoosePaginate = require('mongoose-paginate');
 const updatesAndErrors = _require('/models/pluggins/updatesAndErrors');
 
-const invites = mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
-  from: {
+const organization = mongoose.Schema({
+  _id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users'
+    auto: true,
   },
-  to: {
+  title: {
     type: String,
-    required: true
+    index: { unique: true },
+    minLength: 4,
   },
-  message: String,
-  html: String,
-  token: String,
-  validUntil: {
-    type: Date,
-    default: +new Date() + 2 * 24 * 60 * 60 * 1000
-  },
-  organization: {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Organizations'
+    ref: 'Users',
+    index: { unique: true },
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  settings: {
+    type: mongoose.Schema.Types.Mixed,
+    default: { 'preview_app': 'https://amb.to' },
   },
   createdAt: {
     type: Date,
-    default: +new Date()
+    default: +new Date(),
   },
   updatedAt: {
     type: Date,
-    default: +new Date()
-  }
+    default: +new Date(),
+  },
 });
 
-invites.plugin(findOrCreate);
-invites.plugin(mongoosePaginate);
-invites.plugin(updatesAndErrors);
+organization.plugin(findOrCreate);
+organization.plugin(mongoosePaginate);
+organization.plugin(updatesAndErrors);
 
-module.exports = mongoose.model('Invites', invites);
+module.exports = mongoose.model('Organizations', organization);

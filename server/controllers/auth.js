@@ -31,7 +31,7 @@ exports.login = async (req, res, next) => {
     [err, user] = await to(
       User.findOne({ email })
       .populate({
-        path: 'company',
+        path: 'organization',
         select: '-active -createdAt -updatedAt -__v -owner'
       })
       .select('-active -createdAt -updatedAt -__v')
@@ -77,7 +77,7 @@ exports.verifyAccount = async (req, res, next) => {
   [err, user] = await to(
     User.findOne({ address })
     .populate({
-      path: 'company',
+      path: 'organization',
       select: '-active -createdAt -updatedAt -__v -owner'
     })
     .select('-active -createdAt -updatedAt -password -__v')

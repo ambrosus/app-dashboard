@@ -15,7 +15,7 @@ const emailService = _require('/utils/email');
 const accountCreatedTemplate = _require('/assets/templates/email/accountCreated.template.html');
 
 const User = _require('/models/users');
-const Company = _require('/models/companies');
+const Organization = _require('/models/organizations');
 const Invite = _require('/models/invites');
 
 /**
@@ -41,6 +41,9 @@ exports.create = async (req, res, next) => {
   _user['_id'] = new mongoose.Types.ObjectId();
   if (!inviteToken) {
     _user['permissions'] = ['manage_organization', 'manage_accounts', 'create_asset', 'create_events'];
+  } else {
+    _user['permissions'] = _user['permissions'] || ['create_asset', 'create_events'];
+    _user['accessLevel'] = _user['accessLevel'] || 1;
   }
 
   [err, userCreated] = await to(_user.save());
@@ -93,41 +96,41 @@ exports.hermesAccountRegister = async (req, res, next) => {
 }
 
 /**
- * Sets company ownership
+ * Sets organization ownership
  *
  * @name setOwnership
  * @route {POST} api/setup
- * @bodyparam user, company
+ * @bodyparam user, organization
  * @returns Status code 400 on failure
  * @returns Status code 200 on success
  */
 exports.setOwnership = async (req, res, next) => {
   const user = req.body.user || {};
-  const company = req.body.company || {};
-  let err, _user, companyUpdated, userUpdated;
+  const organization = req.body.organization || {};
+  let err, _user, organizationUpdated, userUpdated;
 
-  if (user && company) {
+  if (user && organization) {
     // Find user
     [err, _user] = await to(User.findById(user._id));
     if (err || !_user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
-    // Update company
-    [err, companyUpdated] = await to(Company.findByIdAndUpdate(company._id, { owner: user._id }));
-    if (err || !companyUpdated) { logger.error('Company update error: ', err); return next(new ValidationError(err.message, err)); }
+    // Update organization
+    [err, organizationUpdated] = await to(Organization.findByIdAndUpdate(organization._id, { owner: user._id }));
+    if (err || !organizationUpdated) { logger.error('Organization update error: ', err); return next(new ValidationError(err.message, err)); }
 
     // Update user
-    _user.company = companyUpdated._id;
+    _user.organization = organizationUpdated._id;
     [err, userUpdated] = await to(_user.save());
     if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
     req.status = 200;
-    req.json = { data: { user: userUpdated, company: companyUpdated }, message: 'Success', status: 200 };
+    req.json = { data: { user: userUpdated, organization: organizationUpdated }, message: 'Success', status: 200 };
     return next();
 
   } else if (!user) {
     return next(new ValidationError('"user" object is required'));
-  } else if (!company) {
-    return next(new ValidationError('"company" object is required'));
+  } else if (!organization) {
+    return next(new ValidationError('"organization" object is required'));
   }
 };
 
@@ -146,7 +149,7 @@ exports.getAccount = async (req, res, next) => {
   [err, user] = await to(
     User.findOne({ email })
     .populate({
-      path: 'company',
+      path: 'organization',
       select: '-active -createdAt -updatedAt -__v -owner',
     })
     .select('-active -createdAt -updatedAt -__v')
@@ -159,21 +162,21 @@ exports.getAccount = async (req, res, next) => {
 };
 
 /**
- * Get list of accounts based on the user's company
+ * Get list of accounts based on the user's organization
  *
- * @name getCompanyAccounts
+ * @name getOrganizationAccounts
  * @route {GET} api/users/
  * @returns Status code 400 on failure
  * @returns users Object & number of users (count) on success with status code 200
  */
 exports.getAccounts = async (req, res, next) => {
-  const company = req.query.company || '';
+  const organization = req.query.organization || '';
   let err, users;
 
   [err, users] = await to(
-    User.find({ company })
+    User.find({ organization })
     .populate({
-      path: 'company',
+      path: 'organization',
       select: '-active -createdAt -updatedAt -__v -owner',
     })
     .select('-password -__v')

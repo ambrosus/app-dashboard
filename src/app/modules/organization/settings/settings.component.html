@@ -1,0 +1,34 @@
+<h4 class="m-b-30">Settings</h4>
+
+<form [formGroup]="settingsForm" (ngSubmit)="editOrganization()" class="m-w-4">
+  <div class="form-text m-b-20">
+    <label for="title">Company title</label>
+    <input formControlName="title" type="text" id="title" spellcheck="false" appInput>
+  </div>
+  <div class="form-text m-b-20">
+    <label for="preview_app">Preview app</label>
+    <input formControlName="preview_app" type="url" id="preview_app" spellcheck="false" appInput>
+  </div>
+  <div class="form-text m-b-30">
+    <label for="timeZone">Time Zone</label>
+    <input formControlName="timeZone" list="timezones" id="timeZone" spellcheck="false" appInput>
+    <datalist id="timezones">
+      <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+    </datalist>
+  </div>
+  <div class="m-b-30">
+    <h5 class="m-b-20">Company logo</h5>
+    <div class="flex flex-direction-r align-items-c">
+      <div class="avatar relative" style="max-width: 150px; left: 0; top: 0; flex: 0 0 50px;" *ngIf="croppedImage" [style.backgroundImage]="'url('+ croppedImage +')'"></div>
+      <label for="company_logo" (click)="showCropper = true" class="button m-l-20" style="margin-bottom: 0px;">Choose an image</label>
+    </div>
+    <input type="file" (change)="fileChangeEvent($event)" class="srt" id="company_logo" />
+    <image-cropper *ngIf="showCropper" class="m-t-10" style="max-height: 400px" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1 / 1" [resizeToWidth]="150" [imageQuality]="100" format="png" (imageCroppedBase64)="imageCropped($event)"></image-cropper>
+  </div>
+  <div class="flex flex-direction-r justify-content-fe align-items-c">
+    <app-spinner *ngIf="spinner"></app-spinner>
+    <button type="submit" class="button button--blue m-l-20">Save settings</button>
+  </div>
+</form>
+<h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+<h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>

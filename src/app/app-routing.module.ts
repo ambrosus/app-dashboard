@@ -39,10 +39,10 @@ const routes: Routes = [
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always',
   }, {
-    path: 'administration',
+    path: 'organization',
     canActivate: [AuthLoginGuard, PermissionsGuard],
     canActivateChild: [AuthLoginGuard, PermissionsGuard],
-    loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
+    loadChildren: 'app/modules/organization/organization.module#OrganizationModule',
     runGuardsAndResolvers: 'always',
     data: { permissions: ['manage_organization'] },
   }, {

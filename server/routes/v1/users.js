@@ -9,14 +9,14 @@ const express = require('express');
 
 const UsersController = _require('/controllers/users');
 const InvitesController = _require('/controllers/invites');
-const CompaniesController = _require('/controllers/companies');
+const OrganizationsController = _require('/controllers/organizations');
 
 const routes = express.Router();
 
 // Routes
 routes.route('/')
   .post(InvitesController.extract, UsersController.hermesAccountRegister, UsersController.create,
-    CompaniesController.create, UsersController.setOwnership, (req, res) => { res.status(req.status).json(req.json); })
+    OrganizationsController.create, UsersController.setOwnership, (req, res) => { res.status(req.status).json(req.json); })
   .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
 
 routes.route('/:email')

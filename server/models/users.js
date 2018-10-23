@@ -23,9 +23,9 @@ const users = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
   },
-  company: {
+  organization: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies',
+    ref: 'Organizations',
   },
   full_name: String,
   email: {

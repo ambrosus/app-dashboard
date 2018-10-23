@@ -53,7 +53,7 @@ export class UsersService {
 
   getUsers() {
     const user: any = this.storageService.get('user');
-    const url = `/api/users?company=${user.company._id}`;
+    const url = `/api/users?organization=${user.organization._id}`;
     return new Observable(observer => {
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),

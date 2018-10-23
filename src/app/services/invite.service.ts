@@ -15,11 +15,11 @@ export class InviteService {
         err => { observer.error(err); }
       );
     });
-
   }
 
   getInvites(user) {
-    const url = `/api/invites/company/${user.company._id}`;
+    const address = this.storageService.get('user')['address'];
+    const url = `/api/invites/organization/${user.organization._id}?address=${address}`;
 
     return new Observable(observer => {
       this.http.get(url).subscribe(
@@ -43,7 +43,8 @@ export class InviteService {
   }
 
   sendInvite(body) {
-    const url = `/api/invites`;
+    const address = this.storageService.get('user')['address'];
+    const url = `/api/invites?address=${address}`;
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         ({ data }: any) => { observer.next(data); },

@@ -16,7 +16,7 @@ const { ValidationError, NotFoundError } = _require('/errors');
 const { decrypt } = _require('/utils/password');
 
 const Invite = _require('/models/invites');
-const Company = _require('/models/companies');
+const Organization = _require('/models/organizations');
 
 /**
  * Create a new invite
@@ -29,22 +29,27 @@ const Company = _require('/models/companies');
  * @returns success message on success with status code 200
  */
 exports.create = async (req, res, next) => {
-  const { invites, user } = req.body;
-  let err, company, insertedInvites, emailSent;
+  const { emails, user } = req.body;
+  let err, organization, insertedInvites, emailSent;
 
-  if (invites && invites.length !== 0 && user) {
-    [err, company] = await to(Company.findById(user.company._id));
-    if (err || !company) { logger.error('Company GET error: ', err); return next(new NotFoundError(err.message)); }
+  if (emails && emails.length && user) {
+    const invites = [];
 
-    invites.map(invite => {
+    [err, organization] = await to(Organization.findById(user.organization._id));
+    if (err || !organization) { logger.error('Organization GET error: ', err); return next(new NotFoundError(err.message)); }
+
+    emails.map(email => {
+      const invite = {};
       invite['_id'] = new mongoose.Types.ObjectId();
+      invite['to'] = email;
       invite['from'] = mongoose.Types.ObjectId(user._id);
-      invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email: invite.to, accessLevel: invite.accessLevel, role: invite.role, createdAt: +new Date(), company: user.company._id }), config.secret);
+      invite['token'] = tokenEncrypt.encrypt(JSON.stringify({ email, createdAt: +new Date(), organization: user.organization._id }), config.secret);
 
-      const url = `https://${req.get('host')}/invite/${invite['token']}`;
-      const message = invite['message'] ? `<p style="text-align: left;width: 100%; color: #000; margin-bottom: 25px;">${invite['message']}</p>` : '<!-- Message -->';
+      const url = `https://${req.get('host')}/signup?token=${invite['token']}`;
+      const message = `<p style="text-align: left;width: 100%; color: #000; margin-bottom: 25px;">I would like to invite you to join our organizations dashboard.</p>`
       invite['html'] = inviteTemplate.replace(/@url/g, url).replace(/@message/g, message);
-      invite['company'] = company;
+      invite['organization'] = organization;
+      invites.push(invite);
     });
 
     [err, insertedInvites] = await to(Invite.insertMany(invites));
@@ -52,19 +57,18 @@ exports.create = async (req, res, next) => {
 
     insertedInvites.map(async (invite) => {
       const invitation = JSON.parse(JSON.stringify(invite));
-      invitation.subject = `${user.full_name} invited you to join ${user.company.title} Dasbhoard`;
-      invitation.from = `no-reply@${slug(user.company.title)}.com`;
+      invitation.subject = `${user.full_name} invited you to join ${user.organization.title || 'our'} dashboard`;
+      invitation.from = `no-reply@${slug(user.organization.title || 'dashboard')}.com`;
 
       [err, emailSent] = await to(email.send(invitation));
       if (err || !emailSent) { logger.error('Email send error: ', err); }
-      if (emailSent) logger.error('Email send success: ', emailSent);
     });
 
     req.status = 200;
     req.json = { data: null, message: 'Success', status: 200 };
     return next();
 
-  } else if (!invites || invites.length === 0) {
+  } else if (!invites || !invites.length) {
     next(new ValidationError('"invites" need to be a non-empty array'));
   } else if (!user) {
     next(new ValidationError('"user" is required'));
@@ -81,15 +85,12 @@ exports.create = async (req, res, next) => {
  */
 exports.extract = async (req, res, next) => {
   const inviteToken = req.query.token;
-  if (!req.body.user.accessLevel) { req.body.user.accessLevel = 1; }
-  if (!req.body.user.permissions) { req.body.user.permissions = ['create_asset', 'create_event']; }
 
   if (inviteToken) {
     try {
       const token = JSON.parse(decrypt(inviteToken, config.secret));
       if (token.email) { req.body.user.email = token.email; }
-      if (token.accessLevel) { req.body.user.accessLevel = token.accessLevel; }
-      if (token.company) { req.body.user.company = token.company; }
+      if (token.organization) { req.body.user.organization = token.organization; }
       return next();
     } catch (error) { return next(next(new ValidationError('Invite token is invalid'))); }
   } else { return next(); }
@@ -118,20 +119,20 @@ exports.delete = async (req, res, next) => {
 }
 
 /**
- * Get all invites for a company
+ * Get all invites for a organization
  *
  * @name getAllInvites
- * @route {GET} api/invites/company/:company
- * @queryparams company
+ * @route {GET} api/invites/organization/:organization
+ * @queryparams organization
  * @returns Status code 400 on failure
  * @returns array of invites & number of invites (length) on success with status code 200
  */
 exports.getAll = async (req, res, next) => {
-  const company = req.params.company;
+  const organization = req.params.id;
   let err, invites;
 
   [err, invites] = await to(
-    Invite.find({ company })
+    Invite.find({ organization })
     .populate({
       path: 'from',
       select: 'full_name email',
@@ -155,21 +156,28 @@ exports.getAll = async (req, res, next) => {
  */
 exports.verify = async (req, res, next) => {
   const token = req.params.token;
-  let err, createdAt, deleted, invite;
-  try { createdAt = JSON.parse(tokenEncrypt.decrypt(token, config.secret))['createdAt']; } catch (error) { return next(new ValidationError('Token is invalid')); }
+  let err, createdAt, deleted, invite, _token;
+  try { _token = JSON.parse(tokenEncrypt.decrypt(token, config.secret)); } catch (error) { return next(new ValidationError('Token is invalid')); }
   const validUntil = 2 * 24 * 60 * 60 * 1000;
 
-  if (+new Date() - createdAt > validUntil) {
+  if (+new Date() - _token.createdAt > validUntil) {
     [err, deleted] = await to(Invite.findOneAndRemove({ token }));
     if (err || !deleted) { logger.error('Invite DELETE error: ', err); return next(new ValidationError(err.message, err)); }
     return next(new ValidationError('Invite expired'));
   } else {
-    [err, invite] = await to(Invite.findOne({ token }));
+    [err, invite] = await to(
+      Invite.findOne({ token })
+      .populate('from')
+      .populate({
+        path: 'organization',
+        select: '-active -createdAt -updatedAt -__v -owner'
+      })
+      .select('-active -createdAt -updatedAt -__v')
+    );
     if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
     req.status = 200;
-    req.json = { data: null, message: 'Token is valid', status: 200 };
+    req.json = { data: invite, message: 'Token is valid', status: 200 };
     return next();
   }
-
 };

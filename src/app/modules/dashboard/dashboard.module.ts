@@ -11,7 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AssetsComponent } from 'app/modules/dashboard/assets/assets.component';
 import { AssetAddComponent } from './asset-add/asset-add.component';
 import { RouterModule } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardOutletComponent } from './dashboard-outlet/dashboard-outlet.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { StorageService } from 'app/services/storage.service';
@@ -29,21 +29,21 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     DashboardRoutingModule,
     SharedModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
   ],
   declarations: [
     AssetComponent,
     AssetsComponent,
     AssetAddComponent,
-    DashboardComponent,
+    DashboardOutletComponent,
     EventComponent,
     EventAddComponent,
     ChartComponent,
     ChartistComponent,
     AssetFormComponent,
     EventFormComponent,
-    JsonFormComponent
+    JsonFormComponent,
   ],
-  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService]
+  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService],
 })
 export class DashboardModule { }

@@ -41,7 +41,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.db, { useNewUrlParser: true })
   .then(connected => {
     logger.info('MongoDB connected');
-    invitationsCron.start();
+    // invitationsCron.start();
   }).catch(error => logger.error('Mongodb connection error: ', error));
 
 app.use(express.static(path.join(__dirname, 'dist')));

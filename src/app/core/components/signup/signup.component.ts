@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
-import { CompaniesService } from 'app/services/companies.service';
+import { OrganizationsService } from 'app/services/organizations.service';
 import { UsersService } from 'app/services/users.service';
 
 declare let Web3: any;
@@ -31,7 +31,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private companiesService: CompaniesService,
+    private organizationsService: OrganizationsService,
     private usersService: UsersService
   ) {
     this.web3 = new Web3();
@@ -128,7 +128,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
     this.promiseAction = new Promise((resolve, reject) => {
       // Check if organization exists
-      this.organizationCheck = this.companiesService.checkCompany({ title: organization }).subscribe(
+      this.organizationCheck = this.organizationsService.checkOrganization({ title: organization }).subscribe(
         res => {
           // Register a user
           this.userRegister = this.usersService.createUser(data).subscribe(

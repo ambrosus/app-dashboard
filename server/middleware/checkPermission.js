@@ -16,9 +16,9 @@ module.exports = action => {
     let err, user;
 
     [err, user] = await to(User.findOne({ address }));
-    if (err || !user) { return next(NotFoundError(err.message, err)); }
+    if (err || !user) { return next(new NotFoundError('User not found', err)); }
 
-    if (user.permissions.indexOf(action) === -1) { return next(PermissionError('No permission')); }
+    if (user.permissions.indexOf(action) === -1) { return next(new PermissionError('No permission')); }
     return next();
   }
 };
