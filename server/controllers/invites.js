@@ -84,16 +84,22 @@ exports.create = async (req, res, next) => {
  * @returns calls next();
  */
 exports.extract = async (req, res, next) => {
-  const inviteToken = req.query.token;
+  const { token } = req.body;
+  let err, invite;
 
-  if (inviteToken) {
-    try {
-      const token = JSON.parse(decrypt(inviteToken, config.secret));
-      if (token.email) { req.body.user.email = token.email; }
-      if (token.organization) { req.body.user.organization = token.organization; }
-      return next();
-    } catch (error) { return next(next(new ValidationError('Invite token is invalid'))); }
-  } else { return next(); }
+  [err, invite] = await to(
+    Invite.findOne({ token })
+    .populate('from')
+    .populate({
+      path: 'organization',
+      select: '-active -createdAt -updatedAt -__v -owner'
+    })
+    .select('-active -createdAt -updatedAt -__v')
+  );
+  if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError('No invite', err)); }
+
+  req.invite = invite;
+  next();
 }
 
 /**
@@ -174,7 +180,7 @@ exports.verify = async (req, res, next) => {
       })
       .select('-active -createdAt -updatedAt -__v')
     );
-    if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError(err.message, err)); }
+    if (err || !invite) { logger.error('Invite GET error: ', err); return next(new NotFoundError('No invite', err)); }
 
     req.status = 200;
     req.json = { data: invite, message: 'Token is valid', status: 200 };

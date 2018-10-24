@@ -39,10 +39,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <app-tab label="Private/public keys">
             <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
               <label>Private Key
-                <input formControlName="secret" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
+                <input formControlName="privateKey" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
               </label>
               <label>Public Key
-                <input formControlName="address" type="text" spellcheck="false">
+                <input formControlName="publicKey" type="text" spellcheck="false">
               </label>
 
               {{ this.forms.secretForm.value.address }}

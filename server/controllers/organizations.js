@@ -71,6 +71,36 @@ exports.check = async (req, res, next) => {
   return next();
 }
 
+exports.setOwnership = async (req, res, next) => {
+  const user = req.body.user || {};
+  const organization = req.body.organization || {};
+  let err, _user, organizationUpdated, userUpdated;
+
+  if (user && organization) {
+    // Find user
+    [err, _user] = await to(User.findById(user._id));
+    if (err || !_user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
+
+    // Update organization
+    [err, organizationUpdated] = await to(Organization.findByIdAndUpdate(organization._id, { owner: user._id }));
+    if (err || !organizationUpdated) { logger.error('Organization update error: ', err); return next(new ValidationError(err.message, err)); }
+
+    // Update user
+    _user.organization = organizationUpdated._id;
+    [err, userUpdated] = await to(_user.save());
+    if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
+
+    req.status = 200;
+    req.json = { data: { user: userUpdated, organization: organizationUpdated }, message: 'Success', status: 200 };
+    return next();
+
+  } else if (!user) {
+    return next(new ValidationError('"user" object is required'));
+  } else if (!organization) {
+    return next(new ValidationError('"organization" object is required'));
+  }
+};
+
 exports.organizationRequest = async (req, res, next) => {
   const { email, address, title, message } = req.body;
   let err, accountExists, organizationExists, organizationRequestCreated;

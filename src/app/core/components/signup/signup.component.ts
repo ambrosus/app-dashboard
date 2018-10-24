@@ -26,6 +26,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   requestOrganizationSub: Subscription;
   routeSub: Subscription;
   getInviteSub: Subscription;
+  createAccountSub: Subscription;
   error;
   success;
   promiseAction;
@@ -69,6 +70,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.requestOrganizationSub) { this.requestOrganizationSub.unsubscribe(); }
     if (this.routeSub) { this.routeSub.unsubscribe(); }
     if (this.getInviteSub) { this.getInviteSub.unsubscribe(); }
+    if (this.createAccountSub) { this.createAccountSub.unsubscribe(); }
   }
 
   getInvite() {
@@ -82,8 +84,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   generateKeys() {
-    const { address, secret } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    this.forms.secretForm.get('privateKey').setValue(secret);
+    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+    this.forms.secretForm.get('privateKey').setValue(privateKey);
     this.forms.secretForm.get('publicKey').setValue(address);
     this.step = 'keysGenerate';
   }
@@ -108,7 +110,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   verifyAccount() {
     this.error = false;
-    const { privateKey } = this.forms.secretForm.getRawValue();
+    const { privateKey, publicKey } = this.forms.secretForm.getRawValue();
 
     if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
 
@@ -118,26 +120,38 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.error = 'This account is already registered, please insert another secret';
         resolve();
       }, err => {
-        this.step = 'requestForm';
-        reject();
+        if (!this.invite) {
+          this.step = 'requestForm';
+          reject();
+        } else {
+          // Account create request
+          const body = {
+            token: this.token,
+            address: publicKey,
+          };
+          this.createAccountSub = this.usersService.createUser(body).subscribe(
+            (resp: any) => {
+              this.router.navigate(['/login']);
+            },
+            error => {
+              console.error('Account create: ', error);
+              reject();
+            },
+          );
+        }
       });
     });
   }
 
-  inviteRegisterUser() {
-
-  }
-
   requestOrganization() {
     this.error = false;
-    const { address } = this.forms.secretForm.getRawValue();
+    const { privateKey } = this.forms.secretForm.getRawValue();
     const data = this.forms.requestForm.getRawValue();
-    data.address = address;
+    data.address = privateKey;
 
     if (!this.forms.requestForm.valid) { return this.error = 'Please fill all required fields'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      // Check if organization exists
       this.requestOrganizationSub = this.organizationsService.requestOrganization(data).subscribe(
         (resp: any) => {
           this.step = 'success';

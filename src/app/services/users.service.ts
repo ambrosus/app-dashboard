@@ -26,11 +26,8 @@ export class UsersService {
     });
   }
 
-  createUser(body, token = null) {
-    let url = `/api/users`;
-    if (token) {
-      url += `?token=${token}`;
-    }
+  createUser(body) {
+    const url = `/api/users`;
 
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
