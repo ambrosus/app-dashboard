@@ -19,7 +19,7 @@ export class AssetsService {
     private storageService: StorageService,
     private http: HttpClient,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     this.initSDK();
     this.web3 = new Web3();
@@ -50,7 +50,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -66,7 +66,7 @@ export class AssetsService {
           this._events.next(data);
           observer.next(data);
         },
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -78,7 +78,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -90,7 +90,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -192,7 +192,7 @@ export class AssetsService {
 
       this.http.post(url, body).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -211,7 +211,7 @@ export class AssetsService {
           if (location.pathname.includes('/events/')) { this.router.navigate([u]); }
           observer.next(data);
         },
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }

@@ -31,20 +31,22 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <!-- STEP 2 -->
   <div *ngIf="step === 'keysGenerate'">
     <h2 class="card__title">Registration</h2>
-    <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+    <p class="card__body"><strong>Public</strong> and <strong>private</strong> keys are required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
 
     <div class="card animated fadeInDown">
       <div class="card__header">
         <app-tabs>
           <app-tab label="Private/public keys">
             <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
-              <label>Secret
+              <label>Private Key
                 <input formControlName="secret" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
               </label>
-              <label>Address
+              <label>Public Key
                 <input formControlName="address" type="text" spellcheck="false">
               </label>
-              <button type="button" class="button" (click)="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</button>
+
+              {{ this.forms.secretForm.value.address }}
+              <a class="button" download="keys.json" [attr.href]="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</a>
               <label style="margin: 10px 0; user-select: none;">
                 <input type="checkbox" formControlName="saved"> I saved my keys
               </label>

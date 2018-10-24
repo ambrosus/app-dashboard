@@ -10,23 +10,11 @@
         padding: 20px;
         text-align: center;
         cursor: pointer;
-        border-bottom: 1px solid #eee;
-
-        &.active {
-          border: 1px solid #eee;
-          border-bottom: 1px solid #fff;
-          color: darken(#55a8fd, 10);
-        }
-
-        &:not(.active) {
-          background: #f9f9f9;
-        }
       }
     }
   }
 
   &__tab {
     padding: 30px;
-    border: 1px solid #eee;
   }
 }

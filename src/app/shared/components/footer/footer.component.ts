@@ -8,20 +8,24 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  menu;
+  socials: {
+    url: string,
+    icon: string
+  }[];
 
   constructor() {
-    this.menu = [
+    this.socials = [
       {
-        title: 'Help',
-        url: '/help',
+        url: 'https://www.facebook.com/ambrosusAMB',
+        icon: 'facebook',
       },
       {
-        title: 'About',
-        url: '/about',
-      }, {
-        title: 'Terms and Conditions',
-        url: '/terms',
+        url: 'https://www.youtube.com/channel/UC27wKQU7KBgvtuTAOKD0BJg',
+        icon: 'youtube',
+      },
+      {
+        url: 'https://twitter.com/AmbrosusAMB',
+        icon: 'twitter',
       },
     ];
   }
