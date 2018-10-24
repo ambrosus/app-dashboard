@@ -154,7 +154,7 @@ exports.getAccount = async (req, res, next) => {
     })
     .select('-active -createdAt -updatedAt -__v')
   );
-  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
+  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err, err)); }
 
   req.status = 200;
   req.json = { data: user, message: 'Success', status: 200 };

@@ -5,6 +5,7 @@ import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { UsersService } from 'app/services/users.service';
+import { Router } from '@angular/router';
 
 declare let Web3: any;
 
@@ -32,7 +33,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private route: Router
   ) {
     this.web3 = new Web3();
   }
