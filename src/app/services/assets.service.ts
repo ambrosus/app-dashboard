@@ -95,6 +95,48 @@ export class AssetsService {
     });
   }
 
+  parseEvent(event) {
+    let eventObjects = [];
+
+    // Extract event objects
+    if (event.content.data) {
+      eventObjects = event.content.data.reduce((total, obj, index, array) => {
+        const type = obj.type.split('.');
+        obj.type = type[type.length - 1].toLowerCase();
+        obj.eventId = event.eventId;
+        obj.createdBy = event.content.idData.createdBy;
+        obj.timestamp = event.content.idData.timestamp;
+
+        if (obj.type === 'location' || obj.type === 'identifiers') {
+          event.content.data.map(_obj => {
+            if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
+              _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+            }
+          });
+        } else { total.push(obj); }
+
+        return total;
+      }, []);
+
+      // Groups and properties
+      eventObjects.map(eventObject => {
+        eventObject['groups'] = [];
+        eventObject['properties'] = [];
+        Object.keys(eventObject).map((key: any) => {
+          if (['type', 'name', 'assetType', 'documents', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
+            const property = {
+              key,
+              value: eventObject[key],
+            };
+            eventObject[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
+          }
+        });
+      });
+    }
+
+    return eventObjects;
+  }
+
   sortEventsByTimestamp(a, b) {
     if (a.timestamp > b.timestamp) { return -1; }
     if (a.timestamp < b.timestamp) { return 1; }

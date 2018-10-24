@@ -9,23 +9,32 @@ isLatest = type => ['info', 'redirection', 'identifiers', 'branding', 'location'
 
 exports.findEvent = (eventType, events) => {
   let e = false;
-  events.find(event => {
+  events.map(event => {
     if (event.content.data) {
-      return event.content.data.find(obj => {
+      event.content.data.map(obj => {
         const type = obj.type.split('.');
         obj.type = type[type.length - 1].toLowerCase();
         obj.eventId = event.eventId;
         obj.createdBy = event.content.idData.createdBy;
         obj.timestamp = event.content.idData.timestamp;
+
+        if (obj.type === 'location' || obj.type === 'identifiers') {
+          event.content.data.map(_obj => {
+            if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
+              _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+            }
+          });
+        }
+
         switch (eventType) {
           case 'latest':
-            if (isLatest(obj.type)) { e = obj; return true; }
+            if (isLatest(obj.type)) { e = obj; }
             break;
           default:
-            if (obj.type === eventType) { e = obj; return true; }
+            if (obj.type === eventType) { e = obj; }
         }
       });
-    } else { return false; }
+    }
   });
   return e;
 };

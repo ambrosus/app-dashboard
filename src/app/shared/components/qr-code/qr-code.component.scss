@@ -1,0 +1,15 @@
+:host {
+  cursor: pointer;
+  flex: 0 0 120px;
+  transition: opacity .3s;
+  margin-right: 20px;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  img {
+    height: 120px;
+    width: 120px;
+  }
+}

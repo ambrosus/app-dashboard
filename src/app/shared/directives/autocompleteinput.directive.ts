@@ -34,11 +34,7 @@ export class AutocompleteinputDirective implements OnInit {
         b.innerHTML = '<strong>' + item.substr(0, value.length) + '</strong>';
         b.innerHTML += item.substr(value.length);
         b.addEventListener('click', event => {
-          this.el.nativeElement.value = item;
-          this.assetsService.inputChanged.next({
-            control: this.appAutocompleteinput.control,
-            value: item,
-          });
+          this.appAutocompleteinput.control.setValue(item);
           this.lastValue = item;
           this.clearList();
         });

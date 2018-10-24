@@ -1,0 +1,8 @@
+.vscode
+data
+dist
+node_modules
+test
+.travis.yml
+.DS_Store
+.git

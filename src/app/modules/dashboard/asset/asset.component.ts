@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
-import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
@@ -17,7 +16,6 @@ export class AssetComponent implements OnInit, OnDestroy {
   routeParamsSub: Subscription;
   asset;
   assetId: string;
-  events;
   user;
   previewAppUrl;
 
@@ -37,14 +35,28 @@ export class AssetComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeSub = this.route.data.subscribe(data => this.asset = data.asset);
     this.routeParamsSub = this.route.params.subscribe(params => this.assetId = params.assetid);
-    this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
 
-    this.user = this.storageService.get('user');
-    let companySettings: any = {};
+    this.user = <any>this.storageService.get('user') || {};
     try {
-      companySettings = JSON.parse(this.user.company.settings);
-    } catch (e) { }
-    this.previewAppUrl = companySettings.preview_app || 'https://amb.to';
+      this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
+      this.previewAppUrl = this.user.company.settings.preview_app;
+    } catch (e) {
+      this.asset['infoEvent'] = {};
+      this.previewAppUrl = 'https://amb.to';
+    }
+
+    // Groups and properties
+    this.asset.infoEvent['groups'] = [];
+    this.asset.infoEvent['properties'] = [];
+    Object.keys(this.asset.infoEvent).map((key: any) => {
+      if (['type', 'name', 'assetType', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
+        const property = {
+          key,
+          value: this.asset.infoEvent[key],
+        };
+        this.asset.infoEvent[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -58,11 +70,10 @@ export class AssetComponent implements OnInit, OnDestroy {
     } catch (e) { return false; }
   }
 
-  getName(eventObject, alternative = '') {
+  getName(info, alternative = 'No title') {
     try {
-      const obj = JSON.parse(eventObject);
-      const name = obj.name;
-      const type = obj.type.split('.');
+      const name = info.name;
+      const type = info.type.split('.');
       return name ? name : type[type.length - 1];
     } catch (e) { return alternative; }
   }
@@ -82,27 +93,14 @@ export class AssetComponent implements OnInit, OnDestroy {
     }
   }
 
-  openCreateEventDialog() {
+  openAddEventDialog() {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { right: '0' },
     });
 
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
+    dialogRef.afterClosed().subscribe(result => console.log('Event add dialog was closed'));
     const instance = dialogRef.componentInstance;
-    instance.prefill = this.events;
     instance.assetIds = [this.assetId];
-  }
-
-  openJsonDialog(): void {
-    const dialogRef = this.dialog.open(JsonPreviewComponent, {
-      width: '600px',
-      position: { right: '0' },
-    });
-    const instance = dialogRef.componentInstance;
-    instance.data = this.events;
-    instance.name = this.getName(this.asset.infoEvent, 'No title');
-
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 }

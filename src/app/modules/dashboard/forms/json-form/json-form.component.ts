@@ -17,21 +17,12 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   textArea: any = '';
   sequenceNumber = 0;
 
-  @Input() prefill;
   @Input() assetIds: String[];
-  @Input() for = 'assets';
+  @Input() for: 'assets';
 
   constructor(private storageService: StorageService, private assetsService: AssetsService) { }
 
-  emit(type) { window.dispatchEvent(new Event(type)); }
-
-  ngOnInit() {
-    if (this.prefill && this.assetIds) {
-      if (!Array.isArray(this.prefill)) { this.prefill = [this.prefill]; }
-      this.prefill.map(event => delete event['metadata']);
-      this.textArea = JSON.stringify(this.prefill, null, 2);
-    }
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
@@ -142,11 +133,11 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     } catch (e) { }
 
     if (json) {
-      if (!confirm('Are you sure you want to proceed creating this asset?')) { return; }
+      if (!confirm(`Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`)) { return; }
 
       this.spinner = true;
 
-      if (this.for === 'assets' && !this.prefill) {
+      if (this.for === 'assets') {
         // Create asset and info event
         const asset = this.generateAsset();
         const infoEvent = this.generateEvents(json, [asset.assetId]);
@@ -155,7 +146,6 @@ export class JsonFormComponent implements OnInit, OnDestroy {
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
-            this.emit('asset:created');
           },
           err => {
             this.error = err.message;
@@ -170,7 +160,6 @@ export class JsonFormComponent implements OnInit, OnDestroy {
           (resp: any) => {
             this.spinner = false;
             this.success = 'Success';
-            this.emit('event:created');
           },
           err => {
             this.error = err.message;

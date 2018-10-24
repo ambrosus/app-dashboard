@@ -260,6 +260,7 @@ button.is-loading .btn-spinner {
   }
 }
 
+
 .autocomplete-items {
   position: absolute;
   border: 1px solid #d4d4d4;
@@ -327,5 +328,80 @@ button.is-loading .btn-spinner {
 
   @include min-1024 {
     justify-content: flex-end;
-  }
-}
+
+    .addMore {
+      color: $ablue;
+      margin-bottom: 15px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    // Asset and Event
+
+    .object {
+      background: #fff;
+
+      &__header,
+      &__body {
+        padding: 30px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      &__header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      &__title {
+
+        :first-child {
+          margin-bottom: 7px;
+        }
+      }
+
+      &__subtitle {
+        margin-bottom: 15px;
+      }
+
+      &__body {
+        > * {
+          margin-bottom: 25px;
+        }
+      }
+
+      &__groups {
+        > * {
+          margin-bottom: 25px;
+        }
+      }
+
+      &__images {
+        img {
+          width: 100%;
+          max-width: 150px;
+          margin-right: 25px;
+        }
+      }
+    }
+
+    .item {
+      color: #777;
+      border-bottom: 1px dashed #e0e6f6;
+      display: flex;
+      flex-direction: row;
+      padding: 7px 0px;
+
+      &__title,
+      &__value {
+        width: 50%;
+      }
+
+      &__title {
+        margin-right: 15px;
+      }
+
+      &:last-of-type {
+        border: none;
+      }
+    }
