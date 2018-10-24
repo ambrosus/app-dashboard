@@ -68,7 +68,7 @@ exports.getAsset = async (req, res, next) => {
   const infoEvent = findEvent('info', infoEvents.results);
   if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
-  [err, assetUpdated] = await to(Asset.findByIdAndUpdate(asset._id, asset));
+  [err, assetUpdated] = await to(Asset.findByIdAndUpdate(asset._id, asset, {new: true}));
   if (err || !assetUpdated) {
     logger.error('Asset update error: ', err);
     req.json = asset;
@@ -144,7 +144,7 @@ exports.getEvents = async (req, res, next) => {
     if (latestEvent && (!cachedAssetsLatestEvent || cachedAssetsLatestEvent.timestamp < latestEvent.timestamp)) {
       cachedAsset.latestEvent = JSON.stringify(latestEvent);
 
-      [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
+      [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset, {new: true}));
       if (err || !updateCachedAsset) { logger.error('Asset update error: ', err); }
     }
 
@@ -257,7 +257,7 @@ exports.createEvents = async (req, res, next) => {
         if (latestEvent) asset['latestEvent'] = JSON.stringify(latestEvent);
         if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
-        [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset));
+        [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset, {new: true}));
         if (err || !assetUpdated) { logger.error('Asset update error: ', err); }
       }
       if (index === array.length - 1) { req.status = 200; return next(); }
