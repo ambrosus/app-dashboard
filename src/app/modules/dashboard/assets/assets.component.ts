@@ -41,6 +41,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   error = false;
   selectAllText = 'Select all';
   loader = false;
+  dialogRef;
 
   constructor(
     private assetsService: AssetsService,
@@ -52,7 +53,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.navigationSub = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
+      if (e instanceof NavigationEnd && this.authService.isLoggedIn()) {
+        this.loadAssets();
+        if (this.dialogRef) { this.dialogRef.close(); }
+      }
     });
   }
 
@@ -183,13 +187,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   createEventsDialog() {
-    const dialogRef = this.dialog.open(EventAddComponent, {
+    this.dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { right: '0' },
     });
-    const instance = dialogRef.componentInstance;
+    const instance = this.dialogRef.componentInstance;
     instance.assetIds = this.assetIds;
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
+    this.dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 
   toggleId(action, id) {
