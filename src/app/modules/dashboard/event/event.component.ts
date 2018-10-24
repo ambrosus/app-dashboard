@@ -49,7 +49,7 @@ export class EventComponent implements OnInit, OnDestroy {
     console.log('3', this.eventObjects);
   }
 
-  getName(obj, alternative = '') {
+  getName(obj, alternative = 'No Title') {
     try {
       const name = obj.name;
       const type = obj.type ? obj.type.split('.') : [];
