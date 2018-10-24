@@ -1,7 +1,7 @@
 <div class="object" *ngIf="asset">
 
   <header class="object__header">
-    <app-qr-code class="qr" [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+    <app-qr-code [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
     <div class="object__title">
       <h3>{{ getName(asset.infoEvent) }}</h3>
       <p>{{ assetId }}</p>

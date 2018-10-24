@@ -246,22 +246,6 @@ button.is-loading .btn-spinner {
 
 // Asset and Event
 
-.qr {
-  cursor: pointer;
-  flex: 0 0 120px;
-  transition: opacity .3s;
-  margin-right: 20px;
-
-  & img {
-    height: 120px;
-    width: 120px;
-  }
-
-  &:hover {
-    opacity: 0.75;
-  }
-}
-
 .object {
   background: #fff;
 
