@@ -9,7 +9,6 @@ import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } fr
 export class EventAddComponent implements OnInit {
   json;
 
-  @Input() prefill;
   @Input() assetIds: String[] = [];
   @Input() isDialog;
 

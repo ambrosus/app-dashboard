@@ -1,16 +1,18 @@
-.jsonInput {
-  font-size: 14px;
+.json {
+  font-size: 12px;
   font-family: monospace;
-  box-shadow: 0 2px 20px 0 rgba(74, 124, 226, 0.09);
-  padding: 20px;
-  background: #fff;
+  height: 300px;
+  min-height: 300px;
   width: 100%;
   max-width: 100%;
   min-width: 100%;
-  height: 300px;
-  min-height: 300px;
+  padding: 20px;
+  background: #fff;
   white-space: pre;
   line-height: 1.4;
   color: #333;
-  border: 2px solid #5078f1;
+
+  &:focus {
+    outline: 2px solid lightblue;
+  }
 }
