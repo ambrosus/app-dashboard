@@ -5,6 +5,7 @@ import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { CompaniesService } from 'app/services/companies.service';
 import { UsersService } from 'app/services/users.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare let Web3: any;
 
@@ -32,15 +33,16 @@ export class SignupComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private companiesService: CompaniesService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private sanitizer: DomSanitizer,
   ) {
     this.web3 = new Web3();
   }
 
   ngOnInit() {
     this.forms.secretForm = new FormGroup({
-      secret: new FormControl(null, [Validators.required]),
-      address: new FormControl({ value: null, disabled: true }, [Validators.required]),
+      privateKey: new FormControl(null, [Validators.required]),
+      publicKey: new FormControl({ value: null, disabled: true }, [Validators.required]),
       saved: new FormControl(null, [Validators.requiredTrue]),
     });
     this.forms.userForm = new FormGroup({
@@ -57,9 +59,9 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   generateKeys() {
-    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    this.forms.secretForm.get('secret').setValue(privateKey);
-    this.forms.secretForm.get('address').setValue(address);
+    const { address, secret } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+    this.forms.secretForm.get('privateKey').setValue(secret);
+    this.forms.secretForm.get('publicKey').setValue(address);
     this.step = 'keysGenerate';
   }
 
@@ -68,8 +70,8 @@ export class SignupComponent implements OnInit, OnDestroy {
     let address;
     try {
       address = this.web3.eth.accounts.privateKeyToAccount(secret.value).address;
-      this.forms.secretForm.get('secret').setValue(secret.value);
-      this.forms.secretForm.get('address').setValue(address);
+      this.forms.secretForm.get('privateKey').setValue(secret.value);
+      this.forms.secretForm.get('publicKey').setValue(address);
     } catch (e) {
       this.error = 'Please insert valid secret';
       this.forms.secretForm.get('address').setValue(null);
@@ -77,30 +79,19 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   downloadJSON() {
-    const filename = 'Private/public keys';
-    const data = JSON.stringify(this.forms.secretForm.value, null, 2);
-
-    const blob = new Blob([data], { type: 'application/json' });
-    if (window.navigator.msSaveOrOpenBlob) {
-      window.navigator.msSaveBlob(blob, filename);
-    } else {
-      const elem = window.document.createElement('a');
-      elem.href = window.URL.createObjectURL(blob);
-      elem.download = filename;
-      document.body.appendChild(elem);
-      elem.click();
-      document.body.removeChild(elem);
-    }
+    const url = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.forms.secretForm.value, null, 2));
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   verifyAccount() {
     this.error = false;
-    const { secret } = this.forms.secretForm.value;
+    const { privateKey } = this.forms.secretForm.getRawValue();
 
     if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(privateKey).subscribe((resp: any) => {
+        console.log(resp);
         this.error = 'This account is already registered, please insert another secret';
         resolve();
       }, err => {
@@ -112,14 +103,14 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   registerUser() {
     this.error = false;
-    const { address, secret } = this.forms.secretForm.value;
-    const { organization, email } = this.forms.userForm.value;
+    const { publicKey } = this.forms.secretForm.getRawValue();
+    const { organization, email } = this.forms.userForm.getRawValue();
     const data = {
       company: {
         title: organization,
       },
       user: {
-        address,
+        address: publicKey,
         email,
       },
     };
@@ -139,13 +130,13 @@ export class SignupComponent implements OnInit, OnDestroy {
             err => {
               console.error('User register error: ', err);
               reject();
-            }
+            },
           );
         },
         err => {
           reject();
           this.error = 'Organization with this name already exists';
-        }
+        },
       );
     });
   }

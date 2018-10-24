@@ -7,6 +7,7 @@ app-login {
   justify-content: center;
   text-align: center;
   padding-top: 50px;
+  color: #fff;
 
   .card {
     padding: 0;
@@ -17,8 +18,28 @@ app-login {
     animation-name: fadeInUp;
     animation-delay: 0.5s;
 
+    &__title {
+      color: #fff;
+      font-weight: 400;
+    }
+
+    &__body {
+      color: #fff;
+      opacity: 0.6;
+    }
+
     .button {
       width: 100%;
+    }
+  }
+
+  .tabs__menu__list__link {
+    color: #fff;
+    opacity: 0.6;
+    font-weight: 600;
+
+    &.active {
+      opacity: 1;
     }
   }
 }
@@ -36,6 +57,7 @@ app-login {
     transform: translate3d(0, 0, 0);
   }
 }
+
 
 .card_body {
   border-bottom: 1px solid #eee;

@@ -72,7 +72,9 @@ exports.verifyAccount = async (req, res, next) => {
   let err, verified, user;
 
   [err, verified] = await to(httpGet(`${hermes.url}/accounts/${address}`, token));
-  if (err) { return next(new ValidationError(err.data ? err.data['reason'] : 'Verification failed')); }
+  if (err || !verified) {
+    return next(new ValidationError((err && err.data) ? err.data.reason : 'Verification failed'));
+  }
 
   [err, user] = await to(
     User.findOne({ address })

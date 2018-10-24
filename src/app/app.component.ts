@@ -21,12 +21,13 @@ export class AppComponent {
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
-    private router: Router
+    private router: Router,
   ) {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
         this.initialLoad = true;
+        this.renderer.addClass(document.body, 'page-loaded');
       }
     });
   }

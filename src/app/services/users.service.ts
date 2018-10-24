@@ -21,7 +21,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.put(`/api/users/${user.email}?address=${user.address}`, body).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -35,7 +35,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         ({ data }: any) => observer.next(data),
-        err => { console.error('Account CREATE error: ', err.error); observer.error(err.error); }
+        err => { console.error('Account CREATE error: ', err.error); observer.error(err.error); },
       );
     });
   }
@@ -49,7 +49,7 @@ export class UsersService {
           this._user.next(data);
           return observer.next(data);
         },
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -60,7 +60,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }

@@ -51,7 +51,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private el: ElementRef,
     public dialog: MatDialog,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initTableForm();
     this.initSearchForm();
@@ -159,7 +159,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       err => {
         this.loader = false;
         console.log('Assets GET failed: ', err);
-      }
+      },
     );
   }
 
@@ -213,7 +213,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
         console.log('Assets GET failed: ', err);
         this.pagination['resultCount'] = 0;
         this.pagination['resultLength'] = 0;
-      }
+      },
     );
   }
 }

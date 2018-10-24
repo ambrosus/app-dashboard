@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
-@import "mixins";
+@import "_mixins";
 
 html,
 body {
@@ -16,11 +16,31 @@ body {
   height: 100%;
 }
 
+@include keyframes(animateGradient) {
+  0% {
+    background-position: 0 100%;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
 body {
-  background: #f5f7fc;
   font-size: 14px;
   color: #121e3e;
   font-family: 'Open Sans', sans-serif;
+  background: #141885;
+  background-size: 100% 200% !important;
+
+
+  &.page-loaded {
+    @include gradient-vertical-three-colors(#521ca0, #141885, 50%, darken(#141885, 10));
+    @include animation('animateGradient .9s 1');
+    animation-delay: 1s;
+    background-position: 0 100%;
+    animation-fill-mode: forwards;
+  }
 }
 
 app-root {
@@ -31,19 +51,14 @@ app-root {
 }
 
 .card {
-  background: #fff;
   padding: 30px;
-  border-radius: 4px;
-  box-shadow: 0px 2px 25px 2px rgba(237, 239, 243, 0.9), 0px 0px 1px 1px rgba(237, 239, 243, 0.6);
 
   &__title {
-    color: #121e3e;
     font-size: 2em;
     margin-bottom: 20px;
   }
 
   &__body {
-    color: #5b5e63;
     font-weight: 100;
     margin-bottom: 15px;
     font-size: 1em;
