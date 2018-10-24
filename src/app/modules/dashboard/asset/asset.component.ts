@@ -70,7 +70,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     } catch (e) { return false; }
   }
 
-  getName(info, alternative = '') {
+  getName(info, alternative = 'No title') {
     try {
       const name = info.name;
       const type = info.type.split('.');
