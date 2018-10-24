@@ -50,9 +50,9 @@ exports.create = async (req, res, next) => {
   const confirmationEmail = {};
   const url = `https://${req.get('host')}/login`;
   confirmationEmail.html = accountCreatedTemplate.replace(/@url/g, url);
-  confirmationEmail.subject = `Your account has been approved for using Ambrosus Dashboard`;
+  confirmationEmail.subject = 'Your account has been approved for using Ambrosus Dashboard';
   confirmationEmail.to = userCreated.email;
-  confirmationEmail.from = `no-reply@ambrosus.com`;
+  confirmationEmail.from = 'no-reply@ambrosus.com';
   [err, emailSent] = await to(emailService.send(confirmationEmail));
   if (err || !emailSent) { logger.error('Email send error: ', err); }
   if (emailSent) logger.error('Email send success: ', emailSent);
@@ -67,7 +67,7 @@ exports.create = async (req, res, next) => {
   req.status = 200;
   req.body.user = userCreated;
   return next();
-}
+};
 
 /**
  * Hermes account register
@@ -85,12 +85,18 @@ exports.hermesAccountRegister = async (req, res, next) => {
   let err, userRegistered;
 
   const body = { address, accessLevel, permissions };
+
+  console.log(`${hermes.url}/accounts`, body, config.token);
+
   [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
-  if (err || !userRegistered) { logger.error('Hermes user registration error: ', err); return next(new ValidationError(err.data['reason'])); }
+  if (err || !userRegistered) {
+    logger.error('Hermes user registration error: ', err);
+    return next(new ValidationError(err && err.data ? err.data.reason : 'Hermes account registration failed.'));
+  }
 
   req.status = 200;
   return next();
-}
+};
 
 /**
  * Sets company ownership

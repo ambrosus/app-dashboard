@@ -29,7 +29,7 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     DashboardRoutingModule,
     SharedModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
   ],
   declarations: [
     AssetComponent,
@@ -42,8 +42,8 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     ChartistComponent,
     AssetFormComponent,
     EventFormComponent,
-    JsonFormComponent
+    JsonFormComponent,
   ],
-  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService]
+  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService],
 })
 export class DashboardModule { }

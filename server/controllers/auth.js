@@ -32,7 +32,7 @@ exports.login = async (req, res, next) => {
       User.findOne({ email })
       .populate({
         path: 'company',
-        select: '-active -createdAt -updatedAt -__v -owner'
+        select: '-active -createdAt -updatedAt -__v -owner',
       })
       .select('-active -createdAt -updatedAt -__v')
     );
@@ -72,13 +72,15 @@ exports.verifyAccount = async (req, res, next) => {
   let err, verified, user;
 
   [err, verified] = await to(httpGet(`${hermes.url}/accounts/${address}`, token));
-  if (err) { return next(new ValidationError(err.data ? err.data['reason'] : 'Verification failed')); }
+  if (err || !verified) {
+    return next(new ValidationError((err && err.data) ? err.data.reason : 'Verification failed'));
+  }
 
   [err, user] = await to(
     User.findOne({ address })
     .populate({
       path: 'company',
-      select: '-active -createdAt -updatedAt -__v -owner'
+      select: '-active -createdAt -updatedAt -__v -owner',
     })
     .select('-active -createdAt -updatedAt -password -__v')
   );
@@ -95,4 +97,4 @@ exports.verifyAccount = async (req, res, next) => {
   req.status = 200;
   req.json = { data: user, message: 'Success', status: 200 };
   return next();
-}
+};

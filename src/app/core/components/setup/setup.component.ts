@@ -3,8 +3,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DashboardService } from 'app/services/dashboard.service';
 
 import * as moment from 'moment-timezone';
-import { AuthService } from 'app/services/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-setup',
@@ -30,7 +28,7 @@ export class SetupComponent implements OnInit {
   secret;
 
   constructor(
-    private Dashboard: DashboardService
+    private Dashboard: DashboardService,
     ) {
     this.timezones = moment.tz.names();
 
