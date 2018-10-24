@@ -32,4 +32,15 @@ export class OrganizationsService {
       );
     });
   }
+
+  requestOrganization(body) {
+    const url = `/api/organizations/request`;
+
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        ({ data }: any) => { observer.next(data); },
+        err => { observer.error(err); }
+      );
+    });
+  }
 }

@@ -1,12 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class InviteService {
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
 
-  validateInvite(token) {
+  verifyInvite(token) {
     const url = `/api/invites/verify/${token}`;
 
     return new Observable(observer => {

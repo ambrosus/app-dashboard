@@ -9,7 +9,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
   <!-- STEP 1 -->
   <div *ngIf="step === 'keysOptions'">
-    <h2 class="card__title">Registration</h2>
+    <h2 class="card__title">{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
     <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
 
     <div class="card animated fadeInDown">
@@ -63,7 +63,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
 
   <!-- STEP 3 -->
-  <div *ngIf="step === 'signupForm'">
+  <div *ngIf="step === 'requestForm'">
     <h2 class="card__title">Almost done...</h2>
     <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
 
@@ -71,20 +71,20 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="card__header">
         <app-tabs>
           <app-tab label="User information">
-            <form [formGroup]="forms.userForm" (ngSubmit)="registerUser()">
-              <label>Your organization (optional)
-                <input formControlName="organization" type="text" spellcheck="false">
+            <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+              <label>Your organization title (optional)
+                <input formControlName="title" type="text" spellcheck="false">
               </label>
               <label>Your email
                 <input formControlName="email" type="email" spellcheck="false">
               </label>
               <label>What makes you interested in our solution?
-                <textarea formControlName="reason" style="max-width: 100%;"></textarea>
+                <textarea formControlName="message" style="max-width: 100%;"></textarea>
               </label>
               <label style="user-select: none;">
                 <input formControlName="terms" type="checkbox"> I have read and accepted your Terms of Service
               </label>
-              <button type="submit" class="button button--blue" [disabled]="!forms.userForm.valid" [promiseBtn]="promiseAction">Continue</button>
+              <button type="submit" class="button button--blue" [disabled]="!forms.requestForm.valid" [promiseBtn]="promiseAction">Continue</button>
             </form>
           </app-tab>
         </app-tabs>

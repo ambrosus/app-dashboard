@@ -6,7 +6,6 @@ import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { LoginComponent } from './core/components/login/login.component';
-import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -28,10 +27,6 @@ const routes: Routes = [
     path: 'signup',
     canActivate: [AuthGuard],
     component: SignupComponent,
-    runGuardsAndResolvers: 'always',
-  }, {
-    path: 'invite/:token',
-    component: InviteComponent,
     runGuardsAndResolvers: 'always',
   }, {
     path: 'assets',

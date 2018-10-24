@@ -5,10 +5,13 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
+const mongoose = require('mongoose');
 const { to } = _require('/utils/general');
 const { ValidationError } = _require('/errors');
 
+const User = _require('/models/users');
 const Organization = _require('/models/organizations');
+const OrganizationRequest = _require('/models/organization-request');
 
 /**
  * Create a new organization.
@@ -24,7 +27,9 @@ exports.create = async (req, res, next) => {
   const { title, settings } = organization;
   let err, organizationCreated;
 
-  const query = {};
+  const query = {
+    _id: new mongoose.Types.ObjectId(),
+  };
   if (title) { query.title = title; }
   if (settings) { query.settings = settings; }
   [err, organizationCreated] = await to(Organization.create(query));
@@ -63,5 +68,24 @@ exports.check = async (req, res, next) => {
 
   req.status = organization ? 400 : 200;
   req.json = { data: null, message: `${organization ? 'Organization exists' : 'No organization'}`, status: req.status };
+  return next();
+}
+
+exports.organizationRequest = async (req, res, next) => {
+  const { email, address, title, message } = req.body;
+  let err, accountExists, organizationExists, organizationRequestCreated;
+
+  [err, accountExists] = await to(User.findOne({ email }));
+  if (accountExists) { return next(new ValidationError('Account with this email already exists')); }
+
+  [err, organizationExists] = await to(Organization.findOne({ title }));
+  if (organizationExists) { return next(new ValidationError('Organization with this title already exists')) }
+
+  req.body._id = new mongoose.Types.ObjectId();
+  [err, organizationRequestCreated] = await to(OrganizationRequest.create(req.body));
+  if (err) { return next(new ValidationError('Request create error', err)); }
+
+  req.status = 201;
+  req.json = { data: organizationRequestCreated, message: 'Success', status: req.status };
   return next();
 }
