@@ -1,3 +1,19 @@
-<p>
-  account works!
-</p>
+<div *ngIf="user">
+  <h4 class="m-v-10">{{ user.email }}</h4>
+  <p class="m-b-20">{{ user.address }}</p>
+  <hr class="m-b-20">
+  <form [formGroup]="userForm" (ngSubmit)="save()" class="m-w-4">
+    <label>Public key
+      <input formControlName="address" type="text">
+    </label>
+    <label>Name
+      <input formControlName="name" type="text">
+    </label>
+    <label>Email
+      <input formControlName="email" type="email">
+    </label>
+    <label>Time Zone
+      <input formControlName="timeZone" type="text">
+    </label>
+  </form>
+</div>

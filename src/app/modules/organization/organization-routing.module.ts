@@ -5,6 +5,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { AllComponent } from './accounts/all/all.component';
 import { InviteComponent } from './accounts/invite/invite.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AccountComponent } from './accounts/account/account.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
           {
             path: 'invite',
             component: InviteComponent,
+          },
+          {
+            path: ':email',
+            component: AccountComponent,
           },
         ],
       },

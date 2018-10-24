@@ -8,14 +8,14 @@
 <table class="table" *ngIf="showUsers">
   <tbody>
     <tr *ngFor="let _user of users; let i = index">
-      <td class="table__image" routerLink="{{ _user._id }}">
+      <td class="table__image" routerLink="{{ _user.email }}">
         <div>{{ _user.email.charAt(0) }}</div>
       </td>
-      <td class="table__info" routerLink="{{ _user._id }}">
+      <td class="table__info" routerLink="{{ _user.email }}">
         <p class="table__info__title">{{ _user.full_name }}</p>
         <small class="table__info__meta">{{ _user.address }}</small>
       </td>
-      <td class="table__status" routerLink="{{ _user._id }}">
+      <td class="table__status" routerLink="{{ _user.email }}">
         <span class="table__status__event">Registered</span>
         <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
       </td>
