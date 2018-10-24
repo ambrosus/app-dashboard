@@ -52,7 +52,7 @@ exports.getAssets = async (req, res, next) => {
 exports.getAsset = async (req, res, next) => {
   const { token } = req.query;
   const assetId = req.params.assetId;
-  let err, asset, infoEvents, assetUpdate;
+  let err, asset, infoEvents, assetUpdated;
 
   // Get cached asset
   [err, asset] = await to(Asset.findOne({ assetId }));
@@ -68,14 +68,14 @@ exports.getAsset = async (req, res, next) => {
   const infoEvent = findEvent('info', infoEvents.results);
   if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
-  [err, assetUpdate] = await to(Asset.findByIdAndUpdate(asset._id, asset));
-  if (err || !assetUpdate) {
+  [err, assetUpdated] = await to(Asset.findByIdAndUpdate(asset._id, asset, {new: true}));
+  if (err || !assetUpdated) {
     logger.error('Asset update error: ', err);
     req.json = asset;
   }
 
   req.status = 200;
-  req.json = { data: assetUpdate, message: 'Success', status: 200 };
+  req.json = { data: assetUpdated, message: 'Success', status: 200 };
   next();
 }
 
@@ -111,7 +111,6 @@ exports.getEvents = async (req, res, next) => {
     if (data) { url += `${decodeURI(data)}&`; }
     if (assetId) { url += `${decodeURI(assetId)}&`; }
   } catch (e) {}
-  console.log('URL', url);
 
   [err, events] = await to(httpGet(url, token));
   if (err || !events) { return next(new NotFoundError(err.data['reason'])); }
@@ -145,7 +144,7 @@ exports.getEvents = async (req, res, next) => {
     if (latestEvent && (!cachedAssetsLatestEvent || cachedAssetsLatestEvent.timestamp < latestEvent.timestamp)) {
       cachedAsset.latestEvent = JSON.stringify(latestEvent);
 
-      [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset));
+      [err, updateCachedAsset] = await to(Asset.findByIdAndUpdate(cachedAsset._id, cachedAsset, {new: true}));
       if (err || !updateCachedAsset) { logger.error('Asset update error: ', err); }
     }
 
@@ -258,7 +257,7 @@ exports.createEvents = async (req, res, next) => {
         if (latestEvent) asset['latestEvent'] = JSON.stringify(latestEvent);
         if (infoEvent) asset['infoEvent'] = JSON.stringify(infoEvent);
 
-        [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset));
+        [err, assetUpdated] = await to(Asset.findOneAndUpdate({ assetId: asset.assetId }, asset, {new: true}));
         if (err || !assetUpdated) { logger.error('Asset update error: ', err); }
       }
       if (index === array.length - 1) { req.status = 200; return next(); }

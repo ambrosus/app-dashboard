@@ -22,18 +22,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   eventsResultsSub: Subscription;
   events = [];
   unchangedEvents = [];
-  // Pagination
-  pagination = {
-    currentPage: 0,
-    perPage: 15,
-    totalPages: 0,
-    resultCount: 0,
-    resultLength: 0,
-  };
-  searchActive = false;
-  // Other
-  searchPlaceholder = 'ie. ambrosus.asset.sold';
-  showSearch = false;
 
   @Input() data;
   @Input() assetId;
@@ -51,10 +39,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.eventsResultsSub) { this.eventsResultsSub.unsubscribe(); }
   }
 
+  getLocation(event) {
+    const location = event.location || event;
+    const { city, country, name } = location;
+    return [city, country, name].filter(Boolean).join(', ') || 'No place attached'
+  }
+
   loadEvents(page = 0, perPage = 15) {
     const token = this.authService.getToken();
     const options = { assetId: encodeURI(`assetId=${this.assetId}`), token, page, perPage };
-    this.searchActive = false;
 
     this.eventsResultsSub = this.assetsService._events.subscribe(
       events => {
@@ -65,44 +58,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     this.eventsSub = this.assetsService.getEvents(options).subscribe(
       (resp: any) => {
-        this.pagination.currentPage = page;
-        this.pagination.perPage = perPage;
-        this.pagination.resultCount = resp.resultCount;
-        this.pagination.resultLength = resp.results.length;
-        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
-      },
-      err => {
-        this.events = [];
-        console.log('Events GET failed: ', err);
-      }
-    );
-  }
-
-  search(page = 0, perPage = 15) {
-    const search = this.el.nativeElement.querySelector('#search').value;
-    const select = this.el.nativeElement.querySelector('#select').value;
-    this.searchActive = true;
-
-    if (search.length === 0) { return this.loadEvents(); }
-
-    const token = this.authService.getToken();
-    const options = { assetId: encodeURI(`assetId=${this.assetId}`), token };
-
-    const searchValues = search.split(',');
-    switch (select) {
-      case 'type':
-        options['data'] = `data[type]=${searchValues[0].trim()}`;
-        break;
-    }
-
-    this.eventsSub = this.assetsService.getEvents(options).subscribe(
-      (resp: any) => {
-        this.events = this.assetsService.parseTimelineEvents(resp).events;
-        this.pagination.currentPage = page;
-        this.pagination.perPage = perPage;
-        this.pagination.resultCount = resp.resultCount;
-        this.pagination.resultLength = resp.results.length;
-        this.pagination.totalPages = Math.ceil(resp.resultCount / perPage);
       },
       err => {
         this.events = [];
