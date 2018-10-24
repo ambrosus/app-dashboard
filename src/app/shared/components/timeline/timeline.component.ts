@@ -40,10 +40,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   getLocation(event) {
-    const obj = event.location || event;
-    const city = obj.city;
-    const country = obj.country || obj.name || '';
-    return city || country ? city ? `${city}, ${country}` : `${country}` : 'No place attached';
+    const location = event.location || event;
+    const { city, country, name } = location;
+    return [city, country, name].filter(Boolean).join(', ') || 'No place attached'
   }
 
   loadEvents(page = 0, perPage = 15) {
