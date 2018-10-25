@@ -21,7 +21,7 @@ export class InviteService {
     });
   }
 
-  getInvites(user) {
+  getInvites() {
     const token = this.authService.getToken();
     const headers = { Authorization: `AMB_TOKEN ${token}` };
     const url = `/api/invites`;

@@ -8,6 +8,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 const mongoose = require('mongoose');
 const { to } = _require('/utils/general');
 const { ValidationError } = _require('/errors');
+const organizationApprovedTemplate = _require('/assets/templates/email/organizationApproved.template.html');
+const organizationDisapprovedTemplate = _require('/assets/templates/email/organizationDisapproved.template.html');
+const emailService = _require('/utils/email');
+const slug = require('slug');
+const { hermes, token } = _require('/config');
 
 const User = _require('/models/users');
 const Organization = _require('/models/organizations');
@@ -19,10 +24,10 @@ exports.edit = async (req, res, next) => {
   const query = req.body;
   let err, organizationUpdated;
 
-  if (!user.permissions.includes('super_admin') && user.organization._id !== organizationID) { return next(new PermissionError('You can only edit your own organization')); }
+  if (!user.permissions.includes('super_account') && user.organization._id !== organizationID) { return next(new PermissionError('You can only edit your own organization')); }
 
   const update = {};
-  const allowedToChange = ['title', 'settings'];
+  const allowedToChange = ['title', 'settings', 'active'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
@@ -36,45 +41,15 @@ exports.edit = async (req, res, next) => {
 }
 
 exports.check = async (req, res, next) => {
-  const { title } = req.query;
+  const title = req.params.title;
   let err, organization;
 
   [err, organization] = await to(Organization.findOne({ title }));
 
-  req.status = organization ? 400 : 200;
+  req.status = organization ? 200 : 400;
   req.json = { data: null, message: `${organization ? 'Organization exists' : 'No organization'}`, status: req.status };
   return next();
 }
-
-exports.setOwnership = async (req, res, next) => {
-  const user = req.body.user || {};
-  const organization = req.body.organization || {};
-  let err, _user, organizationUpdated, userUpdated;
-
-  if (user && organization) {
-    // Find user
-    [err, _user] = await to(User.findById(user._id));
-    if (err || !_user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
-
-    // Update organization
-    [err, organizationUpdated] = await to(Organization.findByIdAndUpdate(organization._id, { owner: user._id }));
-    if (err || !organizationUpdated) { logger.error('Organization update error: ', err); return next(new ValidationError(err.message, err)); }
-
-    // Update user
-    _user.organization = organizationUpdated._id;
-    [err, userUpdated] = await to(_user.save());
-    if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
-
-    req.status = 200;
-    req.json = { data: { user: userUpdated, organization: organizationUpdated }, message: 'Success', status: 200 };
-    return next();
-
-  } else if (!user) {
-    return next(new ValidationError('"user" object is required'));
-  } else if (!organization) {
-    return next(new ValidationError('"organization" object is required'));
-  }
-};
 
 exports.organizationRequest = async (req, res, next) => {
   const { email, address, title, message } = req.body;
@@ -96,4 +71,87 @@ exports.organizationRequest = async (req, res, next) => {
   req.status = 201;
   req.json = { data: organizationRequestCreated, message: 'Success', status: req.status };
   return next();
+}
+
+exports.organizationRequestApproval = async (req, res, next) => {
+  const { approved, organizationRequestID } = req.body;
+  let err, organizationRequest, organizationRequestRemoved, hermesRegistered, userCreated, organizationCreated, confirmationEmail, organizationUpdated;
+
+  [err, organizationRequest] = await to(OrganizationRequest.findById(organizationRequestID));
+  if (err || !organizationRequest) { return next(new ValidationError('No organization request', err)); }
+
+  if (!approved) {
+    [err, organizationRequestRemoved] = await to(OrganizationRequest.findByIdAndRemove(organizationRequestID));
+    if (err || !organizationRequestRemoved) { return next(new ValidationError('Removing request failed', err)); }
+
+    // Send an email to user
+    confirmationEmail = {};
+    confirmationEmail.html = organizationDisapprovedTemplate;
+    confirmationEmail.subject = `Your organization request has not been approved`;
+    confirmationEmail.to = organizationRequest.email;
+    confirmationEmail.from = `no-reply@dashboard.com`;
+    [err, emailSent] = await to(emailService.send(confirmationEmail));
+    if (err || !emailSent) { logger.error('Email SEND: ', err); }
+
+    req.status = 200;
+    req.json = { data: null, message: 'Request removed', status: req.status };
+    return next();
+  } else {
+    // Register hermes accounts
+    const body = {
+      address: organizationRequest.address,
+      accessLevel: 10,
+      permissions: ['protected_account', 'register_accounts', 'manage_accounts', 'create_asset', 'create_event']
+    };
+    [err, hermesRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, token));
+    if (err || !hermesRegistered) {
+      logger.error('Hermes user registration: ', err);
+      return next(new ValidationError((err && err.data ? err.data.reason : 'Hermes account registration failed'), err));
+    }
+
+    // Create organization
+    [err, organizationCreated] = await to(Organization.create({ title: organizationRequest.title }));
+    if (err || !organizationCreated) {
+      logger.error('Organization create: ', err);
+      return next(new ValidationError('Organization create failed', err));
+    }
+
+    // Create user accounts
+    [err, userCreated] = await to(User.create({
+      email: organizationRequest.email,
+      address: organizationRequest.address,
+      permissions: ['manage_organization', 'manage_accounts', 'create_asset', 'create_event'],
+      organization: organizationCreated._id,
+    }));
+    if (err || !userCreated) {
+      logger.error('User create: ', err);
+      return next(new ValidationError('User create failed', err));
+    }
+
+    // Update organization's owner
+    organizationCreated.owner = userCreated._id;
+    [err, organizationUpdated] = await to(organizationCreated.save());
+    if (err || !organizationUpdated) {
+      logger.error('Organization update: ', err);
+      return next(new ValidationError('Organization update failed', err));
+    }
+
+    // Send an email to user
+    confirmationEmail = {};
+    const url = `https://${req.get('host')}/login`;
+    confirmationEmail.html = organizationApprovedTemplate.replace(/@url/g, url);
+    confirmationEmail.subject = `Your organization request has been approved`;
+    confirmationEmail.to = userCreated.email;
+    confirmationEmail.from = `no-reply@${slug(organizationCreated.title)}.com`;
+    [err, emailSent] = await to(emailService.send(confirmationEmail));
+    if (err || !emailSent) { logger.error('Email SEND: ', err); }
+
+    // Remove organization request
+    [err, organizationRequestRemoved] = await to(OrganizationRequest.findByIdAndRemove(organizationRequestID));
+    if (err || !organizationRequestRemoved) { return next(new ValidationError('Request approved, but failed to be removed', err)); }
+
+    req.status = 201;
+    req.json = { data: organizationCreated, message: 'Request approved', status: req.status };
+    return next();
+  }
 }

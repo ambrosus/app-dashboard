@@ -1,28 +1,38 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
+import * as moment from 'moment-timezone';
+
+declare let AmbrosusSDK: any;
+declare let Web3: any;
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   _user = new BehaviorSubject({});
+  sdk;
 
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
-    private authService: AuthService,
   ) {
     const user = <any>this.storageService.get('user') || {};
     this._user.next(user);
+    this.sdk = new AmbrosusSDK({ Web3 });
+  }
+
+  getToken(secret = null) {
+    const _secret = secret || this.storageService.get('secret');
+    const validUntil = moment().add(5, 'days').format();
+    return _secret ? this.sdk.getToken(_secret, validUntil) : {};
   }
 
   /* User */
 
   updateProfile(body) {
-    const token = this.authService.getToken();
+    const token = this.getToken();
     const headers = { Authorization: `AMB_TOKEN ${token}` };
     const user: any = this.storageService.get('user');
 
@@ -60,7 +70,7 @@ export class UsersService {
   }
 
   getUsers() {
-    const token = this.authService.getToken();
+    const token = this.getToken();
     const headers = { Authorization: `AMB_TOKEN ${token}` };
     const url = `/api/users`;
 

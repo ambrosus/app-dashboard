@@ -7,11 +7,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const mongoose = require('mongoose');
 const slug = require('slug');
-const config = _require('/config');
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
 const { ValidationError, PermissionError } = _require('/errors');
-const { hermes } = _require('/config');
+const { hermes, token } = _require('/config');
 const emailService = _require('/utils/email');
 const accountCreatedTemplate = _require('/assets/templates/email/accountCreated.template.html');
 
@@ -79,7 +78,7 @@ exports.hermesAccountRegister = async (req, res, next) => {
 
   const body = { address, accessLevel, permissions };
 
-  [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, config.token));
+  [err, userRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, token));
   if (err || !userRegistered) {
     logger.error('Hermes user registration error: ', err);
     return next(new ValidationError(err && err.data ? err.data.reason : 'Hermes account registration failed.'));
@@ -156,17 +155,26 @@ exports.getAccounts = async (req, res, next) => {
 exports.edit = async (req, res, next) => {
   const email = req.params.email;
   const user = req.user;
-  const query = req.body;
-  let err, userUpdated;
+  const data = req.body;
+  let err, userFound, userUpdated;
 
-  if (!user.permissions.includes('manage_accounts') && user.email !== email) { return next(new PermissionError('You can only edit your own account')); }
-
-  const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token'];
-  for (const key in query) {
-    if (allowedToChange.indexOf(key) > -1) { user[key] = query[key]; }
+  if (!user.permissions.includes('manage_accounts') && user.email !== email) {
+    return next(new PermissionError('You can only edit your own account'));
   }
 
-  [err, userUpdated] = await to(user.save());
+  [err, userFound] = await to(User.findOne({ email }));
+  if (err || !userFound) { logger.error('User GET error: ', err); return next(new ValidationError('No user found', err)); }
+
+  if (!user.permissions.includes('super_account') && user.organization !== userFound.organization) {
+    return next(new PermissionError('You can only edit accounts within your own organization'));
+  }
+
+  const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token', 'active'];
+  for (const key in data) {
+    if (allowedToChange.includes(key)) { userFound[key] = data[key]; }
+  }
+
+  [err, userUpdated] = await to(userFound.save());
   if (err || !userUpdated) { logger.error('User update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;

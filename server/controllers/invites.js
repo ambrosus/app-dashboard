@@ -13,7 +13,6 @@ const inviteTemplate = _require('/assets/templates/email/invite.template.html');
 const slug = require('slug');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
-const { decrypt } = _require('/utils/password');
 
 const Invite = _require('/models/invites');
 const Organization = _require('/models/organizations');

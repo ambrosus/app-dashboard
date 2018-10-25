@@ -46,6 +46,10 @@ const users = mongoose.Schema({
     type: Date,
     default: +new Date(),
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
   createdAt: {
     type: Date,
     default: +new Date(),

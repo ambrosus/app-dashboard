@@ -4,39 +4,70 @@
 <button type="button" class="button button--blue" (click)="showUsers = true">Registered</button>
 <button type="button" class="button button--blue" (click)="showUsers = false">Pending</button>
 
-<p class="m-t-20">{{ showUsers ? users.length : invites.length }} accounts</p>
-<table class="table" *ngIf="showUsers">
-  <tbody>
-    <tr *ngFor="let _user of users; let i = index">
-      <td class="table__image" routerLink="{{ _user.email }}">
-        <div>{{ _user.email.charAt(0) }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ _user.email }}">
-        <p class="table__info__title">{{ _user.full_name }}</p>
-        <small class="table__info__meta">{{ _user.address }}</small>
-      </td>
-      <td class="table__status" routerLink="{{ _user.email }}">
-        <span class="table__status__event">Registered</span>
-        <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<p class="m-t-20">{{ showUsers ? users.length + usersDisabled.length : invites.length }} accounts</p>
 
-<table class="table" *ngIf="!showUsers">
-  <tbody>
-    <tr *ngFor="let _invite of invites; let i = index">
-      <td class="table__image">
-        <div>{{ _invite.to.charAt(0) }}</div>
-      </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ _invite.to }}</p>
-        <small class="table__info__meta">from: {{ _invite.from.full_name }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event">Pending</span>
-        <p class="table__status__timestamp">Created: {{ _invite.createdAt }}</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div *ngIf="showUsers">
+
+  <p class="m-t-20 right" *ngIf="usersDisabled.length" (click)="showDisabled = !showDisabled">{{ showDisabled ? 'Hide disabled' : 'Show disabled' }} ({{ usersDisabled.length }})</p>
+
+  <!-- Active users -->
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let _user of users; let i = index">
+        <td class="table__image" routerLink="{{ _user.email }}">
+          <div>{{ _user.email.charAt(0) }}</div>
+        </td>
+        <td class="table__info" routerLink="{{ _user.email }}">
+          <p class="table__info__title">{{ _user.full_name }}</p>
+          <small class="table__info__meta">{{ _user.address }}</small>
+        </td>
+        <td class="table__status" routerLink="{{ _user.email }}">
+          <span class="table__status__event">{{ _user.active ? 'Active' : 'Disabled' }}</span>
+          <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Disabled users -->
+  <div *ngIf="showDisabled && usersDisabled.length">
+    <h5 class="m-v-20" style="color: salmon;">Disabled users</h5>
+    <table class="table">
+      <tbody>
+        <tr *ngFor="let _user of usersDisabled; let i = index">
+          <td class="table__image" routerLink="{{ _user.email }}">
+            <div>{{ _user.email.charAt(0) }}</div>
+          </td>
+          <td class="table__info" routerLink="{{ _user.email }}">
+            <p class="table__info__title">{{ _user.full_name }}</p>
+            <small class="table__info__meta">{{ _user.address }}</small>
+          </td>
+          <td class="table__status" routerLink="{{ _user.email }}">
+            <span class="table__status__event" style="background-color: salmon;">{{ _user.active ? 'Active' : 'Disabled' }}</span>
+            <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="!showUsers">
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let _invite of invites; let i = index">
+        <td class="table__image">
+          <div>{{ _invite.to.charAt(0) }}</div>
+        </td>
+        <td class="table__info">
+          <p class="table__info__title">{{ _invite.to }}</p>
+          <small class="table__info__meta">from: {{ _invite.from.full_name }}</small>
+        </td>
+        <td class="table__status">
+          <span class="table__status__event">Pending</span>
+          <p class="table__status__timestamp">Created: {{ _invite.createdAt }}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

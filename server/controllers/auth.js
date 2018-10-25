@@ -32,11 +32,13 @@ exports.login = async (req, res, next) => {
       User.findOne({ email })
       .populate({
         path: 'organization',
-        select: '-active -createdAt -updatedAt -__v -owner'
+        select: '-createdAt -updatedAt -__v -owner'
       })
-      .select('-active -createdAt -updatedAt -__v')
+      .select('-createdAt -updatedAt -__v')
     );
-    if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err ? err.message : 'No user', err)); }
+    if (err || !user) { logger.error('User GET error: ', err); return next(new ValidationError('No user found', err)); }
+
+    if (user && !(user.active && user.organization.active)) { return next(new ValidationError('User is deactivated')); }
 
     const valid = bcrypt.compareSync(password, user.password);
     if (!valid) return next(new ValidationError('User "password" is incorrect'));
@@ -80,11 +82,12 @@ exports.verifyAccount = async (req, res, next) => {
     User.findOne({ address })
     .populate({
       path: 'organization',
-      select: '-active -createdAt -updatedAt -__v -owner'
+      select: '-createdAt -updatedAt -__v -owner'
     })
-    .select('-active -createdAt -updatedAt -password -__v')
+    .select('-createdAt -updatedAt -password -__v')
   );
   if (err) { logger.error('User GET error: ', err); }
+  if (user && !(user.active && user.organization.active)) { return next(new ValidationError('User is deactivated')); }
   if (!user) {
     req.status = 200;
     req.json = { data: null, message: 'User verified, with no user account', status: 200 };

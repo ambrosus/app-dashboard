@@ -15,15 +15,17 @@ export class AllComponent implements OnInit, OnDestroy {
   getUsersSub: Subscription;
   getInvitesSub: Subscription;
   users = [];
+  usersDisabled = [];
   invites = [];
   ids = [];
   user;
   showUsers = true;
+  showDisabled;
 
   constructor(
     private invitesService: InviteService,
     private storageService: StorageService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) { }
 
   ngOnInit() {
@@ -40,18 +42,21 @@ export class AllComponent implements OnInit, OnDestroy {
   getUsers() {
     this.getUsersSub = this.usersService.getUsers().subscribe(
       (users: any) => {
-        this.users = users.map(user => {
+        this.users = users.filter(user => {
           user.lastLogin = moment.tz(user.lastLogin, this.user.organization.timeZone).fromNow();
-          return user;
+          return user.active;
+        });
+        this.usersDisabled = users.filter(user => {
+          return !user.active;
         });
         console.log('Users GET: ', this.users);
       },
-      err => console.error('Users GET error: ', err)
+      err => console.error('Users GET error: ', err),
     );
   }
 
   getInvites() {
-    this.getInvitesSub = this.invitesService.getInvites(this.user).subscribe(
+    this.getInvitesSub = this.invitesService.getInvites().subscribe(
       (invites: any) => {
         this.invites = invites.map(invite => {
           invite.createdAt = moment.tz(invite.createdAt, this.user.organization.timeZone).fromNow();
@@ -59,7 +64,7 @@ export class AllComponent implements OnInit, OnDestroy {
         });
         console.log('Invites GET: ', this.invites);
       },
-      err => console.error('Invites GET error: ', err)
+      err => console.error('Invites GET error: ', err),
     );
   }
 }
