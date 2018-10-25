@@ -13,27 +13,11 @@ const User = _require('/models/users');
 module.exports = (action = '') => {
   return async (req, res, next) => {
     try {
-      let token = req.headers.authentication.split('AMB_TOKEN');
-      token = JSON.parse(atob(token[1]));
-      const { address, validUntil } = token.idData;
+      const { permissions } = req.user;
 
-      if (!(validUntil - (Date.now() / 1000))) {
-        return next(new ValidationError('Token has expired'));
-      }
+      if (action && !permissions.includes(action)) { return next(new PermissionError('No permission')); }
 
-      [err, user] = await to(
-        User.findOne({ address })
-        .populate({
-          path: 'organization',
-          select: '-active -createdAt -updatedAt -__v -owner'
-        })
-        .select('-active -createdAt -updatedAt -password -__v')
-      );
-      if (err || !user) { return next(new ValidationError('User not found', err)); }
-
-      if (action && user.permissions.indexOf(action) === -1) { return next(new PermissionError('No permission')); }
-      req.user = user;
       return next();
-    } catch (e) { return next(new PermissionError('Invalid or no token provided')); }
+    } catch (e) { return next(new PermissionError('No token provided')); }
   }
 };

@@ -14,9 +14,12 @@ const Organization = _require('/models/organizations');
 const OrganizationRequest = _require('/models/organization-request');
 
 exports.edit = async (req, res, next) => {
-  const organizationID = req.user.organization._id;
+  const organizationID = req.params.organizationID;
+  const user = req.user;
   const query = req.body;
   let err, organizationUpdated;
+
+  if (!user.permissions.includes('super_admin') && user.organization._id !== organizationID) { return next(new PermissionError('You can only edit your own organization')); }
 
   const update = {};
   const allowedToChange = ['title', 'settings'];

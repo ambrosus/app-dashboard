@@ -15,7 +15,7 @@ const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
-const error_handler = require('./server/middleware/error_handler');
+const errorHandler = require('./server/middleware/errorHandler');
 
 const APIRoutes = require('./server/routes/v1');
 
@@ -52,7 +52,7 @@ app.use(bodyParser.json());
 app.use('/api', APIRoutes);
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist/index.html')));
 
-app.use(error_handler);
+app.use(errorHandler);
 
 const server = http.createServer(app);
 server.listen(config.port, () => logger.info('Server running...'));

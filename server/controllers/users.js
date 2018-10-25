@@ -159,7 +159,7 @@ exports.edit = async (req, res, next) => {
   const query = req.body;
   let err, userUpdated;
 
-  if (user.email !== email) { return next(new PermissionError('You can only edit your own account')); }
+  if (!user.permissions.includes('manage_accounts') && user.email !== email) { return next(new PermissionError('You can only edit your own account')); }
 
   const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token'];
   for (const key in query) {

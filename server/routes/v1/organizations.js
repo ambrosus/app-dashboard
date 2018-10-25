@@ -12,7 +12,7 @@ const checkPermission = _require('/middleware/checkPermission');
 const OrganizationsRoutes = express.Router();
 
 // Routes
-OrganizationsRoutes.route('/')
+OrganizationsRoutes.route('/:organizationID')
   .put(checkPermission('manage_organization'), OrganizationsController.edit, (req, res) => { res.status(req.status).json(req.json); });
 OrganizationsRoutes.post('/request', OrganizationsController.organizationRequest, (req, res) => { res.status(req.status).json(req.json); });
 OrganizationsRoutes.get('/:title/check', OrganizationsController.check, (req, res) => { res.status(req.status).json(req.json); });
