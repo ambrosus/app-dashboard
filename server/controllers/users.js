@@ -10,13 +10,12 @@ const slug = require('slug');
 const config = _require('/config');
 const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError } = _require('/errors');
+const { ValidationError, PermissionError } = _require('/errors');
 const { hermes } = _require('/config');
 const emailService = _require('/utils/email');
 const accountCreatedTemplate = _require('/assets/templates/email/accountCreated.template.html');
 
 const User = _require('/models/users');
-const Organization = _require('/models/organizations');
 const Invite = _require('/models/invites');
 
 /**
@@ -33,7 +32,7 @@ exports.create = async (req, res, next) => {
   const invite = req.invite || {};
   let err, userFound, userCreated, inviteRemoved, emailSent;
 
-  [err, userFound] = await to(User.findOne({ email: invite.to, address }));
+  [err, userFound] = await to(User.findOne({ $or: [{ email: invite.to }, { address }] }));
   if (err) { logger.error('User GET: ', err); return next(new ValidationError('User error', err)); }
   if (userFound) { return next(new ValidationError('User with this email or address already exists')); }
 
@@ -126,7 +125,7 @@ exports.getAccount = async (req, res, next) => {
  * @returns users Object & number of users (count) on success with status code 200
  */
 exports.getAccounts = async (req, res, next) => {
-  const organization = req.query.organization || '';
+  const organization = req.user.organization._id;
   let err, users;
 
   [err, users] = await to(
@@ -137,7 +136,7 @@ exports.getAccounts = async (req, res, next) => {
     })
     .select('-password -__v')
   );
-  if (err || !users) { logger.error('Users GET error: ', err); return next(new NotFoundError(err.message, err)); }
+  if (err || !users) { logger.error('Users GET error: ', err); return next(new ValidationError('No users found', err)); }
 
   req.status = 200;
   req.json = { data: users, message: 'Success', status: 200 };
@@ -156,11 +155,11 @@ exports.getAccounts = async (req, res, next) => {
  */
 exports.edit = async (req, res, next) => {
   const email = req.params.email;
+  const user = req.user;
   const query = req.body;
-  let err, user, userUpdated;
+  let err, userUpdated;
 
-  [err, user] = await to(User.findOne({ email }));
-  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err.message, err)); }
+  if (user.email !== email) { return next(new PermissionError('You can only edit your own account')); }
 
   const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token'];
   for (const key in query) {

@@ -7,14 +7,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const express = require('express');
 const OrganizationsController = _require('/controllers/organizations');
+const checkPermission = _require('/middleware/checkPermission');
 
 const OrganizationsRoutes = express.Router();
 
 // Routes
-OrganizationsRoutes.post('/', OrganizationsController.create, (req, res) => { res.status(req.status).json(req.json); });
+OrganizationsRoutes.route('/')
+  .put(checkPermission('manage_organization'), OrganizationsController.edit, (req, res) => { res.status(req.status).json(req.json); });
 OrganizationsRoutes.post('/request', OrganizationsController.organizationRequest, (req, res) => { res.status(req.status).json(req.json); });
-OrganizationsRoutes.get('/check', OrganizationsController.check, (req, res) => { res.status(req.status).json(req.json); });
-OrganizationsRoutes.route('/:id')
-  .put(OrganizationsController.edit, (req, res) => { res.status(req.status).json(req.json); });
+OrganizationsRoutes.get('/:title/check', OrganizationsController.check, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = OrganizationsRoutes;

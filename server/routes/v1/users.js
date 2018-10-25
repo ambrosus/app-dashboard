@@ -6,19 +6,20 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const express = require('express');
+const checkPermission = _require('/middleware/checkPermission');
 
 const UsersController = _require('/controllers/users');
 const InvitesController = _require('/controllers/invites');
 
-const routes = express.Router();
+const UsersRoutes = express.Router();
 
-// Routes
-routes.route('/')
+// UsersRoutes
+UsersRoutes.route('/')
   .post(InvitesController.extract, UsersController.hermesAccountRegister, UsersController.create, (req, res) => { res.status(req.status).json(req.json); })
-  .get(UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
+  .get(checkPermission('manage_accounts'), UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
 
-routes.route('/:email')
+UsersRoutes.route('/:email')
   .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
-  .put(UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
+  .put(checkPermission(), UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
-module.exports = routes;
+module.exports = UsersRoutes;

@@ -29,7 +29,8 @@ const Organization = _require('/models/organizations');
  * @returns success message on success with status code 200
  */
 exports.create = async (req, res, next) => {
-  const { emails, user } = req.body;
+  const { emails } = req.body;
+  const user = req.user;
   let err, organization, insertedInvites, emailSent;
 
   if (emails && emails.length && user) {
@@ -113,10 +114,10 @@ exports.extract = async (req, res, next) => {
  */
 exports.delete = async (req, res, next) => {
   const ids = req.body.ids || [];
-  const userId = req.query.user;
+  const userID = req.user._id;
   let err, deleted;
 
-  [err, deleted] = await to(Invite.deleteMany({ _id: { $in: ids }, from: userId }));
+  [err, deleted] = await to(Invite.deleteMany({ _id: { $in: ids }, from: userID }));
   if (err || !deleted) { logger.error('Invites delete error: ', err); return next(new ValidationError(err.message)); }
 
   req.status = 200;
@@ -134,7 +135,7 @@ exports.delete = async (req, res, next) => {
  * @returns array of invites & number of invites (length) on success with status code 200
  */
 exports.getAll = async (req, res, next) => {
-  const organization = req.params.id;
+  const organization = req.user.organization._id;
   let err, invites;
 
   [err, invites] = await to(

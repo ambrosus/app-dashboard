@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { StorageService } from './storage.service';
 import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InviteService {
 
-  constructor(private http: HttpClient, private storageService: StorageService) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   verifyInvite(token) {
     const url = `/api/invites/verify/${token}`;
@@ -16,43 +16,46 @@ export class InviteService {
     return new Observable(observer => {
       this.http.get(url).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
   }
 
   getInvites(user) {
-    const address = this.storageService.get('user')['address'];
-    const url = `/api/invites/organization/${user.organization._id}?address=${address}`;
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
+    const url = `/api/invites`;
 
     return new Observable(observer => {
-      this.http.get(url).subscribe(
+      this.http.get(url, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
   }
 
   revokeInvites(ids) {
-    const user = <any>this.storageService.get('user');
-    const url = `/api/invites/delete?user=${user._id}`;
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
+    const url = `/api/invites/delete`;
 
     return new Observable(observer => {
-      this.http.post(url, { ids }).subscribe(
+      this.http.post(url, { ids }, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
 
   }
 
   sendInvite(body) {
-    const address = this.storageService.get('user')['address'];
-    const url = `/api/invites?address=${address}`;
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
+    const url = `/api/invites`;
     return new Observable(observer => {
-      this.http.post(url, body).subscribe(
+      this.http.post(url, body, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
   }

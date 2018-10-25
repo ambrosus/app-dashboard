@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
 
 @Injectable({
@@ -9,7 +10,11 @@ import { StorageService } from './storage.service';
 export class UsersService {
   _user = new BehaviorSubject({});
 
-  constructor(private http: HttpClient, private storageService: StorageService) {
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService,
+    private authService: AuthService,
+  ) {
     const user = <any>this.storageService.get('user') || {};
     this._user.next(user);
   }
@@ -17,9 +22,12 @@ export class UsersService {
   /* User */
 
   updateProfile(body) {
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
     const user: any = this.storageService.get('user');
+
     return new Observable(observer => {
-      this.http.put(`/api/users/${user.email}?address=${user.address}`, body).subscribe(
+      this.http.put(`/api/users/${user.email}`, body, { headers }).subscribe(
         ({ data }: any) => observer.next(data),
         err => observer.error(err.error),
       );
@@ -52,10 +60,12 @@ export class UsersService {
   }
 
   getUsers() {
-    const user: any = this.storageService.get('user');
-    const url = `/api/users?organization=${user.organization._id}`;
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
+    const url = `/api/users`;
+
     return new Observable(observer => {
-      this.http.get(url).subscribe(
+      this.http.get(url, { headers }).subscribe(
         ({ data }: any) => observer.next(data),
         err => observer.error(err.error),
       );

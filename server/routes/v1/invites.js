@@ -13,8 +13,10 @@ const InvitesController = _require('/controllers/invites');
 const InvitesRoutes = express.Router();
 
 // Routes
-InvitesRoutes.post('/', checkPermission('manage_accounts'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); });
-InvitesRoutes.get('/organization/:id', checkPermission('manage_accounts'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
+InvitesRoutes.route('/')
+  .post(checkPermission('manage_accounts'), InvitesController.create, (req, res) => { res.status(req.status).json(req.json); })
+  .get(checkPermission('manage_accounts'), InvitesController.getAll, (req, res) => { res.status(req.status).json(req.json); });
+
 InvitesRoutes.get('/verify/:token', InvitesController.verify, (req, res) => { res.status(req.status).json(req.json); });
 InvitesRoutes.post('/delete', checkPermission('manage_accounts'), InvitesController.delete, (req, res) => { res.status(req.status).json(req.json); });
 

@@ -6,19 +6,34 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const { to } = _require('/utils/general');
-const { PermissionError, NotFoundError } = _require('/errors');
+const { PermissionError, ValidationError } = _require('/errors');
 
 const User = _require('/models/users');
 
-module.exports = action => {
+module.exports = (action = '') => {
   return async (req, res, next) => {
-    const address = req.body.address || req.params.address || req.query.address;
-    let err, user;
+    try {
+      let token = req.headers.authentication.split('AMB_TOKEN');
+      token = JSON.parse(atob(token[1]));
+      const { address, validUntil } = token.idData;
 
-    [err, user] = await to(User.findOne({ address }));
-    if (err || !user) { return next(new NotFoundError('User not found', err)); }
+      if (!(validUntil - (Date.now() / 1000))) {
+        return next(new ValidationError('Token has expired'));
+      }
 
-    if (user.permissions.indexOf(action) === -1) { return next(new PermissionError('No permission')); }
-    return next();
+      [err, user] = await to(
+        User.findOne({ address })
+        .populate({
+          path: 'organization',
+          select: '-active -createdAt -updatedAt -__v -owner'
+        })
+        .select('-active -createdAt -updatedAt -password -__v')
+      );
+      if (err || !user) { return next(new ValidationError('User not found', err)); }
+
+      if (action && user.permissions.indexOf(action) === -1) { return next(new PermissionError('No permission')); }
+      req.user = user;
+      return next();
+    } catch (e) { return next(new PermissionError('Invalid or no token provided')); }
   }
 };

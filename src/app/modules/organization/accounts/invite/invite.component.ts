@@ -18,7 +18,7 @@ export class InviteComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private inviteService: InviteService
+    private inviteService: InviteService,
   ) {
     this.initInviteForm();
   }
@@ -47,24 +47,20 @@ export class InviteComponent implements OnInit, OnDestroy {
     (<FormArray>this.inviteForm.get('members')).push(
       new FormGroup({
         email: new FormControl('', []),
-      })
+      }),
     );
   }
 
   invite() {
     this.error = false;
     this.success = false;
-    const user: any = this.storageService.get('user');
-    delete user.organization.settings;
+
     const emails = this.inviteForm.value.members.reduce((_emails, member, array, index) => {
       if (member.email) { _emails.push(member.email); }
       return _emails;
     }, []);
 
-    const body = {
-      emails,
-      user,
-    };
+    const body = { emails };
 
     if (this.inviteForm.valid && body.emails.length > 0) {
       this.spinner = true;
@@ -77,7 +73,7 @@ export class InviteComponent implements OnInit, OnDestroy {
         err => {
           this.error = 'Invites failed';
           console.error('Invites SEND error: ', err);
-        }
+        },
       );
     } else {
       this.error = 'Send at least one invite';

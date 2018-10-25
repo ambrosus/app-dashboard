@@ -1,34 +1,34 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { StorageService } from './storage.service';
+import { AuthService } from './auth.service';
 
 export class OrganizationsService {
 
   constructor(
     private http: HttpClient,
-    private storageService: StorageService
+    private authService: AuthService,
   ) { }
 
-  checkOrganization(query) {
+  checkOrganization(title) {
     return new Observable(observer => {
-      let url = `/api/organizations/check?`;
-      Object.keys(query).map(key => url += `${key}=${query[key]}&`);
+      const url = `/api/organizations/${title}/check`;
 
       this.http.get(url).subscribe(
         res => observer.next(res),
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
 
   editOrganization(body) {
-    const organizationID = this.storageService.get('user')['organization']['_id'] || null;
-    const url = `/api/organizations/${organizationID}`;
+    const token = this.authService.getToken();
+    const headers = { Authorization: `AMB_TOKEN ${token}` };
+    const url = `/api/organizations`;
 
     return new Observable(observer => {
-      this.http.put(url, body).subscribe(
+      this.http.put(url, body, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
   }
@@ -39,7 +39,7 @@ export class OrganizationsService {
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); }
+        err => { observer.error(err); },
       );
     });
   }

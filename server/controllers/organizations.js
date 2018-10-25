@@ -13,36 +13,8 @@ const User = _require('/models/users');
 const Organization = _require('/models/organizations');
 const OrganizationRequest = _require('/models/organization-request');
 
-/**
- * Create a new organization.
- *
- * @name create
- * @route {POST} api/companies
- * @bodyparam organization: { title, timeZone }
- * @returns Status code 400 on failure
- * @returns organization Object on success with status code 200
- */
-exports.create = async (req, res, next) => {
-  const organization = req.body.organization || {};
-  const { title, settings } = organization;
-  let err, organizationCreated;
-
-  const query = {
-    _id: new mongoose.Types.ObjectId(),
-  };
-  if (title) { query.title = title; }
-  if (settings) { query.settings = settings; }
-  [err, organizationCreated] = await to(Organization.create(query));
-  if (err || !organizationCreated) { logger.error('Organization create error: ', err); return next(new ValidationError(err.message, err)); }
-
-  req.status = 200;
-  req.body.organization = organizationCreated;
-  req.json = { data: organization, message: 'Success', status: 200 };
-  return next();
-};
-
 exports.edit = async (req, res, next) => {
-  const id = req.params.id;
+  const organizationID = req.user.organization._id;
   const query = req.body;
   let err, organizationUpdated;
 
@@ -52,7 +24,7 @@ exports.edit = async (req, res, next) => {
     if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
 
-  [err, organizationUpdated] = await to(Organization.findByIdAndUpdate(id, update));
+  [err, organizationUpdated] = await to(Organization.findByIdAndUpdate(organizationID, update));
   if (err || !organizationUpdated) { logger.error('Organization update error: ', err); return next(new ValidationError(err.message, err)); }
 
   req.status = 200;
@@ -103,13 +75,16 @@ exports.setOwnership = async (req, res, next) => {
 
 exports.organizationRequest = async (req, res, next) => {
   const { email, address, title, message } = req.body;
-  let err, accountExists, organizationExists, organizationRequestCreated;
+  let err, accountExists, organizationExists, organizationRequestExists, organizationRequestCreated;
 
-  [err, accountExists] = await to(User.findOne({ email }));
-  if (accountExists) { return next(new ValidationError('Account with this email already exists')); }
+  [err, organizationRequestExists] = await to(OrganizationRequest.findOne({ $or: [{ email }, { title }, { address }] }));
+  if (organizationRequestExists) { return next(new ValidationError('Organization request with this email or organization title already exists')); }
 
   [err, organizationExists] = await to(Organization.findOne({ title }));
   if (organizationExists) { return next(new ValidationError('Organization with this title already exists')) }
+
+  [err, accountExists] = await to(User.findOne({ $or: [{ email }, { address }] }));
+  if (accountExists) { return next(new ValidationError('Account with this email or address already exists')); }
 
   req.body._id = new mongoose.Types.ObjectId();
   [err, organizationRequestCreated] = await to(OrganizationRequest.create(req.body));
