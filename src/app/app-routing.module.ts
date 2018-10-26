@@ -34,6 +34,13 @@ const routes: Routes = [
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always',
   }, {
+    path: 'node',
+    canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    loadChildren: 'app/modules/node/node.module#NodeModule',
+    runGuardsAndResolvers: 'always',
+    data: { permissions: ['super_account'] },
+  }, {
     path: 'organization',
     canActivate: [AuthLoginGuard, PermissionsGuard],
     canActivateChild: [AuthLoginGuard, PermissionsGuard],

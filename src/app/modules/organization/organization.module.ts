@@ -7,7 +7,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { SharedModule } from 'app/shared/shared.module';
 import { UsersService } from 'app/services/users.service';
 
-import { AdministrationRoutingModule } from './organization-routing.module';
+import { OrganizationRoutingModule } from './organization-routing.module';
 import { SettingsComponent } from './settings/settings.component';
 import { AllComponent } from './accounts/all/all.component';
 import { InviteComponent } from './accounts/invite/invite.component';
@@ -20,14 +20,18 @@ import { OrganizationOutletComponent } from './organization-outlet/organization-
 @NgModule({
   imports: [
     CommonModule,
-    AdministrationRoutingModule,
+    OrganizationRoutingModule,
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
     Angular2PromiseButtonModule.forRoot(),
     FormsModule,
   ],
-  providers: [UsersService, InviteService, OrganizationsService],
+  providers: [
+    UsersService,
+    InviteService,
+    OrganizationsService,
+  ],
   declarations: [
     AllComponent,
     InviteComponent,

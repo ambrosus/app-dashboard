@@ -14,11 +14,11 @@ export class AssetResolver implements Resolve<any> {
 
   resolve(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): Observable<any> | Promise<any> | any {
     return this.asset.getAsset(route.params.assetid).pipe(
       map(asset => asset),
-      first()
+      first(),
     );
   }
 }

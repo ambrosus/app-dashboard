@@ -48,6 +48,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <li>
       <a routerLink="/assets" routerLinkActive="active" appIconLeft="blue-stack">Assets</a>
     </li>
+    <li *ngIf="checkPermission(['super_account'])">
+      <a routerLink="/node" routerLinkActive="active" appIconLeft="display">Node</a>
+    </li>
     <li *ngIf="checkPermission(['manage_accounts'])">
       <a routerLink="/organization/accounts" routerLinkActive="active" appIconLeft="header-user">Accounts</a>
     </li>

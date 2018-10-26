@@ -25,7 +25,7 @@ export class GeneralComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {
     this.web3 = new Web3();
   }
@@ -79,7 +79,7 @@ export class GeneralComponent implements OnInit, OnDestroy {
     if (this.updateProfileForm.valid) {
       this.spinner = true;
 
-      this.updateProfileSub = this.usersService.updateProfile(body).subscribe(
+      this.updateProfileSub = this.usersService.editUser(body, this.user.email).subscribe(
         resp => {
           this.spinner = false;
           this.success = 'Update successful!';

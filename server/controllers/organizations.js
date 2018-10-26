@@ -27,7 +27,7 @@ exports.edit = async (req, res, next) => {
   if (!user.permissions.includes('super_account') && user.organization._id !== organizationID) { return next(new PermissionError('You can only edit your own organization')); }
 
   const update = {};
-  const allowedToChange = ['title', 'settings', 'active'];
+  const allowedToChange = ['title', 'settings', 'legalAddress', 'active'];
   for (const key in query) {
     if (allowedToChange.indexOf(key) > -1) update[key] = query[key];
   }
@@ -48,6 +48,35 @@ exports.check = async (req, res, next) => {
 
   req.status = organization ? 200 : 400;
   req.json = { data: null, message: `${organization ? 'Organization exists' : 'No organization'}`, status: req.status };
+  return next();
+}
+
+exports.getAll = async (req, res, next) => {
+  let err, organizations;
+
+  [err, organizations] = await to(
+    Organization.find()
+    .populate({
+      path: 'owner',
+      select: '-password -__v'
+    })
+    .select('-__v')
+  );
+  if (err) { logger.error('Organizations GET: ', err); return next(new ValidationError('Organizations error', err)); }
+
+  req.status = 200;
+  req.json = { data: organizations, message: 'Success', status: req.status };
+  return next();
+}
+
+exports.getOrganizationRequests = async (req, res, next) => {
+  let err, organizationRequests;
+
+  [err, organizationRequests] = await to(OrganizationRequest.find());
+  if (err) { logger.error('Organization requests GET: ', err); return next(new ValidationError('Organizations requests error', err)); }
+
+  req.status = 200;
+  req.json = { data: organizationRequests, message: 'Success', status: req.status };
   return next();
 }
 

@@ -16,7 +16,7 @@ export class InviteService {
     return new Observable(observer => {
       this.http.get(url).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); },
+        err => { observer.error(err.error); },
       );
     });
   }
@@ -29,7 +29,7 @@ export class InviteService {
     return new Observable(observer => {
       this.http.get(url, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); },
+        err => { observer.error(err.error); },
       );
     });
   }
@@ -42,7 +42,7 @@ export class InviteService {
     return new Observable(observer => {
       this.http.post(url, { ids }, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); },
+        err => { observer.error(err.error); },
       );
     });
 
@@ -55,7 +55,7 @@ export class InviteService {
     return new Observable(observer => {
       this.http.post(url, body, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err); },
+        err => { observer.error(err.error); },
       );
     });
   }

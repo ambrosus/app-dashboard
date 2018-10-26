@@ -11,16 +11,18 @@ import { InviteService } from 'app/services/invite.service';
   styleUrls: ['./all.component.scss'],
 })
 export class AllComponent implements OnInit, OnDestroy {
-  selectAllText = 'Select all';
   getUsersSub: Subscription;
   getInvitesSub: Subscription;
+  invitesAction: Subscription;
+  usersAction: Subscription;
   users = [];
   usersDisabled = [];
   invites = [];
   ids = [];
   user;
-  showUsers = true;
-  showDisabled;
+  show = 'active';
+  success;
+  error;
 
   constructor(
     private invitesService: InviteService,
@@ -37,6 +39,19 @@ export class AllComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.getUsersSub) { this.getUsersSub.unsubscribe(); }
     if (this.getInvitesSub) { this.getInvitesSub.unsubscribe(); }
+    if (this.invitesAction) { this.invitesAction.unsubscribe(); }
+    if (this.usersAction) { this.usersAction.unsubscribe(); }
+  }
+
+  getNumberOfAccounts() {
+    switch (this.show) {
+      case 'active':
+        return this.users.length;
+      case 'pending':
+        return this.invites.length;
+      case 'disabled':
+        return this.usersDisabled.length;
+    }
   }
 
   getUsers() {
@@ -66,5 +81,22 @@ export class AllComponent implements OnInit, OnDestroy {
       },
       err => console.error('Invites GET error: ', err),
     );
+  }
+
+  actions(action, body = {}) {
+    switch (action) {
+      case 'inviteRevoke':
+        this.invitesAction = this.invitesService.revokeInvites(body['ids']).subscribe(
+          resp => this.getInvites(),
+          err => this.error = err.message,
+        );
+        break;
+      case 'userEdit':
+        this.usersAction = this.usersService.editUser(body['data'], body['email']).subscribe(
+          resp => this.getUsers(),
+          err => this.error = err.message,
+        );
+        break;
+    }
   }
 }

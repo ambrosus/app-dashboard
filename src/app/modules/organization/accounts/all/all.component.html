@@ -1,73 +1,87 @@
 <h4 class="m-v-30 relative p-r-40">Accounts <button type="button" routerLink="invite">+</button></h4>
 <hr class="m-b-20">
 
-<button type="button" class="button button--blue" (click)="showUsers = true">Registered</button>
-<button type="button" class="button button--blue" (click)="showUsers = false">Pending</button>
+<button type="button" class="button button--blue" (click)="show = 'active'">Active</button>
+<button type="button" class="button button--blue" (click)="show = 'pending'">Pending</button>
+<button type="button" class="button" (click)="show = 'disabled'">Disabled</button>
 
-<p class="m-t-20">{{ showUsers ? users.length + usersDisabled.length : invites.length }} accounts</p>
+<p class="m-v-30" style="color: salmon;">{{ error }}</p>
 
-<div *ngIf="showUsers">
+<p class="m-t-20">{{ getNumberOfAccounts() }} accounts</p>
 
-  <p class="m-t-20 right" *ngIf="usersDisabled.length" (click)="showDisabled = !showDisabled">{{ showDisabled ? 'Hide disabled' : 'Show disabled' }} ({{ usersDisabled.length }})</p>
+<!-- Active users -->
+<table class="table" *ngIf="show === 'active'">
+  <tbody>
+    <tr *ngFor="let _user of users; let i = index">
+      <td class="table__image" routerLink="{{ _user.email }}">
+        <div>{{ _user.email.charAt(0) }}</div>
+      </td>
+      <td class="table__info" routerLink="{{ _user.email }}">
+        <p class="table__info__title">{{ _user.full_name }}</p>
+        <small class="table__info__meta">{{ _user.address }}</small>
+      </td>
+      <td class="table__status">
+        <span class="table__status__event" style="background-color: green;">Active</span>
+        <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+        <div class="table__options" appClickThisActive>
+          <img src="/assets/raster/menu.png">
+          <ul class="table__options__menu">
+            <li routerLink="{{ _user.email }}">Info</li>
+            <li *ngIf="user._id !== _user._id" (click)="actions('userEdit', { email: _user.email, data: { active: false } })">Disable</li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-  <!-- Active users -->
-  <table class="table">
-    <tbody>
-      <tr *ngFor="let _user of users; let i = index">
-        <td class="table__image" routerLink="{{ _user.email }}">
-          <div>{{ _user.email.charAt(0) }}</div>
-        </td>
-        <td class="table__info" routerLink="{{ _user.email }}">
-          <p class="table__info__title">{{ _user.full_name }}</p>
-          <small class="table__info__meta">{{ _user.address }}</small>
-        </td>
-        <td class="table__status" routerLink="{{ _user.email }}">
-          <span class="table__status__event">{{ _user.active ? 'Active' : 'Disabled' }}</span>
-          <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<!-- Disabled users -->
+<table class="table" *ngIf="show === 'disabled'">
+  <tbody>
+    <tr *ngFor="let _user of usersDisabled; let i = index">
+      <td class="table__image" routerLink="{{ _user.email }}">
+        <div>{{ _user.email.charAt(0) }}</div>
+      </td>
+      <td class="table__info" routerLink="{{ _user.email }}">
+        <p class="table__info__title">{{ _user.full_name }}</p>
+        <small class="table__info__meta">{{ _user.address }}</small>
+      </td>
+      <td class="table__status">
+        <span class="table__status__event" style="background-color: salmon;">Disabled</span>
+        <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+        <div class="table__options" appClickThisActive>
+          <img src="/assets/raster/menu.png">
+          <ul class="table__options__menu">
+            <li routerLink="{{ _user.email }}">Info</li>
+            <li (click)="actions('userEdit', { email: _user.email, data: { active: true } })">Activate</li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-  <!-- Disabled users -->
-  <div *ngIf="showDisabled && usersDisabled.length">
-    <h5 class="m-v-20" style="color: salmon;">Disabled users</h5>
-    <table class="table">
-      <tbody>
-        <tr *ngFor="let _user of usersDisabled; let i = index">
-          <td class="table__image" routerLink="{{ _user.email }}">
-            <div>{{ _user.email.charAt(0) }}</div>
-          </td>
-          <td class="table__info" routerLink="{{ _user.email }}">
-            <p class="table__info__title">{{ _user.full_name }}</p>
-            <small class="table__info__meta">{{ _user.address }}</small>
-          </td>
-          <td class="table__status" routerLink="{{ _user.email }}">
-            <span class="table__status__event" style="background-color: salmon;">{{ _user.active ? 'Active' : 'Disabled' }}</span>
-            <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div *ngIf="!showUsers">
-  <table class="table">
-    <tbody>
-      <tr *ngFor="let _invite of invites; let i = index">
-        <td class="table__image">
-          <div>{{ _invite.to.charAt(0) }}</div>
-        </td>
-        <td class="table__info">
-          <p class="table__info__title">{{ _invite.to }}</p>
-          <small class="table__info__meta">from: {{ _invite.from.full_name }}</small>
-        </td>
-        <td class="table__status">
-          <span class="table__status__event">Pending</span>
-          <p class="table__status__timestamp">Created: {{ _invite.createdAt }}</p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<!-- Pending users -->
+<table class="table" *ngIf="show === 'pending'">
+  <tbody>
+    <tr *ngFor="let _invite of invites; let i = index">
+      <td class="table__image">
+        <div>{{ _invite.to.charAt(0) }}</div>
+      </td>
+      <td class="table__info">
+        <p class="table__info__title">{{ _invite.to }}</p>
+        <small class="table__info__meta">from: {{ _invite.from.full_name }}</small>
+      </td>
+      <td class="table__status">
+        <span class="table__status__event" style="background-color: orange;">Pending</span>
+        <p class="table__status__timestamp">Invited: {{ _invite.createdAt }}</p>
+        <div class="table__options" appClickThisActive>
+          <img src="/assets/raster/menu.png">
+          <ul class="table__options__menu">
+            <li (click)="actions('inviteRevoke', { ids: [_invite._id] })">Revoke</li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

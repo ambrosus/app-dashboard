@@ -25,13 +25,14 @@ const organization = mongoose.Schema({
     ref: 'Users',
     index: { unique: true },
   },
-  active: {
-    type: Boolean,
-    default: true,
-  },
   settings: {
     type: mongoose.Schema.Types.Mixed,
     default: { 'preview_app': 'https://amb.to' },
+  },
+  legalAddress: String,
+  active: {
+    type: Boolean,
+    default: true,
   },
   createdAt: {
     type: Date,

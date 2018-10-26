@@ -31,13 +31,12 @@ export class UsersService {
 
   /* User */
 
-  updateProfile(body) {
+  editUser(body, email) {
     const token = this.getToken();
     const headers = { Authorization: `AMB_TOKEN ${token}` };
-    const user: any = this.storageService.get('user');
 
     return new Observable(observer => {
-      this.http.put(`/api/users/${user.email}`, body, { headers }).subscribe(
+      this.http.put(`/api/users/${email}`, body, { headers }).subscribe(
         ({ data }: any) => observer.next(data),
         err => observer.error(err.error),
       );

@@ -43,7 +43,7 @@ export class AccountComponent implements OnInit, OnDestroy {
         this.user = resp;
         this.initUserForm();
       },
-      err => this.router.navigate(['../'], { relativeTo: this.route })
+      err => this.router.navigate(['../'], { relativeTo: this.route }),
     );
   }
 

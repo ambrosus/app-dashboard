@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) { }
 
   ngOnInit() {

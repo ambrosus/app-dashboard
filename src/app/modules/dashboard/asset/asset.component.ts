@@ -29,7 +29,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
@@ -39,9 +39,13 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.user = <any>this.storageService.get('user') || {};
     try {
       this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
-      this.previewAppUrl = this.user.company.settings.preview_app;
     } catch (e) {
       this.asset['infoEvent'] = {};
+    }
+
+    try {
+      this.previewAppUrl = this.user.organization.settings.preview_app;
+    } catch (e) {
       this.previewAppUrl = 'https://amb.to';
     }
 

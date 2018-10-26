@@ -14,11 +14,14 @@ const UsersController = _require('/controllers/users');
 const OrganizationsRoutes = express.Router();
 
 // Routes
-OrganizationsRoutes.route('/:organizationID')
-  .put(checkPermission('manage_organization'), OrganizationsController.edit, (req, res) => { res.status(req.status).json(req.json); });
+OrganizationsRoutes.route('/')
+  .get(checkPermission('super_account'), OrganizationsController.getAll, (req, res) => { res.status(req.status).json(req.json); });
 OrganizationsRoutes.route('/request')
+  .get(checkPermission('super_account'), OrganizationsController.getOrganizationRequests, (req, res) => { res.status(req.status).json(req.json); })
   .post(OrganizationsController.organizationRequest, (req, res) => { res.status(req.status).json(req.json); })
   .put(checkPermission('super_account'), OrganizationsController.organizationRequestApproval, (req, res) => { res.status(req.status).json(req.json); });
-OrganizationsRoutes.get('/:title/check', OrganizationsController.check, (req, res) => { res.status(req.status).json(req.json); });
+OrganizationsRoutes.get('/check/:title', OrganizationsController.check, (req, res) => { res.status(req.status).json(req.json); });
+OrganizationsRoutes.route('/:organizationID')
+  .put(checkPermission('manage_organization'), OrganizationsController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = OrganizationsRoutes;

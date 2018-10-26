@@ -30,9 +30,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private authService: AuthService,
     private organizationsService: OrganizationsService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) { }
 
   ngOnInit() {
@@ -85,7 +84,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.settingsForm.valid) {
       this.spinner = true;
 
-      this.editOrganizationSub = this.organizationsService.editOrganization(body).subscribe(
+      this.editOrganizationSub = this.organizationsService.editOrganization(body, this.user.organization._id).subscribe(
         (resp: any) => {
           this.spinner = false;
           this.success = 'Settings update success';
@@ -94,7 +93,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
               this.storageService.set('user', user);
               this.emit('user:refresh');
             },
-            err => console.error('Account GET error: ', err)
+            err => console.error('Account GET error: ', err),
           );
           console.log('Organization UPDATE success: ', resp);
         },
@@ -102,7 +101,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
           this.spinner = false;
           this.error = err.message;
           console.error('Organization UPDATE error: ', err);
-        }
+        },
       );
     } else {
       this.error = 'All inputs are required';
