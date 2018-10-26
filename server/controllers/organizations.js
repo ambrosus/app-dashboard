@@ -13,6 +13,7 @@ const organizationDisapprovedTemplate = _require('/assets/templates/email/organi
 const emailService = _require('/utils/email');
 const slug = require('slug');
 const { hermes, token } = _require('/config');
+const { httpPost } = _require('/utils/requests');
 
 const User = _require('/models/users');
 const Organization = _require('/models/organizations');
@@ -130,7 +131,7 @@ exports.organizationRequestApproval = async (req, res, next) => {
     const body = {
       address: organizationRequest.address,
       accessLevel: 10,
-      permissions: ['protected_account', 'register_accounts', 'manage_accounts', 'create_asset', 'create_event']
+      permissions: ['register_accounts', 'manage_accounts', 'create_asset', 'create_event']
     };
     [err, hermesRegistered] = await to(httpPost(`${hermes.url}/accounts`, body, token));
     if (err || !hermesRegistered) {

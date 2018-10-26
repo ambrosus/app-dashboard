@@ -145,9 +145,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   requestOrganization() {
     this.error = false;
-    const { privateKey } = this.forms.secretForm.getRawValue();
+    const { publicKey } = this.forms.secretForm.getRawValue();
     const data = this.forms.requestForm.getRawValue();
-    data.address = privateKey;
+    data.address = publicKey;
 
     if (!this.forms.requestForm.valid) { return this.error = 'Please fill all required fields'; }
 

@@ -104,7 +104,7 @@ exports.getAccount = async (req, res, next) => {
     User.findOne({ email })
     .populate({
       path: 'organization',
-      select: '-active -createdAt -updatedAt -__v -owner',
+      select: '-active -__v -owner',
     })
     .select('-active -createdAt -updatedAt -__v')
   );
@@ -131,7 +131,7 @@ exports.getAccounts = async (req, res, next) => {
     User.find({ organization })
     .populate({
       path: 'organization',
-      select: '-active -createdAt -updatedAt -__v -owner',
+      select: '-active -__v -owner',
     })
     .select('-password -__v')
   );
@@ -165,7 +165,7 @@ exports.edit = async (req, res, next) => {
   [err, userFound] = await to(User.findOne({ email }));
   if (err || !userFound) { logger.error('User GET error: ', err); return next(new ValidationError('No user found', err)); }
 
-  if (!user.permissions.includes('super_account') && user.organization !== userFound.organization) {
+  if (!user.permissions.includes('super_account') && user.organization._id.toString() !== userFound.organization._id.toString()) {
     return next(new PermissionError('You can only edit accounts within your own organization'));
   }
 

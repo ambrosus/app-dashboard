@@ -32,7 +32,7 @@ exports.login = async (req, res, next) => {
       User.findOne({ email })
       .populate({
         path: 'organization',
-        select: '-createdAt -updatedAt -__v -owner'
+        select: '-__v -owner'
       })
       .select('-createdAt -updatedAt -__v')
     );
@@ -82,7 +82,7 @@ exports.verifyAccount = async (req, res, next) => {
     User.findOne({ address })
     .populate({
       path: 'organization',
-      select: '-createdAt -updatedAt -__v -owner'
+      select: '-__v -owner'
     })
     .select('-createdAt -updatedAt -password -__v')
   );

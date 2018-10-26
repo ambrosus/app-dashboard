@@ -40,7 +40,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   getOwnerName(organization) {
     const owner = organization.owner;
-    return owner ? owner.name || owner.email || 'No name' : 'No owner';
+    return owner ? owner.full_name || owner.email || 'No name' : 'No owner';
   }
 
   getNumberOfOrganizations() {
@@ -92,7 +92,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         break;
       case 'organizationRequest':
         this.organizationActionSub = this.organizationsService.organizationRequestApproval(body).subscribe(
-          resp => this.getOrganizationRequests(),
+          resp => {
+            this.getOrganizations();
+            this.getOrganizationRequests();
+          },
           err => this.error = err.message,
         );
         break;

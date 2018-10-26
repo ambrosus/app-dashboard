@@ -45,6 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.user = res;
       this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
       this.isLoggedin = this.authService.isLoggedIn();
+      console.log('User GET (header): ', this.user);
     });
   }
 

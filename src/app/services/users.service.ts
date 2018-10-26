@@ -61,7 +61,6 @@ export class UsersService {
       this.http.get(url).subscribe(
         ({ data }: any) => {
           this._user.next(data);
-          return observer.next(data);
         },
         err => observer.error(err.error),
       );

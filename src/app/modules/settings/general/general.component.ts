@@ -34,9 +34,11 @@ export class GeneralComponent implements OnInit, OnDestroy {
     this.user = this.storageService.get('user') || {};
 
     this.updateProfileForm = new FormGroup({
+      address: new FormControl({ value: this.user.address, disabled: true }, [Validators.required]),
       full_name: new FormControl(this.user.full_name, []),
       email: new FormControl(this.user.email, [Validators.required]),
       timeZone: new FormControl(this.user.timeZone, [Validators.required]),
+      organization: new FormControl({ value: this.user.organization.title, disabled: true }, []),
       password: new FormControl('', []),
       passwordConfirm: new FormControl('', [this.comparePasswords]),
     });
@@ -88,14 +90,14 @@ export class GeneralComponent implements OnInit, OnDestroy {
               this.storageService.set('user', user);
               this.emit('user:refresh');
             },
-            err => console.error('Account GET error: ', err)
+            err => console.error('Account GET error: ', err),
           );
         },
         err => {
           this.spinner = false;
           this.error = err.message;
           console.error('Profile UPDATE error: ', err);
-        }
+        },
       );
     } else {
       this.error = 'All inputs are required';

@@ -19,8 +19,11 @@ export class AccountComponent implements OnInit, OnDestroy {
   constructor(private usersService: UsersService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.routeSub = this.route.params.subscribe(params => this.email = params.email);
-    this.getUser();
+    this.routeSub = this.route.params.subscribe(params => {
+      this.email = params.email;
+      this.usersService.getUser(this.email).subscribe();
+      this.getUser();
+    });
   }
 
   ngOnDestroy() {
@@ -37,13 +40,12 @@ export class AccountComponent implements OnInit, OnDestroy {
   }
 
   getUser() {
-    this.getUserSub = this.usersService.getUser(this.email).subscribe(
-      (resp: any) => {
-        console.log('USER GET: ', resp);
-        this.user = resp;
+    this.getUserSub = this.usersService._user.subscribe(
+      user => {
+        console.log('USER GET: ', user);
+        this.user = user;
         this.initUserForm();
       },
-      err => this.router.navigate(['../'], { relativeTo: this.route }),
     );
   }
 

@@ -44,6 +44,6 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     EventFormComponent,
     JsonFormComponent,
   ],
-  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService],
+  providers: [AssetResolver, EventResolver, AssetsResolver, AssetsService],
 })
 export class DashboardModule { }

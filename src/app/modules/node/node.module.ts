@@ -10,8 +10,6 @@ import { SharedModule } from 'app/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
-import { UsersService } from 'app/services/users.service';
-import { OrganizationsService } from 'app/services/organizations.service';
 import { NodeService } from 'app/services/node.service';
 
 @NgModule({
@@ -25,8 +23,6 @@ import { NodeService } from 'app/services/node.service';
     FormsModule,
   ],
   providers: [
-    UsersService,
-    OrganizationsService,
     NodeService,
   ],
   declarations: [

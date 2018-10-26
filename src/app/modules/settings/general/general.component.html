@@ -3,28 +3,28 @@
 <div class="card m-w-4 block-center">
   <form [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()" class="m-w-4">
     <label>Your Public key
-      <input type="text" spellcheck="false" [placeholder]="user.address" disabled>
+      <input formControlName="address" type="text">
     </label>
     <label>Your Full name
-      <input formControlName="full_name" type="text" spellcheck="false">
+      <input formControlName="full_name" type="text">
     </label>
     <label>Your Email
-      <input formControlName="email" type="email" spellcheck="false">
+      <input formControlName="email" type="email">
     </label>
     <label>Your Organization
-      <input type="text" spellcheck="false" placeholder="None" disabled>
+      <input formControlName="organization" type="text">
     </label>
     <label for="timeZone">Your Time Zone
-      <input formControlName="timeZone" list="timezones" id="timeZone" spellcheck="false">
+      <input formControlName="timeZone" list="timezones" id="timeZone">
       <datalist id="timezones">
         <option *ngFor="let timezone of timezones" value="{{ timezone }}">
       </datalist>
     </label>
     <label>Password
-      <input formControlName="password" type="password" spellcheck="false">
+      <input formControlName="password" type="password">
     </label>
     <label>Password Confirm
-      <input formControlName="passwordConfirm" type="password" spellcheck="false">
+      <input formControlName="passwordConfirm" type="password">
     </label>
     <div class="flex flex-direction-r justify-content-fe align-items-c">
       <app-spinner *ngIf="spinner"></app-spinner>
