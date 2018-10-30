@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <main class="main p-a-20">
   <h2 class="center m-t-30">My assets</h2>
-  <p class="center m-b-30">Showing {{ this.assets.length }} results</p>
+  <p class="center m-b-30">Showing {{ this.assets.results.length }} results</p>
 
   <!-- Search -->
   <form [formGroup]="forms.search" (ngSubmit)="search()">
@@ -26,7 +26,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
             <button type="button" class="button" (click)="bulkEvent()">Bulk event</button>
           </td>
           <td style="text-align: right;">
-            <button type="button" class="button button--blue m-l-auto" routerLink="/assets/new" style="">Create New Asset</button>
+            <button type="button" class="button button--blue m-l-auto" routerLink="/assets/new">Create New Asset</button>
           </td>
         </tr>
       </thead>
@@ -35,11 +35,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <td class="table__checkbox"><input formControlName="selected" type="checkbox"></td>
           <td class="table__image" routerLink="/assets/{{ asset.value.assetId }}"><img src="{{ getImage(asset) }}"></td>
           <td class="table__info" routerLink="/assets/{{ asset.value.assetId }}">
-            <p class="table__info__title">{{ getName(asset.value.infoEvent, 'No title') }}</p>
+            <p class="table__info__title">{{ getName(asset.value.infoEvent) }}</p>
             <small class="table__info__meta">{{ asset.value.assetId }}</small>
           </td>
           <td class="table__status" routerLink="/assets/{{ asset.value.assetId }}">
-            <span class="table__status__event">{{ getName(asset.value.latestEvent, 'Created') }}</span>
             <p class="table__status__timestamp">{{ asset.value.createdAt | date:'d MMM yyyy HH:mm' }}</p>
           </td>
         </tr>
@@ -47,8 +46,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <tfoot>
         <tr>
           <td colspan="4">
-            <app-pagination *ngIf="searchActive" [pagination]="pagination" [method]="search"></app-pagination>
-            <app-pagination *ngIf="!searchActive" [pagination]="pagination" [method]="loadAssets"></app-pagination>
+            <button type="button" class="loadMore">Load more</button>
           </td>
         </tr>
       </tfoot>

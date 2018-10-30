@@ -5,7 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, ElementRef, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -24,32 +24,19 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSub: Subscription;
   assetsSub: Subscription;
-  eventsSub: Subscription;
   forms: {
     table?: FormGroup,
     search?: FormGroup
   } = {};
-  // Pagination
-  assets: any[] = [];
-  pagination = {
-    currentPage: 1,
-    perPage: 15,
-    totalPages: 0,
-    resultCount: 0,
-    resultLength: 0,
-  };
-  // Search
-  searchActive = false;
-  // Other
-  error = false;
-  loader = false;
+  assets = { results: [] };
   selectButton = 'Select all';
+  loader;
+  error;
   selected;
 
   constructor(
     private assetsService: AssetsService,
     private authService: AuthService,
-    private el: ElementRef,
     private router: Router,
     public dialog: MatDialog,
     private storageService: StorageService,
@@ -59,13 +46,33 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
     });
+    this.assetsService._assets.subscribe(
+      (assets: any) => {
+        console.log('[GET] Assets: ', assets);
+        this.assets = assets;
+
+        this.loader = false;
+        this.forms.table = new FormGroup({
+          assets: new FormArray([]),
+        });
+
+        // Table form
+        assets.results.map(asset => {
+          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
+            assetId: new FormControl(asset.assetId),
+            infoEvent: new FormControl(asset.infoEvent),
+            createdAt: new FormControl(asset.content.idData.timestamp),
+            selected: new FormControl(null),
+          }));
+        });
+      },
+    );
   }
 
   ngOnInit() { }
 
   ngOnDestroy() {
     if (this.assetsSub) { this.assetsSub.unsubscribe(); }
-    if (this.eventsSub) { this.eventsSub.unsubscribe(); }
     if (this.navigationSub) { this.navigationSub.unsubscribe(); }
   }
 
@@ -87,12 +94,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
     } catch (e) { return false; }
   }
 
-  getName(eventObject, alternative = '') {
+  getName(obj, alternative = 'No title') {
     try {
-      const obj = JSON.parse(eventObject);
       const name = obj.name;
-      const type = obj.type.split('.');
-      return name ? name : type[type.length - 1];
+      let type = obj.type.split('.');
+      type = type[type.length - 1];
+      return [name, type].find(item => item);
     } catch (e) { return alternative; }
   }
 
@@ -111,117 +118,32 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   bulkEvent() {
     const assetIds = [];
-    this.forms.table.get('assets')['controls'].map(asset => {
-      if (asset.value.selected) { assetIds.push(asset.value.assetId); }
+    const data = this.forms.table.getRawValue();
+    data.assets.map(asset => {
+      if (asset.selected) { assetIds.push(asset.assetId); }
     });
     if (!assetIds.length) { return alert(`You didn\'t select any assets. Please do so first.`); }
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
-      position: { right: '0' },
+      position: { top: '0', right: '0' },
     });
     const instance = dialogRef.componentInstance;
     instance.assetIds = assetIds;
-    dialogRef.afterClosed().subscribe(result => console.log('Bulk event dialog was closed'));
+    dialogRef.afterClosed().subscribe(result => console.log('[Bulk event] was closed'));
   }
 
-  resetLoadAssets() {
-    this.searchActive = false;
-    this.el.nativeElement.querySelector('#search').value = '';
-    this.assets = [];
-    this.loadAssets = this.loadAssets.bind(this);
-  }
-
-  loadAssets(page = 1, perPage = 15) {
-    this.resetLoadAssets();
+  loadAssets(next = null, previous = null, limit = 15) {
+    this.assets = { results: [] };
     this.loader = true;
     const token = this.authService.getToken();
-    const user = <any>this.storageService.get('user') || {};
-    const { address } = user;
-    this.assetsSub = this.assetsService.getAssets({ address, page, perPage, token }).subscribe(
-      (assets: any) => {
-        console.log(assets);
-        this.loader = false;
-        this.forms.table = new FormGroup({
-          assets: new FormArray([]),
-        });
-        this.assets = assets.docs || [];
+    const options = { limit, token };
+    if (next) { options['next'] = next; }
+    if (previous) { options['previous'] = previous; }
 
-        // Table form
-        this.assets.map(asset => {
-          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
-            assetId: new FormControl(asset.assetId),
-            infoEvent: new FormControl(asset.infoEvent),
-            latestEvent: new FormControl(asset.latestEvent),
-            createdAt: new FormControl(asset.createdAt),
-            selected: new FormControl(null),
-          }));
-        });
-
-        // Pagination
-        this.pagination.currentPage = page;
-        this.pagination.perPage = perPage;
-        this.pagination.resultCount = assets.total;
-        this.pagination.resultLength = this.assets.length;
-        this.pagination.totalPages = Math.ceil(assets.total / perPage);
-      },
-      err => {
-        this.loader = false;
-        console.log('Assets GET failed: ', err);
-      },
-    );
+    this.assetsSub = this.assetsService.getAssets(options).subscribe();
   }
 
-  search(page = 0, perPage = 15) {
-    this.searchActive = true;
-    this.selectButton = 'Select all';
-    const data = this.forms.search.value;
-
-    if (!data.input.length) { return this.loadAssets(); }
-
-    this.loader = true;
-    const token = this.authService.getToken();
-    const options = {
-      assets: true,
-      token,
-      page,
-      perPage,
-    };
-    // Search by name
-    options['data'] = `data[name]=${data.input.trim()}`;
-
-    this.eventsSub = this.assetsService.getEvents(options).subscribe(
-      (assets: any) => {
-        console.log(assets);
-        this.loader = false;
-        this.forms.table = new FormGroup({
-          assets: new FormArray([]),
-        });
-        this.assets = assets.docs || [];
-
-        // Table form
-        this.assets.map(asset => {
-          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
-            assetId: new FormControl(asset.assetId),
-            infoEvent: new FormControl(asset.infoEvent),
-            latestEvent: new FormControl(asset.latestEvent),
-            createdAt: new FormControl(asset.createdAt),
-            selected: new FormControl(null),
-          }));
-        });
-
-        // Pagination
-        this.pagination.resultCount = assets.total;
-        this.pagination.totalPages = Math.ceil(assets.total / perPage);
-        this.pagination.currentPage = page + 1;
-        this.pagination.perPage = perPage;
-        this.pagination.resultLength = this.assets.length;
-      },
-      err => {
-        this.loader = false;
-        console.log('Assets GET failed: ', err);
-        this.pagination['resultCount'] = 0;
-        this.pagination['resultLength'] = 0;
-      },
-    );
+  search() {
+    console.log('search');
   }
 }

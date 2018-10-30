@@ -14,7 +14,8 @@ module.exports = {
   email: {
     API_KEY: process.env.EMAIL_API_KEY,
   },
-  hermes: {
-    url: process.env.HERMES_URL,
+  api: {
+    core: process.env.API_CORE,
+    extended: process.env.API_EXTENDED,
   },
 };

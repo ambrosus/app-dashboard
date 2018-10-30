@@ -6,31 +6,50 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const Asset = _require('/models/assets');
 const { findEvent } = _require('/utils/assets');
 const { httpGet, httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
-const { hermes } = _require('/config');
+const { api } = _require('/config');
 
-/**
- * 1. Gets paginated assets from dash db
- * 2. Calls next();
- *
- * @name getAssets
- * @route { GET } api/assets/
- * @param { String } page - pagination page to get
- * @param { String } perPage - assets perPage to get
- * @returns 400 on error
- * @returns 200 and next() on success
- */
 exports.getAssets = async (req, res, next) => {
-  const { page, perPage } = req.query;
-  const address = req.query.address;
-  let err, assets;
+  const { token, limit = 15, next: _next, previous } = req.query;
+  let err, url, assets, assetIds, infoEvents;
 
-  [err, assets] = await to(Asset.paginate({ createdBy: address }, { page: parseInt(page) || 1, limit: parseInt(perPage) || 15, sort: '-createdAt' }));
-  if (err || !assets) { logger.error('Assets GET error: ', err); return next(new ValidationError(err.message, err)); }
+  // Get assets
+  url = `${api.extended}/asset?limit=${limit}&`;
+  if (_next) { url += `next=${_next}&`; }
+  if (previous) { url += `previous=${previous}&`; }
+
+  [err, assets] = await to(httpGet(url, token));
+  if (err || !(assets && assets.results && Array.isArray(assets.results))) {
+    logger.error('[GET] Assets: ', err);
+    return next(new ValidationError('Error getting assets', err));
+  }
+
+  // Extract assetIds
+  assetIds = assets.results.reduce((_assetIds, asset, index, array) => {
+    if (asset.assetId) { _assetIds.push(asset.assetId); }
+    return _assetIds;
+  }, []);
+
+  // Get latest info events
+  url = `${api.extended}/event/latest/type`;
+  const body = {
+    assets: assetIds,
+    type: 'ambrosus.asset.info',
+  };
+  [err, infoEvents] = await to(httpPost(url, body, token));
+  if (err || !(infoEvents && infoEvents.results && Array.isArray(infoEvents.results))) {
+    logger.error('[GET] Latest info events: ', err);
+    return next(new ValidationError('Error getting assets', err));
+  }
+
+  // Connects assets with info event
+  assets = assets.results.map(asset => {
+    asset.infoEvent = infoEvents.results.find(event => asset.assetId === event.content.idData.assetId);
+    if (asset.infoEvent) { asset.infoEvent = findEvent('info', [asset.infoEvent]); }
+  });
 
   req.status = 200;
   req.json = { data: assets, message: 'Success', status: 200 };
@@ -59,7 +78,7 @@ exports.getAsset = async (req, res, next) => {
   if (err || !asset) { logger.error('Asset GET error: ', err); return next(new NotFoundError(err.message, err)); }
 
   // Get info event
-  url = `${hermes.url}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
+  url = `${api.core}/events?assetId=${asset.assetId}&perPage=1&data[type]=ambrosus.asset.info`;
 
   [err, infoEvents] = await to(httpGet(url, token));
   if (err || !infoEvents) { logger.error('Asset info event GET error: ', err); }
@@ -105,7 +124,7 @@ exports.getEvents = async (req, res, next) => {
   const address = req.query.address;
   let err, events, cachedAssets, cachedAsset, updateCachedAsset;
 
-  let url = `${hermes.url}/events?page=${page || 0}&perPage=${perPage || 15}&`;
+  let url = `${api.core}/events?page=${page || 0}&perPage=${perPage || 15}&`;
   try {
     if (createdBy) { url += `${decodeURI(createdBy)}&`; } else { url += `createdBy=${address}&`; }
     if (data) { url += `${decodeURI(data)}&`; }
@@ -170,7 +189,7 @@ exports.getEvent = async (req, res, next) => {
   const eventId = req.params.eventId;
   let err, event;
 
-  const url = `${hermes.url}/events/${eventId}`;
+  const url = `${api.core}/events/${eventId}`;
 
   [err, event] = await to(httpGet(url, token));
   if (err || !event) { logger.error('Event GET error: ', err); return next(new NotFoundError(err.data['reason'])); }
@@ -200,7 +219,7 @@ exports.createAsset = async (req, res, next) => {
 
   if (Array.isArray(assets) && assets.length > 0) {
     // Create asset
-    const url = `${hermes.url}/assets`;
+    const url = `${api.core}/assets`;
     assets.map(async (asset, index, array) => {
       [err, assetCreated] = await to(httpPost(url, asset));
       if (err || !assetCreated) { logger.error('Asset create error: ', err); }
@@ -243,7 +262,7 @@ exports.createEvents = async (req, res, next) => {
 
   if (Array.isArray(events) && events.length > 0) {
     events.map(async (event, index, array) => {
-      const url = `${hermes.url}/assets/${event.content.idData.assetId}/events`;
+      const url = `${api.core}/assets/${event.content.idData.assetId}/events`;
       [err, eventCreated] = await to(httpPost(url, event));
       if (err || !eventCreated) { logger.error('Event create error: ', err); }
       if (eventCreated) {

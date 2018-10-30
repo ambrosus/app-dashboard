@@ -28,7 +28,6 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
-import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
@@ -61,7 +60,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     QrCodeComponent,
     NotificationComponent,
     MatDialogModule,
-    PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
     CustomCheckboxDirective,
@@ -89,7 +87,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent,
-    PaginationComponent,
     CheckIfPipe,
     CustomCheckboxDirective,
     FooterComponent,

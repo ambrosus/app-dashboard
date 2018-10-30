@@ -11,7 +11,8 @@ declare let Web3: any;
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [], resultCount: 0 });
+  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
+  _assets: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
   ambrosus;
   web3;
 
@@ -23,12 +24,10 @@ export class AssetsService {
   ) {
     this.initSDK();
     this.web3 = new Web3();
-    window.addEventListener('user:refresh', () => this.initSDK());
   }
 
+  get assets() { return this._assets.asObservable(); }
   get events() { return this._events.asObservable(); }
-
-  emit(type) { window.dispatchEvent(new Event(type)); }
 
   initSDK() {
     const secret = this.storageService.get('secret');
