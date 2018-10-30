@@ -7,7 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <main class="main p-a-20">
   <h2 class="center m-t-30">My assets</h2>
-  <p class="center m-b-30">Showing {{ this.assets.results.length }} results</p>
+  <p class="center m-b-30">Showing {{ forms.table.get('assets')['controls'].length }} results</p>
 
   <!-- Search -->
   <form [formGroup]="forms.search" (ngSubmit)="search()">
@@ -39,14 +39,15 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
             <small class="table__info__meta">{{ asset.value.assetId }}</small>
           </td>
           <td class="table__status" routerLink="/assets/{{ asset.value.assetId }}">
-            <p class="table__status__timestamp">{{ asset.value.createdAt | date:'d MMM yyyy HH:mm' }}</p>
+            <p>Created</p>
+            <p class="table__status__timestamp">{{ asset.value.createdAt * 1000 | date:'d MMM yyyy HH:mm' }}</p>
           </td>
         </tr>
       </tbody>
-      <tfoot>
+      <tfoot *ngIf="assets.results.length && assets.hasNext">
         <tr>
           <td colspan="4">
-            <button type="button" class="loadMore">Load more</button>
+            <button type="button" class="button button--blue loadMore" (click)="loadAssets(assets.next)">Load more</button>
           </td>
         </tr>
       </tfoot>

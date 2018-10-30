@@ -19,7 +19,7 @@ export class AssetsService {
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
-    private auth: AuthService,
+    private authService: AuthService,
     private router: Router,
   ) {
     this.initSDK();
@@ -48,7 +48,7 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
+        ({ data }: any) => this._assets.next(data),
         err => observer.error(err.error),
       );
     });
@@ -72,7 +72,7 @@ export class AssetsService {
 
   getAsset(assetId) {
     return new Observable(observer => {
-      const token = this.auth.getToken();
+      const token = this.authService.getToken();
       const url = `/api/assets/${assetId}?token=${token}`;
 
       this.http.get(url).subscribe(
@@ -84,7 +84,7 @@ export class AssetsService {
 
   getEvent(eventId) {
     return new Observable(observer => {
-      const token = this.auth.getToken();
+      const token = this.authService.getToken();
       const url = `/api/assets/events/${eventId}?token=${token}`;
 
       this.http.get(url).subscribe(
@@ -185,7 +185,7 @@ export class AssetsService {
 
   createAssets(assets, events) {
     return new Observable(observer => {
-      const token = this.auth.getToken();
+      const token = this.authService.getToken();
       const url = `/api/assets?token=${token}`;
       const body = { assets, events };
 
@@ -198,7 +198,7 @@ export class AssetsService {
 
   createEvents(events) {
     return new Observable(observer => {
-      const token = this.auth.getToken();
+      const token = this.authService.getToken();
       const url = `/api/assets/events?token=${token}`;
       const body = { events };
 

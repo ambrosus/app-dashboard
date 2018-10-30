@@ -28,7 +28,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     table?: FormGroup,
     search?: FormGroup
   } = {};
-  assets = { results: [] };
+  assets: any;
   selectButton = 'Select all';
   loader;
   error;
@@ -52,9 +52,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.assets = assets;
 
         this.loader = false;
-        this.forms.table = new FormGroup({
-          assets: new FormArray([]),
-        });
 
         // Table form
         assets.results.map(asset => {
@@ -105,7 +102,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   getImage(asset) {
     try {
-      const info = JSON.parse(asset.value.infoEvent);
+      const info = asset.value.infoEvent;
       return info.images.default.url;
     } catch (e) { return '/assets/raster/logotip.jpg'; }
   }
@@ -133,10 +130,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   loadAssets(next = null, previous = null, limit = 15) {
-    this.assets = { results: [] };
+    this.dialog.closeAll();
     this.loader = true;
     const token = this.authService.getToken();
-    const options = { limit, token };
+    const user = <any>this.storageService.get('user') || {};
+    const { address } = user;
+    const options = { limit, token, address };
     if (next) { options['next'] = next; }
     if (previous) { options['previous'] = previous; }
 

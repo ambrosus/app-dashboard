@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
     token = JSON.parse(token);
     const { createdBy, validUntil } = token.idData;
 
-    if (!(new Date(validUntil).getTime() - new Date().getTime())) {
+    if (!((validUntil * 1000) - new Date().getTime())) {
       return next(new ValidationError('Token has expired'));
     }
 

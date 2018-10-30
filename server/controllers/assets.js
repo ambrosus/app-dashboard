@@ -13,15 +13,23 @@ const { ValidationError, NotFoundError } = _require('/errors');
 const { api } = _require('/config');
 
 exports.getAssets = async (req, res, next) => {
-  const { token, limit = 15, next: _next, previous } = req.query;
-  let err, url, assets, assetIds, infoEvents;
+  const { token, limit = 15, next: _next, previous, address } = req.query;
+  let err, url, body, assets, assetIds, infoEvents;
 
   // Get assets
-  url = `${api.extended}/asset?limit=${limit}&`;
-  if (_next) { url += `next=${_next}&`; }
-  if (previous) { url += `previous=${previous}&`; }
+  url = `${api.extended}/asset/query`;
+  body = {
+    query: [{
+      field: 'content.idData.createdBy',
+      value: `${address}`,
+      operator: 'equal'
+    }],
+    limit
+  };
+  if (_next) { body['next'] = _next; }
+  if (previous) { body['previous'] = previous; }
 
-  [err, assets] = await to(httpGet(url, token));
+  [err, assets] = await to(httpPost(url, body, token));
   if (err || !(assets && assets.results && Array.isArray(assets.results))) {
     logger.error('[GET] Assets: ', err);
     return next(new ValidationError('Error getting assets', err));
@@ -35,7 +43,7 @@ exports.getAssets = async (req, res, next) => {
 
   // Get latest info events
   url = `${api.extended}/event/latest/type`;
-  const body = {
+  body = {
     assets: assetIds,
     type: 'ambrosus.asset.info',
   };
@@ -46,9 +54,10 @@ exports.getAssets = async (req, res, next) => {
   }
 
   // Connects assets with info event
-  assets = assets.results.map(asset => {
+  assets.results = assets.results.map(asset => {
     asset.infoEvent = infoEvents.results.find(event => asset.assetId === event.content.idData.assetId);
     if (asset.infoEvent) { asset.infoEvent = findEvent('info', [asset.infoEvent]); }
+    return asset;
   });
 
   req.status = 200;
