@@ -164,13 +164,15 @@ exports.createAsset = async (req, res, next) => {
   let err, url, assetCreated;
 
   req.json = {
-    assets: {
-      created: [],
-      failed: [],
-    },
-    events: {
-      created: [],
-      failed: [],
+    data: {
+      assets: {
+        created: [],
+        failed: [],
+      },
+      events: {
+        created: [],
+        failed: [],
+      },
     },
   };
 
@@ -181,9 +183,9 @@ exports.createAsset = async (req, res, next) => {
       [err, assetCreated] = await to(httpPost(url, asset));
       if (err) {
         logger.error('[CREATE] Asset: ', err);
-        req.json.assets.failed.push({ asset, error: err });
+        req.json.data.assets.failed.push({ asset, error: err });
       }
-      req.json.assets.created.push(assetCreated);
+      req.json.data.assets.created.push(assetCreated);
 
       if (index === array.length - 1) { req.status = 200; return next(); }
     });
@@ -194,11 +196,13 @@ exports.createEvents = async (req, res, next) => {
   const { events } = req.body;
   let err, eventCreated;
 
-  if (!(req.json && req.json.events)) {
+  if (!(req.json && req.json.data && req.json.data.events)) {
     req.json = {
-      events: {
-        created: [],
-        failed: [],
+      data: {
+        events: {
+          created: [],
+          failed: [],
+        },
       },
     };
   }
@@ -210,9 +214,9 @@ exports.createEvents = async (req, res, next) => {
       [err, eventCreated] = await to(httpPost(url, event));
       if (err) {
         logger.error('[CREATE] Event: ', err);
-        req.json.events.failed.push({ event, error: err });
+        req.json.data.events.failed.push({ event, error: err });
       }
-      req.json.events.created.push(eventCreated);
+      req.json.data.events.created.push(eventCreated);
 
       if (index === array.length - 1) { req.status = 200; return next(); }
     });

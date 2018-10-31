@@ -24,7 +24,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private assetsService: AssetsService
+    private assetsService: AssetsService,
   ) { }
 
   ngOnInit() {
@@ -91,7 +91,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         url: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -100,7 +100,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -109,7 +109,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -123,7 +123,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
             value: new FormControl(null, []),
           }),
         ]),
-      })
+      }),
     );
   }
 
@@ -133,7 +133,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -285,14 +285,15 @@ export class EventFormComponent implements OnInit, OnDestroy {
       this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
       this.createEventsSub = this.assetsService.createEvents(events).subscribe(
         (resp: any) => {
+          console.log('[CREATE] Events: ', resp);
           this.spinner = false;
           this.success = 'Success';
         },
         err => {
+          console.error('[CREATE] Events: ', err);
           this.error = err.message;
           this.spinner = false;
-          console.error('Events create error: ', err);
-        }
+        },
       );
 
     } else if (!this.eventForm.valid) {

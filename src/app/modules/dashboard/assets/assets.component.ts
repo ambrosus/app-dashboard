@@ -8,7 +8,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AuthService } from 'app/services/auth.service';
@@ -22,7 +21,6 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
   encapsulation: ViewEncapsulation.None,
 })
 export class AssetsComponent implements OnInit, OnDestroy {
-  navigationSub: Subscription;
   assetsSub: Subscription;
   getAssetsSub: Subscription;
   forms: {
@@ -40,39 +38,41 @@ export class AssetsComponent implements OnInit, OnDestroy {
   constructor(
     private assetsService: AssetsService,
     private authService: AuthService,
-    private router: Router,
     public dialog: MatDialog,
     private storageService: StorageService,
-  ) {
+  ) { }
+
+  ngOnInit() {
     this.initTableForm();
     this.initSearchForm();
-    this.navigationSub = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
-    });
+    this.loadAssets();
+
     this.assetsSub = this.assetsService._assets.subscribe(
       (assets: any) => {
         console.log('[GET] Assets: ', assets);
-        this.assets = assets;
-        this.loader = false;
 
-        // Table form
-        assets.results.map(asset => {
-          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
-            assetId: new FormControl(asset.assetId),
-            infoEvent: new FormControl(asset.infoEvent),
-            createdAt: new FormControl(asset.content.idData.timestamp),
-            selected: new FormControl(null),
-          }));
-        });
+        if (assets) {
+          this.assets = assets;
+          this.loader = false;
+
+          // Table form
+          assets.results.map(asset => {
+            (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
+              assetId: new FormControl(asset.assetId),
+              infoEvent: new FormControl(asset.infoEvent),
+              createdAt: new FormControl(asset.content.idData.timestamp),
+              selected: new FormControl(null),
+            }));
+          });
+        }
       },
     );
   }
 
-  ngOnInit() { }
-
   ngOnDestroy() {
     if (this.assetsSub) { this.assetsSub.unsubscribe(); }
     if (this.getAssetsSub) { this.getAssetsSub.unsubscribe(); }
+    this.assetsService._assets.next(null);
   }
 
   initTableForm() {

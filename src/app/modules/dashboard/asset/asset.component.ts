@@ -15,10 +15,12 @@ import { AssetsService } from 'app/services/assets.service';
 export class AssetComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
   routeParamsSub: Subscription;
+  eventsSub: Subscription;
   asset;
   assetId: string;
   user;
   previewAppUrl;
+  timeline;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -38,6 +40,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.results[0]);
     this.routeParamsSub = this.route.params.subscribe(params => this.assetId = params.assetid);
+    this.assetsService._events.subscribe(events => this.timeline = events && events.results && events.results.length);
 
     this.user = <any>this.storageService.get('user') || {};
 

@@ -143,29 +143,31 @@ export class JsonFormComponent implements OnInit, OnDestroy {
         const infoEvent = this.generateEvents(json, [asset.assetId]);
         this.assetsCreateSub = this.assetsService.createAssets([asset], infoEvent).subscribe(
           (resp: any) => {
+            console.log('[CREATE] Asset: ', resp);
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
           },
           err => {
+            console.error('[CREATE] Asset: ', err);
             this.error = err.message;
             this.spinner = false;
-            console.error('Asset and info event create error: ', err);
-          }
+          },
         );
       } else {
         // Edit or add events
         const events = this.generateEvents(json);
         this.eventsCreateSub = this.assetsService.createEvents(events).subscribe(
           (resp: any) => {
+            console.log('[CREATE] Events: ', resp);
             this.spinner = false;
             this.success = 'Success';
           },
           err => {
+            console.error('[CREATE] Events: ', err);
             this.error = err.message;
             this.spinner = false;
-            console.error('Events create error: ', err);
-          }
+          },
         );
       }
     } else {

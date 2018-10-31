@@ -22,6 +22,13 @@
         </ul>
       </div>
 
+      <!-- Images -->
+      <div class="object__images" *ngIf="eventObject.images">
+        <h5 class="object__subtitle">Images</h5>
+
+        <img *ngFor="let image of objectKeys(eventObject.images)" src="{{ eventObject.images[image]['url'] }}">
+      </div>
+
       <!-- Documents -->
       <div class="object__images" *ngIf="eventObject.documents">
         <h5 class="object__subtitle">Documents</h5>

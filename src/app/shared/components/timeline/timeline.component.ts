@@ -22,7 +22,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   getEventsSub: Subscription;
   events;
   timelineEvents = [];
-  unchangedEvents;
+  unchangedEvents = [];
 
   @Input() data;
   @Input() assetId;
@@ -36,12 +36,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadEvents();
     this.eventsSub = this.assetsService._events.subscribe(
-      ({ events }: any) => {
+      events => {
         console.log('[GET] Events: ', events);
         if (events) {
-          this.unchangedEvents = JSON.parse(JSON.stringify(events));
+          this.unchangedEvents.concat(JSON.parse(JSON.stringify(events.results)));
           this.events = events;
-          this.timelineEvents.concat(this.assetsService.parseTimelineEvents(this.events));
+          this.timelineEvents = this.timelineEvents.concat(...this.assetsService.parseTimelineEvents(this.events));
         }
       },
     );
@@ -50,6 +50,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.eventsSub) { this.eventsSub.unsubscribe(); }
     if (this.getEventsSub) { this.getEventsSub.unsubscribe(); }
+    this.assetsService._events.next(null);
   }
 
   loadEvents(next = null, previous = null) {
@@ -67,7 +68,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       position: { right: '0' },
     });
     const instance = dialogRef.componentInstance;
-    instance.data = this.unchangedEvents.results;
+    instance.data = this.unchangedEvents;
     instance.name = this.name;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }

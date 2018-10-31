@@ -11,8 +11,8 @@ declare let Web3: any;
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
-  _assets: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
+  _events: BehaviorSubject<any> = new BehaviorSubject(null);
+  _assets: BehaviorSubject<any> = new BehaviorSubject(null);
   ambrosus;
   web3;
 
@@ -72,7 +72,7 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        ({ data }: any) => { console.log(data); this._events.next(data); },
+        ({ data }: any) => this._events.next(data),
         err => observer.error(err.error),
       );
     });
