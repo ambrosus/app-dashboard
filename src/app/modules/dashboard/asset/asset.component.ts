@@ -45,7 +45,6 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) { if (this.dialogRef) { this.dialogRef.close(); } }
     });
-
     this.assetsService._events.subscribe(events => this.timeline = events && events.results && events.results.length);
 
     this.user = <any>this.storageService.get('user') || {};
