@@ -24,14 +24,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
   timelineEvents = [];
   unchangedEvents = [];
 
-  @Input() data;
   @Input() assetId;
   @Input() name;
 
-  getName = this.assetsService.getName;
-  getLocation = this.assetsService.getLocation;
-
-  constructor(private assetsService: AssetsService, private authService: AuthService, public dialog: MatDialog) { }
+  constructor(public assetsService: AssetsService, private authService: AuthService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.loadEvents();
@@ -53,20 +49,28 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.assetsService._events.next(null);
   }
 
-  loadEvents(next = null, previous = null) {
+  loadEvents(next = null) {
     const token = this.authService.getToken();
-    const options = { assetId: this.assetId, token };
-    if (next) { options['next'] = next; }
-    if (previous) { options['previous'] = previous; }
+    const options = {
+      assetId: this.assetId,
+      token,
+      next,
+    };
 
     this.getEventsSub = this.assetsService.getEvents(options).subscribe();
   }
 
   openDialog(): void {
+    // TODO: Use data property isntead of componentInstance
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
       position: { right: '0' },
+      data: {
+        data: this.unchangedEvents,
+        name: this.name,
+      },
     });
+
     const instance = dialogRef.componentInstance;
     instance.data = this.unchangedEvents;
     instance.name = this.name;
