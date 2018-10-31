@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-json-form',
@@ -20,13 +21,21 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   @Input() assetIds: String[];
   @Input() for: 'assets';
 
-  constructor(private storageService: StorageService, private assetsService: AssetsService) { }
+  constructor(
+    private storageService: StorageService,
+    private assetsService: AssetsService,
+    private router: Router,
+  ) { }
 
   ngOnInit() { }
 
   ngOnDestroy() {
     if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
     if (this.eventsCreateSub) { this.eventsCreateSub.unsubscribe(); }
+  }
+
+  cancel() {
+    this.router.navigate([`${location.pathname}`]);
   }
 
   validateJSON(input) {

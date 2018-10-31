@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ElementRef, Renderer2, Input, Inject } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-event-add',
@@ -14,7 +16,9 @@ export class EventAddComponent implements OnInit {
 
   constructor(
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<EventAddComponent>,
   ) { }
 
   ngOnInit() { }

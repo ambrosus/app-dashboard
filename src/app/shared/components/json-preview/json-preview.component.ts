@@ -5,8 +5,9 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Input, Inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-json-preview',
@@ -15,12 +16,15 @@ import { MatDialogRef } from '@angular/material/dialog';
   encapsulation: ViewEncapsulation.None,
 })
 export class JsonPreviewComponent implements OnInit {
-  @Input() data;
+  @Input() _data;
   @Input() name;
 
   stringify = JSON.stringify;
 
-  constructor(private dialogRef: MatDialogRef<JsonPreviewComponent>) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<JsonPreviewComponent>,
+  ) { }
   ngOnInit() { }
 
   syntaxHighlight() {
@@ -45,13 +49,13 @@ export class JsonPreviewComponent implements OnInit {
           cls = 'null';
         }
         return `<span class="${cls}">${match}</span>`;
-      }
+      },
     );
   }
 
   downloadJSON() {
     const filename = this.name || new Date();
-    const copy = JSON.parse(JSON.stringify(this.data));
+    const copy = JSON.parse(JSON.stringify(this.data || this._data));
 
     copy.map(obj => {
       obj.content.idData.assetId = '{{ assetId }}';

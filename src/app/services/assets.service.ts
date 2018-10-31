@@ -4,15 +4,15 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { AuthService } from './auth.service';
-import { Router } from '@angular/router';
 
 declare let Web3: any;
 
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  _events: BehaviorSubject<any> = new BehaviorSubject(null);
-  _assets: BehaviorSubject<any> = new BehaviorSubject(null);
+  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
+  _assets: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
+  unchangedEvents = [];
   ambrosus;
   web3;
 
@@ -20,14 +20,13 @@ export class AssetsService {
     private storageService: StorageService,
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router,
   ) {
     this.initSDK();
     this.web3 = new Web3();
   }
 
-  get assets() { return this._assets.asObservable(); }
-  get events() { return this._events.asObservable(); }
+  get assets(): any { return this._assets.asObservable(); }
+  get events(): any { return this._events.asObservable(); }
 
   initSDK() {
     const secret = this.storageService.get('secret');
@@ -60,7 +59,10 @@ export class AssetsService {
       const url = `/api/assets/${assetId}?token=${token}`;
 
       this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
+        ({ data }: any) => {
+          this.parseAsset(data.results[0]);
+          observer.next(data);
+        },
         err => observer.error(err.error),
       );
     });
@@ -72,7 +74,12 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        ({ data }: any) => this._events.next(data),
+        ({ data }: any) => {
+          this.unchangedEvents.concat(JSON.parse(JSON.stringify(data.results)));
+          data.results = this.parseTimelineEvents(data.results);
+          data.results = this._events.getValue().results.concat(data.results);
+          this._events.next(data);
+        },
         err => observer.error(err.error),
       );
     });
@@ -111,7 +118,10 @@ export class AssetsService {
 
       this.http.post(url, body).subscribe(
         ({ data }: any) => {
-          this._events.next({ results: [...this._events.getValue().results].concat(data.events.created) });
+          JSON.parse(JSON.stringify(data.events.created)).map(event => this.unchangedEvents.unshift(event));
+          const currentEvents = <any>this._events.getValue();
+          this.parseTimelineEvents(JSON.parse(JSON.stringify(data.events.created))).map(event => currentEvents.results.unshift(event));
+          this._events.next(currentEvents);
           observer.next(data);
         },
         err => observer.error(err.error),
@@ -128,6 +138,12 @@ export class AssetsService {
       type = type[type.length - 1];
       return [name, type].find(i => i);
     } catch (e) { return alternative; }
+  }
+
+  getImage(obj) {
+    try {
+      return obj.images.default.url;
+    } catch (e) { return '/assets/raster/logotip.jpg'; }
   }
 
   getLocation(event) {
@@ -184,8 +200,24 @@ export class AssetsService {
     return eventObjects;
   }
 
+  parseAsset(asset) {
+    if (!asset.infoEvent) { asset.infoEvent = {}; }
+    // Groups and properties
+    asset.infoEvent['groups'] = [];
+    asset.infoEvent['properties'] = [];
+    Object.keys(asset.infoEvent).map((key: any) => {
+      if (['type', 'name', 'assetType', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
+        const property = {
+          key,
+          value: asset.infoEvent[key],
+        };
+        asset.infoEvent[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
+      }
+    });
+  }
+
   parseTimelineEvents(e) {
-    const events = e.results.reduce((_events, { content, eventId }) => {
+    const events = e.reduce((_events, { content, eventId }) => {
       const timestamp = content.idData.timestamp;
       const author = content.idData.createdBy;
 

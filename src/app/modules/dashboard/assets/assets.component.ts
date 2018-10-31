@@ -33,10 +33,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   error;
   selected;
 
-  getName = this.assetsService.getName;
-
   constructor(
-    private assetsService: AssetsService,
+    public assetsService: AssetsService,
     private authService: AuthService,
     public dialog: MatDialog,
     private storageService: StorageService,
@@ -50,21 +48,18 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.assetsSub = this.assetsService._assets.subscribe(
       (assets: any) => {
         console.log('[GET] Assets: ', assets);
+        this.assets = assets;
+        this.loader = false;
 
-        if (assets) {
-          this.assets = assets;
-          this.loader = false;
-
-          // Table form
-          assets.results.map(asset => {
-            (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
-              assetId: new FormControl(asset.assetId),
-              infoEvent: new FormControl(asset.infoEvent),
-              createdAt: new FormControl(asset.content.idData.timestamp),
-              selected: new FormControl(null),
-            }));
-          });
-        }
+        // Table form
+        assets.results.map(asset => {
+          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
+            assetId: new FormControl(asset.assetId),
+            infoEvent: new FormControl(asset.infoEvent),
+            createdAt: new FormControl(asset.content.idData.timestamp),
+            selected: new FormControl(null),
+          }));
+        });
       },
     );
   }
@@ -72,7 +67,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.assetsSub) { this.assetsSub.unsubscribe(); }
     if (this.getAssetsSub) { this.getAssetsSub.unsubscribe(); }
-    this.assetsService._assets.next(null);
+    this.assetsService._assets.next({ results: [] });
   }
 
   initTableForm() {
@@ -93,13 +88,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
     } catch (e) { return false; }
   }
 
-  getImage(asset) {
-    try {
-      const info = asset.value.infoEvent;
-      return info.images.default.url;
-    } catch (e) { return '/assets/raster/logotip.jpg'; }
-  }
-
   select() {
     this.selected = !this.selected;
     this.selectButton = this.selected ? 'Unselect all' : 'Select all';
@@ -116,22 +104,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { top: '0', right: '0' },
+      data: {
+        assetIds,
+      },
     });
-    const instance = dialogRef.componentInstance;
-    instance.assetIds = assetIds;
+
     dialogRef.afterClosed().subscribe(result => console.log('[Bulk event] was closed'));
   }
 
-  loadAssets(next = null, previous = null, limit = 15) {
+  loadAssets(next = '', limit = 15) {
     this.dialog.closeAll();
     this.loader = true;
     const token = this.authService.getToken();
     const user = <any>this.storageService.get('user') || {};
     const { address } = user;
-    const options = { limit, token, address };
-    if (next) { options['next'] = next; }
-    if (previous) { options['previous'] = previous; }
-
+    const options = {
+      limit,
+      token,
+      address,
+      next,
+    };
     this.getAssetsSub = this.assetsService.getAssets(options).subscribe();
   }
 

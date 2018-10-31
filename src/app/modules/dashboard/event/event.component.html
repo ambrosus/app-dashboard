@@ -3,7 +3,7 @@
   <div *ngFor="let eventObject of eventObjects">
     <header class="object__header">
       <div class="object__title">
-        <h3>{{ getName(eventObject) }}</h3>
+        <h3>{{ assetsService.getName(eventObject) }}</h3>
         <p>{{ eventId }}</p>
       </div>
     </header>

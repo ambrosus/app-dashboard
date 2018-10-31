@@ -13,10 +13,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="card__header">
         <app-tabs>
           <app-tab label="Form">
-            <app-event-form [assetIds]="assetIds"></app-event-form>
+            <app-event-form [assetIds]="data.assetIds || assetIds"></app-event-form>
           </app-tab>
           <app-tab label="JSON">
-            <app-json-form [assetIds]="assetIds" [for]="'events'"></app-json-form>
+            <app-json-form [assetIds]="data.assetIds || assetIds" [for]="'events'"></app-json-form>
           </app-tab>
         </app-tabs>
       </div>

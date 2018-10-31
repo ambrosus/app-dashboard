@@ -5,11 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-
-{{ assetsService.events | async }}
-
-<ul class="timeline" *ngIf="events">
-  <li class="timeline__event" *ngFor="let event of timelineEvents" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+<ul class="timeline" *ngIf="(assetsService._events | async).results.length">
+  <li class="timeline__event" *ngFor="let event of (assetsService._events | async).results" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
     <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'EEE, MMM d, yyyy' }}</p>
     <div class="timeline__event__info">
       <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'HH:mm' }}</p>

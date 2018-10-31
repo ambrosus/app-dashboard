@@ -7,6 +7,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const { to } = _require('/utils/general');
 const { PermissionError, ValidationError } = _require('/errors');
+const moment = require('moment');
 
 const User = _require('/models/users');
 
@@ -21,7 +22,7 @@ module.exports = async (req, res, next) => {
     token = JSON.parse(token);
     const { createdBy, validUntil } = token.idData;
 
-    if (!((validUntil * 1000) - new Date().getTime())) {
+    if (!moment(validUntil * 1000).diff(moment(), 'days')) {
       return next(new ValidationError('Token has expired'));
     }
 

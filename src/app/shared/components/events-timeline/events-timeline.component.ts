@@ -13,16 +13,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
-  selector: 'app-timeline',
-  templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss'],
+  selector: 'app-events-timeline',
+  templateUrl: './events-timeline.component.html',
+  styleUrls: ['./events-timeline.component.scss'],
 })
-export class TimelineComponent implements OnInit, OnDestroy {
+export class EventsTimelineComponent implements OnInit, OnDestroy {
   eventsSub: Subscription;
   getEventsSub: Subscription;
   events;
-  timelineEvents = [];
-  unchangedEvents = [];
 
   @Input() assetId;
   @Input() name;
@@ -31,25 +29,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadEvents();
-    this.eventsSub = this.assetsService._events.subscribe(
-      events => {
-        console.log('[GET] Events: ', events);
-        if (events) {
-          this.unchangedEvents.concat(JSON.parse(JSON.stringify(events.results)));
-          this.events = events;
-          this.timelineEvents = this.timelineEvents.concat(...this.assetsService.parseTimelineEvents(this.events));
-        }
-      },
-    );
+    this.eventsSub = this.assetsService._events.subscribe(events => this.events = events);
   }
 
   ngOnDestroy() {
     if (this.eventsSub) { this.eventsSub.unsubscribe(); }
     if (this.getEventsSub) { this.getEventsSub.unsubscribe(); }
-    this.assetsService._events.next(null);
+    this.assetsService.unchangedEvents = [];
+    this.assetsService._events.next({ results: [] });
   }
 
-  loadEvents(next = null) {
+  loadEvents(next = '') {
     const token = this.authService.getToken();
     const options = {
       assetId: this.assetId,
@@ -61,19 +51,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   openDialog(): void {
-    // TODO: Use data property isntead of componentInstance
     const dialogRef = this.dialog.open(JsonPreviewComponent, {
       width: '600px',
       position: { right: '0' },
       data: {
-        data: this.unchangedEvents,
+        data: this.assetsService.unchangedEvents,
         name: this.name,
       },
     });
 
-    const instance = dialogRef.componentInstance;
-    instance.data = this.unchangedEvents;
-    instance.name = this.name;
     dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
   }
 

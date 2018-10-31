@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-form',
@@ -25,6 +26,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -33,6 +35,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
+  }
+
+  cancel() {
+    this.router.navigate([`${location.pathname}`]);
   }
 
   private initForm() {

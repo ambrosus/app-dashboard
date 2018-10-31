@@ -5,7 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -19,7 +18,7 @@ import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
-import { TimelineComponent } from 'app/shared/components/timeline/timeline.component';
+import { EventsTimelineComponent } from 'app/shared/components/events-timeline/events-timeline.component';
 import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -53,7 +52,7 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent,
+    EventsTimelineComponent,
     JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
@@ -81,7 +80,7 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent,
+    EventsTimelineComponent,
     JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
