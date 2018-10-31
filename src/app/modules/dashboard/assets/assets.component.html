@@ -10,11 +10,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <p class="center m-b-30">Showing {{ forms.table.get('assets')['controls'].length }} results</p>
 
   <!-- Search -->
-  <form [formGroup]="forms.search" (ngSubmit)="search()">
+  <!-- <form [formGroup]="forms.search" (ngSubmit)="search()">
     <label class="search">
       <input formControlName="input" type="search" placeholder="Search..." id="search">
     </label>
-  </form>
+  </form> -->
 
   <!-- Table -->
   <form [formGroup]="forms.table">
@@ -47,7 +47,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <tfoot *ngIf="assets.results.length && assets.hasNext">
         <tr>
           <td colspan="4">
-            <button type="button" class="button button--blue loadMore" (click)="loadAssets(assets.next)">Load more</button>
+            <button type="button" class="button button--blue" (click)="loadAssets(assets.next)">Load more</button>
           </td>
         </tr>
       </tfoot>

@@ -54,22 +54,6 @@ export class AssetsService {
     });
   }
 
-  getEvents(options) {
-    return new Observable(observer => {
-      const { address } = <any>this.storageService.get('user');
-      let url = `/api/assets/events?address=${address}&`;
-      Object.keys(options).map(key => url += `${key}=${encodeURI(options[key])}&`);
-
-      this.http.get(url).subscribe(
-        ({ data }: any) => {
-          this._events.next(data);
-          observer.next(data);
-        },
-        err => observer.error(err.error),
-      );
-    });
-  }
-
   getAsset(assetId) {
     return new Observable(observer => {
       const token = this.authService.getToken();
@@ -77,6 +61,18 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
+        err => observer.error(err.error),
+      );
+    });
+  }
+
+  getEvents(options) {
+    return new Observable(observer => {
+      let url = `/api/assets/events?`;
+      Object.keys(options).map(key => url += `${key}=${options[key]}&`);
+
+      this.http.get(url).subscribe(
+        ({ data }: any) => { console.log(data); this._events.next(data); },
         err => observer.error(err.error),
       );
     });
@@ -92,6 +88,58 @@ export class AssetsService {
         err => observer.error(err.error),
       );
     });
+  }
+
+  // Create methods
+
+  createAssets(assets, events) {
+    return new Observable(observer => {
+      const url = `/api/assets`;
+      const body = { assets, events };
+
+      this.http.post(url, body).subscribe(
+        ({ data }: any) => observer.next(data),
+        err => observer.error(err.error),
+      );
+    });
+  }
+
+  createEvents(events) {
+    return new Observable(observer => {
+      const url = `/api/assets/events`;
+      const body = { events };
+
+      this.http.post(url, body).subscribe(
+        ({ data }: any) => {
+          this._events.next({ results: [...this._events.getValue().results].concat(data.events.created) });
+          observer.next(data);
+        },
+        err => observer.error(err.error),
+      );
+    });
+  }
+
+  // UTILS
+
+  getName(obj, alternative = 'No title') {
+    try {
+      const name = obj.name;
+      let type = obj.type.split('.');
+      type = type[type.length - 1];
+      return [name, type].find(i => i);
+    } catch (e) { return alternative; }
+  }
+
+  getLocation(event) {
+    const location = event.location || event;
+    const { city, country, name } = location;
+    return [city, country, name].filter(Boolean).join(', ') || 'No place attached';
+  }
+
+  sortEventsByTimestamp(a, b) {
+    if (a.timestamp > b.timestamp) { return -1; }
+    if (a.timestamp < b.timestamp) { return 1; }
+    return 0;
   }
 
   parseEvent(event) {
@@ -136,12 +184,6 @@ export class AssetsService {
     return eventObjects;
   }
 
-  sortEventsByTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) { return -1; }
-    if (a.timestamp < b.timestamp) { return 1; }
-    return 0;
-  }
-
   parseTimelineEvents(e) {
     const events = e.results.reduce((_events, { content, eventId }) => {
       const timestamp = content.idData.timestamp;
@@ -168,51 +210,17 @@ export class AssetsService {
           }
 
           const notInclude = ['location', 'identifier', 'identifiers'];
-          if (notInclude.indexOf(obj.type) === -1) { _events.events.push(obj); }
+          if (notInclude.indexOf(obj.type) === -1) { _events.push(obj); }
 
           return obj;
         });
       }
       return _events;
-    }, { events: [], resultCount: e.resultCount });
+    }, []);
 
-    events.events.sort(this.sortEventsByTimestamp);
+    events.sort(this.sortEventsByTimestamp);
 
     return events;
-  }
-
-  // Create methods
-
-  createAssets(assets, events) {
-    return new Observable(observer => {
-      const token = this.authService.getToken();
-      const url = `/api/assets?token=${token}`;
-      const body = { assets, events };
-
-      this.http.post(url, body).subscribe(
-        ({ data }: any) => observer.next(data),
-        err => observer.error(err.error),
-      );
-    });
-  }
-
-  createEvents(events) {
-    return new Observable(observer => {
-      const token = this.authService.getToken();
-      const url = `/api/assets/events?token=${token}`;
-      const body = { events };
-
-      this.http.post(url, body).subscribe(
-        ({ data }: any) => {
-          console.log(data);
-          this._events.next({ results: [...this._events.getValue().results].concat(data.events) });
-          const u = `/assets/${data.events[0].content.idData.assetId}/events/${data.events[0].eventId}`;
-          if (location.pathname.includes('/events/')) { this.router.navigate([u]); }
-          observer.next(data);
-        },
-        err => observer.error(err.error),
-      );
-    });
   }
 
   sign(data, secret) { return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature; }

@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
+import { AssetsService } from 'app/services/assets.service';
 
 @Component({
   selector: 'app-asset',
@@ -22,6 +23,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   objectKeys = Object.keys;
   isArray = Array.isArray;
   stringify = JSON.stringify;
+  getName = this.assetsService.getName;
 
   isObject(value) { return typeof value === 'object'; }
   valueJSON(value) { return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, ''); }
@@ -30,18 +32,14 @@ export class AssetComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public dialog: MatDialog,
     private storageService: StorageService,
+    private assetsService: AssetsService,
   ) { }
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(data => this.asset = data.asset);
+    this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.results[0]);
     this.routeParamsSub = this.route.params.subscribe(params => this.assetId = params.assetid);
 
     this.user = <any>this.storageService.get('user') || {};
-    try {
-      this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
-    } catch (e) {
-      this.asset['infoEvent'] = {};
-    }
 
     try {
       this.previewAppUrl = this.user.organization.settings.preview_app;
@@ -72,14 +70,6 @@ export class AssetComponent implements OnInit, OnDestroy {
     try {
       return JSON.parse(value);
     } catch (e) { return false; }
-  }
-
-  getName(info, alternative = 'No title') {
-    try {
-      const name = info.name;
-      const type = info.type.split('.');
-      return name ? name : type[type.length - 1];
-    } catch (e) { return alternative; }
   }
 
   downloadQR(el: any) {

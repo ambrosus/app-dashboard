@@ -24,6 +24,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 export class AssetsComponent implements OnInit, OnDestroy {
   navigationSub: Subscription;
   assetsSub: Subscription;
+  getAssetsSub: Subscription;
   forms: {
     table?: FormGroup,
     search?: FormGroup
@@ -33,6 +34,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loader;
   error;
   selected;
+
+  getName = this.assetsService.getName;
 
   constructor(
     private assetsService: AssetsService,
@@ -46,11 +49,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd && this.authService.isLoggedIn()) { this.loadAssets(); }
     });
-    this.assetsService._assets.subscribe(
+    this.assetsSub = this.assetsService._assets.subscribe(
       (assets: any) => {
         console.log('[GET] Assets: ', assets);
         this.assets = assets;
-
         this.loader = false;
 
         // Table form
@@ -70,7 +72,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.assetsSub) { this.assetsSub.unsubscribe(); }
-    if (this.navigationSub) { this.navigationSub.unsubscribe(); }
+    if (this.getAssetsSub) { this.getAssetsSub.unsubscribe(); }
   }
 
   initTableForm() {
@@ -89,15 +91,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
     try {
       return JSON.parse(value);
     } catch (e) { return false; }
-  }
-
-  getName(obj, alternative = 'No title') {
-    try {
-      const name = obj.name;
-      let type = obj.type.split('.');
-      type = type[type.length - 1];
-      return [name, type].find(item => item);
-    } catch (e) { return alternative; }
   }
 
   getImage(asset) {
@@ -139,7 +132,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (next) { options['next'] = next; }
     if (previous) { options['previous'] = previous; }
 
-    this.assetsSub = this.assetsService.getAssets(options).subscribe();
+    this.getAssetsSub = this.assetsService.getAssets(options).subscribe();
   }
 
   search() {
