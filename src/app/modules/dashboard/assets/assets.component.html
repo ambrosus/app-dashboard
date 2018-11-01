@@ -44,10 +44,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           </td>
         </tr>
       </tbody>
-      <tfoot *ngIf="(assets | checkIf: 'assets.results.length') && assets.hasNext">
+      <tfoot *ngIf="pagination && pagination.hasNext">
         <tr>
           <td colspan="4">
-            <button type="button" class="button button--blue" (click)="loadAssets(assets.next)">Load more</button>
+            <button type="button" class="button button--blue" (click)="loadAssets(pagination.next)">Load more</button>
           </td>
         </tr>
       </tfoot>

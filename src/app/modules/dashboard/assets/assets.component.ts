@@ -23,15 +23,17 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 export class AssetsComponent implements OnInit, OnDestroy {
   assetsSub: Subscription;
   getAssetsSub: Subscription;
+  routerSub: Subscription;
   forms: {
     table?: FormGroup,
     search?: FormGroup
   } = {};
-  assets: any;
+  pagination;
   selectButton = 'Select all';
   loader;
   error;
   selected;
+  back;
 
   constructor(
     public assetsService: AssetsService,
@@ -41,18 +43,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.initTableForm();
     this.initSearchForm();
-    this.loadAssets();
 
-    this.assetsSub = this.assetsService._assets.subscribe(
-      (assets: any) => {
-        console.log('[GET] Assets: ', assets);
-        this.assets = assets;
+    this.assetsSub = this.assetsService.assets.subscribe(
+      ({ data, pagination }: any) => {
+        console.log('[GET] Assets: ', data);
+        this.pagination = pagination;
         this.loader = false;
 
         // Table form
-        assets.results.map(asset => {
+        this.initTableForm();
+        data.map(asset => {
           (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
             assetId: new FormControl(asset.assetId),
             infoEvent: new FormControl(asset.infoEvent),
@@ -67,7 +68,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.assetsSub) { this.assetsSub.unsubscribe(); }
     if (this.getAssetsSub) { this.getAssetsSub.unsubscribe(); }
-    this.assetsService._assets.next({ results: [] });
   }
 
   initTableForm() {
@@ -80,6 +80,22 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.forms.search = new FormGroup({
       input: new FormControl(null, [Validators.required]),
     });
+  }
+
+  loadAssets(next = '', limit = 15) {
+    this.dialog.closeAll();
+    this.loader = true;
+    const token = this.authService.getToken();
+    const user = <any>this.storageService.get('user') || {};
+    const { address } = user;
+    const options = {
+      limit,
+      token,
+      address,
+      next,
+    };
+
+    this.getAssetsSub = this.assetsService.getAssets(options).subscribe();
   }
 
   JSONparse(value) {
@@ -110,21 +126,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => console.log('[Bulk event] was closed'));
-  }
-
-  loadAssets(next = '', limit = 15) {
-    this.dialog.closeAll();
-    this.loader = true;
-    const token = this.authService.getToken();
-    const user = <any>this.storageService.get('user') || {};
-    const { address } = user;
-    const options = {
-      limit,
-      token,
-      address,
-      next,
-    };
-    this.getAssetsSub = this.assetsService.getAssets(options).subscribe();
   }
 
   search() {

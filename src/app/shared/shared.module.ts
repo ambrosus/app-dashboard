@@ -19,7 +19,6 @@ import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 import { EventsTimelineComponent } from 'app/shared/components/events-timeline/events-timeline.component';
-import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ClickThisActiveDirective } from './directives/click-this-active.directive';
@@ -53,7 +52,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     LoopIncludePipe,
     LoopExcludePipe,
     EventsTimelineComponent,
-    JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
@@ -81,7 +79,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     LoopIncludePipe,
     LoopExcludePipe,
     EventsTimelineComponent,
-    JsonPreviewComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
@@ -94,6 +91,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     IconLeftDirective,
     IconRightDirective,
   ],
-  entryComponents: [JsonPreviewComponent, EventAddComponent],
+  entryComponents: [EventAddComponent],
 })
 export class SharedModule { }

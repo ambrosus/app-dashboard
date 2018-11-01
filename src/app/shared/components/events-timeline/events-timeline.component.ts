@@ -10,7 +10,6 @@ import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
 
 @Component({
   selector: 'app-events-timeline',
@@ -20,23 +19,26 @@ import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-pr
 export class EventsTimelineComponent implements OnInit, OnDestroy {
   eventsSub: Subscription;
   getEventsSub: Subscription;
-  events;
+  pagination;
 
   @Input() assetId;
   @Input() name;
 
-  constructor(public assetsService: AssetsService, private authService: AuthService, public dialog: MatDialog) { }
+  constructor(
+    public assetsService: AssetsService,
+    private authService: AuthService,
+    public dialog: MatDialog,
+  ) { }
 
   ngOnInit() {
     this.loadEvents();
-    this.eventsSub = this.assetsService._events.subscribe(events => this.events = events);
+    this.eventsSub = this.assetsService.events.subscribe(({ pagination }: any) => this.pagination = pagination);
   }
 
   ngOnDestroy() {
     if (this.eventsSub) { this.eventsSub.unsubscribe(); }
     if (this.getEventsSub) { this.getEventsSub.unsubscribe(); }
-    this.assetsService.unchangedEvents = [];
-    this.assetsService._events.next({ results: [] });
+    this.assetsService.events = { meta: {}, data: [], pagination: {}, change: 'reset' };
   }
 
   loadEvents(next = '') {
@@ -48,28 +50,5 @@ export class EventsTimelineComponent implements OnInit, OnDestroy {
     };
 
     this.getEventsSub = this.assetsService.getEvents(options).subscribe();
-  }
-
-  openDialog(): void {
-    const dialogRef = this.dialog.open(JsonPreviewComponent, {
-      width: '600px',
-      position: { right: '0' },
-      data: {
-        data: this.assetsService.unchangedEvents,
-        name: this.name,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(result => console.log('The dialog was closed'));
-  }
-
-  bulkActions(action) {
-    switch (action.value) {
-      case 'exportEvents':
-        this.openDialog();
-        break;
-    }
-
-    action.value = 'default';
   }
 }

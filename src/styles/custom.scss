@@ -10,6 +10,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 @import "_mixins";
 
+html {
+  top: 0 !important;
+  left: 0 !important;
+}
+
 html,
 body {
   width: 100%;

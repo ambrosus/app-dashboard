@@ -10,9 +10,8 @@ declare let Web3: any;
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  _events: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
-  _assets: BehaviorSubject<any> = new BehaviorSubject({ results: [] });
-  unchangedEvents = [];
+  private _events: BehaviorSubject<any> = new BehaviorSubject({ meta: {}, data: [], pagination: {} });
+  private _assets: BehaviorSubject<any> = new BehaviorSubject({ meta: {}, data: [], pagination: {} });
   ambrosus;
   web3;
 
@@ -23,10 +22,77 @@ export class AssetsService {
   ) {
     this.initSDK();
     this.web3 = new Web3();
+    this.loadAssets();
+  }
+
+  loadAssets() {
+    const token = this.authService.getToken();
+    const user = <any>this.storageService.get('user') || {};
+    const { address } = user;
+    const options = {
+      limit: 15,
+      token,
+      address,
+    };
+    this.getAssets(options).subscribe();
   }
 
   get assets(): any { return this._assets.asObservable(); }
   get events(): any { return this._events.asObservable(); }
+
+  set events(options) {
+    if (options && options.data) {
+      options = JSON.parse(JSON.stringify(options));
+      options.data = this.parseTimelineEvents(options.data);
+      const events = this._events.getValue();
+      if (options.change === 'data' && Array.isArray(options.data)) {
+        switch (options.type) {
+          case 'all':
+            events['data'] = options.data;
+            break;
+          case 'start':
+            options.data.map(event => events.data.unshift(event));
+            break;
+          case 'end':
+            events.data = events.data.concat(options.data);
+            break;
+        }
+        this._events.next(events);
+      } else if (options.change === 'reset') {
+        delete options.change;
+        this._events.next(options);
+      } else {
+        const data = events.data.concat(options.data);
+        options.data = data;
+        this._events.next(options);
+      }
+    }
+  }
+
+  set assets(options) {
+    if (options && options.data) {
+      options = JSON.parse(JSON.stringify(options));
+      const assets = this._assets.getValue();
+      if (options.change === 'data' && Array.isArray(options.data)) {
+        switch (options.type) {
+          case 'all':
+            assets['data'] = options.data;
+            break;
+          case 'start':
+            options.data.map(event => assets.data.unshift(event));
+            break;
+          case 'end':
+            assets.data = assets.data.concat(options.data);
+            break;
+        }
+        this._assets.next(assets);
+      } else {
+        const data = assets.data.concat(options.data);
+        options.data = data;
+        this._assets.next(options);
+      }
+    }
+  }
 
   initSDK() {
     const secret = this.storageService.get('secret');
@@ -47,7 +113,7 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        ({ data }: any) => this._assets.next(data),
+        ({ data }: any) => this.assets = data,
         err => observer.error(err.error),
       );
     });
@@ -74,12 +140,7 @@ export class AssetsService {
       Object.keys(options).map(key => url += `${key}=${options[key]}&`);
 
       this.http.get(url).subscribe(
-        ({ data }: any) => {
-          this.unchangedEvents.concat(JSON.parse(JSON.stringify(data.results)));
-          data.results = this.parseTimelineEvents(data.results);
-          data.results = this._events.getValue().results.concat(data.results);
-          this._events.next(data);
-        },
+        ({ data }: any) => this.events = data,
         err => observer.error(err.error),
       );
     });
@@ -101,11 +162,18 @@ export class AssetsService {
 
   createAssets(assets, events) {
     return new Observable(observer => {
+      const token = this.authService.getToken();
       const url = `/api/assets`;
-      const body = { assets, events };
+      const body = { assets, events, token };
 
       this.http.post(url, body).subscribe(
-        ({ data }: any) => observer.next(data),
+        ({ data }: any) => {
+          data['change'] = 'data';
+          data['type'] = 'start';
+          data['data'] = data.assets.created;
+          this.assets = data;
+          observer.next(data);
+        },
         err => observer.error(err.error),
       );
     });
@@ -118,10 +186,26 @@ export class AssetsService {
 
       this.http.post(url, body).subscribe(
         ({ data }: any) => {
-          JSON.parse(JSON.stringify(data.events.created)).map(event => this.unchangedEvents.unshift(event));
-          const currentEvents = <any>this._events.getValue();
-          this.parseTimelineEvents(JSON.parse(JSON.stringify(data.events.created))).map(event => currentEvents.results.unshift(event));
-          this._events.next(currentEvents);
+          // Update _events
+          const eventsData = this._events.getValue().data;
+          if (eventsData && eventsData.length) {
+            data['change'] = 'data';
+            data['type'] = 'start';
+            data['data'] = data.events.created;
+            this.events = data;
+          }
+
+          // Update _assets
+          let assetsData = this._assets.getValue().data;
+          assetsData = assetsData.map(asset => {
+            const assetEvents = data.events.created.filter(event => asset.assetId === event.content.idData.assetId);
+            const infoEvent = this.findEvent('info', assetEvents);
+            if (infoEvent) { asset['infoEvent'] = infoEvent; }
+            return asset;
+          });
+          const options = { change: 'data', type: 'all', data: assetsData };
+          this.assets = options;
+
           observer.next(data);
         },
         err => observer.error(err.error),
@@ -276,4 +360,38 @@ export class AssetsService {
   }
 
   validTimestamp(timestamp) { return new Date(timestamp).getTime() > 0; }
+
+  isLatest(type) { return ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1; }
+
+  findEvent(eventType, events) {
+    let e = false;
+    events.map(event => {
+      if (event.content.data) {
+        event.content.data.map(obj => {
+          const type = obj.type.split('.');
+          obj.type = type[type.length - 1].toLowerCase();
+          obj.eventId = event.eventId;
+          obj.createdBy = event.content.idData.createdBy;
+          obj.timestamp = event.content.idData.timestamp;
+
+          if (obj.type === 'location' || obj.type === 'identifiers') {
+            event.content.data.map(_obj => {
+              if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
+                _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+              }
+            });
+          }
+
+          switch (eventType) {
+            case 'latest':
+              if (this.isLatest(obj.type)) { e = obj; }
+              break;
+            default:
+              if (obj.type === eventType) { e = obj; }
+          }
+        });
+      }
+    });
+    return e;
+  }
 }

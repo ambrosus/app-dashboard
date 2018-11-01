@@ -60,8 +60,18 @@ exports.getAssets = async (req, res, next) => {
     return asset;
   });
 
+  // faked schema
+  const schema = {
+    meta: {},
+    data: {},
+    pagination: {},
+  };
+  schema.data = assets.results;
+  delete assets.results;
+  schema.pagination = assets;
+
   req.status = 200;
-  req.json = { data: assets, message: 'Success', status: 200 };
+  req.json = { data: schema, message: 'Success', status: 200 };
   next();
 }
 
@@ -129,8 +139,18 @@ exports.getEvents = async (req, res, next) => {
     return next(new ValidationError('Error getting events', err));
   }
 
+  // faked schema
+  const schema = {
+    meta: {},
+    data: {},
+    pagination: {},
+  };
+  schema.data = events.results;
+  delete events.results;
+  schema.pagination = events;
+
   req.status = 200;
-  req.json = { data: events, message: 'Success', status: 200 };
+  req.json = { data: schema, message: 'Success', status: 200 };
   next();
 }
 
@@ -193,8 +213,8 @@ exports.createAsset = async (req, res, next) => {
 }
 
 exports.createEvents = async (req, res, next) => {
-  const { events } = req.body;
-  let err, eventCreated;
+  const { events, token } = req.body;
+  let err, url, eventCreated;
 
   if (!(req.json && req.json.data && req.json.data.events)) {
     req.json = {
@@ -210,7 +230,7 @@ exports.createEvents = async (req, res, next) => {
   if (Array.isArray(events) && events.length) {
     // Create events
     events.map(async (event, index, array) => {
-      const url = `${api.core}/assets/${event.content.idData.assetId}/events`;
+      url = `${api.core}/assets/${event.content.idData.assetId}/events`;
       [err, eventCreated] = await to(httpPost(url, event));
       if (err) {
         logger.error('[CREATE] Event: ', err);
@@ -218,7 +238,18 @@ exports.createEvents = async (req, res, next) => {
       }
       req.json.data.events.created.push(eventCreated);
 
-      if (index === array.length - 1) { req.status = 200; return next(); }
+      if (index === array.length - 1) {
+        try {
+          req.json.data.assets.created = req.json.data.assets.created.map(asset => {
+            const assetEvents = req.json.data.events.created.filter(event => asset.assetId === event.content.idData.assetId);
+            asset['infoEvent'] = findEvent('info', assetEvents);
+            return asset;
+          });
+
+          req.status = 200;
+          return next();
+        } catch (e) { req.status = 200; return next(); }
+      }
     });
   } else { next(); }
 }
