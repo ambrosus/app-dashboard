@@ -126,7 +126,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => {
-          this.parseAsset(data.results[0]);
+          this.parseAsset(data.data[0]);
           observer.next(data);
         },
         err => observer.error(err.error),
@@ -168,6 +168,7 @@ export class AssetsService {
 
       this.http.post(url, body).subscribe(
         ({ data }: any) => {
+          // Update _assets
           data['change'] = 'data';
           data['type'] = 'start';
           data['data'] = data.assets.created;

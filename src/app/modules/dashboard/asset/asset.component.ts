@@ -40,7 +40,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.results[0]);
+    this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.data[0]);
     this.routeParamsSub = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) { if (this.dialogRef) { this.dialogRef.close(); } }

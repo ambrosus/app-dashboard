@@ -5,11 +5,10 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const mongoose = require('mongoose');
 const { findEvent } = _require('/utils/assets');
-const { httpGet, httpPost } = _require('/utils/requests');
+const { httpPost } = _require('/utils/requests');
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError } = _require('/errors');
+const { ValidationError } = _require('/errors');
 const { api } = _require('/config');
 
 exports.getAssets = async (req, res, next) => {
@@ -30,13 +29,13 @@ exports.getAssets = async (req, res, next) => {
   if (previous) { body['previous'] = previous; }
 
   [err, assets] = await to(httpPost(url, body, token));
-  if (err || !(assets && assets.results && Array.isArray(assets.results))) {
+  if (err || !(assets && assets.data && Array.isArray(assets.data))) {
     logger.error('[GET] Assets: ', err);
     return next(new ValidationError('Error getting assets', err));
   }
 
   // Extract assetIds
-  assetIds = assets.results.reduce((_assetIds, asset, index, array) => {
+  assetIds = assets.data.reduce((_assetIds, asset, index, array) => {
     if (asset.assetId) { _assetIds.push(asset.assetId); }
     return _assetIds;
   }, []);
@@ -48,30 +47,20 @@ exports.getAssets = async (req, res, next) => {
     type: 'ambrosus.asset.info',
   };
   [err, infoEvents] = await to(httpPost(url, body, token));
-  if (err || !(infoEvents && infoEvents.results && Array.isArray(infoEvents.results))) {
+  if (err || !(infoEvents && infoEvents.data && Array.isArray(infoEvents.data))) {
     logger.error('[GET] Latest info events: ', err);
     return next(new ValidationError('Error getting assets', err));
   }
 
   // Connects assets with info event
-  assets.results = assets.results.map(asset => {
-    asset.infoEvent = infoEvents.results.find(event => asset.assetId === event.content.idData.assetId);
+  assets.data = assets.data.map(asset => {
+    asset.infoEvent = infoEvents.data.find(event => asset.assetId === event.content.idData.assetId);
     if (asset.infoEvent) { asset.infoEvent = findEvent('info', [asset.infoEvent]); }
     return asset;
   });
 
-  // faked schema
-  const schema = {
-    meta: {},
-    data: {},
-    pagination: {},
-  };
-  schema.data = assets.results;
-  delete assets.results;
-  schema.pagination = assets;
-
   req.status = 200;
-  req.json = { data: schema, message: 'Success', status: 200 };
+  req.json = { data: assets, message: 'Success', status: 200 };
   next();
 }
 
@@ -90,7 +79,7 @@ exports.getAsset = async (req, res, next) => {
     }]
   };
   [err, asset] = await to(httpPost(url, body, token));
-  if (err || !(asset && asset.results && Array.isArray(asset.results))) {
+  if (err || !(asset && asset.data && Array.isArray(asset.data))) {
     logger.error('[GET] Asset: ', err);
     return next(new ValidationError('Error getting asset', err));
   }
@@ -102,14 +91,14 @@ exports.getAsset = async (req, res, next) => {
     type: 'ambrosus.asset.info',
   };
   [err, infoEvent] = await to(httpPost(url, body, token));
-  if (err || !(infoEvent && infoEvent.results && Array.isArray(infoEvent.results))) {
+  if (err || !(infoEvent && infoEvent.data && Array.isArray(infoEvent.data))) {
     logger.error('[GET] Latest info event: ', err);
     return next(new ValidationError('Error getting asset', err));
   }
 
   // Connects asset with info event
-  asset.results[0]['infoEvent'] = {};
-  if (infoEvent.results.length) { asset.results[0].infoEvent = findEvent('info', infoEvent.results); }
+  asset.data[0]['infoEvent'] = {};
+  if (infoEvent.data.length) { asset.data[0].infoEvent = findEvent('info', infoEvent.data); }
 
   req.status = 200;
   req.json = { data: asset, message: 'Success', status: 200 };
@@ -134,23 +123,13 @@ exports.getEvents = async (req, res, next) => {
   if (previous) { body['previous'] = previous; }
 
   [err, events] = await to(httpPost(url, body, token));
-  if (err || !(events && events.results && Array.isArray(events.results))) {
+  if (err || !(events && events.data && Array.isArray(events.data))) {
     logger.error('[GET] Events: ', err);
     return next(new ValidationError('Error getting events', err));
   }
 
-  // faked schema
-  const schema = {
-    meta: {},
-    data: {},
-    pagination: {},
-  };
-  schema.data = events.results;
-  delete events.results;
-  schema.pagination = events;
-
   req.status = 200;
-  req.json = { data: schema, message: 'Success', status: 200 };
+  req.json = { data: events, message: 'Success', status: 200 };
   next();
 }
 
@@ -169,13 +148,13 @@ exports.getEvent = async (req, res, next) => {
     }]
   };
   [err, event] = await to(httpPost(url, body, token));
-  if (err || !(event && event.results && Array.isArray(event.results))) {
+  if (err || !(event && event.data && Array.isArray(event.data))) {
     logger.error('[GET] Event: ', err);
     return next(new ValidationError('Error getting event', err));
   }
 
   req.status = 200;
-  req.json = { data: event.results[0], message: 'Success', status: 200 };
+  req.json = { data: event.data[0], message: 'Success', status: 200 };
   return next();
 }
 
@@ -213,7 +192,7 @@ exports.createAsset = async (req, res, next) => {
 }
 
 exports.createEvents = async (req, res, next) => {
-  const { events, token } = req.body;
+  const { events } = req.body;
   let err, url, eventCreated;
 
   if (!(req.json && req.json.data && req.json.data.events)) {
