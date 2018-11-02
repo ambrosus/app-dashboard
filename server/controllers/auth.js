@@ -9,20 +9,10 @@ const bcrypt = require('bcrypt');
 const { to } = _require('/utils/general');
 const { ValidationError, NotFoundError } = _require('/errors');
 const { httpGet } = _require('/utils/requests');
-const { token, hermes } = _require('/config');
+const { token, api } = _require('/config');
 
 const User = _require('/models/users');
 
-/**
- * Logs in user
- * Stores user email, user address on successful login
- *
- * @name login
- * @route {POST} api/auth/login
- * @bodyparam email, password
- * @returns Status code 400 on failure
- * @returns user Object on success with status code 200
- */
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   let err, user;
@@ -60,20 +50,11 @@ exports.login = async (req, res, next) => {
   }
 };
 
-/**
- * Verifies a user by calling the API (hermes.url/accounts/address)
- *
- * @name verify
- * @route {POST} api/auth/verify
- * @bodyparam address, token, hermes
- * @returns Status code 400 on failure
- * @returns user Object on success with status code 200
- */
 exports.verifyAccount = async (req, res, next) => {
   const { address } = req.body;
   let err, verified, user;
 
-  [err, verified] = await to(httpGet(`${hermes.url}/accounts/${address}`, token));
+  [err, verified] = await to(httpGet(`${api.core}/accounts/${address}`, token));
   if (err || !verified) {
     return next(new ValidationError((err && err.data) ? err.data.reason : 'Verification failed'));
   }
