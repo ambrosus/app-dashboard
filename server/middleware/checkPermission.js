@@ -6,19 +6,18 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const { to } = _require('/utils/general');
-const { PermissionError, NotFoundError } = _require('/errors');
+const { PermissionError, ValidationError } = _require('/errors');
 
 const User = _require('/models/users');
 
-module.exports = action => {
+module.exports = (action = '') => {
   return async (req, res, next) => {
-    const address = req.body.address || req.params.address || req.query.address;
-    let err, user;
+    try {
+      const { permissions } = req.user;
 
-    [err, user] = await to(User.findOne({ address }));
-    if (err || !user) { return next(NotFoundError(err.message, err)); }
+      if (action && !permissions.includes(action)) { return next(new PermissionError('No permission')); }
 
-    if (user.permissions.indexOf(action) === -1) { return next(PermissionError('No permission')); }
-    return next();
+      return next();
+    } catch (e) { return next(new PermissionError('No token provided')); }
   }
 };

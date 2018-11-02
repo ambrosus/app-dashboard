@@ -3,7 +3,7 @@
   <div *ngFor="let eventObject of eventObjects">
     <header class="object__header">
       <div class="object__title">
-        <h3>{{ getName(eventObject) }}</h3>
+        <h3>{{ assetsService.getName(eventObject) }}</h3>
         <p>{{ eventId }}</p>
       </div>
     </header>
@@ -20,6 +20,13 @@
             <span class="item__value">{{ eventObject.identifiers.identifiers[key][0] }}</span>
           </li>
         </ul>
+      </div>
+
+      <!-- Images -->
+      <div class="object__images" *ngIf="eventObject.images">
+        <h5 class="object__subtitle">Images</h5>
+
+        <img *ngFor="let image of objectKeys(eventObject.images)" src="{{ eventObject.images[image]['url'] }}">
       </div>
 
       <!-- Documents -->

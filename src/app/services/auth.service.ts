@@ -20,7 +20,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private storageService: StorageService,
-    private userService: UsersService
+    private userService: UsersService,
   ) {
     this.sdk = new AmbrosusSDK({
       Web3,
@@ -37,9 +37,9 @@ export class AuthService {
   }
 
   getToken(secret = null) {
-    const _secret = secret || this.storageService.get('secret');
-    const validUntil = moment().add(5, 'days').format();
-    return _secret ? this.sdk.getToken(_secret, validUntil) : {};
+    secret = secret || this.storageService.get('secret');
+    const validUntil = moment().add(5, 'days').unix();
+    return secret ? this.sdk.getToken(secret, validUntil) : {};
   }
 
   verifyAccount(secret) {
@@ -59,7 +59,7 @@ export class AuthService {
             return observer.next(res.data);
           } else { return observer.next(res); }
         },
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }
@@ -83,7 +83,7 @@ export class AuthService {
             observer.next('success');
           } catch (e) { return observer.error({ message: 'Password is incorrect.' }); }
         },
-        err => observer.error(err.error)
+        err => observer.error(err.error),
       );
     });
   }

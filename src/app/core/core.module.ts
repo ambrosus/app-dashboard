@@ -10,12 +10,11 @@ import { HelpComponent } from './components/help/help.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SetupComponent } from './components/setup/setup.component';
-import { InviteComponent } from './components/invite/invite.component';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { HelpService } from './components/help/help.service';
 import { SignupComponent } from './components/signup/signup.component';
-import { CompaniesService } from '../services/companies.service';
+import { OrganizationsService } from '../services/organizations.service';
 
 @NgModule({
   imports: [SharedModule, AppRoutingModule, NgSelectModule, ReactiveFormsModule, Angular2PromiseButtonModule.forRoot()],
@@ -27,7 +26,6 @@ import { CompaniesService } from '../services/companies.service';
     HelpComponent,
     LoginComponent,
     SetupComponent,
-    InviteComponent,
     SignupComponent,
   ],
   providers: [
@@ -37,7 +35,7 @@ import { CompaniesService } from '../services/companies.service';
       multi: true,
     },
     HelpService,
-    CompaniesService,
+    OrganizationsService,
   ],
 })
 export class CoreModule { }

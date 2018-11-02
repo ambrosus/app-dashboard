@@ -1,0 +1,37 @@
+<h4 class="m-b-30 center">Edit profile</h4>
+
+<div class="card m-w-4 block-center">
+  <form [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()" class="m-w-4">
+    <label>Your Public key
+      <input formControlName="address" type="text">
+    </label>
+    <label>Your Full name
+      <input formControlName="full_name" type="text">
+    </label>
+    <label>Your Email
+      <input formControlName="email" type="email">
+    </label>
+    <label>Your Organization
+      <input formControlName="organization" type="text">
+    </label>
+    <label for="timeZone">Your Time Zone
+      <input formControlName="timeZone" list="timezones" id="timeZone">
+      <datalist id="timezones">
+        <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+      </datalist>
+    </label>
+    <label>Password
+      <input formControlName="password" type="password">
+    </label>
+    <label>Password Confirm
+      <input formControlName="passwordConfirm" type="password">
+    </label>
+    <div class="flex flex-direction-r justify-content-fe align-items-c">
+      <app-spinner *ngIf="spinner"></app-spinner>
+      <button type="submit" class="button button--blue m-l-20" [disabled]="!updateProfileForm.valid">Edit profile</button>
+    </div>
+  </form>
+</div>
+
+<h5 class="m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
+<h5 class="m-v-30 center" *ngIf="success" style="color: #57b846">{{ success }}</h5>

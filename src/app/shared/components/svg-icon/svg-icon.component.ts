@@ -46,7 +46,7 @@ export class SvgIconComponent implements OnInit {
       },
       err => {
         console.error(err);
-      }
+      },
     );
   }
 }

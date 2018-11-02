@@ -24,7 +24,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <li *ngIf="user">
             <p class="p-a-10 color-blacks--base" *ngIf="!user.full_name && !user.email">{{ user.address }}</p>
             <p class="p-a-10 color-blacks--base">{{ user.full_name || user.email }}</p>
-            <p class="p-a-10" *ngIf="user.company">{{ user.company.title }}</p>
+            <p class="p-a-10" *ngIf="user.organization">{{ user.organization.title }}</p>
           </li>
           <li class="separator color-ablue--base">
             <span (click)="logout()">Logout</span>
@@ -48,11 +48,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <li>
       <a routerLink="/assets" routerLinkActive="active" appIconLeft="blue-stack">Assets</a>
     </li>
+    <li *ngIf="checkPermission(['super_account'])">
+      <a routerLink="/node" routerLinkActive="active" appIconLeft="display">Node</a>
+    </li>
     <li *ngIf="checkPermission(['manage_accounts'])">
-      <a routerLink="/administration/users" routerLinkActive="active" appIconLeft="header-user">Users</a>
+      <a routerLink="/organization/accounts" routerLinkActive="active" appIconLeft="header-user">Accounts</a>
     </li>
     <li *ngIf="checkPermission(['manage_organization'])">
-      <a routerLink="/administration/company" routerLinkActive="active" appIconLeft="settings-gear">Company</a>
+      <a routerLink="/organization/settings" routerLinkActive="active" appIconLeft="settings-gear">Organization</a>
     </li>
     <li>
       <a routerLink="/settings" routerLinkActive="active" appIconLeft="cog">Settings</a>

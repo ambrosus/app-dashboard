@@ -6,7 +6,6 @@ import { HelpComponent } from './core/components/help/help.component';
 import { TermsComponent } from './core/components/terms/terms.component';
 import { AboutComponent } from './core/components/about/about.component';
 import { LoginComponent } from './core/components/login/login.component';
-import { InviteComponent } from './core/components/invite/invite.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -30,19 +29,22 @@ const routes: Routes = [
     component: SignupComponent,
     runGuardsAndResolvers: 'always',
   }, {
-    path: 'invite/:token',
-    component: InviteComponent,
-    runGuardsAndResolvers: 'always',
-  }, {
     path: 'assets',
     canActivate: [AuthGuard],
     loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
     runGuardsAndResolvers: 'always',
   }, {
-    path: 'administration',
+    path: 'node',
     canActivate: [AuthLoginGuard, PermissionsGuard],
     canActivateChild: [AuthLoginGuard, PermissionsGuard],
-    loadChildren: 'app/modules/administration/administration.module#AdministrationModule',
+    loadChildren: 'app/modules/node/node.module#NodeModule',
+    runGuardsAndResolvers: 'always',
+    data: { permissions: ['super_account'] },
+  }, {
+    path: 'organization',
+    canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    loadChildren: 'app/modules/organization/organization.module#OrganizationModule',
     runGuardsAndResolvers: 'always',
     data: { permissions: ['manage_organization'] },
   }, {

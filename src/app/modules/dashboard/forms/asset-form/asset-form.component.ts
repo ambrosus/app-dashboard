@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-form',
@@ -26,7 +27,8 @@ export class AssetFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private assetsService: AssetsService
+    private assetsService: AssetsService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -36,6 +38,10 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.createAssetsSub) { this.createAssetsSub.unsubscribe(); }
     if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
+  }
+
+  cancel() {
+    this.router.navigate([`${location.pathname}`]);
   }
 
   private initForm() {
@@ -85,7 +91,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         url: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -94,7 +100,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -103,7 +109,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -117,7 +123,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
             value: new FormControl(null, []),
           }),
         ]),
-      })
+      }),
     );
   }
 
@@ -127,7 +133,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
-      })
+      }),
     );
   }
 
@@ -265,15 +271,16 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       const infoEvent = this.generateInfoEvent(asset.assetId);
       this.createAssetsSub = this.assetsService.createAssets([asset], [infoEvent]).subscribe(
         (resp: any) => {
+          console.log('[CREATE] Asset: ', resp);
           this.spinner = false;
           this.success = 'Success';
           this.sequenceNumber += 1;
         },
         err => {
+          console.error('[CREATE] Asset: ', err);
           this.error = err.message;
           this.spinner = false;
-          console.error('Asset and info event create error: ', err);
-        }
+        },
       );
     } else { this.error = 'Please fill all required fields'; }
   }

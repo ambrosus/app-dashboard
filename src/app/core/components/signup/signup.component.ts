@@ -3,8 +3,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
-import { CompaniesService } from 'app/services/companies.service';
+import { OrganizationsService } from 'app/services/organizations.service';
 import { UsersService } from 'app/services/users.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { InviteService } from 'app/services/invite.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
 declare let Web3: any;
@@ -18,49 +20,72 @@ declare let Web3: any;
 export class SignupComponent implements OnInit, OnDestroy {
   forms: {
     secretForm?: FormGroup,
-    userForm?: FormGroup
+    requestForm?: FormGroup
   } = {};
 
-  organizationCheck: Subscription;
-  userRegister: Subscription;
+  requestOrganizationSub: Subscription;
+  routeSub: Subscription;
+  getInviteSub: Subscription;
+  createAccountSub: Subscription;
   error;
   success;
   promiseAction;
   web3;
   saved;
   step = 'keysOptions';
+  token;
+  invite;
 
   constructor(
     private authService: AuthService,
-    private companiesService: CompaniesService,
+    private organizationsService: OrganizationsService,
     private usersService: UsersService,
+    private route: ActivatedRoute,
+    private inviteService: InviteService,
+    private router: Router,
     private sanitizer: DomSanitizer,
   ) {
     this.web3 = new Web3();
   }
 
   ngOnInit() {
+    this.routeSub = this.route.queryParams.subscribe(queryParams => {
+      this.token = queryParams.token;
+      if (this.token) { this.getInvite(); }
+    });
     this.forms.secretForm = new FormGroup({
       privateKey: new FormControl(null, [Validators.required]),
       publicKey: new FormControl({ value: null, disabled: true }, [Validators.required]),
       saved: new FormControl(null, [Validators.requiredTrue]),
     });
-    this.forms.userForm = new FormGroup({
-      organization: new FormControl(null, []),
+    this.forms.requestForm = new FormGroup({
+      title: new FormControl(null, []),
       email: new FormControl(null, [Validators.required]),
-      reason: new FormControl(null, [Validators.required]),
+      message: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.requiredTrue]),
     });
   }
 
   ngOnDestroy() {
-    if (this.organizationCheck) { this.organizationCheck.unsubscribe(); }
-    if (this.userRegister) { this.userRegister.unsubscribe(); }
+    if (this.requestOrganizationSub) { this.requestOrganizationSub.unsubscribe(); }
+    if (this.routeSub) { this.routeSub.unsubscribe(); }
+    if (this.getInviteSub) { this.getInviteSub.unsubscribe(); }
+    if (this.createAccountSub) { this.createAccountSub.unsubscribe(); }
+  }
+
+  getInvite() {
+    this.getInviteSub = this.inviteService.verifyInvite(this.token).subscribe(
+      (resp: any) => {
+        this.invite = resp;
+        console.log('GET INVITE: ', this.invite);
+      },
+      err => this.router.navigate(['/login']),
+    );
   }
 
   generateKeys() {
-    const { address, secret } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    this.forms.secretForm.get('privateKey').setValue(secret);
+    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+    this.forms.secretForm.get('privateKey').setValue(privateKey);
     this.forms.secretForm.get('publicKey').setValue(address);
     this.step = 'keysGenerate';
   }
@@ -85,7 +110,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   verifyAccount() {
     this.error = false;
-    const { privateKey } = this.forms.secretForm.getRawValue();
+    const { privateKey, publicKey } = this.forms.secretForm.getRawValue();
 
     if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
 
@@ -95,47 +120,47 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.error = 'This account is already registered, please insert another secret';
         resolve();
       }, err => {
-        this.step = 'signupForm';
-        reject();
+        if (!this.invite) {
+          this.step = 'requestForm';
+          reject();
+        } else {
+          // Account create request
+          const body = {
+            token: this.token,
+            address: publicKey,
+          };
+          this.createAccountSub = this.usersService.createUser(body).subscribe(
+            (resp: any) => {
+              this.router.navigate(['/login']);
+            },
+            error => {
+              console.error('Account create: ', error);
+              reject();
+            },
+          );
+        }
       });
     });
   }
 
-  registerUser() {
+  requestOrganization() {
     this.error = false;
     const { publicKey } = this.forms.secretForm.getRawValue();
-    const { organization, email } = this.forms.userForm.getRawValue();
-    const data = {
-      company: {
-        title: organization,
-      },
-      user: {
-        address: publicKey,
-        email,
-      },
-    };
+    const data = this.forms.requestForm.getRawValue();
+    data.address = publicKey;
 
-    if (!this.forms.userForm.valid) { return this.error = 'Please fill all required fields'; }
+    if (!this.forms.requestForm.valid) { return this.error = 'Please fill all required fields'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      // Check if organization exists
-      this.organizationCheck = this.companiesService.checkCompany({ title: organization }).subscribe(
-        res => {
-          // Register a user
-          this.userRegister = this.usersService.createUser(data).subscribe(
-            _res => {
-              this.step = 'success';
-              resolve();
-            },
-            err => {
-              console.error('User register error: ', err);
-              reject();
-            },
-          );
+      this.requestOrganizationSub = this.organizationsService.organizationRequest(data).subscribe(
+        (resp: any) => {
+          this.step = 'success';
+          resolve();
         },
         err => {
+          console.error('Request Organization: ', err);
+          this.error = err.error ? err.error.message : 'Request error';
           reject();
-          this.error = 'Organization with this name already exists';
         },
       );
     });

@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AssetsComponent } from 'app/modules/dashboard/assets/assets.component';
 import { AssetComponent } from 'app/modules/dashboard/asset/asset.component';
 import { AssetAddComponent } from './asset-add/asset-add.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardOutletComponent } from './dashboard-outlet/dashboard-outlet.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { EventResolver } from 'app/services/event-resolver.service';
@@ -12,7 +12,7 @@ import { EventResolver } from 'app/services/event-resolver.service';
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
+    component: DashboardOutletComponent,
     children: [
       { path: '', component: AssetsComponent },
       { path: 'new', component: AssetAddComponent },

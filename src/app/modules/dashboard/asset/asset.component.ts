@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
+import { AssetsService } from 'app/services/assets.service';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-asset',
@@ -14,10 +15,14 @@ import { StorageService } from 'app/services/storage.service';
 export class AssetComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
   routeParamsSub: Subscription;
+  navigationSub: Subscription;
+  eventsSub: Subscription;
   asset;
   assetId: string;
   user;
   previewAppUrl;
+  timeline;
+  dialogRef;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -28,54 +33,37 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private storageService: StorageService,
+    public assetsService: AssetsService,
     public dialog: MatDialog,
-    private storageService: StorageService
+    private router: Router,
   ) { }
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(data => this.asset = data.asset);
-    this.routeParamsSub = this.route.params.subscribe(params => this.assetId = params.assetid);
+    this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.data[0]);
+    this.routeParamsSub = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
+    this.navigationSub = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd) { if (this.dialogRef) { this.dialogRef.close(); } }
+    });
+    this.assetsService.events.subscribe(events => this.timeline = events && events.data && events.data.length);
 
     this.user = <any>this.storageService.get('user') || {};
-    try {
-      this.asset['infoEvent'] = this.JSONparse(this.asset.infoEvent);
-      this.previewAppUrl = this.user.company.settings.preview_app;
-    } catch (e) {
-      this.asset['infoEvent'] = {};
-      this.previewAppUrl = 'https://amb.to';
-    }
 
-    // Groups and properties
-    this.asset.infoEvent['groups'] = [];
-    this.asset.infoEvent['properties'] = [];
-    Object.keys(this.asset.infoEvent).map((key: any) => {
-      if (['type', 'name', 'assetType', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
-        const property = {
-          key,
-          value: this.asset.infoEvent[key],
-        };
-        this.asset.infoEvent[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
-      }
-    });
+    try {
+      this.previewAppUrl = this.user.organization.settings.preview_app;
+    } catch (e) { this.previewAppUrl = 'https://amb.to'; }
   }
 
   ngOnDestroy() {
     if (this.routeSub) { this.routeSub.unsubscribe(); }
     if (this.routeParamsSub) { this.routeParamsSub.unsubscribe(); }
+    if (this.navigationSub) { this.navigationSub.unsubscribe(); }
   }
 
   JSONparse(value) {
     try {
       return JSON.parse(value);
     } catch (e) { return false; }
-  }
-
-  getName(info, alternative = 'No title') {
-    try {
-      const name = info.name;
-      const type = info.type.split('.');
-      return name ? name : type[type.length - 1];
-    } catch (e) { return alternative; }
   }
 
   downloadQR(el: any) {
@@ -94,13 +82,14 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   openAddEventDialog() {
-    const dialogRef = this.dialog.open(EventAddComponent, {
+    this.dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { right: '0' },
+      data: {
+        assetIds: [this.assetId],
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => console.log('Event add dialog was closed'));
-    const instance = dialogRef.componentInstance;
-    instance.assetIds = [this.assetId];
+    this.dialogRef.afterClosed().subscribe(result => console.log('Event add dialog was closed'));
   }
 }

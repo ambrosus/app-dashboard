@@ -5,7 +5,6 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -19,8 +18,7 @@ import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
 import { LoopIncludePipe } from './pipes/loop-include.pipe';
 import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
-import { TimelineComponent } from 'app/shared/components/timeline/timeline.component';
-import { JsonPreviewComponent } from 'app/shared/components/json-preview/json-preview.component';
+import { EventsTimelineComponent } from 'app/shared/components/events-timeline/events-timeline.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ClickThisActiveDirective } from './directives/click-this-active.directive';
@@ -28,7 +26,6 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
-import { PaginationComponent } from './components/pagination/pagination.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
@@ -54,14 +51,12 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent,
-    JsonPreviewComponent,
+    EventsTimelineComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent,
     MatDialogModule,
-    PaginationComponent,
     CheckIfPipe,
     ImageCropperModule,
     CustomCheckboxDirective,
@@ -83,13 +78,11 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     StickyDirective,
     LoopIncludePipe,
     LoopExcludePipe,
-    TimelineComponent,
-    JsonPreviewComponent,
+    EventsTimelineComponent,
     SvgIconComponent,
     ClickThisActiveDirective,
     QrCodeComponent,
     NotificationComponent,
-    PaginationComponent,
     CheckIfPipe,
     CustomCheckboxDirective,
     FooterComponent,
@@ -98,6 +91,6 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     IconLeftDirective,
     IconRightDirective,
   ],
-  entryComponents: [JsonPreviewComponent, EventAddComponent],
+  entryComponents: [EventAddComponent],
 })
 export class SharedModule { }

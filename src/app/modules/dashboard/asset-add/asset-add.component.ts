@@ -14,7 +14,7 @@ export class AssetAddComponent implements OnInit {
 
   constructor(
     private el: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
   ) { }
 
   ngOnInit() { }

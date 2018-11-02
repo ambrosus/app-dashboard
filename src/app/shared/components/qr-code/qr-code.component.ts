@@ -17,18 +17,18 @@ export class QrCodeComponent implements OnInit {
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
     this.generateQR();
 
-    let companySettings: any = {};
+    let organizationSettings: any = {};
     try {
-      companySettings = JSON.parse(this.storageService.get('user')['company']['settings']);
+      organizationSettings = JSON.parse(this.storageService.get('user')['organization']['settings']);
     } catch (e) { }
 
-    this.logo = companySettings.logo || false;
+    this.logo = organizationSettings.logo || false;
   }
 
   generateQR() {

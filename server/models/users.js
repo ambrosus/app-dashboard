@@ -23,9 +23,9 @@ const users = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true,
   },
-  company: {
+  organization: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies',
+    ref: 'Organizations',
   },
   full_name: String,
   email: {
@@ -45,6 +45,10 @@ const users = mongoose.Schema({
   lastLogin: {
     type: Date,
     default: +new Date(),
+  },
+  active: {
+    type: Boolean,
+    default: true,
   },
   createdAt: {
     type: Date,

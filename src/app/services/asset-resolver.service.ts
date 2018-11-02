@@ -10,15 +10,15 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AssetResolver implements Resolve<any> {
-  constructor(private asset: AssetsService) { }
+  constructor(private assetService: AssetsService) { }
 
   resolve(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): Observable<any> | Promise<any> | any {
-    return this.asset.getAsset(route.params.assetid).pipe(
+    return this.assetService.getAsset(route.params.assetid).pipe(
       map(asset => asset),
-      first()
+      first(),
     );
   }
 }

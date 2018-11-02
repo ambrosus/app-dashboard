@@ -11,14 +11,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AssetsComponent } from 'app/modules/dashboard/assets/assets.component';
 import { AssetAddComponent } from './asset-add/asset-add.component';
 import { RouterModule } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardOutletComponent } from './dashboard-outlet/dashboard-outlet.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
-import { StorageService } from 'app/services/storage.service';
 import { ChartComponent } from './chart/chart.component';
 import { ChartistComponent } from './chart/chartist/chartist.component';
 import { AssetsService } from 'app/services/assets.service';
-import { UsersService } from '../../services/users.service';
 import { AssetFormComponent } from './forms/asset-form/asset-form.component';
 import { EventFormComponent } from './forms/event-form/event-form.component';
 import { JsonFormComponent } from './forms/json-form/json-form.component';
@@ -35,7 +33,7 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     AssetComponent,
     AssetsComponent,
     AssetAddComponent,
-    DashboardComponent,
+    DashboardOutletComponent,
     EventComponent,
     EventAddComponent,
     ChartComponent,
@@ -44,6 +42,6 @@ import { JsonFormComponent } from './forms/json-form/json-form.component';
     EventFormComponent,
     JsonFormComponent,
   ],
-  providers: [StorageService, AssetResolver, EventResolver, AssetsResolver, AssetsService, UsersService],
+  providers: [AssetResolver, EventResolver, AssetsResolver, AssetsService],
 })
 export class DashboardModule { }

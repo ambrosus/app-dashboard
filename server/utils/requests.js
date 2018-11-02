@@ -13,6 +13,7 @@ exports.httpGet = (url, token = null) => {
     'Content-Type': 'application/json'
   };
   if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+
   return new Promise((resolve, reject) => {
     axios.get(url, { headers, data: null })
       .then(resp => resolve(resp.data))

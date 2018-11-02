@@ -27,9 +27,9 @@ const invites = mongoose.Schema({
     type: Date,
     default: +new Date() + 2 * 24 * 60 * 60 * 1000
   },
-  company: {
+  organization: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Companies'
+    ref: 'Organizations'
   },
   createdAt: {
     type: Date,
