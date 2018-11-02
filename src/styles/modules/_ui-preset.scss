@@ -1,0 +1,176 @@
+// Global
+
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  font-size: 100%;
+  background: transparent;
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  width: 100%;
+}
+
+html {
+  min-height: 100%;
+  min-height: 100vh;
+  font-size: 1em;
+}
+
+body {
+  font-size: 13px;
+  color: $black;
+  font-family: 'Rubik', sans-serif;
+  background-color: $white;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-style: normal;
+  position: relative;
+  min-height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  &.login {
+    background: $purple-blue;
+    background-size: 100% 200% !important;
+
+    &.page-loaded {
+      @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
+      @include animation('animateGradient .9s 1');
+      animation-delay: 1s;
+      background-position: 0 100%;
+      animation-fill-mode: forwards;
+    }
+  }
+}
+
+@include keyframes(animateGradient) {
+  0% {
+    background-position: 0 100%;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+img,
+embed,
+object,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+ul {
+  list-style-type: none;
+}
+
+[disabled],
+:disabled {
+  opacity: 0.25;
+  cursor: not-allowed !important;
+}
+
+// Paragraph and lead
+
+p,
+.p,
+.lead {
+  line-height: 1.15;
+  color: $black;
+  font-weight: 400;
+}
+
+p,
+.p {
+  font-size: 13px;
+}
+
+.lead {
+  font-size: 17px;
+}
+
+// Headings
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  line-height: 1.17;
+  color: $dark-purple;
+  font-weight: 400;
+  margin-bottom: 15px;
+}
+
+h1,
+.h1 {
+  font-size: 40px;
+}
+
+h2,
+.h2 {
+  font-size: 24px;
+}
+
+h3,
+.h3 {
+  font-size: 21px;
+}
+
+h4,
+.h4 {
+  font-size: 17px;
+}
+
+h5,
+.h5 {
+  font-size: 15px;
+}
+
+h6,
+.h6 {
+  font-size: 13px;
+}
+
+
+// Other
+
+a {
+  font-size: 13px;
+  color: $light-blue;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.subtitle {
+  @extend .h5;
+  color: $black;
+}
+
+.meta {
+  @extend .p;
+  font-size: 11px;
+  color: $grey;
+
+  &__caption {
+    @extend .meta;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+}

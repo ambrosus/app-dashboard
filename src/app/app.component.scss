@@ -8,59 +8,61 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 @import 'var';
 
-app-component{
-  flex-shrink: 0;
-}
-
 .header {
-    position: relative;
-    z-index: 960;
-    height: 60px;
+  position: relative;
+  z-index: 960;
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  background: $ablue;
+
+  a {
+    color: #fff;
+  }
+
+  &-container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    background: $ablue;
-    a {
-        color: #fff;
-    }
-    &-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    &-logo {
-        & img {
-            height: 20px;
-        }
-    }
-    &-menu {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        height: 100%;
-        color: #fff;
-        &__item {
-            margin-right: 14px;
-            position: relative;
-            &:last-child {
-                margin-right: 0;
-            }
+  }
 
-            &.dropdown{
-              padding-left: 40px;
-
-              .avatar{
-                position: absolute;
-                left: 0;
-                top: 50%;
-                margin-top: -16px;
-              }
-            }
-        }
+  &-logo {
+    & img {
+      height: 20px;
     }
+  }
+
+  &-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    color: #fff;
+
+    &__item {
+      margin-right: 14px;
+      position: relative;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &.dropdown {
+        padding-left: 40px;
+
+        .avatar {
+          position: absolute;
+          left: 0;
+          top: 50%;
+          margin-top: -16px;
+        }
+      }
+    }
+  }
 }
 
 
@@ -184,7 +186,7 @@ app-component{
 }
 
 .a-hover {
-  &:hover{
+  &:hover {
     transform: translateY(100) !important;
     color: red !important;
   }
@@ -196,8 +198,8 @@ app-component{
 }
 
 .amb-sidebar {
-  background: white; 
-  height: 100vh !important; 
+  background: white;
+  height: 100vh !important;
   box-shadow: 1px 1px 1px 1px #ccc;
 
   &__body {

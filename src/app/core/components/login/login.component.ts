@@ -14,7 +14,7 @@ import { AuthService } from 'app/services/auth.service';
 export class LoginComponent implements OnInit {
   forms: {
     loginForm?: FormGroup,
-    secretForm?: FormGroup
+    privateKeyForm?: FormGroup
   } = {};
 
   error;
@@ -25,14 +25,14 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {
     this.forms.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.forms.secretForm = new FormGroup({
-      secret: new FormControl(null, [Validators.required]),
+    this.forms.privateKeyForm = new FormGroup({
+      privateKey: new FormControl(null, [Validators.required]),
     });
   }
 
@@ -41,12 +41,12 @@ export class LoginComponent implements OnInit {
   verifyAccount() {
     this.error = false;
     this.forgotPassword = false;
-    const data = this.forms.secretForm.value;
+    const data = this.forms.privateKeyForm.value;
 
-    if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
+    if (this.forms.privateKeyForm.invalid) { return this.error = { privateKey: 'Private key is required' }; }
 
     this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(data.secret).subscribe((resp: any) => {
+      this.authService.verifyAccount(data.privateKey).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {

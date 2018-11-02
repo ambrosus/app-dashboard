@@ -1,0 +1,64 @@
+form {
+  display: block;
+  width: 100%;
+  max-width: 408px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+label {
+  color: $grey;
+  text-align: left;
+  display: block;
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.15;
+  margin-bottom: 23px;
+
+  &:last-of-type {
+    margin-bottom: 45px;
+  }
+
+  &.error {
+    color: $dark-red;
+
+    input:not([type="checkbox"]),
+    .input,
+    textarea {
+      box-shadow: 0 1px $dark-red;
+    }
+
+    .message {
+      font-size: 11px;
+      margin-top: 10px;
+      color: inherit;
+
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
+input:not([type="checkbox"]),
+.input,
+textarea {
+  font-family: 'Rubiko', sans-serif;
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  font-weight: 400;
+  padding: 10px 0;
+  color: $grey;
+  box-shadow: 0 1px rgba(#fff, 0.25);
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: left;
+  transition: all .2s;
+
+  &:focus {
+    color: #fff;
+    box-shadow: 0 1px #fff, inset 0px -1px #fff;
+  }
+}

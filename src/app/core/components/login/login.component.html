@@ -5,42 +5,28 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<div class="wrapper">
-  <h2 class="card__title">Welcome to Ambrosus.Dashboard!</h2>
-  <p class="card__body">How would you like to log in?</p>
+<app-tabs>
+  <app-tab label="Private Key">
+    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px;">
+      <label>Your private key
+        <input formControlName="privateKey" type="password" autocomplete="new-password" [appError]="error || 'The private key is required'">
+      </label>
+      <button type="submit" [promiseBtn]="promiseAction">Log in</button>
+    </form>
+  </app-tab>
+  <app-tab label="Email & Password">
+    <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
+      <label>Your email
+        <input formControlName="email" type="email">
+      </label>
+      <label>Your password
+        <input formControlName="password" type="password">
+      </label>
+      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
+    </form>
+  </app-tab>
+</app-tabs>
 
-  <div class="card animated fadeInDown">
-    <div class="card__header">
-
-      <app-tabs>
-        <app-tab label="Email/Password">
-          <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
-            <label>Email
-              <input formControlName="email" type="email" name="email" spellcheck="false">
-            </label>
-            <label>Password
-              <input formControlName="password" type="password" name="password" spellcheck="false">
-            </label>
-            <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
-          </form>
-        </app-tab>
-
-        <app-tab label="Secret">
-          <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
-            <label>Secret
-              <input formControlName="secret" type="password" name="secret" autocomplete="new-password" spellcheck="false">
-            </label>
-            <button type="submit" class="button button--blue" [promiseBtn]="promiseAction">Sign in</button>
-          </form>
-        </app-tab>
-      </app-tabs>
-
-      <p class="card_body" *ngIf="error || forgotPassword">{{ forgotPassword ? 'Login using secret and change the password inside user settings' : error }}</p>
-    </div>
-
-    <div class="additional-options">
-      <a (click)="forgotPassword = !forgotPassword; error = false;">Forgot your password?</a>
-      <a routerLink="/signup">I want to signup</a>
-    </div>
-  </div>
+<div style="text-align: center; margin-top: 50px">
+  <a routerLink="/signup">Register an account</a>
 </div>

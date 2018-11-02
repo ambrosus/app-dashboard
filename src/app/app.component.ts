@@ -17,6 +17,7 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 export class AppComponent {
   navigationSub: Subscription;
   initialLoad = false;
+  login;
 
   constructor(
     private el: ElementRef,
@@ -28,6 +29,7 @@ export class AppComponent {
         window.scrollTo(0, 0);
         this.initialLoad = true;
         this.renderer.addClass(document.body, 'page-loaded');
+        if (this.hideHeader()) { this.renderer.addClass(document.body, 'login'); }
       }
     });
   }
