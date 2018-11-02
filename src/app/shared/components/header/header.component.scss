@@ -158,12 +158,12 @@ app-header {
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 99999;
-  box-shadow: 6px 0px 20px 0px rgba(0, 0, 0, .1);
   transform: translateX(-100%);
   transition: transform .3s;
 
   &.active {
     transform: translateX(0);
+    box-shadow: 6px 0px 20px 0px rgba(0, 0, 0, .1);
   }
 
   &__menu {

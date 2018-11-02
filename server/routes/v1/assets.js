@@ -15,9 +15,11 @@ const AssetsRoutes = express.Router();
 AssetsRoutes.route('/')
   .post(AssetsController.createAsset, AssetsController.createEvents, (req, res) => { res.status(req.status).json(req.json); })
   .get(AssetsController.getAssets, (req, res) => { res.status(req.status).json(req.json); });
+
 AssetsRoutes.route('/events')
   .post(AssetsController.createEvents, (req, res) => { res.status(req.status).json(req.json); })
   .get(AssetsController.getEvents, (req, res) => { res.status(req.status).json(req.json); });
+
 AssetsRoutes.get('/events/:eventId', AssetsController.getEvent, (req, res) => { res.status(req.status).json(req.json); });
 AssetsRoutes.get('/:assetId', AssetsController.getAsset, (req, res) => { res.status(req.status).json(req.json); });
 

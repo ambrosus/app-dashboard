@@ -118,7 +118,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
     <div class="flex flex-direction-r justify-content-fe align-items-c m-t-20">
       <app-spinner *ngIf="spinner"></app-spinner>
-      <button type="button" class="color-ablue--base m-l-20" routerLink="/">Cancel</button>
+      <button type="button" class="color-ablue--base m-l-20" (click)="cancel()">Cancel</button>
       <button type="submit" class="button button--blue m-l-20">Create asset</button>
     </div>
   </form>

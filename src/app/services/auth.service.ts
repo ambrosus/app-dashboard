@@ -37,9 +37,9 @@ export class AuthService {
   }
 
   getToken(secret = null) {
-    const _secret = secret || this.storageService.get('secret');
-    const validUntil = moment().add(5, 'days').format();
-    return _secret ? this.sdk.getToken(_secret, validUntil) : {};
+    secret = secret || this.storageService.get('secret');
+    const validUntil = moment().add(5, 'days').unix();
+    return secret ? this.sdk.getToken(secret, validUntil) : {};
   }
 
   verifyAccount(secret) {

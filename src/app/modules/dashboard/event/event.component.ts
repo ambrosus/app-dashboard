@@ -27,7 +27,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private assetsService: AssetsService
+    public assetsService: AssetsService,
   ) { }
 
   ngOnDestroy() {
@@ -38,7 +38,7 @@ export class EventComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeSub = this.route.data.subscribe(
       data => this.event = data.event,
-      err => console.log('Event GET error: ', err)
+      err => console.error('[GET] Event: ', err),
     );
     this.routeParamsSub = this.route.params.subscribe(resp => {
       this.assetId = resp.assetid;
@@ -46,14 +46,5 @@ export class EventComponent implements OnInit, OnDestroy {
     });
 
     this.eventObjects = this.assetsService.parseEvent(this.event);
-    console.log('3', this.eventObjects);
-  }
-
-  getName(obj, alternative = 'No Title') {
-    try {
-      const name = obj.name;
-      const type = obj.type ? obj.type.split('.') : [];
-      return name ? name : type[type.length - 1];
-    } catch (e) { return alternative; }
   }
 }

@@ -3,7 +3,7 @@
   <header class="object__header">
     <app-qr-code [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
     <div class="object__title">
-      <h3>{{ getName(asset.infoEvent) }}</h3>
+      <h3>{{ assetsService.getName(asset.infoEvent) }}</h3>
       <p>{{ assetId }}</p>
     </div>
   </header>
@@ -60,8 +60,8 @@
   <!-- Events -->
   <div class="p-a-30">
     <h3 class="m-b-20">Events <button type="button" (click)="openAddEventDialog()">+</button></h3>
-
-    <app-timeline [assetId]="assetId" [name]="asset && asset.infoEvent ? asset.infoEvent.name : null"></app-timeline>
+    <p *ngIf="!timeline">No events</p>
+    <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.infoEvent)"></app-events-timeline>
   </div>
 
 </div>

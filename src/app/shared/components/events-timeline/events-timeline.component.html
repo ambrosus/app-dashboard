@@ -5,13 +5,16 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<ul class="timeline">
-  <li class="timeline__event" *ngFor="let event of events" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+<ul class="timeline" *ngIf="(assetsService.events | async).data.length">
+  <li class="timeline__event" *ngFor="let event of (assetsService.events | async).data" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
     <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'EEE, MMM d, yyyy' }}</p>
     <div class="timeline__event__info">
       <p class="timeline__event__timestamp">{{ event.timestamp * 1000 | date:'HH:mm' }}</p>
-      <h5 class="timeline__event__info__title">{{ event.name || event.type }}</h5>
-      <span class="timeline__event__info__location" *ngIf="event.location">{{ getLocation(event) }}</span>
+      <h5 class="timeline__event__info__title">{{ assetsService.getName(event) }}</h5>
+      <span class="timeline__event__info__location" *ngIf="event.location">{{ assetsService.getLocation(event) }}</span>
     </div>
+  </li>
+  <li *ngIf="pagination && pagination.hasNext">
+    <button type="button" class="button button--blue" (click)="loadEvents(pagination.next)">Load more</button>
   </li>
 </ul>

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-json-form',
@@ -20,13 +21,21 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   @Input() assetIds: String[];
   @Input() for: 'assets';
 
-  constructor(private storageService: StorageService, private assetsService: AssetsService) { }
+  constructor(
+    private storageService: StorageService,
+    private assetsService: AssetsService,
+    private router: Router,
+  ) { }
 
   ngOnInit() { }
 
   ngOnDestroy() {
     if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
     if (this.eventsCreateSub) { this.eventsCreateSub.unsubscribe(); }
+  }
+
+  cancel() {
+    this.router.navigate([`${location.pathname}`]);
   }
 
   validateJSON(input) {
@@ -143,29 +152,31 @@ export class JsonFormComponent implements OnInit, OnDestroy {
         const infoEvent = this.generateEvents(json, [asset.assetId]);
         this.assetsCreateSub = this.assetsService.createAssets([asset], infoEvent).subscribe(
           (resp: any) => {
+            console.log('[CREATE] Asset: ', resp);
             this.spinner = false;
             this.success = 'Success';
             this.sequenceNumber += 1;
           },
           err => {
+            console.error('[CREATE] Asset: ', err);
             this.error = err.message;
             this.spinner = false;
-            console.error('Asset and info event create error: ', err);
-          }
+          },
         );
       } else {
         // Edit or add events
         const events = this.generateEvents(json);
         this.eventsCreateSub = this.assetsService.createEvents(events).subscribe(
           (resp: any) => {
+            console.log('[CREATE] Events: ', resp);
             this.spinner = false;
             this.success = 'Success';
           },
           err => {
+            console.error('[CREATE] Events: ', err);
             this.error = err.message;
             this.spinner = false;
-            console.error('Events create error: ', err);
-          }
+          },
         );
       }
     } else {
