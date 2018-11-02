@@ -28,7 +28,8 @@ export class ErrorDirective implements OnChanges, OnInit {
 
   @HostListener('keyup', ['$event'])
   onKeyUp(event) {
-    if (this.el.nativeElement.classList.contains('ng-invalid')) {
+    const classList = this.el.nativeElement.classList;
+    if (classList.contains('ng-dirty') && classList.contains('ng-invalid')) {
       this.createError();
     } else { this.removeError(); }
   }

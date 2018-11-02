@@ -9,20 +9,20 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <app-tab label="Private Key">
     <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px;">
       <label>Your private key
-        <input formControlName="privateKey" type="password" autocomplete="new-password" [appError]="error || 'The private key is required'">
+        <input formControlName="privateKey" type="password" autocomplete="new-password" [appError]="error || 'Private key is required'">
       </label>
-      <button type="submit" [promiseBtn]="promiseAction">Log in</button>
+      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
   </app-tab>
   <app-tab label="Email & Password">
     <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
       <label>Your email
-        <input formControlName="email" type="email">
+        <input formControlName="email" type="email" [appError]="error || 'Email is required'">
       </label>
       <label>Your password
-        <input formControlName="password" type="password">
+        <input formControlName="password" type="password" [appError]="error || 'Password is required'">
       </label>
-      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
+      <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
   </app-tab>
 </app-tabs>
