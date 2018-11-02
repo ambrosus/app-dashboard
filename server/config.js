@@ -15,7 +15,7 @@ module.exports = {
     API_KEY: process.env.EMAIL_API_KEY,
   },
   api: {
-    core: process.env.API_CORE,
-    extended: process.env.API_EXTENDED,
+    core: process.env.API_CORE || 'https://gateway-test.ambrosus.com',
+    extended: process.env.API_EXTENDED || 'https://eu1-hermes-ext.ambrosus-test.com',
   },
 };
