@@ -5,105 +5,126 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<div class="wrapper">
+<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px;">
 
-  <!-- STEP 1 -->
-  <div *ngIf="step === 'keysOptions'">
-    <h2 class="card__title">{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
-    <p class="card__body">Public/private key is required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+<!-- STEP 1: Options -->
+<div *ngIf="step === 'options'" style="width: 100%; max-width: 625px; margin: 0 auto;">
+  <h2 style="color: #fff; margin: 55px 0 20px;">{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
+  <p class="meta" style="margin-bottom: 90px;">Public/private key pair is required to access the blockchain and complete transactions. <br><br>
+    You are free to either register your own key or use our secure key generator.<br>
+    Don’t worry, in either case, <b>we do not store your private key.</b></p>
 
-    <div class="card animated fadeInDown">
-      <div class="card__header center" style="padding: 30px 30px 0;">
-        <button type="button" class="button button--blue" (click)="step = 'keysGenerate'">Register my own key</button>
-        <p style="margin: 10px 0;">OR</p>
-        <button type="button" class="button button--blue" (click)="generateKeys()">Generate keys for me</button>
-        <small style="margin: 10px 0; display: block;">By proceeding I agree to your Terms of Service.</small>
-        <p class="card_body" *ngIf="error">{{ error }}</p>
-      </div>
-
-      <div class="additional-options">
-        <a></a>
-        <a routerLink="/login">I want to sign in</a>
-      </div>
+  <div class="options">
+    <div class="option">
+      <img src="/assets/raster/key.png" alt="Register my own key">
+      <button type="button" (click)="step = 'registerKey'">Register my own key</button>
+    </div>
+    <p class="options__separator meta__caption"><b>OR</b></p>
+    <div class="option">
+      <img src="/assets/raster/key-generate.png" alt="Generate keys for me">
+      <button class="outline" type="button">Generate keys for me</button>
     </div>
   </div>
 
-  <!-- STEP 2 -->
-  <div *ngIf="step === 'keysGenerate'">
-    <h2 class="card__title">Registration</h2>
-    <p class="card__body"><strong>Public</strong> and <strong>private</strong> keys are required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+  <div style="text-align: center; margin: 90px 0 30px">
+    <a routerLink="/login">Already a user?</a>
+  </div>
+</div>
 
-    <div class="card animated fadeInDown">
-      <div class="card__header">
-        <app-tabs>
-          <app-tab label="Private/public keys">
-            <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
-              <label>Private Key
-                <input formControlName="privateKey" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
-              </label>
-              <label>Public Key
-                <input formControlName="publicKey" type="text" spellcheck="false">
-              </label>
+<!-- STEP 2: Register key -->
+<div *ngIf="step === 'registerKey'" style="width: 100%;">
+  <h2 style="color: #fff; margin: 55px 0 25px;">Register your public key</h2>
+  <p class="meta" style="margin-bottom: 60px;">Public key is also known as address.</p>
 
-              {{ this.forms.secretForm.value.address }}
-              <a class="button" download="keys.json" [attr.href]="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</a>
-              <label style="margin: 10px 0; user-select: none;">
-                <input type="checkbox" formControlName="saved"> I saved my keys
-              </label>
-              <button type="submit" class="button button--blue" [disabled]="!forms.secretForm.valid" [promiseBtn]="promiseAction">Next</button>
-            </form>
-          </app-tab>
-        </app-tabs>
-        <p class="card_body" *ngIf="error">{{ error }}</p>
-      </div>
+  <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+    <label>Your private key
+      <span class="info">
+        <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
+        <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
+      </span>
+      <input formControlName="privateKey" type="text" [appError]="[error, forms.privateKeyForm, true]">
+    </label>
+    <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Continue</button>
+  </form>
+</div>
 
-      <div class="additional-options">
-        <a></a>
-        <a routerLink="/login">I want to sign in</a>
-      </div>
+<!-- STEP 2: Generate keys -->
+<div *ngIf="step === 'keysGenerate'">
+
+
+  <!-- <h2 class="card__title">Registration</h2>
+  <p class="card__body"><strong>Public</strong> and <strong>private</strong> keys are required to access the blockchain and complete transactions. You are free to either register your own key or use our secure key generator. Don't worry, in either case, we <b>do not</b> store your private key.</p>
+
+  <div class="card animated fadeInDown">
+    <div class="card__header">
+      <app-tabs>
+        <app-tab label="Private/public keys">
+          <form [formGroup]="forms.secretForm" (ngSubmit)="verifyAccount()">
+            <label>Private Key
+              <input formControlName="privateKey" type="text" spellcheck="false" #secret (keyup)="generateAddress(secret)">
+            </label>
+            <label>Public Key
+              <input formControlName="publicKey" type="text" spellcheck="false">
+            </label>
+
+            {{ this.forms.secretForm.value.address }}
+            <a class="button" download="keys.json" [attr.href]="downloadJSON()" style="border: 2px solid green; color: green">Download keystore file (JSON)</a>
+            <label style="margin: 10px 0; user-select: none;">
+              <input type="checkbox" formControlName="saved"> I saved my keys
+            </label>
+            <button type="submit" class="button button--blue" [disabled]="!forms.secretForm.valid" [promiseBtn]="promiseAction">Next</button>
+          </form>
+        </app-tab>
+      </app-tabs>
+      <p class="card_body" *ngIf="error">{{ error }}</p>
+    </div>
+
+    <div class="additional-options">
+      <a></a>
+      <a routerLink="/login">I want to sign in</a>
+    </div>
+  </div> -->
+</div>
+
+<!-- STEP 3 -->
+<div *ngIf="step === 'requestForm'">
+  <h2 class="card__title">Almost done...</h2>
+  <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
+
+  <div class="card animated fadeInDown">
+    <div class="card__header">
+      <app-tabs>
+        <app-tab label="User information">
+          <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+            <label>Your organization title (optional)
+              <input formControlName="title" type="text" spellcheck="false">
+            </label>
+            <label>Your email
+              <input formControlName="email" type="email" spellcheck="false">
+            </label>
+            <label>What makes you interested in our solution?
+              <textarea formControlName="message" style="max-width: 100%;"></textarea>
+            </label>
+            <label style="user-select: none;">
+              <input formControlName="terms" type="checkbox"> I have read and accepted your Terms of Service
+            </label>
+            <button type="submit" class="button button--blue" [disabled]="!forms.requestForm.valid" [promiseBtn]="promiseAction">Continue</button>
+          </form>
+        </app-tab>
+      </app-tabs>
+      <p class="card_body" *ngIf="error">{{ error }}</p>
+    </div>
+
+    <div class="additional-options">
+      <a (click)="step = 'keysGenerate'">Back to keys</a>
+      <a routerLink="/login">I want to sign in</a>
     </div>
   </div>
+</div>
 
-  <!-- STEP 3 -->
-  <div *ngIf="step === 'requestForm'">
-    <h2 class="card__title">Almost done...</h2>
-    <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
-
-    <div class="card animated fadeInDown">
-      <div class="card__header">
-        <app-tabs>
-          <app-tab label="User information">
-            <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
-              <label>Your organization title (optional)
-                <input formControlName="title" type="text" spellcheck="false">
-              </label>
-              <label>Your email
-                <input formControlName="email" type="email" spellcheck="false">
-              </label>
-              <label>What makes you interested in our solution?
-                <textarea formControlName="message" style="max-width: 100%;"></textarea>
-              </label>
-              <label style="user-select: none;">
-                <input formControlName="terms" type="checkbox"> I have read and accepted your Terms of Service
-              </label>
-              <button type="submit" class="button button--blue" [disabled]="!forms.requestForm.valid" [promiseBtn]="promiseAction">Continue</button>
-            </form>
-          </app-tab>
-        </app-tabs>
-        <p class="card_body" *ngIf="error">{{ error }}</p>
-      </div>
-
-      <div class="additional-options">
-        <a (click)="step = 'keysGenerate'">Back to keys</a>
-        <a routerLink="/login">I want to sign in</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- STEP 4 - SUCCESS -->
-  <div class="card animated fadeInDown" *ngIf="step === 'success'" style="padding: 30px;">
-    <h2 class="card__title">Thank you!</h2>
-    <p class="card__body">Your application has been successfully submitted for approval. Once reviewed, we will send you an e-mail.</p>
-    <hr>
-  </div>
+<!-- STEP 4 - SUCCESS -->
+<div class="card animated fadeInDown" *ngIf="step === 'success'" style="padding: 30px;">
+  <h2 class="card__title">Thank you!</h2>
+  <p class="card__body">Your application has been successfully submitted for approval. Once reviewed, we will send you an e-mail.</p>
+  <hr>
 </div>

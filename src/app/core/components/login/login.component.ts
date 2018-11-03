@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
     public dialog: MatDialog,
   ) {
     this.forms.loginForm = new FormGroup({
-      email: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, this.validateEmail]),
       password: new FormControl(null, [Validators.required]),
     });
     this.forms.privateKeyForm = new FormGroup({
@@ -46,6 +46,15 @@ export class LoginComponent implements OnInit {
       console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
       return null;
     } catch (e) { return { 'Invalid private key': control.value }; }
+  }
+
+  validateEmail(control: AbstractControl) {
+    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!emailPattern.test(control.value)) {
+      return { 'Email is invalid': control.value };
+    }
+    return null;
   }
 
   verifyAccount() {

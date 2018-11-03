@@ -29,7 +29,9 @@ export class AppComponent {
         window.scrollTo(0, 0);
         this.initialLoad = true;
         this.renderer.addClass(document.body, 'page-loaded');
-        if (this.hideHeader()) { this.renderer.addClass(document.body, 'login'); }
+        if (this.hideHeader()) {
+          this.renderer.addClass(document.body, 'login');
+        } else { this.renderer.removeClass(document.body, 'login'); }
       }
     });
   }

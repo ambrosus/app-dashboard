@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -19,7 +19,7 @@ declare let Web3: any;
 })
 export class SignupComponent implements OnInit, OnDestroy {
   forms: {
-    secretForm?: FormGroup,
+    privateKeyForm?: FormGroup,
     requestForm?: FormGroup
   } = {};
 
@@ -32,7 +32,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   promiseAction;
   web3;
   saved;
-  step = 'keysOptions';
+  step = 'options';
   token;
   invite;
 
@@ -53,10 +53,9 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.token = queryParams.token;
       if (this.token) { this.getInvite(); }
     });
-    this.forms.secretForm = new FormGroup({
-      privateKey: new FormControl(null, [Validators.required]),
+    this.forms.privateKeyForm = new FormGroup({
+      privateKey: new FormControl(null, [Validators.required, this.validatePrivateKey]),
       publicKey: new FormControl({ value: null, disabled: true }, [Validators.required]),
-      saved: new FormControl(null, [Validators.requiredTrue]),
     });
     this.forms.requestForm = new FormGroup({
       title: new FormControl(null, []),
@@ -73,6 +72,14 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.createAccountSub) { this.createAccountSub.unsubscribe(); }
   }
 
+  validatePrivateKey(control: AbstractControl) {
+    try {
+      const web3 = new Web3();
+      console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
+      return null;
+    } catch (e) { return { 'Invalid private key': control.value }; }
+  }
+
   getInvite() {
     this.getInviteSub = this.inviteService.verifyInvite(this.token).subscribe(
       (resp: any) => {
@@ -85,8 +92,8 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   generateKeys() {
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    this.forms.secretForm.get('privateKey').setValue(privateKey);
-    this.forms.secretForm.get('publicKey').setValue(address);
+    this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
+    this.forms.privateKeyForm.get('publicKey').setValue(address);
     this.step = 'keysGenerate';
   }
 
@@ -95,29 +102,29 @@ export class SignupComponent implements OnInit, OnDestroy {
     let address;
     try {
       address = this.web3.eth.accounts.privateKeyToAccount(secret.value).address;
-      this.forms.secretForm.get('privateKey').setValue(secret.value);
-      this.forms.secretForm.get('publicKey').setValue(address);
+      this.forms.privateKeyForm.get('privateKey').setValue(secret.value);
+      this.forms.privateKeyForm.get('publicKey').setValue(address);
     } catch (e) {
       this.error = 'Please insert valid secret';
-      this.forms.secretForm.get('address').setValue(null);
+      this.forms.privateKeyForm.get('address').setValue(null);
     }
   }
 
   downloadJSON() {
-    const url = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.forms.secretForm.value, null, 2));
+    const url = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.forms.privateKeyForm.value, null, 2));
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   verifyAccount() {
     this.error = false;
-    const { privateKey, publicKey } = this.forms.secretForm.getRawValue();
+    const { privateKey, publicKey } = this.forms.privateKeyForm.getRawValue();
 
-    if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
+    if (!this.forms.privateKeyForm.valid) { return this.error = 'Public key is required'; }
 
     this.promiseAction = new Promise((resolve, reject) => {
       this.authService.verifyAccount(privateKey).subscribe((resp: any) => {
         console.log(resp);
-        this.error = 'This account is already registered, please insert another secret';
+        this.error = 'This account is already registered, please use another private key';
         resolve();
       }, err => {
         if (!this.invite) {
@@ -145,7 +152,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   requestOrganization() {
     this.error = false;
-    const { publicKey } = this.forms.secretForm.getRawValue();
+    const { publicKey } = this.forms.privateKeyForm.getRawValue();
     const data = this.forms.requestForm.getRawValue();
     data.address = publicKey;
 

@@ -7,15 +7,16 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px;">
 <p class="center" style="color: #989898; margin: 65px 0 25px">Choose your log-in method</p>
+
 <app-tabs>
   <app-tab label="Private Key">
-    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()">
+    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
       <label>Your private key
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
           <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
         </span>
-        <input formControlName="privateKey" type="password" autocomplete="new-password" [appError]="[error, forms.privateKeyForm, true]">
+        <input formControlName="privateKey" type="text" [appError]="[error, forms.privateKeyForm, true]">
       </label>
       <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
