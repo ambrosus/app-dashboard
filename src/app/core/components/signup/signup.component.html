@@ -98,52 +98,38 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </h6>
   </div>
   <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
-  <div style="margin-bottom: 50px; text-align: center">
+  <div style="text-align: center">
     <input type="checkbox" [checked]="saved" (change)="saved = !saved" id="saveKeys">
-    <label for="saveKeys" class="checkbox" style="margin: 0">I have saved my keys</label>
+    <label for="saveKeys" class="checkbox">I have saved my keys</label>
   </div>
   <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
 </div>
 
 <!-- STEP 4: Request form -->
-<div *ngIf="step === 'requestForm'">
-  <h2 class="card__title">Almost done...</h2>
-  <p class="card__body">For better user experience and access to all dashboard features please share a few details. You can skip this step and complete it later.</p>
-
-  <div class="card animated fadeInDown">
-    <div class="card__header">
-      <app-tabs>
-        <app-tab label="User information">
-          <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
-            <label>Your organization title (optional)
-              <input formControlName="title" type="text" spellcheck="false">
-            </label>
-            <label>Your email
-              <input formControlName="email" type="email" spellcheck="false">
-            </label>
-            <label>What makes you interested in our solution?
-              <textarea formControlName="message" style="max-width: 100%;"></textarea>
-            </label>
-            <label style="user-select: none;">
-              <input formControlName="terms" type="checkbox"> I have read and accepted your Terms of Service
-            </label>
-            <button type="submit" class="button button--blue" [disabled]="!forms.requestForm.valid" [promiseBtn]="promiseAction">Continue</button>
-          </form>
-        </app-tab>
-      </app-tabs>
-      <p class="card_body" *ngIf="error">{{ error }}</p>
+<div *ngIf="step === 'requestForm'" style="width: 100%; max-width: 625px; margin: 0 auto;">
+  <h2 style="color: #fff; margin: 55px 0 15px; padding: 0 50px;">Almost done</h2>
+  <p class="meta" style="margin-bottom: 50px;">For better customer experience please share a few more details.</p>
+  <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+    <label>Organization name (optional)
+      <input formControlName="title" type="text" [appError]="[error, forms.requestForm, true]">
+    </label>
+    <label>Your email
+      <input formControlName="email" type="email" [appError]="[error, forms.requestForm]">
+    </label>
+    <label>What makes you interested in our solution?
+      <textarea formControlName="message" style="max-width: 100%;" [appError]="[error, forms.requestForm]"></textarea>
+    </label>
+    <div style="text-align: left">
+      <input type="checkbox" formControlName="terms" id="terms">
+      <label for="terms" class="checkbox">I have read and accepted <a>Terms of Service</a></label>
     </div>
-
-    <div class="additional-options">
-      <a (click)="step = 'keysGenerate'">Back to keys</a>
-      <a routerLink="/login">I want to sign in</a>
-    </div>
-  </div>
+    <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseAction">Register</button>
+  </form>
 </div>
 
-<!-- STEP 4 - SUCCESS -->
-<div class="card animated fadeInDown" *ngIf="step === 'success'" style="padding: 30px;">
-  <h2 class="card__title">Thank you!</h2>
-  <p class="card__body">Your application has been successfully submitted for approval. Once reviewed, we will send you an e-mail.</p>
-  <hr>
+<!-- STEP 5: Success -->
+<div *ngIf="step === 'success'" style="width: 100%; max-width: 625px; margin: 0 auto;">
+  <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px">
+  <h2 style="color: #fff; margin-bottom: 15px; padding: 0 50px;">Thank you!</h2>
+  <p class="meta" style="margin-bottom: 50px;">Your application has been successfully submitted for approval.<br>Once reviewed, we will send you an email with further instructions.</p>
 </div>

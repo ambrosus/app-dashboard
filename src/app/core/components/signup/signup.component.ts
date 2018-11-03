@@ -22,7 +22,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     privateKeyForm?: FormGroup,
     requestForm?: FormGroup
   } = {};
-
   requestOrganizationSub: Subscription;
   routeSub: Subscription;
   getInviteSub: Subscription;
@@ -59,7 +58,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     });
     this.forms.requestForm = new FormGroup({
       title: new FormControl(null, []),
-      email: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, this.validateEmail]),
       message: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.requiredTrue]),
     });
@@ -78,6 +77,15 @@ export class SignupComponent implements OnInit, OnDestroy {
       console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
       return null;
     } catch (e) { return { 'Invalid private key': control.value }; }
+  }
+
+  validateEmail(control: AbstractControl) {
+    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!emailPattern.test(control.value)) {
+      return { 'Email is invalid': control.value };
+    }
+    return null;
   }
 
   getInvite() {

@@ -14,7 +14,7 @@ export class ErrorDirective implements OnChanges, OnInit, OnDestroy {
   form;
   hideValidSign;
 
-  @Input() appError: [string, FormGroup, boolean?];
+  @Input() appError: any[];
 
   constructor(
     private el: ElementRef,
