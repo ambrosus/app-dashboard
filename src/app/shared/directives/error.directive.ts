@@ -1,5 +1,4 @@
 import { Directive, Input, ElementRef, OnChanges, HostListener, OnInit, Renderer2, OnDestroy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Directive({
