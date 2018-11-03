@@ -65,6 +65,14 @@ label {
     }
   }
 
+  .show-password {
+    display: inline-block;
+    position: absolute;
+    top: 25px;
+    right: 3px;
+    color: $grey;
+  }
+
   .info {
     display: inline-block;
     position: absolute;

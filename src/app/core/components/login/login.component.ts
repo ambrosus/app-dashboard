@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   deviceInfo;
   promiseAction;
   forgotPassword;
+  showPassword;
 
   constructor(
     private authService: AuthService,

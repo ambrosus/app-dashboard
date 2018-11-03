@@ -26,7 +26,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         <input formControlName="email" type="email" [appError]="[error, forms.loginForm]">
       </label>
       <label>Your password
-        <input formControlName="password" type="password" [appError]="[error, forms.loginForm, true]">
+        <span class="show-password" (click)="showPassword = !showPassword">
+          <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
+          <app-svg-icon *ngIf="showPassword" name="eye_close" width="16" height="16"></app-svg-icon>
+        </span>
+        <input formControlName="password" [type]="showPassword ? 'text' : 'password'" [appError]="[error, forms.loginForm, true]">
       </label>
       <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
