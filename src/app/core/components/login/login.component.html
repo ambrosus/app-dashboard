@@ -9,6 +9,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <app-tab label="Private Key">
     <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()">
       <label>Your private key
+        <span class="info">
+          <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
+          <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
+        </span>
         <input formControlName="privateKey" type="password" autocomplete="new-password" [appError]="[error, forms.privateKeyForm, true]">
       </label>
       <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>

@@ -45,11 +45,11 @@ label {
     display: none;
     position: absolute;
     top: 28px;
-    right: 5px;
+    right: 3px;
     width: 12px;
     height: 12px;
     content: '';
-    background-image: url(/assets/ui/svg/success.svg);
+    background-image: url('/assets/svg/success.svg');
     background-size: contain;
   }
 
@@ -61,6 +61,50 @@ label {
     &.no-sign {
       &:after {
         display: none;
+      }
+    }
+  }
+
+  .info {
+    display: inline-block;
+    position: absolute;
+    top: 25px;
+    right: 3px;
+
+    .message {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 12px);
+      width: 135px;
+      min-height: 70px;
+      left: calc(100% - 75px);
+      padding: 8px;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 11px;
+      line-height: 1.2;
+      color: $black;
+
+      &:before {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: calc(100% - 75px);
+        width: 0;
+        height: 0;
+        border: 7px solid #fff;
+        background: #fff;
+        transform: rotate(45deg);
+      }
+    }
+
+    &:hover {
+      svg {
+        fill: $light-blue;
+      }
+
+      .message {
+        display: inline-block;
       }
     }
   }

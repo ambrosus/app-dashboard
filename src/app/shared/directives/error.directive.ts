@@ -25,6 +25,7 @@ export class ErrorDirective implements OnChanges, OnInit, OnDestroy {
     [this.errors, this.form, this.hideValidSign] = this.appError;
     this.parent = this.el.nativeElement.parentNode;
     this.controlName = this.el.nativeElement.attributes['formcontrolname'].nodeValue;
+
     // Valid sign and class
     this.statusSub = this.form.get(this.controlName).statusChanges.subscribe(
       status => {
