@@ -16,7 +16,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
           <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
         </span>
-        <input formControlName="privateKey" type="text" [appError]="[error, forms.privateKeyForm, true]">
+        <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]">
       </label>
       <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
@@ -24,14 +24,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <app-tab label="Email & Password">
     <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
       <label>Your email
-        <input formControlName="email" type="email" [appError]="[error, forms.loginForm]">
+        <input formControlName="email" type="email" [appError]="[forms.loginForm]">
       </label>
       <label>Your password
         <span class="show-password" (click)="showPassword = !showPassword">
           <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
           <app-svg-icon *ngIf="showPassword" name="eye_close" width="16" height="16"></app-svg-icon>
         </span>
-        <input formControlName="password" [type]="showPassword ? 'text' : 'password'" [appError]="[error, forms.loginForm, true]">
+        <input formControlName="password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]">
       </label>
       <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseAction">Log in</button>
     </form>
