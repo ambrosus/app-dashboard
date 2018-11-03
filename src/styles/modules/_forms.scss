@@ -116,6 +116,39 @@ label {
       }
     }
   }
+
+  &.checkbox {
+    color: #fff;
+    padding-left: 39px;
+    display: inline-block;
+    width: auto;
+
+    &:before {
+      content: '';
+      width: 22px;
+      height: 22px;
+      border: 2px solid #fff;
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: -4px;
+      border-radius: 6px;
+    }
+
+    &:after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      background-image: url('/assets/svg/success.svg');
+      background-size: 11px;
+      background-repeat: no-repeat;
+      transition: all .2s;
+    }
+  }
 }
 
 input:not([type="checkbox"]),
@@ -139,5 +172,33 @@ textarea {
   &:focus {
     color: #fff;
     box-shadow: 0 1px #fff, inset 0px -1px #fff;
+  }
+}
+
+input[type="checkbox"] {
+  position: absolute;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip: rect(0, 0, 0, 0);
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+[type="checkbox"] {
+  &:checked + label {
+    &:after {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &:not(:checked) + label {
+    &:after {
+      opacity: 0;
+      transform: scale(0);
+    }
   }
 }

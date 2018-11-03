@@ -68,4 +68,29 @@ app-signup {
       }
     }
   }
+
+  .back {
+    position: absolute;
+    left: 0;
+    color: #9198BB;
+  }
+
+  .warning {
+    width: 100%;
+    max-width: 624px;
+    background: rgba(4, 4, 4, 0.15);
+    border-radius: 8px;
+    margin: 50px 0 40px;
+    padding: 50px 25px;
+  }
+
+  .keys {
+    width: 100%;
+    max-width: 624px;
+    background: #fff;
+    border-radius: 8px;
+    margin: 50px 0 20px;
+    padding: 35px 25px 25px 25px;
+    text-align: left;
+  }
 }
