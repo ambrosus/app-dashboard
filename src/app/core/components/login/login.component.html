@@ -5,6 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
+<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px;">
+<p class="center" style="color: #989898; margin: 65px 0 25px">Choose your log-in method</p>
 <app-tabs>
   <app-tab label="Private Key">
     <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()">
@@ -31,6 +33,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </app-tab>
 </app-tabs>
 
-<div style="text-align: center; margin-top: 50px">
+<div style="text-align: center; margin: 50px 0 30px">
   <a routerLink="/signup">Register an account</a>
 </div>
