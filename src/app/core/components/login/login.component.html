@@ -24,14 +24,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <app-tab label="Email & Password">
     <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
       <label [ngClass]="{ error: errorLoginForm }">Your email
-        <input formControlName="email" type="email" name="new-email" autocomplete="off" [appError]="[forms.loginForm]">
+        <input formControlName="email" type="email" name="new-email" autocomplete="new-password" [appError]="[forms.loginForm]">
       </label>
       <label [ngClass]="{ error: errorLoginForm }">Your password
         <span class="show-password" (click)="showPassword = !showPassword">
           <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
           <app-svg-icon *ngIf="showPassword" name="eye_close" width="16" height="16"></app-svg-icon>
         </span>
-        <input formControlName="password" name="new-password" autocomplete="off" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]">
+        <input formControlName="password" name="new_password" autocomplete="new-password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]">
       </label>
       <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseActionLoginForm">Log in</button>
     </form>
