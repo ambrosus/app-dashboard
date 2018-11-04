@@ -36,7 +36,9 @@ app-footer {
   }
 
   .copyright {
-    font-size: 11px;
+    > p {
+      font-size: 11px;
+    }
   }
 
   .contact {
@@ -69,7 +71,9 @@ app-footer {
   app-footer {
 
     .copyright {
-      color: $grey;
+      > p {
+        color: $grey;
+      }
     }
 
     .contact {
