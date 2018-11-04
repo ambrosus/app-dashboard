@@ -26,9 +26,11 @@ export class SignupComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
   getInviteSub: Subscription;
   createAccountSub: Subscription;
-  error;
+  errorPrivateKeyForm;
+  errorRequestForm;
   success;
-  promiseAction;
+  promiseActionPrivateKeyForm;
+  promiseActionRequestForm;
   web3;
   saved = false;
   step = 'options';
@@ -106,16 +108,16 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   verifyAccount() {
-    this.error = false;
+    this.errorPrivateKeyForm = false;
     const { privateKey } = this.forms.privateKeyForm.getRawValue();
 
-    if (!this.forms.privateKeyForm.valid) { return this.error = 'Public key is required'; }
+    if (!this.forms.privateKeyForm.valid) { return this.errorPrivateKeyForm = 'Public key is required'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
       this.authService.verifyAccount(privateKey).subscribe(
         (resp: any) => {
           console.log(resp);
-          this.error = 'This account is already registered, please use another private key';
+          this.errorPrivateKeyForm = 'This account is already registered, please use another private key';
           resolve();
         }, err => {
           this.generateAddress(privateKey);
@@ -137,7 +139,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         resp => this.router.navigate(['/login']),
         error => {
           console.error('[CREATE] Account: ', error);
-          this.error = 'Account creation failed';
+          this.errorPrivateKeyForm = 'Account creation failed';
         },
       );
     } else {
@@ -146,13 +148,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   generateAddress(privateKey) {
-    this.error = false;
+    this.errorPrivateKeyForm = false;
     try {
       const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
       this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
       this.forms.privateKeyForm.get('publicKey').setValue(address);
     } catch (e) {
-      this.error = 'Please insert valid secret';
+      this.errorPrivateKeyForm = 'Please insert valid secret';
       this.forms.privateKeyForm.get('address').setValue(null);
     }
   }
@@ -163,14 +165,14 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   requestOrganization() {
-    this.error = false;
+    this.errorRequestForm = false;
     const { publicKey } = this.forms.privateKeyForm.getRawValue();
     const data = this.forms.requestForm.getRawValue();
     data.address = publicKey;
 
-    if (this.forms.requestForm.invalid) { return this.error = 'Please fill all required fields'; }
+    if (this.forms.requestForm.invalid) { return this.errorRequestForm = 'Please fill all required fields'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionRequestForm = new Promise((resolve, reject) => {
       this.requestOrganizationSub = this.organizationsService.organizationRequest(data).subscribe(
         (resp: any) => {
           this.step = 'success';
@@ -178,7 +180,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         },
         err => {
           console.error('[REQUEST] Organization: ', err);
-          this.error = 'Request failed, please contact support';
+          this.errorRequestForm = 'Request failed, please contact support';
           reject();
         },
       );

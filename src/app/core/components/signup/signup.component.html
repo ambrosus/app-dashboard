@@ -5,7 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px;">
+<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px; height: 120px">
 
 <!-- STEP 1: Options -->
 <div *ngIf="step === 'options'" style="width: 100%; max-width: 625px; margin: 0 auto;">
@@ -42,14 +42,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
 
   <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
-    <label>Your private key
+    <label [ngClass]="{ error: errorPrivateKeyForm }">Your private key
       <span class="info">
         <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
         <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
       </span>
       <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]">
     </label>
-    <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Continue</button>
+    <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">Continue</button>
   </form>
 </div>
 
@@ -110,20 +110,20 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <h2 style="color: #fff; margin: 55px 0 15px; padding: 0 50px;">Almost done</h2>
   <p class="meta" style="margin-bottom: 50px;">For better customer experience please share a few more details.</p>
   <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
-    <label>Organization name (optional)
+    <label [ngClass]="{ error: errorRequestForm }">Organization name (optional)
       <input formControlName="title" type="text" [appError]="[forms.requestForm, true]">
     </label>
-    <label>Your email
+    <label [ngClass]="{ error: errorRequestForm }">Your email
       <input formControlName="email" type="email" [appError]="[forms.requestForm]">
     </label>
-    <label>What makes you interested in our solution?
+    <label [ngClass]="{ error: errorRequestForm }">What makes you interested in our solution?
       <textarea formControlName="message" style="max-width: 100%;" [appError]="[forms.requestForm]"></textarea>
     </label>
     <div style="text-align: left">
       <input type="checkbox" formControlName="terms" id="terms">
       <label for="terms" class="checkbox">I have read and accepted <a>Terms of Service</a></label>
     </div>
-    <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseAction">Register</button>
+    <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">Register</button>
   </form>
 </div>
 

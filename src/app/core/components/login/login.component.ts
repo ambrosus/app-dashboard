@@ -18,11 +18,13 @@ export class LoginComponent implements OnInit {
     loginForm?: FormGroup,
     privateKeyForm?: FormGroup
   } = {};
-  error;
   deviceInfo;
-  promiseAction;
+  promiseActionPrivateKeyForm;
+  promiseActionLoginForm;
   forgotPassword;
   showPassword;
+  errorPrivateKeyForm;
+  errorLoginForm;
 
   constructor(
     private authService: AuthService,
@@ -58,36 +60,36 @@ export class LoginComponent implements OnInit {
   }
 
   verifyAccount() {
-    this.error = false;
+    this.errorPrivateKeyForm = false;
     this.forgotPassword = false;
     const data = this.forms.privateKeyForm.value;
 
-    if (this.forms.privateKeyForm.invalid) { return this.error = 'Fill all required fileds'; }
+    if (this.forms.privateKeyForm.invalid) { return this.errorPrivateKeyForm = 'Fill all required fileds'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
       this.authService.verifyAccount(data.privateKey).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
-        this.error = err.message;
+        this.errorPrivateKeyForm = err.message;
         reject();
       });
     });
   }
 
   login() {
-    this.error = false;
+    this.errorLoginForm = false;
     this.forgotPassword = false;
     const data = this.forms.loginForm.value;
 
-    if (!this.forms.loginForm.valid) { return this.error = 'All fields are required'; }
+    if (!this.forms.loginForm.valid) { return this.errorLoginForm = 'All fields are required'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionLoginForm = new Promise((resolve, reject) => {
       this.authService.login(data.email, data.password).subscribe((resp: any) => {
         this.router.navigate(['/assets']);
         resolve();
       }, err => {
-        this.error = err.message;
+        this.errorLoginForm = err.message;
         reject();
       });
     });

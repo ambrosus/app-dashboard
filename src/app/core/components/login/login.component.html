@@ -5,35 +5,35 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px;">
+<img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px; height: 120px">
 <p class="center" style="color: #989898; margin: 65px 0 25px">Choose your log-in method</p>
 
 <app-tabs>
   <app-tab label="Private Key">
     <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
-      <label>Your private key
+      <label [ngClass]="{ error: errorPrivateKeyForm }">Your private key
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
           <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
         </span>
         <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]">
       </label>
-      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseAction">Log in</button>
+      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">Log in</button>
     </form>
   </app-tab>
   <app-tab label="Email & Password">
     <form [formGroup]="forms.loginForm" (ngSubmit)="login()">
-      <label>Your email
-        <input formControlName="email" type="email" [appError]="[forms.loginForm]">
+      <label [ngClass]="{ error: errorLoginForm }">Your email
+        <input formControlName="email" type="email" autocomplete="off" [appError]="[forms.loginForm]">
       </label>
-      <label>Your password
+      <label [ngClass]="{ error: errorLoginForm }">Your password
         <span class="show-password" (click)="showPassword = !showPassword">
           <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
           <app-svg-icon *ngIf="showPassword" name="eye_close" width="16" height="16"></app-svg-icon>
         </span>
-        <input formControlName="password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]">
+        <input formControlName="password" autocomplete="off" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]">
       </label>
-      <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseAction">Log in</button>
+      <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseActionLoginForm">Log in</button>
     </form>
   </app-tab>
 </app-tabs>
