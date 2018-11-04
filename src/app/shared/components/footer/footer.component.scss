@@ -23,7 +23,16 @@ app-footer {
           height: 16px;
 
           path {
-            fill: #fff;
+            fill: $grey;
+            transition: fill .2s;
+          }
+        }
+
+        &:hover {
+          svg {
+            path {
+              fill: #fff;
+            }
           }
         }
       }
