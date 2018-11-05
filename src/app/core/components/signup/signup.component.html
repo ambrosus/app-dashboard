@@ -117,7 +117,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.requestForm]">
     </label>
     <label [ngClass]="{ error: errorRequestForm }">What makes you interested in our solution?
-      <textarea formControlName="message" style="max-width: 100%;" [appError]="[forms.requestForm]"></textarea>
+      <textarea formControlName="message" [appError]="[forms.requestForm]"></textarea>
     </label>
     <div style="text-align: left">
       <input type="checkbox" formControlName="terms" id="terms">

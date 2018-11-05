@@ -161,7 +161,7 @@ textarea {
   width: 100%;
   font-weight: 400;
   padding: 10px 0;
-  color: $grey;
+  color: #fff;
   box-shadow: 0 1px rgba(#fff, 0.25);
   font-size: 13px;
   line-height: 1.15;
@@ -173,6 +173,11 @@ textarea {
     color: #fff;
     box-shadow: 0 1px #fff, inset 0px -1px #fff;
   }
+}
+
+textarea {
+  min-height: 34px;
+  height: 34px;
 }
 
 input[type="checkbox"] {
