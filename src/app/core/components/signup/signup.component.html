@@ -98,10 +98,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </h6>
   </div>
   <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
-  <div style="text-align: center">
-    <input type="checkbox" [checked]="saved" (change)="saved = !saved" id="saveKeys">
-    <label for="saveKeys" class="checkbox">I have saved my keys</label>
-  </div>
+  <label style="text-align: center">
+    <input type="checkbox" formControlName="terms" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
+  </label>
   <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
 </div>
 
@@ -119,10 +118,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <label [ngClass]="{ error: errorRequestForm }">What makes you interested in our solution?
       <textarea formControlName="message" [appError]="[forms.requestForm]"></textarea>
     </label>
-    <div style="text-align: left">
-      <input type="checkbox" formControlName="terms" id="terms">
-      <label for="terms" class="checkbox">I have read and accepted <a>Terms of Service</a></label>
-    </div>
+    <label>
+      <input type="checkbox" formControlName="terms" appCustomCheckbox>
+      I have read and accepted <a>Terms of Service</a>
+    </label>
     <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">Register</button>
   </form>
 </div>

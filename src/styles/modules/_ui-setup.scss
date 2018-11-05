@@ -35,29 +35,6 @@ body {
   min-height: 100%;
   min-height: 100vh;
   overflow-x: hidden;
-
-  &.login {
-    background: $purple-blue;
-    background-size: 100% 200% !important;
-
-    &.page-loaded {
-      @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
-      @include animation('animateGradient .9s 1');
-      animation-delay: 1s;
-      background-position: 0 100%;
-      animation-fill-mode: forwards;
-    }
-  }
-}
-
-@include keyframes(animateGradient) {
-  0% {
-    background-position: 0 100%;
-  }
-
-  100% {
-    background-position: 0 0;
-  }
 }
 
 img,

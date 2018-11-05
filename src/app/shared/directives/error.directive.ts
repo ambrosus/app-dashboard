@@ -10,7 +10,7 @@ export class ErrorDirective implements OnChanges, OnInit, OnDestroy {
   parent;
   controlName;
   form;
-  hideValidSign;
+  hideCheckmarkSign;
 
   @Input() appError: any[];
 
@@ -20,7 +20,7 @@ export class ErrorDirective implements OnChanges, OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    [this.form, this.hideValidSign] = this.appError;
+    [this.form, this.hideCheckmarkSign] = this.appError;
     this.parent = this.el.nativeElement.parentNode;
     this.controlName = this.el.nativeElement.attributes['formcontrolname'].nodeValue;
 
@@ -28,7 +28,7 @@ export class ErrorDirective implements OnChanges, OnInit, OnDestroy {
     this.statusSub = this.form.get(this.controlName).statusChanges.subscribe(
       status => {
         if (status === 'VALID') {
-          if (this.hideValidSign) { this.renderer.addClass(this.parent, 'no-sign'); }
+          if (this.hideCheckmarkSign) { this.renderer.addClass(this.parent, 'no-sign'); }
           this.renderer.addClass(this.parent, 'valid');
         } else {
           this.renderer.removeClass(this.parent, 'valid');
