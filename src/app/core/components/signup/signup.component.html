@@ -85,11 +85,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <div class="keys">
     <h6 style="color: #00B7F9; margin-bottom: 10px; font-weight: 500">YOUR PUBLIC KEY</h6>
     <p style="color: #333; margin-bottom: 40px; font-weight: 500; font-size: 14px">
-      {{ forms.privateKeyForm.getRawValue().publicKey }}</p>
+      {{ getFormValues(forms.privateKeyForm).publicKey }}</p>
 
     <h6 style="color: #00B7F9; margin-bottom: 10px;  font-weight: 500">YOUR PRIVATE KEY</h6>
     <p style="color: #333; margin-bottom: 40px; font-weight: 500; font-size: 14px">
-      {{ forms.privateKeyForm.value.privateKey }}</p>
+      {{ getFormValues(forms.privateKeyForm).privateKey }}</p>
 
     <h6 style="font-weight: 500; text-align: right; margin: 0">
       <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
@@ -99,7 +99,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </div>
   <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
   <label style="text-align: center">
-    <input type="checkbox" formControlName="terms" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
+    <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
   </label>
   <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
 </div>

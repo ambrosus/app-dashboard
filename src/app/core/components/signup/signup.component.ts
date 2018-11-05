@@ -66,6 +66,10 @@ export class SignupComponent implements OnInit, OnDestroy {
     });
   }
 
+  getFormValues(form) {
+    return form.getRawValue();
+  }
+
   ngOnDestroy() {
     if (this.requestOrganizationSub) { this.requestOrganizationSub.unsubscribe(); }
     if (this.routeSub) { this.routeSub.unsubscribe(); }
