@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 import { UsersService } from './users.service';
 
@@ -12,7 +12,8 @@ declare let Web3: any;
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
+  getUserSub: Subscription;
   sdk;
   web3;
 
@@ -26,6 +27,10 @@ export class AuthService {
       Web3,
     });
     this.web3 = new Web3();
+  }
+
+  ngOnDestroy() {
+    if (this.getUserSub) { this.getUserSub.unsubscribe(); }
   }
 
   isLoggedIn() {
@@ -50,15 +55,7 @@ export class AuthService {
       } catch (e) { return observer.error({ message: 'Invalid secret' }); }
 
       this.http.post('/api/auth/verify', { address }).subscribe(
-        (res: any) => {
-          if (res.data) {
-            this.storageService.set('secret', secret);
-            this.storageService.set('token', this.getToken(secret));
-            this.storageService.set('user', res.data);
-            this.userService._user.next(res.data);
-            return observer.next(res.data);
-          } else { return observer.next(res); }
-        },
+        resp => observer.next(resp),
         err => observer.error(err.error),
       );
     });
@@ -66,21 +63,16 @@ export class AuthService {
 
   login(email: string, password: string) {
     return new Observable(observer => {
-
       this.http.post('/api/auth/login', { email, password }).subscribe(
         ({ data }: any) => {
-          console.log(data);
-          const token = JSON.parse(data.token);
+          const token = JSON.parse(data);
           try {
-            const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
-            data.address = address;
+            const { privateKey } = this.web3.eth.accounts.decrypt(token, password);
 
             this.storageService.set('secret', privateKey);
-            this.storageService.set('user', data);
             this.storageService.set('token', this.getToken(privateKey));
 
-            this.userService._user.next(data);
-            observer.next('success');
+            return observer.next();
           } catch (e) { return observer.error({ message: 'Password is incorrect.' }); }
         },
         err => observer.error(err.error),
@@ -91,5 +83,14 @@ export class AuthService {
   logout() {
     this.storageService.clear();
     this.router.navigate(['/login']);
+  }
+
+  // UTILS
+
+  decryptPrivateKey(token, password) {
+    try {
+      const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
+      return [address, privateKey];
+    } catch (e) { return [null]; }
   }
 }

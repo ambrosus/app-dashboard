@@ -6,7 +6,6 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 const Web3 = require('web3');
 const web3 = new Web3();
 const findOrCreate = require('mongoose-findorcreate');
@@ -33,7 +32,6 @@ const users = mongoose.Schema({
     required: [value => !value, '"Email" field is required'],
     validate: [validateEmail, 'E-mail format is not valid'],
   },
-  password: String,
   address: {
     type: String,
     required: [value => !value, '"Address" field is required'],
@@ -63,11 +61,5 @@ const users = mongoose.Schema({
 users.plugin(findOrCreate);
 users.plugin(mongoosePaginate);
 users.plugin(updatesAndErrors);
-
-users.pre('save', function(next) {
-  if (!this.isModified('password')) return next();
-  this.password = bcrypt.hashSync(this.password, 10);
-  next();
-});
 
 module.exports = mongoose.model('Users', users);

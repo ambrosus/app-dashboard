@@ -98,20 +98,25 @@ exports.hermesAccountRegister = async (req, res, next) => {
  */
 exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
-  let err, user;
+  const user = req.user;
+  let err, query, _user;
 
-  [err, user] = await to(
-    User.findOne({ email })
+  if (email === 'me') {
+    query = { email: user.email };
+  } else { query = { email }; }
+
+  [err, _user] = await to(
+    User.findOne(query)
     .populate({
       path: 'organization',
       select: '-active -__v -owner',
     })
     .select('-active -createdAt -updatedAt -__v')
   );
-  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err, err)); }
+  if (err || !_user) { logger.error('[GET] User: ', err); return next(new ValidationError(err)); }
 
   req.status = 200;
-  req.json = { data: user, message: 'Success', status: 200 };
+  req.json = { data: _user, message: 'Success', status: 200 };
   return next();
 };
 
@@ -169,7 +174,7 @@ exports.edit = async (req, res, next) => {
     return next(new PermissionError('You can only edit accounts within your own organization'));
   }
 
-  const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token', 'active'];
+  const allowedToChange = ['full_name', 'email', 'timeZone', 'token', 'active'];
   for (const key in data) {
     if (allowedToChange.includes(key)) { userFound[key] = data[key]; }
   }

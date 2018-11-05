@@ -38,5 +38,5 @@ module.exports = async (req, res, next) => {
 
     req.user = user;
     return next();
-  } catch (e) { console.log(e); return next(new PermissionError('Invalid token')); }
+  } catch (e) { return next(new PermissionError('Invalid token')); }
 };
