@@ -99,9 +99,9 @@ exports.hermesAccountRegister = async (req, res, next) => {
 exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
   const user = req.user;
-  let err, query, _user;
+  let err, _user;
 
-  query = {
+  const query = {
     email: (email === 'me' ? user.email : email)
   }
 
