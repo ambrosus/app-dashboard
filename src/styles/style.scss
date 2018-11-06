@@ -9,6 +9,10 @@ app-root {
   align-items: stretch;
 }
 
+app-root > * {
+  flex-shrink: 0;
+}
+
 router-outlet + * {
   flex-grow: 1;
 }
