@@ -5,7 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 
@@ -15,23 +15,35 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  navigationSub: Subscription;
   initialLoad = false;
   login;
+
+  previousUrl: string;
 
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
   ) {
-    this.navigationSub = this.router.events.subscribe((e: any) => {
+
+    this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
         this.initialLoad = true;
         this.renderer.addClass(document.body, 'page-loaded');
-        if (this.hideHeader()) {
-          this.renderer.addClass(document.body, 'login');
-        } else { this.renderer.removeClass(document.body, 'login'); }
+      }
+
+      if (e instanceof NavigationStart) {
+
+        if (this.previousUrl) {
+          this.renderer.removeClass(document.body, this.previousUrl);
+        }
+
+        const currentUrlSlug = e.url.slice(1);
+        if (currentUrlSlug) {
+          this.renderer.addClass(document.body, currentUrlSlug);
+        }
+        this.previousUrl = currentUrlSlug;
       }
     });
   }

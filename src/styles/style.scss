@@ -3,7 +3,7 @@
 @import 'modules/index';
 
 body {
-  &.login {
+  &.login, &.signup {
     background: $purple-blue;
     background-size: 100% 200% !important;
 
