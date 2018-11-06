@@ -40,12 +40,12 @@ app-signup {
         width: 60px;
         background: #686BC2;
         position: absolute;
-        right: calc(100% + 15px);
+        right: 32px;
         top: 6px;
       }
 
       &:after {
-        left: calc(100% + 15px);
+        left: 32px;
       }
     }
   }
@@ -68,7 +68,7 @@ app-signup {
         }
 
         &:after {
-          top: 27px;
+          top: 30px;
         }
       }
     }
