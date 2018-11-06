@@ -6,13 +6,11 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 const express = require('express');
+const OrganizationController = _require('/controllers/organization');
+const OrganizationRoutes = express.Router();
+const response = (req, res) => { res.status(req.status).json(req.json); };
 
-const AuthController = _require('/controllers/auth');
+OrganizationRoutes.route('/request')
+  .post(OrganizationController.createOrganizationRequest, response);
 
-const AuthRoutes = express.Router();
-
-// Routes
-AuthRoutes.post('/login', AuthController.login, (req, res) => { res.status(req.status).json(req.json); });
-AuthRoutes.post('/verify', AuthController.verifyAccount, (req, res) => { res.status(req.status).json(req.json); });
-
-module.exports = AuthRoutes;
+module.exports = OrganizationRoutes;

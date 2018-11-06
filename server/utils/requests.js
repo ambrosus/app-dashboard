@@ -33,3 +33,16 @@ exports.httpPost = (url, body, token = null) => {
       .catch(error => reject(error.response));
   });
 }
+
+exports.httpPut = (url, body, token = null) => {
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
+  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  return new Promise((resolve, reject) => {
+    axios.put(url, body, { headers, data: null })
+      .then(resp => resolve(resp.data))
+      .catch(error => reject(error.response));
+  });
+}
