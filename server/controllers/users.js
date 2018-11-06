@@ -98,10 +98,10 @@ exports.hermesAccountRegister = async (req, res, next) => {
  */
 exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
-  
+
   const query = {
     email: (email === 'me' ? req.user.email : email)
-  }
+  };
 
   [err, user] = await to(
     User.findOne(query)
