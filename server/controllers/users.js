@@ -98,14 +98,12 @@ exports.hermesAccountRegister = async (req, res, next) => {
  */
 exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
-  const user = req.user;
-  let err, _user;
-
+  
   const query = {
-    email: (email === 'me' ? user.email : email)
+    email: (email === 'me' ? req.user.email : email)
   }
 
-  [err, _user] = await to(
+  [err, user] = await to(
     User.findOne(query)
     .populate({
       path: 'organization',
@@ -113,10 +111,10 @@ exports.getAccount = async (req, res, next) => {
     })
     .select('-active -createdAt -updatedAt -__v')
   );
-  if (err || !_user) { logger.error('[GET] User: ', err); return next(new ValidationError(err)); }
+  if (err || !user) { logger.error('[GET] User: ', err); return next(new ValidationError(err)); }
 
   req.status = 200;
-  req.json = { data: _user, message: 'Success', status: 200 };
+  req.json = { data: user, message: 'Success', status: 200 };
   return next();
 };
 
