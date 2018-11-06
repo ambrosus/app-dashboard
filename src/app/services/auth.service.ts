@@ -66,14 +66,13 @@ export class AuthService implements OnDestroy {
       this.http.post('/api/auth/login', { email, password }).subscribe(
         ({ data }: any) => {
           const token = JSON.parse(data);
-          try {
-            const { privateKey } = this.web3.eth.accounts.decrypt(token, password);
+          const [address, privateKey] = this.decryptPrivateKey(token, password);
+          if (!address) { return observer.error({ message: 'Password is incorrect.' }); }
 
-            this.storageService.set('secret', privateKey);
-            this.storageService.set('token', this.getToken(privateKey));
+          this.storageService.set('secret', privateKey);
+          this.storageService.set('token', this.getToken(privateKey));
 
-            return observer.next();
-          } catch (e) { return observer.error({ message: 'Password is incorrect.' }); }
+          return observer.next();
         },
         err => observer.error(err.error),
       );

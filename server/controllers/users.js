@@ -101,9 +101,9 @@ exports.getAccount = async (req, res, next) => {
   const user = req.user;
   let err, query, _user;
 
-  if (email === 'me') {
-    query = { email: user.email };
-  } else { query = { email }; }
+  query = {
+    email: (email === 'me' ? user.email : email)
+  }
 
   [err, _user] = await to(
     User.findOne(query)
