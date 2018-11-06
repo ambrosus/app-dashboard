@@ -2,8 +2,21 @@
 @import 'utils/index';
 @import 'modules/index';
 
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  align-items: stretch;
+}
+
+router-outlet + * {
+  flex-grow: 1;
+}
+
 body {
-  &.login, &.signup {
+
+  &.login,
+  &.signup {
     background: $purple-blue;
     background-size: 100% 200% !important;
 
@@ -14,6 +27,31 @@ body {
       background-position: 0 100%;
       animation-fill-mode: forwards;
     }
+
+    .logo {
+      img {
+        padding-left: 66px;
+        height: 120px;
+      }
+    }
+
+    p,
+    .lead {
+      color: $grey;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #fff;
+    }
+  }
+
+  p + p {
+    margin-top: 20px;
   }
 }
 

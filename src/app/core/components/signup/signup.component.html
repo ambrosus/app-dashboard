@@ -5,130 +5,131 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<a routerLink="/login"><img src="/assets/raster/login-logo.png" alt="Ambrosus" style="padding-left: 66px; height: 120px"></a>
+<a class="logo" routerLink="/login"><img src="/assets/raster/login-logo.png" alt="Ambrosus"></a>
 
-<!-- STEP 1: Options -->
-<div *ngIf="step === 'options'" style="width: 100%; max-width: 625px; margin: 0 auto;">
-  <h2 style="color: #fff; margin: 55px 0 20px;">{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
-  <p class="meta" style="margin-bottom: 90px;">Public/private key pair is required to access the blockchain and complete transactions. <br><br>
-    You are free to either register your own key or use our secure key generator.<br>
-    Don’t worry, in either case, <b>we do not store your private key.</b></p>
+<div [ngSwitch]="step">
 
-  <div class="options">
-    <div class="option">
-      <img src="/assets/raster/key.png" alt="Register my own key">
-      <button type="button" (click)="step = 'registerKey'">Register my own key</button>
+  <!-- STEP 1: Options -->
+  <div *ngSwitchCase="'options'" class="block-center">
+    <h2>{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
+    <p class="meta" style="margin-bottom: 90px;">Public/private key pair is required to access the blockchain and complete transactions. <br><br>
+      You are free to either register your own key or use our secure key generator.<br>
+      Don’t worry, in either case, <b>we do not store your private key.</b></p>
+
+    <div class="options">
+      <div class="option">
+        <img src="/assets/raster/key.png" alt="Register my own key">
+        <button type="button" (click)="step = 'registerKey'">Register my own key</button>
+      </div>
+      <p class="options__separator meta__caption"><b>OR</b></p>
+      <div class="option">
+        <img src="/assets/raster/key-generate.png" alt="Generate keys for me">
+        <button class="outline" type="button" (click)="step = 'generateKeys'">Generate keys for me</button>
+      </div>
     </div>
-    <p class="options__separator meta__caption"><b>OR</b></p>
-    <div class="option">
-      <img src="/assets/raster/key-generate.png" alt="Generate keys for me">
-      <button class="outline" type="button" (click)="step = 'generateKeys'">Generate keys for me</button>
+
+    <div class="center" style="margin: 90px 0 30px">
+      <a routerLink="/login">Already a user?</a>
     </div>
   </div>
 
-  <div style="text-align: center; margin: 90px 0 30px">
-    <a routerLink="/login">Already a user?</a>
-  </div>
-</div>
+  <!-- STEP 2: Register key -->
+  <div *ngSwitchCase="'registerKey'">
+    <div class="block-center">
+      <h2>
+        <app-svg-icon class="back" name="back-arrow" height="8" (click)="step = 'options'"></app-svg-icon>
+        Register your public key
+      </h2>
+      <p class="meta" style="margin-bottom: 60px;">Public key is also known as address.</p>
+    </div>
 
-<!-- STEP 2: Register key -->
-<div *ngIf="step === 'registerKey'" style="width: 100%;">
-  <div style="width: 100%; max-width: 625px; margin: 0 auto;">
-    <h2 style="color: #fff; margin: 55px 0 15px; padding: 0 50px; position: relative;">
+    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+      <label [ngClass]="{ error: errorPrivateKeyForm }">Your private key
+        <span class="info">
+          <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
+          <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
+        </span>
+        <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]">
+      </label>
+      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">Continue</button>
+    </form>
+  </div>
+
+  <!-- STEP 2: Generate keys -->
+  <div *ngSwitchCase="'generateKeys'" class="block-center">
+    <h2>
       <app-svg-icon class="back" name="back-arrow" height="8" (click)="step = 'options'"></app-svg-icon>
-      Register your public key
+      Generate new keys
     </h2>
-    <p class="meta" style="margin-bottom: 60px;">Public key is also known as address.</p>
-  </div>
+    <p class="meta" style="margin-bottom: 60px;">Keys will be generated locally on your device/browser.</p>
 
-  <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
-    <label [ngClass]="{ error: errorPrivateKeyForm }">Your private key
-      <span class="info">
-        <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
-        <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
-      </span>
-      <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]">
-    </label>
-    <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">Continue</button>
-  </form>
-</div>
-
-<!-- STEP 2: Generate keys -->
-<div *ngIf="step === 'generateKeys'" style="width: 100%; max-width: 625px; margin: 0 auto;">
-  <h2 style="color: #fff; margin: 55px 0 15px; padding: 0 50px; position: relative;">
-    <app-svg-icon class="back" name="back-arrow" height="8" (click)="step = 'options'"></app-svg-icon>
-    Generate new keys
-  </h2>
-  <p class="meta" style="margin-bottom: 60px;">Keys will be generated locally on your device/browser.</p>
-
-  <div class="warning">
-    <h5 style="color: #40D685; margin-bottom: 40px; font-weight: 500">IMPORTANT INFORMATION</h5>
-    <div style="margin-bottom: 30px">
-      <img src="/assets/raster/spy-cam.png" style="margin-right: 32px">
-      <img src="/assets/raster/spy-person.png">
+    <div class="warning">
+      <h5>Important information</h5>
+      <div style="margin-bottom: 30px">
+        <img src="/assets/raster/spy-cam.png" style="margin-right: 32px">
+        <img src="/assets/raster/spy-person.png">
+      </div>
+      <div style="margin-bottom: 30px">
+        <p>The keys provide access to your account. <br>Be diligent to keep your private key safe.</p>
+        <p>Do NOT lose it! It cannot be recovered if you do. <br>Do NOT share it! Your account may be misused. <br>Create a backup.</p>
+      </div>
+      <a>How to secure the keys?</a>
     </div>
-    <p style="color: #fff; margin-bottom: 30px">
-      The keys provide access to your account. <br>Be diligent to keep your private key safe.
-      <br><br>
-      Do NOT lose it! It cannot be recovered if you do. <br>Do NOT share it! Your account may be misused. <br>Create a backup.
-    </p>
-    <a>How to secure the keys?</a>
+
+    <button type="button" (click)="generateKeys()">I Understand</button>
   </div>
 
-  <button type="button" (click)="generateKeys()">I Understand</button>
-</div>
+  <!-- STEP 3: Save keys -->
+  <div *ngSwitchCase="'saveKeys'" class="block-center">
+    <h2 style="color: #40D685">First, save your keys!</h2>
+    <p class="meta">Find your public/private key pair below.</p>
+    <div class="keys">
+      <h6>Your public keys</h6>
+      <p>{{ forms.privateKeyForm.getRawValue().publicKey }}</p>
 
-<!-- STEP 3: Save keys -->
-<div *ngIf="step === 'saveKeys'" style="width: 100%; max-width: 625px; margin: 0 auto;">
-  <h2 style="color: #40D685; margin: 55px 0 15px; padding: 0 50px;">First, save your keys!</h2>
-  <p class="meta" style="margin-bottom: 50px;">Find your public/private key pair below.</p>
-  <div class="keys">
-    <h6 style="color: #00B7F9; margin-bottom: 10px; font-weight: 500">YOUR PUBLIC KEY</h6>
-    <p style="color: #333; margin-bottom: 40px; font-weight: 500; font-size: 14px">
-      {{ getFormValues(forms.privateKeyForm).publicKey }}</p>
+      <h6>Your private key</h6>
+      <p>{{ forms.privateKeyForm.getRawValue().privateKey }}</p>
 
-    <h6 style="color: #00B7F9; margin-bottom: 10px;  font-weight: 500">YOUR PRIVATE KEY</h6>
-    <p style="color: #333; margin-bottom: 40px; font-weight: 500; font-size: 14px">
-      {{ getFormValues(forms.privateKeyForm).privateKey }}</p>
-
-    <h6 style="font-weight: 500; text-align: right; margin: 0">
-      <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
-        <app-svg-icon name="download" width="32" height="29" fill="#333"></app-svg-icon>
-      </a>
-    </h6>
+      <h6 style="font-weight: 500; text-align: right; margin: 0">
+        <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
+          <app-svg-icon name="download" width="32" height="29" fill="#333"></app-svg-icon>
+        </a>
+      </h6>
+    </div>
+    <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
+    <label style="text-align: center">
+      <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
+    </label>
+    <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
   </div>
-  <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
-  <label style="text-align: center">
-    <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
-  </label>
-  <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
-</div>
 
-<!-- STEP 4: Request form -->
-<div *ngIf="step === 'requestForm'" style="width: 100%; max-width: 625px; margin: 0 auto;">
-  <h2 style="color: #fff; margin: 55px 0 15px; padding: 0 50px;">Almost done</h2>
-  <p class="meta" style="margin-bottom: 50px;">For better customer experience please share a few more details.</p>
-  <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
-    <label [ngClass]="{ error: errorRequestForm }">Organization name (optional)
-      <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.requestForm, true]">
-    </label>
-    <label [ngClass]="{ error: errorRequestForm }">Your email
-      <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.requestForm]">
-    </label>
-    <label [ngClass]="{ error: errorRequestForm }">What makes you interested in our solution?
-      <textarea formControlName="message" [appError]="[forms.requestForm]"></textarea>
-    </label>
-    <label>
-      <input type="checkbox" formControlName="terms" appCustomCheckbox>
-      I have read and accepted <a>Terms of Service</a>
-    </label>
-    <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">Register</button>
-  </form>
-</div>
+  <!-- STEP 4: Request form -->
+  <div *ngSwitchCase="'requestForm'" class="block-center">
+    <h2>Almost done</h2>
+    <p class="meta">For better customer experience please share a few more details.</p>
+    <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+      <label [ngClass]="{ error: errorRequestForm }">Organization name (optional)
+        <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.requestForm, true]">
+      </label>
+      <label [ngClass]="{ error: errorRequestForm }">Your email
+        <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.requestForm]">
+      </label>
+      <label [ngClass]="{ error: errorRequestForm }">What makes you interested in our solution?
+        <textarea formControlName="message" [appError]="[forms.requestForm]"></textarea>
+      </label>
+      <label>
+        <input type="checkbox" formControlName="terms" appCustomCheckbox>
+        I have read and accepted <a>Terms of Service</a>
+      </label>
+      <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">Register</button>
+    </form>
+  </div>
 
-<!-- STEP 5: Success -->
-<div *ngIf="step === 'success'" style="width: 100%; max-width: 625px; margin: 0 auto;">
-  <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px">
-  <h2 style="color: #fff; margin-bottom: 15px; padding: 0 50px;">Thank you!</h2>
-  <p class="meta" style="margin-bottom: 50px;">Your application has been successfully submitted for approval.<br>Once reviewed, we will send you an email with further instructions.</p>
+  <!-- STEP 5: Success -->
+  <div *ngSwitchCase="'success'" class="block-center">
+    <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px">
+    <h2>Thank you!</h2>
+    <p class="meta">Your application has been successfully submitted for approval.</p>
+    <p class="meta">Once reviewed, we will send you an email with further instructions.</p>
+  </div>
 </div>

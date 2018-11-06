@@ -9,6 +9,10 @@ app-signup {
   width: 100%;
   text-align: center;
 
+  div {
+    width: 100%;
+  }
+
   .options,
   .option {
     display: flex;
@@ -27,6 +31,7 @@ app-signup {
       color: #686BC2;
       margin: 60px 0;
       position: relative;
+      flex-shrink: 0;
 
       &:before,
       &:after {
@@ -82,6 +87,17 @@ app-signup {
     border-radius: 8px;
     margin: 50px 0 40px;
     padding: 50px 25px;
+
+    > h5 {
+      color: #40D685;
+      margin-bottom: 40px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    p {
+      color: #fff;
+    }
   }
 
   .keys {
@@ -92,5 +108,35 @@ app-signup {
     margin: 50px 0 20px;
     padding: 35px 25px 25px 25px;
     text-align: left;
+
+    h6 {
+      color: #00B7F9;
+      margin-bottom: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      + p {
+        color: #333;
+        margin-bottom: 40px;
+        font-weight: 500;
+        font-size: 14px
+      }
+    }
+  }
+
+  .block-center {
+    max-width: 625px;
+    margin: 0 auto;
+
+    > h2 {
+      margin: 55px 0 25px;
+      padding: 0 50px;
+      position: relative;
+    }
+  }
+
+  .meta {
+    margin-bottom: 50px;
+    font-size: 12px;
   }
 }
