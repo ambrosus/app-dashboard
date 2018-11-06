@@ -15,8 +15,6 @@ import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 })
 export class AppComponent {
   initialLoad = false;
-  login;
-
   previousUrl: string;
 
   constructor(
