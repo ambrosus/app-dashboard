@@ -23,6 +23,7 @@ app-signup {
   .option {
     img {
       margin-bottom: 44px;
+      height: 80px;
     }
   }
 
@@ -120,6 +121,11 @@ app-signup {
         margin-bottom: 40px;
         font-weight: 500;
         font-size: 14px
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+        text-align: right;
       }
     }
   }

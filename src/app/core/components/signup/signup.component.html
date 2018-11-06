@@ -12,9 +12,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <!-- STEP 1: Options -->
   <div *ngSwitchCase="'options'" class="block-center">
     <h2>{{ invite ? 'Welcome to ' + invite.organization.title : 'Registration' }}</h2>
-    <p class="meta" style="margin-bottom: 90px;">Public/private key pair is required to access the blockchain and complete transactions. <br><br>
-      You are free to either register your own key or use our secure key generator.<br>
-      Don’t worry, in either case, <b>we do not store your private key.</b></p>
+    <p class="meta" style="margin: 0">Public/private key pair is required to access the blockchain and complete transactions.</p>
+    <p class="meta" style="margin-bottom: 90px">You are free to either register your own key or use our secure key generator.<br>Don’t worry, in either case, <b>we do not store your private key.</b></p>
 
     <div class="options">
       <div class="option">
@@ -90,14 +89,14 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <h6>Your private key</h6>
       <p>{{ forms.privateKeyForm.getRawValue().privateKey }}</p>
 
-      <h6 style="font-weight: 500; text-align: right; margin: 0">
+      <h6>
         <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
           <app-svg-icon name="download" width="32" height="29" fill="#333"></app-svg-icon>
         </a>
       </h6>
     </div>
-    <p style="text-align: right; margin-bottom: 40px"><a>How to secure the keys?</a></p>
-    <label style="text-align: center">
+    <p class="right" style="margin-bottom: 40px"><a>How to secure the keys?</a></p>
+    <label class="center">
       <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox> I have saved my keys
     </label>
     <button type="button" [disabled]="!saved" (click)="savedKeys()">Continue</button>
@@ -128,8 +127,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <!-- STEP 5: Success -->
   <div *ngSwitchCase="'success'" class="block-center">
     <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px">
-    <h2>Thank you!</h2>
-    <p class="meta">Your application has been successfully submitted for approval.</p>
-    <p class="meta">Once reviewed, we will send you an email with further instructions.</p>
+    <h2 style="margin: 0; margin-bottom: 20px">Thank you!</h2>
+    <p class="meta">Your application has been successfully submitted for approval.<br>Once reviewed, we will send you an email with further instructions.</p>
   </div>
 </div>
