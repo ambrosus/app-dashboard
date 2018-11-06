@@ -1,0 +1,200 @@
+form {
+  display: block;
+  width: 100%;
+  max-width: 408px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+label {
+  color: $grey;
+  text-align: left;
+  display: block;
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.15;
+  margin-bottom: 23px;
+  user-select: none;
+  position: relative;
+
+  &:last-of-type {
+    margin-bottom: 45px;
+  }
+
+  &.error {
+    color: $dark-red;
+
+    input:not([type="checkbox"]),
+    .input,
+    textarea {
+      box-shadow: 0 1px $dark-red;
+    }
+
+    .message {
+      font-size: 11px;
+      margin-top: 10px;
+      color: inherit;
+
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  &:after {
+    display: none;
+    position: absolute;
+    top: 28px;
+    right: 3px;
+    width: 12px;
+    height: 12px;
+    content: '';
+    background-image: url('/assets/svg/success.svg');
+    background-size: contain;
+  }
+
+  &.valid {
+    &:after {
+      display: inline-block;
+    }
+
+    &.no-sign {
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  .show-password {
+    display: inline-block;
+    position: absolute;
+    top: 25px;
+    right: 3px;
+    color: $grey;
+  }
+
+  .info {
+    display: inline-block;
+    position: absolute;
+    top: 25px;
+    right: 3px;
+    color: $grey;
+
+    .message {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 12px);
+      width: 135px;
+      left: calc(100% - 75px);
+      padding: 8px;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 11px;
+      line-height: 1.2;
+      color: $black;
+
+      &:before {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: calc(100% - 75px);
+        width: 0;
+        height: 0;
+        border: 7px solid #fff;
+        background: #fff;
+        transform: rotate(45deg);
+      }
+    }
+
+    &:hover {
+      svg {
+        fill: $light-blue;
+      }
+
+      .message {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+input:not([type="checkbox"]),
+.input,
+textarea {
+  font-family: 'Rubiko', sans-serif;
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  font-weight: 400;
+  padding: 10px 0;
+  color: #fff;
+  box-shadow: 0 1px rgba(#fff, 0.25);
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: left;
+  transition: all .2s;
+  padding-right: 25px;
+
+  &:focus {
+    color: #fff;
+    box-shadow: 0 1px #fff, inset 0px -1px #fff;
+  }
+}
+
+textarea {
+  min-height: 34px;
+  height: 34px;
+}
+
+.custom_checkbox {
+  visibility: hidden;
+  position: absolute;
+  opacity: 0;
+
+  &__icon {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #fff;
+    display: inline-block;
+    position: relative;
+    border-radius: 6px;
+    top: 7px;
+    margin-right: 15px;
+    margin-left: 7px;
+
+    &:after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      position: absolute;
+      left: 4px;
+      top: 5px;
+      background-image: url('/assets/svg/success.svg');
+      background-size: 11px;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transform: scale(0);
+      transition: all .2s;
+    }
+  }
+
+  &:checked {
+    + .custom_checkbox__icon {
+      &:after {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  }
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  background-color: rgb(250, 255, 189) !important;
+  background-image: none !important;
+  color: rgb(0, 0, 0) !important;
+  padding: 10px;
+}

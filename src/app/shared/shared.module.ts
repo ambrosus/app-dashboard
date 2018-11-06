@@ -35,6 +35,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
 import { IconLeftDirective, IconRightDirective } from './directives/icon.directive';
+import { ErrorDirective } from './directives/error.directive';
 
 @NgModule({
   imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
@@ -65,6 +66,7 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     HeaderComponent,
     IconLeftDirective,
     IconRightDirective,
+    ErrorDirective,
   ],
   declarations: [
     InputDirective,
@@ -90,6 +92,7 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
     HeaderComponent,
     IconLeftDirective,
     IconRightDirective,
+    ErrorDirective,
   ],
   entryComponents: [EventAddComponent],
 })

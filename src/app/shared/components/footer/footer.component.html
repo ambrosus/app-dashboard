@@ -5,23 +5,18 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-
-<div class="wrapper footer">
-
-  <div class="footer__copyright">&copy; 2018 Ambrosus Network. All rights reserved.</div>
-
-  <div class="footer__socials">
-    <ul>
-      <li *ngFor="let social of socials">
-        <a href="{{ social.url }}" target="_blank">
-          <app-svg-icon name="{{ social.icon }}"></app-svg-icon>
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="footer__contact">
-    <a href="mailto:info@ambrosus.com">info@ambrosus.com</a>
-  </div>
-
+<div class="copyright">
+  <p>&copy; 2018 Ambrosus Network. All rights reserved.</p>
+</div>
+<div class="socials">
+  <ul>
+    <li *ngFor="let social of socials">
+      <a href="{{ social.url }}" target="_blank">
+        <app-svg-icon name="{{ social.icon }}"></app-svg-icon>
+      </a>
+    </li>
+  </ul>
+</div>
+<div class="contact">
+  <a href="mailto:info@ambrosus.com">info@ambrosus.com</a>
 </div>

@@ -1,55 +1,100 @@
+@import 'utils';
+
 app-footer {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 15px;
+  text-align: center;
+  user-select: none;
   flex-shrink: 0;
-  margin-top: 40px;
 
-  .footer {
-    display: flex;
-    flex-direction: row;
-    padding: 30px 0;
-    color: #fff;
-    font-size: 12px;
+  .socials {
+    margin: 30px 0;
+    align-self: center;
 
-    > div {
-      flex-grow: 1;
-      flex-basis: 0;
-    }
+    li {
+      display: inline-block;
+      margin: 0 10px;
 
-    a {
-      color: #fff;
-      opacity: 0.6;
+      a {
+        svg {
+          width: 16px;
+          height: 16px;
 
-      &:hover {
-        opacity: 1;
-      }
-    }
+          path {
+            fill: $grey;
+            transition: fill .2s;
+          }
+        }
 
-    &__copyright {
-      opacity: 0.6;
-    }
-
-    &__socials {
-      text-align: center;
-
-      li {
-        display: inline-block;
-        margin: 0 10px;
-
-        a {
+        &:hover {
           svg {
-            width: 16px;
-            height: 16px;
-
             path {
               fill: #fff;
             }
           }
         }
       }
+    }
+  }
 
+  .copyright,
+  .contact {
+    width: 300px;
+  }
+
+  .copyright {
+    > p {
+      font-size: 11px;
+    }
+  }
+
+  .contact {
+    a {
+      font-size: 11px;
+    }
+  }
+
+  @include breakpoint-min(1024) {
+    padding: 50px 85px;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .copyright {
+      text-align: left;
     }
 
-    &__contact {
+    .contact {
       text-align: right;
+      user-select: auto;
+    }
+
+    .socials {
+      margin: 0;
+    }
+  }
+}
+
+.login,
+.signup {
+  app-footer {
+
+    .copyright {
+      > p {
+        color: $grey;
+      }
+    }
+
+    .contact {
+      a {
+        color: $grey;
+
+        &:hover {
+          color: #fff;
+        }
+      }
     }
   }
 }

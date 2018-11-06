@@ -1,20 +1,57 @@
+@import 'utils';
+
+app-tabs {
+  width: 100%;
+}
+
 .tabs {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   &__menu {
+    width: 100%;
 
     &__list {
       display: flex;
-      margin-bottom: -1px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      user-select: none;
 
       &__link {
         flex: 1;
-        padding: 20px;
+        padding: 12px 20px;
+        width: 100%;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.2;
         text-align: center;
         cursor: pointer;
+        color: $grey;
+        box-shadow: 0 1px rgba(#fff, 0.25);
+        transition: all .2s;
+
+        &.active {
+          color: #fff;
+          box-shadow: 0 2px #fff, inset 0px -1px #fff;
+        }
+      }
+
+      @include breakpoint-min(768) {
+        flex-direction: row;
+
+        &__link {
+          max-width: 204px;
+        }
       }
     }
   }
 
-  &__tab {
-    padding: 30px;
+  &__content {
+    width: 100%;
+    padding-top: 50px;
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -19,20 +19,21 @@ declare let Web3: any;
 })
 export class SignupComponent implements OnInit, OnDestroy {
   forms: {
-    secretForm?: FormGroup,
+    privateKeyForm?: FormGroup,
     requestForm?: FormGroup
   } = {};
-
   requestOrganizationSub: Subscription;
   routeSub: Subscription;
   getInviteSub: Subscription;
   createAccountSub: Subscription;
-  error;
+  errorPrivateKeyForm;
+  errorRequestForm;
   success;
-  promiseAction;
+  promiseActionPrivateKeyForm;
+  promiseActionRequestForm;
   web3;
-  saved;
-  step = 'keysOptions';
+  saved = false;
+  step = 'options';
   token;
   invite;
 
@@ -53,14 +54,13 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.token = queryParams.token;
       if (this.token) { this.getInvite(); }
     });
-    this.forms.secretForm = new FormGroup({
-      privateKey: new FormControl(null, [Validators.required]),
+    this.forms.privateKeyForm = new FormGroup({
+      privateKey: new FormControl(null, [Validators.required, this.validatePrivateKey]),
       publicKey: new FormControl({ value: null, disabled: true }, [Validators.required]),
-      saved: new FormControl(null, [Validators.requiredTrue]),
     });
     this.forms.requestForm = new FormGroup({
       title: new FormControl(null, []),
-      email: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, this.validateEmail]),
       message: new FormControl(null, [Validators.required]),
       terms: new FormControl(null, [Validators.requiredTrue]),
     });
@@ -73,11 +73,28 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.createAccountSub) { this.createAccountSub.unsubscribe(); }
   }
 
+  validatePrivateKey(control: AbstractControl) {
+    try {
+      const web3 = new Web3();
+      console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
+      return null;
+    } catch (e) { return { 'Invalid private key': control.value }; }
+  }
+
+  validateEmail(control: AbstractControl) {
+    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!emailPattern.test(control.value)) {
+      return { 'Email is invalid': control.value };
+    }
+    return null;
+  }
+
   getInvite() {
     this.getInviteSub = this.inviteService.verifyInvite(this.token).subscribe(
       (resp: any) => {
         this.invite = resp;
-        console.log('GET INVITE: ', this.invite);
+        console.log('[GET] Invite: ', this.invite);
       },
       err => this.router.navigate(['/login']),
     );
@@ -85,81 +102,85 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   generateKeys() {
     const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
-    this.forms.secretForm.get('privateKey').setValue(privateKey);
-    this.forms.secretForm.get('publicKey').setValue(address);
-    this.step = 'keysGenerate';
+    this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
+    this.forms.privateKeyForm.get('publicKey').setValue(address);
+    this.step = 'saveKeys';
   }
 
-  generateAddress(secret) {
-    this.error = false;
-    let address;
+  verifyAccount() {
+    this.errorPrivateKeyForm = false;
+    const { privateKey } = this.forms.privateKeyForm.getRawValue();
+
+    if (!this.forms.privateKeyForm.valid) { return this.errorPrivateKeyForm = 'Public key is required'; }
+
+    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
+      this.authService.verifyAccount(privateKey).subscribe(
+        (resp: any) => {
+          console.log(resp);
+          this.errorPrivateKeyForm = 'This account is already registered, please use another private key';
+          resolve();
+        }, err => {
+          this.generateAddress(privateKey);
+          this.step = 'saveKeys';
+          reject();
+        });
+    });
+  }
+
+  savedKeys() {
+    if (this.invite) {
+      const { publicKey } = this.forms.privateKeyForm.getRawValue();
+      // Account create request
+      const body = {
+        token: this.token,
+        address: publicKey,
+      };
+      this.createAccountSub = this.usersService.createUser(body).subscribe(
+        resp => this.router.navigate(['/login']),
+        error => {
+          console.error('[CREATE] Account: ', error);
+          this.errorPrivateKeyForm = 'Account creation failed';
+        },
+      );
+    } else {
+      this.step = 'requestForm';
+    }
+  }
+
+  generateAddress(privateKey) {
+    this.errorPrivateKeyForm = false;
     try {
-      address = this.web3.eth.accounts.privateKeyToAccount(secret.value).address;
-      this.forms.secretForm.get('privateKey').setValue(secret.value);
-      this.forms.secretForm.get('publicKey').setValue(address);
+      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
+      this.forms.privateKeyForm.get('publicKey').setValue(address);
     } catch (e) {
-      this.error = 'Please insert valid secret';
-      this.forms.secretForm.get('address').setValue(null);
+      this.errorPrivateKeyForm = 'Please insert valid secret';
+      this.forms.privateKeyForm.get('address').setValue(null);
     }
   }
 
   downloadJSON() {
-    const url = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.forms.secretForm.value, null, 2));
+    const url = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.forms.privateKeyForm.getRawValue(), null, 2));
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
-  verifyAccount() {
-    this.error = false;
-    const { privateKey, publicKey } = this.forms.secretForm.getRawValue();
-
-    if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
-
-    this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(privateKey).subscribe((resp: any) => {
-        console.log(resp);
-        this.error = 'This account is already registered, please insert another secret';
-        resolve();
-      }, err => {
-        if (!this.invite) {
-          this.step = 'requestForm';
-          reject();
-        } else {
-          // Account create request
-          const body = {
-            token: this.token,
-            address: publicKey,
-          };
-          this.createAccountSub = this.usersService.createUser(body).subscribe(
-            (resp: any) => {
-              this.router.navigate(['/login']);
-            },
-            error => {
-              console.error('Account create: ', error);
-              reject();
-            },
-          );
-        }
-      });
-    });
-  }
-
   requestOrganization() {
-    this.error = false;
-    const { publicKey } = this.forms.secretForm.getRawValue();
+    this.errorRequestForm = false;
+    const { publicKey } = this.forms.privateKeyForm.getRawValue();
     const data = this.forms.requestForm.getRawValue();
     data.address = publicKey;
 
-    if (!this.forms.requestForm.valid) { return this.error = 'Please fill all required fields'; }
+    if (this.forms.requestForm.invalid) { return this.errorRequestForm = 'Please fill all required fields'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionRequestForm = new Promise((resolve, reject) => {
       this.requestOrganizationSub = this.organizationsService.organizationRequest(data).subscribe(
         (resp: any) => {
           this.step = 'success';
           resolve();
         },
         err => {
-          console.error('Request Organization: ', err);
-          this.error = err.error ? err.error.message : 'Request error';
+          console.error('[REQUEST] Organization: ', err);
+          this.errorRequestForm = 'Request failed, please contact support';
           reject();
         },
       );

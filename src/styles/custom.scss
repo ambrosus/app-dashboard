@@ -6,48 +6,9 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 
-@import "~@ng-select/ng-select/themes/default.theme.css";
+
 
 @import "_mixins";
-
-html,
-body {
-  width: 100%;
-}
-
-@include keyframes(animateGradient) {
-  0% {
-    background-position: 0 100%;
-  }
-
-  100% {
-    background-position: 0 0;
-  }
-}
-
-body {
-  font-size: 14px;
-  color: #121e3e;
-  font-family: 'Open Sans', sans-serif;
-  background: #141885;
-  background-size: 100% 200% !important;
-
-
-  &.page-loaded {
-    @include gradient-vertical-three-colors(#521ca0, #141885, 50%, darken(#141885, 10));
-    @include animation('animateGradient .9s 1');
-    animation-delay: 1s;
-    background-position: 0 100%;
-    animation-fill-mode: forwards;
-  }
-}
-
-app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  align-items: stretch;
-}
 
 .card {
   padding: 30px;
@@ -108,40 +69,6 @@ a {
   text-decoration: none;
 }
 
-input:not([type="checkbox"]),
-.input {
-  appearance: none;
-  -webkit-appearance: none;
-  display: block;
-  width: 100%;
-  font-weight: 400;
-  padding: 15px;
-  border: 1px solid #eceef3;
-
-  &:disabled {
-    background: #f8f9fc;
-  }
-}
-
-textarea {
-  @extend .input;
-  margin-top: 5px;
-}
-
-label {
-  color: #5b5e63;
-  text-align: left;
-  display: block;
-  width: 100%;
-  font-weight: 100;
-  font-size: 13px;
-  margin-bottom: 30px;
-
-  input {
-    margin-top: 5px;
-  }
-}
-
 .avatar {
   position: relative;
   height: 32px;
@@ -192,47 +119,6 @@ button.is-loading .btn-spinner {
   transition: .2s margin ease-in, .4s opacity ease-in;
   margin-left: 20px;
   opacity: 1;
-}
-
-.custom_checkbox {
-  visibility: hidden;
-  position: absolute;
-  opacity: 0;
-
-  &__icon {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: #edf2fe;
-    margin-right: 8px;
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-
-    &:after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      margin-left: -3px;
-      margin-top: -7px;
-      display: none;
-      width: 6px;
-      height: 10px;
-      border: solid darken(#edf2fe, 35);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-  }
-
-  &:checked {
-    + .custom_checkbox__icon {
-      &:after {
-        display: block;
-      }
-    }
-  }
 }
 
 @-webkit-keyframes three-quarters {

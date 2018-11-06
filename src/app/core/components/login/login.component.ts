@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { UsersService } from 'app/services/users.service';
 import { StorageService } from 'app/services/storage.service';
+
+declare let Web3: any;
 
 @Component({
   selector: 'app-login',
@@ -18,12 +20,16 @@ export class LoginComponent implements OnInit, OnDestroy {
   getUserSub: Subscription;
   forms: {
     loginForm?: FormGroup,
-    secretForm?: FormGroup
+    privateKeyForm?: FormGroup
   } = {};
   error;
   deviceInfo;
-  promiseAction;
+  promiseActionPrivateKeyForm;
+  promiseActionLoginForm;
   forgotPassword;
+  showPassword;
+  errorPrivateKeyForm;
+  errorLoginForm;
 
   constructor(
     private authService: AuthService,
@@ -33,31 +39,48 @@ export class LoginComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
   ) {
     this.forms.loginForm = new FormGroup({
-      email: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, this.validateEmail]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.forms.secretForm = new FormGroup({
-      secret: new FormControl(null, [Validators.required]),
+    this.forms.privateKeyForm = new FormGroup({
+      privateKey: new FormControl(null, [Validators.required, this.validatePrivateKey]),
     });
   }
 
   ngOnInit() { }
+
+  validatePrivateKey(control: AbstractControl) {
+    try {
+      const web3 = new Web3();
+      console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
+      return null;
+    } catch (e) { return { 'Invalid private key': control.value }; }
+  }
+
+  validateEmail(control: AbstractControl) {
+    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!emailPattern.test(control.value)) {
+      return { 'Email is invalid': control.value };
+    }
+    return null;
+  }
 
   ngOnDestroy() {
     if (this.getUserSub) { this.getUserSub.unsubscribe(); }
   }
 
   verifyAccount() {
-    this.error = false;
+    this.errorPrivateKeyForm = false;
     this.forgotPassword = false;
-    const _data = this.forms.secretForm.value;
+    const _data = this.forms.privateKeyForm.value;
 
-    if (!this.forms.secretForm.valid) { return this.error = 'Secret is required'; }
+    if (this.forms.privateKeyForm.invalid) { return this.errorPrivateKeyForm = 'Fill all required fileds'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(_data.secret).subscribe(
+    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
+      this.authService.verifyAccount(_data.privateKey).subscribe(
         ({ data }: any) => {
-          this.storageService.set('secret', _data.secret);
+          this.storageService.set('secret', _data.privateKey);
 
           this.getUserSub = this.usersService.getUser('me').subscribe(
             (resp: any) => {
@@ -80,13 +103,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login() {
-    this.error = false;
+    this.errorLoginForm = false;
     this.forgotPassword = false;
     const data = this.forms.loginForm.value;
 
-    if (!this.forms.loginForm.valid) { return this.error = 'All fields are required'; }
+    if (!this.forms.loginForm.valid) { return this.errorLoginForm = 'All fields are required'; }
 
-    this.promiseAction = new Promise((resolve, reject) => {
+    this.promiseActionLoginForm = new Promise((resolve, reject) => {
       this.authService.login(data.email, data.password).subscribe(
         resp => {
           this.getUserSub = this.usersService.getUser('me').subscribe(

@@ -1,0 +1,131 @@
+// Global
+
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  font-size: 100%;
+  background: transparent;
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-size: 13px;
+  color: $black;
+  font-family: 'Rubik', sans-serif;
+  background-color: #fff;
+  font-weight: normal;
+  font-style: normal;
+  position: relative;
+  overflow-x: hidden;
+}
+
+img,
+embed,
+object,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+ul {
+  list-style-type: none;
+}
+
+[disabled],
+:disabled {
+  opacity: 0.25;
+  cursor: not-allowed !important;
+}
+
+// Paragraph and lead
+
+p,
+.lead {
+  line-height: 1.2;
+  color: $black;
+  font-weight: 400;
+}
+
+p {
+  font-size: 13px;
+}
+
+.lead {
+  font-size: 17px;
+}
+
+// Headings
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.17;
+  color: $dark-purple;
+  font-weight: 400;
+  margin-bottom: 15px;
+}
+
+h1,
+.h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 21px;
+}
+
+h4 {
+  font-size: 17px;
+}
+
+h5 {
+  font-size: 15px;
+}
+
+h6 {
+  font-size: 13px;
+}
+
+
+// Other
+
+a {
+  font-size: 13px;
+  color: $light-blue;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.subtitle {
+  @extend .h5;
+  color: $black;
+}
+
+.meta {
+  @extend .p;
+  font-size: 11px;
+  color: $grey;
+
+  &__caption {
+    @extend .meta;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+}

@@ -29,6 +29,8 @@
             "styles": [
               "node_modules/sanitize.css/sanitize.css",
               "node_modules/chartist/dist/chartist.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {

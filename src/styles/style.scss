@@ -1,4 +1,70 @@
-// All sass
 @import 'partials';
+@import 'utils/index';
+@import 'modules/index';
 
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  align-items: stretch;
+}
+
+app-root > * {
+  flex-shrink: 0;
+}
+
+router-outlet + * {
+  flex-grow: 1;
+}
+
+body {
+
+  &.login,
+  &.signup {
+    background: $purple-blue;
+    background-size: 100% 200% !important;
+
+    &.page-loaded {
+      @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
+      @include animation('animateGradient .9s 1');
+      animation-delay: 1s;
+      background-position: 0 100%;
+      animation-fill-mode: forwards;
+    }
+
+    .logo {
+      img {
+        padding-left: 66px;
+        height: 120px;
+      }
+    }
+
+    p,
+    .lead {
+      color: $grey;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #fff;
+    }
+  }
+
+  p + p {
+    margin-top: 20px;
+  }
+}
+
+@include keyframes(animateGradient) {
+  0% {
+    background-position: 0 100%;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
