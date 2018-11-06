@@ -27,19 +27,18 @@ export class AppComponent {
   ) {
 
     this.router.events.subscribe((e: any) => {
+
       if (e instanceof NavigationEnd) {
+
         window.scrollTo(0, 0);
         this.initialLoad = true;
         this.renderer.addClass(document.body, 'page-loaded');
-      }
-
-      if (e instanceof NavigationStart) {
 
         if (this.previousUrl) {
           this.renderer.removeClass(document.body, this.previousUrl);
         }
 
-        const currentUrlSlug = e.url.slice(1);
+        const currentUrlSlug = this.router.url.slice(1);
         if (currentUrlSlug) {
           this.renderer.addClass(document.body, currentUrlSlug);
         }
