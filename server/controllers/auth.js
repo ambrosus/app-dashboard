@@ -5,9 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-const bcrypt = require('bcrypt');
 const { to } = _require('/utils/general');
-const { ValidationError, NotFoundError } = _require('/errors');
+const { ValidationError } = _require('/errors');
 const { httpGet } = _require('/utils/requests');
 const { token, api } = _require('/config');
 
@@ -30,17 +29,8 @@ exports.login = async (req, res, next) => {
 
     if (user && !(user.active && user.organization.active)) { return next(new ValidationError('User is deactivated')); }
 
-    const valid = bcrypt.compareSync(password, user.password);
-    if (!valid) return next(new ValidationError('User "password" is incorrect'));
-
-    user.lastLogin = +new Date();
-    user.save();
-
-    user = user.toObject();
-    delete user.password;
-
     req.status = 200;
-    req.json = { data: user, message: 'Success', status: 200 };
+    req.json = { data: user.token, message: 'Success', status: 200 };
     return next();
 
   } else if (!email) {
@@ -65,20 +55,12 @@ exports.verifyAccount = async (req, res, next) => {
       path: 'organization',
       select: '-__v -owner'
     })
-    .select('-createdAt -updatedAt -password -__v')
+    .select('-createdAt -updatedAt -__v')
   );
   if (err) { logger.error('User GET error: ', err); }
   if (user && !(user.active && user.organization.active)) { return next(new ValidationError('User is deactivated')); }
-  if (!user) {
-    req.status = 200;
-    req.json = { data: null, message: 'User verified, with no user account', status: 200 };
-    return next();
-  }
-
-  user.toObject();
-  delete user.password;
 
   req.status = 200;
-  req.json = { data: user, message: 'Success', status: 200 };
+  req.json = { data: `${ user ? user.token : null}`, message: 'Success', status: 200 };
   return next();
 };

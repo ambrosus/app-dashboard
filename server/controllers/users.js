@@ -98,17 +98,20 @@ exports.hermesAccountRegister = async (req, res, next) => {
  */
 exports.getAccount = async (req, res, next) => {
   const email = req.params.email;
-  let err, user;
+
+  const query = {
+    email: (email === 'me' ? req.user.email : email)
+  };
 
   [err, user] = await to(
-    User.findOne({ email })
+    User.findOne(query)
     .populate({
       path: 'organization',
       select: '-active -__v -owner',
     })
     .select('-active -createdAt -updatedAt -__v')
   );
-  if (err || !user) { logger.error('User GET error: ', err); return next(new NotFoundError(err, err)); }
+  if (err || !user) { logger.error('[GET] User: ', err); return next(new ValidationError(err)); }
 
   req.status = 200;
   req.json = { data: user, message: 'Success', status: 200 };
@@ -169,7 +172,7 @@ exports.edit = async (req, res, next) => {
     return next(new PermissionError('You can only edit accounts within your own organization'));
   }
 
-  const allowedToChange = ['full_name', 'email', 'password', 'timeZone', 'token', 'active'];
+  const allowedToChange = ['full_name', 'email', 'timeZone', 'token', 'active'];
   for (const key in data) {
     if (allowedToChange.includes(key)) { userFound[key] = data[key]; }
   }

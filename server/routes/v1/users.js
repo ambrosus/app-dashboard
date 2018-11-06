@@ -19,7 +19,7 @@ UsersRoutes.route('/')
   .get(checkPermission('manage_accounts'), UsersController.getAccounts, (req, res) => { res.status(req.status).json(req.json); });
 
 UsersRoutes.route('/:email')
-  .get(UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
+  .get(checkPermission(), UsersController.getAccount, (req, res) => { res.status(req.status).json(req.json); })
   .put(checkPermission(), UsersController.edit, (req, res) => { res.status(req.status).json(req.json); });
 
 module.exports = UsersRoutes;

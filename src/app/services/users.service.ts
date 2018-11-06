@@ -56,11 +56,14 @@ export class UsersService {
 
   getUser(email) {
     return new Observable(observer => {
+      const token = this.getToken();
+      const headers = { Authorization: `AMB_TOKEN ${token}` };
       const url = `/api/users/${email}`;
 
-      this.http.get(url).subscribe(
+      this.http.get(url, { headers }).subscribe(
         ({ data }: any) => {
           this._user.next(data);
+          observer.next(data);
         },
         err => observer.error(err.error),
       );

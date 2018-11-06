@@ -74,7 +74,6 @@ export class GeneralComponent implements OnInit, OnDestroy {
     };
 
     if (data.password) {
-      body['password'] = data.password;
       body['token'] = JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password));
     }
 
