@@ -50,6 +50,20 @@ exports.editAccount = async (req, res, next) => {
   return next();
 }
 
+exports.editCoreAccount = async (req, res, next) => {
+  const address = req.params.address;
+  const token = req.query.token;
+  const body = req.body;
+  let err, url, accountEdited;
+
+  url = `${api.core}/accounts/${address}`;
+  [err, accountEdited] = await to(httpPut(url, body, token));
+
+  req.status = `${err ? 400 : 200}`;
+  req.json = err || accountEdited;
+  return next();
+}
+
 exports.getEncryptedPrivateKey = async (req, res, next) => {
   const body = req.body;
   let err, url, privateKey;
@@ -58,19 +72,19 @@ exports.getEncryptedPrivateKey = async (req, res, next) => {
   [err, privateKey] = await to(httpPost(url, body));
 
   // Alter when it gets fixed
-  req.status = `${err || privateKey.meta.code === 400 ? 400 : 200}`;
+  req.status = `${err || (privateKey.meta && privateKey.meta.code === 400) ? 400 : 200}`;
   req.json = err || privateKey;
   return next();
 }
 
-// exports.verifyAccount = async (req, res, next) => {
-//   const address = req.params.address;
-//   let err, url, account;
+exports.verifyAccount = async (req, res, next) => {
+  const address = req.params.address;
+  let err, url, account;
 
-//   url = `${api.extended}/account/exists/${address}`;
-//   [err, account] = await to(httpGet(url));
+  url = `${api.extended}/account/${address}/exists`;
+  [err, account] = await to(httpGet(url));
 
-//   req.status = `${err ? 400 : 200}`;
-//   req.json = err || account;
-//   return next();
-// }
+  req.status = `${err || !(account.meta && account.meta.exists) ? 400 : 200}`;
+  req.json = err || account;
+  return next();
+}

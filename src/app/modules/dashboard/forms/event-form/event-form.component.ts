@@ -149,7 +149,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   private generateEvent(assetId) {
-    const address = this.storageService.get('user')['address'];
+    const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     const eventForm = this.eventForm.getRawValue();
 

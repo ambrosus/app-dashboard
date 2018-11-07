@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UsersService } from 'app/services/users.service';
+import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -10,41 +10,44 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrls: ['./account.component.scss'],
 })
 export class AccountComponent implements OnInit, OnDestroy {
-  getUserSub: Subscription;
+  getAccountSub: Subscription;
   routeSub: Subscription;
-  userForm: FormGroup;
-  user;
-  email;
+  accountForm: FormGroup;
+  account;
 
-  constructor(private usersService: UsersService, private route: ActivatedRoute, private router: Router) { }
+  constructor(
+    private accountsService: AccountsService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) { }
 
   ngOnInit() {
     this.routeSub = this.route.params.subscribe(params => {
-      this.email = params.email;
-      this.usersService.getUser(this.email).subscribe();
-      this.getUser();
+      const address = params.address;
+      this.accountsService.getAccount(address).subscribe();
+      this.getAccount();
     });
   }
 
   ngOnDestroy() {
-    if (this.getUserSub) { this.getUserSub.unsubscribe(); }
+    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
   }
 
-  initUserForm() {
-    this.userForm = new FormGroup({
-      address: new FormControl({ value: this.user.address, disabled: true }),
-      full_name: new FormControl({ value: this.user.full_name, disabled: true }),
-      email: new FormControl({ value: this.user.email, disabled: true }),
-      timeZone: new FormControl({ value: this.user.timeZone, disabled: true }),
+  initAccountForm() {
+    this.accountForm = new FormGroup({
+      address: new FormControl({ value: this.account.address, disabled: true }),
+      full_name: new FormControl({ value: this.account.fullName, disabled: true }),
+      email: new FormControl({ value: this.account.email, disabled: true }),
+      timeZone: new FormControl({ value: this.account.timeZone, disabled: true }),
     });
   }
 
-  getUser() {
-    this.getUserSub = this.usersService._user.subscribe(
-      user => {
-        console.log('USER GET: ', user);
-        this.user = user;
-        this.initUserForm();
+  getAccount() {
+    this.getAccountSub = this.accountsService._account.subscribe(
+      account => {
+        console.log('[GET] Account: ', account);
+        this.account = account;
+        this.initAccountForm();
       },
     );
   }

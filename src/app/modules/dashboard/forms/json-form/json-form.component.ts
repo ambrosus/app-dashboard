@@ -81,7 +81,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   private generateAsset() {
-    const address = this.storageService.get('user')['address'];
+    const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
 
     const idData = {
@@ -104,7 +104,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   }
 
   private generateEvents(json, _assetIds = this.assetIds) {
-    const address = this.storageService.get('user')['address'];
+    const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     let allEvents = [];
 

@@ -27,8 +27,8 @@ export class AssetsService {
 
   loadAssets() {
     const token = this.authService.getToken();
-    const user = <any>this.storageService.get('user') || {};
-    const { address } = user;
+    const account = <any>this.storageService.get('account') || {};
+    const { address } = account;
     const options = {
       limit: 15,
       token,

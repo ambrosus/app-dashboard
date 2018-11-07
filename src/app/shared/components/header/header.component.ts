@@ -7,8 +7,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { UsersService } from 'app/services/users.service';
+import { Router, NavigationStart } from '@angular/router';
+import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,20 +18,18 @@ import { Subscription } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  userSub: Subscription;
+  accountSub: Subscription;
   navSub: Subscription;
   isLoggedin;
   greeting = 'Hi, welcome!';
+  account;
   overlay = false;
-  users;
-  user;
-  addAccount;
   sidebar;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private usersService: UsersService,
+    private accountsService: AccountsService,
   ) { }
 
   ngOnInit() {
@@ -41,24 +39,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.userSub = this.usersService._user.subscribe((res: any) => {
-      this.user = res;
-      this.greeting = this.user.full_name || this.user.email || 'Hi, welcome!';
-      this.isLoggedin = this.authService.isLoggedIn();
-      console.log('User GET (header): ', this.user);
-    });
+    this.accountSub = this.accountsService._account.subscribe(
+      (account: any) => {
+        this.account = account;
+        this.greeting = account.fullName || account.email || 'Hi, welcome!';
+        this.isLoggedin = this.authService.isLoggedIn();
+        console.log('[GET] Account (header): ', this.account);
+      },
+    );
   }
 
   ngOnDestroy() {
-    if (this.userSub) { this.userSub.unsubscribe(); }
+    if (this.accountSub) { this.accountSub.unsubscribe(); }
     if (this.navSub) { this.navSub.unsubscribe(); }
   }
 
   logout() { this.authService.logout(); }
 
   checkPermission(routePermissions: string[]): boolean {
-    if (!this.user.permissions) {
+    if (!this.account.permissions) {
       return false;
-    } else { return routePermissions.every(routePermission => this.user.permissions.some(userPermission => userPermission === routePermission)); }
+    } else { return routePermissions.every(routePermission => this.account.permissions.some(accountPermission => accountPermission === routePermission)); }
   }
 }

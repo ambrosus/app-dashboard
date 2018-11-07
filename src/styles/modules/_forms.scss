@@ -88,7 +88,7 @@ label {
       left: calc(100% - 75px);
       padding: 8px;
       border-radius: 4px;
-      background: #fff;
+      background: #fafafa;
       font-size: 11px;
       line-height: 1.2;
       color: $black;
@@ -100,8 +100,8 @@ label {
         left: calc(100% - 75px);
         width: 0;
         height: 0;
-        border: 7px solid #fff;
-        background: #fff;
+        border: 7px solid #fafafa;
+        background: #fafafa;
         transform: rotate(45deg);
       }
     }
@@ -128,8 +128,8 @@ textarea {
   width: 100%;
   font-weight: 400;
   padding: 10px 0;
-  color: #fff;
-  box-shadow: 0 1px rgba(#fff, 0.25);
+  color: #333;
+  box-shadow: 0 1px rgba(#333, 0.25);
   font-size: 13px;
   line-height: 1.15;
   text-align: left;
@@ -137,8 +137,8 @@ textarea {
   padding-right: 25px;
 
   &:focus {
-    color: #fff;
-    box-shadow: 0 1px #fff, inset 0px -1px #fff;
+    color: #333;
+    box-shadow: 0 1px #333, inset 0px -1px #333;
   }
 }
 
@@ -155,7 +155,7 @@ textarea {
   &__icon {
     width: 22px;
     height: 22px;
-    border: 2px solid #fff;
+    border: 2px solid #333;
     display: inline-block;
     position: relative;
     border-radius: 6px;

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import { Observable, Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
-import { UsersService } from './users.service';
+import { AccountsService } from './accounts.service';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
@@ -21,7 +21,7 @@ export class AuthService implements OnDestroy {
     private http: HttpClient,
     private router: Router,
     private storageService: StorageService,
-    private usersService: UsersService,
+    private accountsService: AccountsService,
   ) {
     this.sdk = new AmbrosusSDK({ Web3 });
     this.web3 = new Web3();
@@ -32,10 +32,10 @@ export class AuthService implements OnDestroy {
   }
 
   isLoggedIn() {
-    const user = <any>this.storageService.get('user');
+    const account = <any>this.storageService.get('account');
     const secret = this.storageService.get('secret');
 
-    return user && user.address && secret;
+    return account && account.address && secret;
   }
 
   getToken(secret = null) {
@@ -49,9 +49,9 @@ export class AuthService implements OnDestroy {
       let address;
       try {
         address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
-      } catch (e) { return observer.error({ message: 'Invalid private key' }); }
+      } catch (e) { return observer.error({ message: 'Private key is invalid' }); }
 
-      this.http.get(`/api/account/verify/${address}`).subscribe(
+      this.http.get(`/api/account/${address}/exists`).subscribe(
         ({ data }: any) => observer.next(data),
         ({ meta }) => observer.error(meta),
       );
@@ -63,17 +63,19 @@ export class AuthService implements OnDestroy {
       this.http.post('/api/account/secret', { email }).subscribe(
         ({ data }: any) => {
           try {
-            const token = JSON.parse(data.token);
+            console.log('[GET] PrivateKey token: ', data);
+            let token = data.token;
+            token = JSON.parse(atob(data.token));
             const [address, privateKey] = this.decryptPrivateKey(token, password);
             if (!address) { return observer.error({ message: 'Password is incorrect' }); }
 
             this.storageService.set('secret', privateKey);
 
-            this.getAccountSub = this.usersService.getAccount(address).subscribe(
+            this.getAccountSub = this.accountsService.getAccount(address).subscribe(
               account => {
                 console.log('[GET] Account: ', account);
-                this.storageService.set('user', account);
-                this.usersService._user.next(account);
+                this.storageService.set('account', account);
+                this.accountsService._account.next(account);
                 this.router.navigate(['/assets']);
                 return observer.next(account);
               },

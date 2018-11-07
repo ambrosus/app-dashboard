@@ -10,16 +10,16 @@ declare let Web3: any;
 @Injectable({
   providedIn: 'root',
 })
-export class UsersService {
-  _user = new BehaviorSubject({});
+export class AccountsService {
+  _account = new BehaviorSubject({});
   sdk;
 
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
   ) {
-    const user = <any>this.storageService.get('user') || {};
-    this._user.next(user);
+    const account = <any>this.storageService.get('account') || {};
+    this._account.next(account);
     this.sdk = new AmbrosusSDK({ Web3 });
   }
 
@@ -99,7 +99,7 @@ export class UsersService {
 
       this.http.get(url, { headers }).subscribe(
         ({ data }: any) => {
-          this._user.next(data);
+          this._account.next(data);
           observer.next(data);
         },
         ({ error }) => observer.error(error),

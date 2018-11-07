@@ -16,7 +16,6 @@ export class EventComponent implements OnInit, OnDestroy {
   eventId;
   event;
   eventObjects = [];
-  user;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;

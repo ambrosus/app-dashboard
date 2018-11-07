@@ -5,7 +5,7 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
-import { UsersService } from 'app/services/users.service';
+import { AccountsService } from 'app/services/accounts.service';
 import { StorageService } from 'app/services/storage.service';
 
 declare let Web3: any;
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     public dialog: MatDialog,
-    private usersService: UsersService,
+    private accountsService: AccountsService,
     private storageService: StorageService,
   ) {
     this.forms.loginForm = new FormGroup({
@@ -82,18 +82,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.storageService.set('secret', privateKey);
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.getAccountSub = this.usersService.getAccount(address).subscribe(
+      this.getAccountSub = this.accountsService.getAccount(address).subscribe(
         account => {
           console.log('[GET] Account: ', account);
           this.storageService.set('secret', privateKey);
-          this.storageService.set('user', account);
-          this.usersService._user.next(account);
+          this.storageService.set('account', account);
+          this.accountsService._account.next(account);
           this.router.navigate(['/assets']);
           resolve();
         },
-        error => {
-          console.error('[GET] Account: ', error);
-          this.errorPrivateKeyForm = error.message;
+        err => {
+          console.error('[GET] Account: ', err);
+          this.errorPrivateKeyForm = err ? err.message : 'Login error';
           this.storageService.clear();
           reject();
         },

@@ -13,12 +13,14 @@ const response = (req, res) => { res.status(req.status).json(req.json); };
 AccountRoutes.route('/')
   .get(AccountController.getAccounts, response);
 
-// AccountRoutes.get('/verify/:address', AccountController.verifyAccount, response);
-
 AccountRoutes.post('/secret', AccountController.getEncryptedPrivateKey, response);
 
 AccountRoutes.route('/:address')
   .get(AccountController.getAccount, response)
   .put(AccountController.editAccount, response);
+
+AccountRoutes.put('/:address/core', AccountController.editCoreAccount, response);
+
+AccountRoutes.get('/:address/exists', AccountController.verifyAccount, response);
 
 module.exports = AccountRoutes;

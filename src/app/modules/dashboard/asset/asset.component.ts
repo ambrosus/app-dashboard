@@ -19,7 +19,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   eventsSub: Subscription;
   asset;
   assetId: string;
-  user;
+  account;
   previewAppUrl;
   timeline;
   dialogRef;
@@ -47,10 +47,10 @@ export class AssetComponent implements OnInit, OnDestroy {
     });
     this.assetsService.events.subscribe(events => this.timeline = events && events.data && events.data.length);
 
-    this.user = <any>this.storageService.get('user') || {};
+    this.account = <any>this.storageService.get('account') || {};
 
     try {
-      this.previewAppUrl = this.user.organization.settings.preview_app;
+      this.previewAppUrl = this.account.organization.settings.preview_app;
     } catch (e) { this.previewAppUrl = 'https://amb.to'; }
   }
 
