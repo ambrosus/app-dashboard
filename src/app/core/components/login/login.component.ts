@@ -17,16 +17,14 @@ declare let Web3: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  getUserSub: Subscription;
+  getAccountSub: Subscription;
+  loginSub: Subscription;
   forms: {
     loginForm?: FormGroup,
     privateKeyForm?: FormGroup
   } = {};
-  error;
-  deviceInfo;
   promiseActionPrivateKeyForm;
   promiseActionLoginForm;
-  forgotPassword;
   showPassword;
   errorPrivateKeyForm;
   errorLoginForm;
@@ -54,7 +52,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       const web3 = new Web3();
       console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
       return null;
-    } catch (e) { return { 'Invalid private key': control.value }; }
+    } catch (e) { return { 'Private key is invalid': control.value }; }
   }
 
   validateEmail(control: AbstractControl) {
@@ -67,66 +65,58 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.getUserSub) { this.getUserSub.unsubscribe(); }
+    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
+    if (this.loginSub) { this.loginSub.unsubscribe(); }
   }
 
-  verifyAccount() {
-    this.errorPrivateKeyForm = false;
-    this.forgotPassword = false;
-    const _data = this.forms.privateKeyForm.value;
+  // Private key form
 
-    if (this.forms.privateKeyForm.invalid) { return this.errorPrivateKeyForm = 'Fill all required fileds'; }
+  getAccount() {
+    this.errorPrivateKeyForm = false;
+    const form = this.forms.privateKeyForm;
+
+    if (form.invalid) { return this.errorPrivateKeyForm = 'Fill all required fileds'; }
+
+    const { privateKey } = form.value;
+    const address = this.authService.privateKeyToAccount(privateKey);
+    this.storageService.set('secret', privateKey);
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(_data.privateKey).subscribe(
-        ({ data }: any) => {
-          this.storageService.set('secret', _data.privateKey);
-
-          this.getUserSub = this.usersService.getUser('me').subscribe(
-            (resp: any) => {
-              this.storageService.set('user', resp);
-              this.usersService._user.next(resp);
-              this.router.navigate(['/assets']);
-              resolve();
-            },
-            err => {
-              console.error('[GET] User: ', err);
-              this.router.navigate(['/assets']);
-              resolve();
-            },
-          );
-        }, err => {
-          this.error = err.message;
+      this.getAccountSub = this.usersService.getAccount(address).subscribe(
+        account => {
+          console.log('[GET] Account: ', account);
+          this.storageService.set('secret', privateKey);
+          this.storageService.set('user', account);
+          this.usersService._user.next(account);
+          this.router.navigate(['/assets']);
+          resolve();
+        },
+        error => {
+          console.error('[GET] Account: ', error);
+          this.errorPrivateKeyForm = error.message;
+          this.storageService.clear();
           reject();
-        });
+        },
+      );
     });
   }
 
+  // Login form
+
   login() {
     this.errorLoginForm = false;
-    this.forgotPassword = false;
-    const data = this.forms.loginForm.value;
+    const form = this.forms.loginForm;
 
-    if (!this.forms.loginForm.valid) { return this.errorLoginForm = 'All fields are required'; }
+    if (form.invalid) { return this.errorLoginForm = 'All fields are required'; }
+
+    const { email, password } = form.value;
 
     this.promiseActionLoginForm = new Promise((resolve, reject) => {
-      this.authService.login(data.email, data.password).subscribe(
-        resp => {
-          this.getUserSub = this.usersService.getUser('me').subscribe(
-            (user: any) => {
-              console.log('[GET] User: ', user);
-              this.storageService.set('user', user);
-              this.router.navigate(['/assets']);
-              resolve();
-            },
-            err => {
-              console.error('[GET] User: ', err);
-              resolve();
-            },
-          );
-        }, err => {
+      this.loginSub = this.authService.login(email, password).subscribe(
+        resp => resolve(),
+        err => {
           console.error('[LOGIN] Error: ', err);
-          this.error = err.message;
+          this.errorLoginForm = err ? err.message : 'Email or password are incorrect';
           reject();
         });
     });

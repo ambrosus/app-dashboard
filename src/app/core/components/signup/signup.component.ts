@@ -173,7 +173,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.forms.requestForm.invalid) { return this.errorRequestForm = 'Please fill all required fields'; }
 
     this.promiseActionRequestForm = new Promise((resolve, reject) => {
-      this.requestOrganizationSub = this.organizationsService.organizationRequest(data).subscribe(
+      this.requestOrganizationSub = this.organizationsService.createOrganizationRequest(data).subscribe(
         (resp: any) => {
           this.step = 'success';
           resolve();

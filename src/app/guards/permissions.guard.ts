@@ -6,7 +6,11 @@ import { StorageService } from 'app/services/storage.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate, CanActivateChild {
-  constructor(private router: Router, private storageService: StorageService, private userService: UsersService) { }
+  constructor(
+    private router: Router,
+    private storageService: StorageService,
+    private userService: UsersService,
+  ) { }
 
   checkPermission(userPermissions: string[], routePermissions: string[]): boolean {
     return routePermissions.every(routePermission => userPermissions.some(userPermission => userPermission === routePermission));

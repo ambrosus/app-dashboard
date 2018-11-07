@@ -12,50 +12,14 @@ const { api } = _require('/config');
 // Accounts
 
 exports.getAccounts = async (req, res, next) => {
-  const token = req.query.token;
+  const { token, next: _next } = req.query;
   let err, url, accounts;
 
-  url = `${api.extended}/account`;
+  url = `${api.extended}/account?next=${_next}`;
   [err, accounts] = await to(httpGet(url, token));
 
-  req.status = `err ? 400 : 200`;
-  req.json = accounts;
-  return next();
-}
-exports.verifyAccount = async (req, res, next) => {
-  const address = req.params.address;
-  let err, url, account;
-
-  url = `${api.extended}/account/exists/${address}`;
-  [err, account] = await to(httpGet(url));
-
-  req.status = `err ? 400 : 200`;
-  req.json = account;
-  return next();
-}
-
-exports.getEncryptedPrivateKey = async (req, res, next) => {
-  const body = req.body;
-  let err, url, privateKey;
-
-  url = `${api.extended}/account/detail/secret`;
-  [err, privateKey] = await to(httpPost(url, body));
-
-  req.status = `err ? 400 : 200`;
-  req.json = privateKey;
-  return next();
-}
-
-exports.getAccountPermissions = async (req, res, next) => {
-  const address = req.params.address;
-  const token = req.query.token;
-  let err, url, accountPermissions;
-
-  url = `${api.extended}/account/permissions/${address}`;
-  [err, accountPermissions] = await to(httpGet(url, token));
-
-  req.status = `err ? 400 : 200`;
-  req.json = accountPermissions;
+  req.status = `${err ? 400 : 200}`;
+  req.json = err || accounts;
   return next();
 }
 
@@ -67,8 +31,8 @@ exports.getAccount = async (req, res, next) => {
   url = `${api.extended}/account/${address}`;
   [err, account] = await to(httpGet(url, token));
 
-  req.status = `err ? 400 : 200`;
-  req.json = account;
+  req.status = `${err ? 400 : 200}`;
+  req.json = err || account;
   return next();
 }
 
@@ -78,39 +42,35 @@ exports.editAccount = async (req, res, next) => {
   const body = req.body;
   let err, url, accountEdited;
 
-  url = `${api.core}/accounts/${address}`;
+  url = `${api.extended}/account/${address}`;
   [err, accountEdited] = await to(httpPut(url, body, token));
 
-  req.status = `err ? 400 : 200`;
-  req.json = accountEdited;
+  req.status = `${err ? 400 : 200}`;
+  req.json = err || accountEdited;
   return next();
 }
 
-// Account details
-
-exports.getAccountDetails = async (req, res, next) => {
-  const address = req.params.address;
-  const token = req.query.token;
-  let err, url, accountDetails;
-
-  url = `${api.extended}/account/detail/${address}`;
-  [err, accountDetails] = await to(httpGet(url, token));
-
-  req.status = `err ? 400 : 200`;
-  req.json = accountDetails;
-  return next();
-}
-
-exports.editAccountDetails = async (req, res, next) => {
-  const address = req.params.address;
-  const token = req.query.token;
+exports.getEncryptedPrivateKey = async (req, res, next) => {
   const body = req.body;
-  let err, url, accountEdited;
+  let err, url, privateKey;
 
-  url = `${api.extended}/account/detail/${address}`;
-  [err, accountEdited] = await to(httpPut(url, body, token));
+  url = `${api.extended}/account/secret`;
+  [err, privateKey] = await to(httpPost(url, body));
 
-  req.status = `err ? 400 : 200`;
-  req.json = accountEdited;
+  // Alter when it gets fixed
+  req.status = `${err || privateKey.meta.code === 400 ? 400 : 200}`;
+  req.json = err || privateKey;
   return next();
 }
+
+// exports.verifyAccount = async (req, res, next) => {
+//   const address = req.params.address;
+//   let err, url, account;
+
+//   url = `${api.extended}/account/exists/${address}`;
+//   [err, account] = await to(httpGet(url));
+
+//   req.status = `${err ? 400 : 200}`;
+//   req.json = err || account;
+//   return next();
+// }

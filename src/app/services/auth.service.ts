@@ -13,7 +13,7 @@ declare let Web3: any;
   providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-  getUserSub: Subscription;
+  getAccountSub: Subscription;
   sdk;
   web3;
 
@@ -21,24 +21,21 @@ export class AuthService implements OnDestroy {
     private http: HttpClient,
     private router: Router,
     private storageService: StorageService,
-    private userService: UsersService,
+    private usersService: UsersService,
   ) {
-    this.sdk = new AmbrosusSDK({
-      Web3,
-    });
+    this.sdk = new AmbrosusSDK({ Web3 });
     this.web3 = new Web3();
   }
 
   ngOnDestroy() {
-    if (this.getUserSub) { this.getUserSub.unsubscribe(); }
+    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
   }
 
   isLoggedIn() {
     const user = <any>this.storageService.get('user');
-    const token = this.storageService.get('token');
     const secret = this.storageService.get('secret');
 
-    return user && user.address && secret && token;
+    return user && user.address && secret;
   }
 
   getToken(secret = null) {
@@ -47,34 +44,47 @@ export class AuthService implements OnDestroy {
     return secret ? this.sdk.getToken(secret, validUntil) : {};
   }
 
-  verifyAccount(secret) {
+  verifyAccount(privateKey) {
     return new Observable(observer => {
       let address;
       try {
-        address = this.web3.eth.accounts.privateKeyToAccount(secret).address;
-      } catch (e) { return observer.error({ message: 'Invalid secret' }); }
+        address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      } catch (e) { return observer.error({ message: 'Invalid private key' }); }
 
-      this.http.post('/api/auth/verify', { address }).subscribe(
-        resp => observer.next(resp),
-        err => observer.error(err.error),
+      this.http.get(`/api/account/verify/${address}`).subscribe(
+        ({ data }: any) => observer.next(data),
+        ({ meta }) => observer.error(meta),
       );
     });
   }
 
   login(email: string, password: string) {
     return new Observable(observer => {
-      this.http.post('/api/auth/login', { email, password }).subscribe(
+      this.http.post('/api/account/secret', { email }).subscribe(
         ({ data }: any) => {
-          const token = JSON.parse(data);
-          const [address, privateKey] = this.decryptPrivateKey(token, password);
-          if (!address) { return observer.error({ message: 'Password is incorrect.' }); }
+          try {
+            const token = JSON.parse(data.token);
+            const [address, privateKey] = this.decryptPrivateKey(token, password);
+            if (!address) { return observer.error({ message: 'Password is incorrect' }); }
 
-          this.storageService.set('secret', privateKey);
-          this.storageService.set('token', this.getToken(privateKey));
+            this.storageService.set('secret', privateKey);
 
-          return observer.next();
+            this.getAccountSub = this.usersService.getAccount(address).subscribe(
+              account => {
+                console.log('[GET] Account: ', account);
+                this.storageService.set('user', account);
+                this.usersService._user.next(account);
+                this.router.navigate(['/assets']);
+                return observer.next(account);
+              },
+              error => {
+                console.error('[GET] Account: ', error);
+                return observer.error(error);
+              },
+            );
+          } catch (e) { return observer.error({ message: 'Password is incorrect' }); }
         },
-        err => observer.error(err.error),
+        ({ meta }) => observer.error(meta),
       );
     });
   }
@@ -91,5 +101,12 @@ export class AuthService implements OnDestroy {
       const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
       return [address, privateKey];
     } catch (e) { return [null]; }
+  }
+
+  privateKeyToAccount(privateKey) {
+    try {
+      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      return address;
+    } catch (e) { return null; }
   }
 }

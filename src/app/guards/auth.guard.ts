@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
     private auth: AuthService,
-    private dashboard: DashboardService
+    private dashboard: DashboardService,
   ) { }
 
   canActivate(): Promise<boolean> {

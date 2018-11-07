@@ -114,7 +114,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => this.assets = data,
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -129,7 +129,7 @@ export class AssetsService {
           this.parseAsset(data.data[0]);
           observer.next(data);
         },
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -141,7 +141,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => this.events = data,
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -153,7 +153,7 @@ export class AssetsService {
 
       this.http.get(url).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -175,7 +175,7 @@ export class AssetsService {
           this.assets = data;
           observer.next(data);
         },
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -209,7 +209,7 @@ export class AssetsService {
 
           observer.next(data);
         },
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }

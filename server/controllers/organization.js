@@ -16,7 +16,7 @@ exports.createOrganizationRequest = async (req, res, next) => {
   url = `${api.extended}/organization/request`;
   [err, organizationRequestCreated] = await to(httpPost(url, body));
 
-  req.status = `err ? 400 : 200`;
-  req.json = organizationRequestCreated;
+  req.status = `${err ? 400 : 200}`;
+  req.json = err || organizationRequestCreated;
   return next();
 }

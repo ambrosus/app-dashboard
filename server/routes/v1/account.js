@@ -13,15 +13,9 @@ const response = (req, res) => { res.status(req.status).json(req.json); };
 AccountRoutes.route('/')
   .get(AccountController.getAccounts, response);
 
-AccountRoutes.get('/exists/:address', AccountController.verifyAccount, response);
+// AccountRoutes.get('/verify/:address', AccountController.verifyAccount, response);
 
-AccountRoutes.get('/permissions/:address', AccountController.getAccountPermissions, response);
-
-AccountRoutes.post('/detail/secret', AccountController.getEncryptedPrivateKey, response);
-
-AccountRoutes.route('/detail/:address')
-  .get(AccountController.getAccountDetails, response)
-  .put(AccountController.editAccountDetails, response);
+AccountRoutes.post('/secret', AccountController.getEncryptedPrivateKey, response);
 
 AccountRoutes.route('/:address')
   .get(AccountController.getAccount, response)

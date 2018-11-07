@@ -29,7 +29,44 @@ export class UsersService {
     return secret ? this.sdk.getToken(secret, validUntil) : {};
   }
 
-  /* User */
+  getAccounts(next = null) {
+    const token = this.getToken();
+    const url = `/api/account?token=${token}&next=${next}`;
+
+    return new Observable(observer => {
+      this.http.get(url).subscribe(
+        ({ data }: any) => observer.next(data),
+        ({ meta }) => observer.error(meta),
+      );
+    });
+  }
+
+  getAccount(address) {
+    const token = this.getToken();
+    const url = `/api/account/${address}?token=${token}`;
+
+    return new Observable(observer => {
+      this.http.get(url).subscribe(
+        ({ data }: any) => observer.next(data),
+        ({ meta }) => observer.error(meta),
+      );
+    });
+  }
+
+  editAccount(address, body) {
+    const token = this.getToken();
+    const url = `/api/account/${address}?token=${token}`;
+
+    return new Observable(observer => {
+      this.http.put(url, body).subscribe(
+        ({ data }: any) => observer.next(data),
+        ({ meta }) => observer.error(meta),
+      );
+    });
+  }
+
+
+  // Deprecated
 
   editUser(body, email) {
     const token = this.getToken();
@@ -38,7 +75,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.put(`/api/users/${email}`, body, { headers }).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -49,7 +86,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         ({ data }: any) => observer.next(data),
-        err => { console.error('Account CREATE error: ', err.error); observer.error(err.error); },
+        ({ error }) => { console.error('Account CREATE error: ', error); observer.error(error); },
       );
     });
   }
@@ -65,7 +102,7 @@ export class UsersService {
           this._user.next(data);
           observer.next(data);
         },
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -78,7 +115,7 @@ export class UsersService {
     return new Observable(observer => {
       this.http.get(url, { headers }).subscribe(
         ({ data }: any) => observer.next(data),
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
