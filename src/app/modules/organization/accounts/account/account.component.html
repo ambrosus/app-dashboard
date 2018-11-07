@@ -1,8 +1,8 @@
-<div *ngIf="user">
-  <h4 class="m-v-10">{{ user.email }}</h4>
-  <p class="m-b-20">{{ user.address }}</p>
+<div *ngIf="account">
+  <h4 class="m-v-10">{{ account.email }}</h4>
+  <p class="m-b-20">{{ account.address }}</p>
   <hr class="m-b-20">
-  <form [formGroup]="userForm" (ngSubmit)="save()" class="m-w-4">
+  <form [formGroup]="accountForm" (ngSubmit)="save()" class="m-w-4">
     <label>Public key
       <input formControlName="address" type="text">
     </label>
