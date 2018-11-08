@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
-import { UsersService } from 'app/services/users.service';
+import { AccountsService } from 'app/services/accounts.service';
 import { InviteService } from 'app/services/invite.service';
 
 @Component({
@@ -11,15 +11,15 @@ import { InviteService } from 'app/services/invite.service';
   styleUrls: ['./all.component.scss'],
 })
 export class AllComponent implements OnInit, OnDestroy {
-  getUsersSub: Subscription;
+  getAccountsSub: Subscription;
   getInvitesSub: Subscription;
   invitesAction: Subscription;
-  usersAction: Subscription;
-  users = [];
-  usersDisabled = [];
+  accountsAction: Subscription;
+  accounts = [];
+  accountsDisabled = [];
   invites = [];
   ids = [];
-  user;
+  account;
   show = 'active';
   success;
   error;
@@ -27,46 +27,46 @@ export class AllComponent implements OnInit, OnDestroy {
   constructor(
     private invitesService: InviteService,
     private storageService: StorageService,
-    private usersService: UsersService,
+    private accountsService: AccountsService,
   ) { }
 
   ngOnInit() {
-    this.user = this.storageService.get('user') || {};
-    this.getUsers();
+    this.account = this.storageService.get('account') || {};
+    this.getAccounts();
     this.getInvites();
   }
 
   ngOnDestroy() {
-    if (this.getUsersSub) { this.getUsersSub.unsubscribe(); }
+    if (this.getAccountsSub) { this.getAccountsSub.unsubscribe(); }
     if (this.getInvitesSub) { this.getInvitesSub.unsubscribe(); }
     if (this.invitesAction) { this.invitesAction.unsubscribe(); }
-    if (this.usersAction) { this.usersAction.unsubscribe(); }
+    if (this.accountsAction) { this.accountsAction.unsubscribe(); }
   }
 
   getNumberOfAccounts() {
     switch (this.show) {
       case 'active':
-        return this.users.length;
+        return this.accounts.length;
       case 'pending':
         return this.invites.length;
       case 'disabled':
-        return this.usersDisabled.length;
+        return this.accountsDisabled.length;
     }
   }
 
-  getUsers() {
-    this.getUsersSub = this.usersService.getUsers().subscribe(
-      (users: any) => {
-        this.users = users.filter(user => {
-          user.lastLogin = moment.tz(user.lastLogin, this.user.organization.timeZone).fromNow();
-          return user.active;
+  getAccounts() {
+    this.getAccountsSub = this.accountsService.getAccounts().subscribe(
+      (accounts: any) => {
+        this.accounts = accounts.filter(account => {
+          account.lastLogin = moment.tz(account.lastLogin, this.account.organization.timeZone).fromNow();
+          return account.active;
         });
-        this.usersDisabled = users.filter(user => {
-          return !user.active;
+        this.accountsDisabled = accounts.filter(account => {
+          return !account.active;
         });
-        console.log('Users GET: ', this.users);
+        console.log('Accounts GET: ', this.accounts);
       },
-      err => console.error('Users GET error: ', err),
+      err => console.error('Accounts GET error: ', err),
     );
   }
 
@@ -74,7 +74,7 @@ export class AllComponent implements OnInit, OnDestroy {
     this.getInvitesSub = this.invitesService.getInvites().subscribe(
       (invites: any) => {
         this.invites = invites.map(invite => {
-          invite.createdAt = moment.tz(invite.createdAt, this.user.organization.timeZone).fromNow();
+          invite.createdAt = moment.tz(invite.createdAt, this.account.organization.timeZone).fromNow();
           return invite;
         });
         console.log('Invites GET: ', this.invites);
@@ -91,9 +91,9 @@ export class AllComponent implements OnInit, OnDestroy {
           err => this.error = err.message,
         );
         break;
-      case 'userEdit':
-        this.usersAction = this.usersService.editUser(body['data'], body['email']).subscribe(
-          resp => this.getUsers(),
+      case 'accountEdit':
+        this.accountsAction = this.accountsService.editAccount(body['address'], body['data']).subscribe(
+          resp => this.getAccounts(),
           err => this.error = err.message,
         );
         break;

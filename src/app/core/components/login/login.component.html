@@ -10,7 +10,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 <app-tabs>
   <app-tab label="Private Key">
-    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+    <form [formGroup]="forms.privateKeyForm" (ngSubmit)="getAccount()" style="max-width: 624px">
       <label [ngClass]="{ error: errorPrivateKeyForm }">Your private key
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>

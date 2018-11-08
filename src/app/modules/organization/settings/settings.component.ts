@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { OrganizationsService } from 'app/services/organizations.service';
-import { UsersService } from 'app/services/users.service';
+import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 
@@ -14,48 +14,48 @@ import * as moment from 'moment-timezone';
 export class SettingsComponent implements OnInit, OnDestroy {
   settingsForm: FormGroup;
   editOrganizationSub: Subscription;
-  userGetSub: Subscription;
-  getUsersSub: Subscription;
+  accountGetSub: Subscription;
+  getAccountsSub: Subscription;
   error;
   success;
-  user;
+  account;
   organization;
-  userAdmins = [];
+  accountAdmins = [];
 
   constructor(
     private storageService: StorageService,
     private organizationsService: OrganizationsService,
-    private usersService: UsersService,
+    private accountsService: AccountsService,
   ) { }
 
   ngOnInit() {
     this.initSettingsForm();
-    this.userGetSub = this.usersService._user.subscribe(user => this.user = user);
-    this.getUsers();
+    this.accountGetSub = this.accountsService._account.subscribe(account => this.account = account);
+    this.getAccounts();
   }
 
   ngOnDestroy() {
     if (this.editOrganizationSub) { this.editOrganizationSub.unsubscribe(); }
-    if (this.userGetSub) { this.userGetSub.unsubscribe(); }
-    if (this.getUsersSub) { this.getUsersSub.unsubscribe(); }
+    if (this.accountGetSub) { this.accountGetSub.unsubscribe(); }
+    if (this.getAccountsSub) { this.getAccountsSub.unsubscribe(); }
   }
 
-  getUsers() {
-    this.getUsersSub = this.usersService.getUsers().subscribe(
-      (users: any) => {
-        this.userAdmins = users.filter(user => {
-          user.lastLogin = moment.tz(user.lastLogin, this.user.organization.timeZone).fromNow();
-          return user.permissions.indexOf('manage_organization') > -1;
+  getAccounts() {
+    this.getAccountsSub = this.accountsService.getAccounts().subscribe(
+      (accounts: any) => {
+        this.accountAdmins = accounts.filter(account => {
+          account.lastLogin = moment.tz(account.lastLogin, this.account.organization.timeZone).fromNow();
+          return account.permissions.indexOf('manage_organization') > -1;
         });
-        console.log('User Admins GET: ', this.userAdmins);
+        console.log('[GET] Accounts: ', this.accountAdmins);
       },
-      err => console.error('Users GET error: ', err),
+      err => console.error('[GET] Accounts: ', err),
     );
   }
 
   initSettingsForm() {
-    this.user = this.storageService.get('user') || {};
-    this.organization = this.user['organization'] || {};
+    this.account = this.storageService.get('account') || {};
+    this.organization = this.account['organization'] || {};
 
     this.settingsForm = new FormGroup({
       title: new FormControl(this.organization.title, [Validators.required]),
@@ -69,11 +69,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const data = this.settingsForm.value;
 
     if (this.settingsForm.valid) {
-      this.editOrganizationSub = this.organizationsService.editOrganization(data, this.user.organization._id).subscribe(
+      this.editOrganizationSub = this.organizationsService.editOrganization(data, this.account.organization._id).subscribe(
         (resp: any) => {
           this.success = 'Update success';
           this.organization = resp;
-          this.usersService.getUser(this.user.email).subscribe();
+          this.accountsService.getAccount(this.account.email).subscribe();
           console.log('Organization UPDATE: ', resp);
         },
         err => {

@@ -25,7 +25,7 @@ export class InterceptorService implements HttpInterceptor {
           if (error.status === 401 && error.url.indexOf('/api/') > -1) {
             this.auth.logout();
           }
-        }
+        },
       ));
   }
 }

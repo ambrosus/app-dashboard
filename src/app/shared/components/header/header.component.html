@@ -14,17 +14,17 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </a>
     </div>
     <a routerLink="/login" *ngIf="!isLoggedin">Login</a>
-    <ul class="header-menu" *ngIf="isLoggedin && user">
+    <ul class="header-menu" *ngIf="isLoggedin && account">
       <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        <div class="avatar" *ngIf="user.full_name || user.email">
-          <span>{{ user.full_name ? user.full_name.charAt(0) : user.email ? user.email.charAt(0) : 'A' }}</span>
+        <div class="avatar" *ngIf="account.fullName || account.email">
+          <span>{{ account.fullName ? account.fullName.charAt(0) : account.email ? account.email.charAt(0) : 'A' }}</span>
         </div>
         {{ greeting }}
         <ul class="dropdown-menu">
-          <li *ngIf="user">
-            <p class="p-a-10 color-blacks--base" *ngIf="!user.full_name && !user.email">{{ user.address }}</p>
-            <p class="p-a-10 color-blacks--base">{{ user.full_name || user.email }}</p>
-            <p class="p-a-10" *ngIf="user.organization">{{ user.organization.title }}</p>
+          <li *ngIf="account">
+            <p class="p-a-10 color-blacks--base" *ngIf="!account.fullName && !account.email">{{ account.address }}</p>
+            <p class="p-a-10 color-blacks--base">{{ account.fullName || account.email }}</p>
+            <p class="p-a-10" *ngIf="account.organization">{{ account.organization.title }}</p>
           </li>
           <li class="separator color-ablue--base">
             <span (click)="logout()">Logout</span>

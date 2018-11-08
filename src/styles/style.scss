@@ -52,6 +52,47 @@ body {
     h6 {
       color: #fff;
     }
+
+    input:not([type="checkbox"]),
+    .input,
+    textarea {
+      color: #fff;
+      box-shadow: 0 1px rgba(#fff, 0.25);
+
+      &:focus {
+        color: #fff;
+        box-shadow: 0 1px #fff, inset 0px -1px #fff;
+      }
+    }
+
+    .custom_checkbox {
+      &__icon {
+        border: 2px solid #fff;
+      }
+    }
+
+    label {
+      .info {
+        .message {
+          background: #fff;
+
+          &:before {
+            border: 7px solid #fff;
+            background: #fff;
+          }
+        }
+      }
+
+      &.error {
+        color: $dark-red;
+
+        input:not([type="checkbox"]),
+        .input,
+        textarea {
+          box-shadow: 0 1px $dark-red;
+        }
+      }
+    }
   }
 
   p + p {

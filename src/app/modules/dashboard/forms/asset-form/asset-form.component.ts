@@ -143,7 +143,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   }
 
   private generateAsset() {
-    const address = this.storageService.get('user')['address'];
+    const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
 
     const idData = {
@@ -166,7 +166,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   }
 
   private generateInfoEvent(_assetId = this.assetId) {
-    const address = this.storageService.get('user')['address'];
+    const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     const assetForm = this.assetForm.getRawValue();
 

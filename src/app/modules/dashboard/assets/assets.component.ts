@@ -86,8 +86,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.dialog.closeAll();
     this.loader = true;
     const token = this.authService.getToken();
-    const user = <any>this.storageService.get('user') || {};
-    const { address } = user;
+    const account = <any>this.storageService.get('account') || {};
+    const { address } = account;
     const options = {
       limit,
       token,

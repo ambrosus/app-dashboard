@@ -9,13 +9,26 @@ export class OrganizationsService {
     private authService: AuthService,
   ) { }
 
+  createOrganizationRequest(body) {
+    const url = '/api/organization/request';
+
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        ({ data }: any) => { observer.next(data); },
+        ({ meta }) => { observer.error(meta); },
+      );
+    });
+  }
+
+  // Deprecated
+
   checkOrganization(title) {
     return new Observable(observer => {
       const url = `/api/organizations/check/${title}`;
 
       this.http.get(url).subscribe(
         res => observer.next(res),
-        err => observer.error(err.error),
+        ({ error }) => observer.error(error),
       );
     });
   }
@@ -28,7 +41,7 @@ export class OrganizationsService {
     return new Observable(observer => {
       this.http.put(url, body, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err.error); },
+        ({ error }) => { observer.error(error); },
       );
     });
   }
@@ -41,7 +54,7 @@ export class OrganizationsService {
     return new Observable(observer => {
       this.http.get(url, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err.error); },
+        ({ error }) => { observer.error(error); },
       );
     });
   }
@@ -54,18 +67,7 @@ export class OrganizationsService {
     return new Observable(observer => {
       this.http.get(url, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err.error); },
-      );
-    });
-  }
-
-  organizationRequest(body) {
-    const url = `/api/organizations/request`;
-
-    return new Observable(observer => {
-      this.http.post(url, body).subscribe(
-        ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err.error); },
+        ({ error }) => { observer.error(error); },
       );
     });
   }
@@ -78,7 +80,7 @@ export class OrganizationsService {
     return new Observable(observer => {
       this.http.put(url, body, { headers }).subscribe(
         ({ data }: any) => { observer.next(data); },
-        err => { observer.error(err.error); },
+        ({ error }) => { observer.error(error); },
       );
     });
   }
