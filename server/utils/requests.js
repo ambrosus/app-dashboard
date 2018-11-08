@@ -7,11 +7,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 const axios = require('axios');
 
+const headers = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json'
+};
+
 exports.httpGet = (url, token = null) => {
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
   if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
 
   return new Promise((resolve, reject) => {
@@ -22,11 +23,8 @@ exports.httpGet = (url, token = null) => {
 }
 
 exports.httpPost = (url, body, token = null) => {
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
   if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+
   return new Promise((resolve, reject) => {
     axios.post(url, body, { headers, data: null })
       .then(resp => resolve(resp.data))
@@ -35,11 +33,8 @@ exports.httpPost = (url, body, token = null) => {
 }
 
 exports.httpPut = (url, body, token = null) => {
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
   if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+
   return new Promise((resolve, reject) => {
     axios.put(url, body, { headers, data: null })
       .then(resp => resolve(resp.data))

@@ -43,20 +43,10 @@ exports.editAccount = async (req, res, next) => {
   let err, url, accountEdited;
 
   url = `${api.extended}/account/${address}`;
-  [err, accountEdited] = await to(httpPut(url, body, token));
 
-  req.status = `${err ? 400 : 200}`;
-  req.json = err || accountEdited;
-  return next();
-}
-
-exports.editCoreAccount = async (req, res, next) => {
-  const address = req.params.address;
-  const token = req.query.token;
-  const body = req.body;
-  let err, url, accountEdited;
-
-  url = `${api.core}/accounts/${address}`;
+  if (body.accessLevel || body.permissions) {
+    url = `${api.core}/accounts/${address}`;
+  }
   [err, accountEdited] = await to(httpPut(url, body, token));
 
   req.status = `${err ? 400 : 200}`;

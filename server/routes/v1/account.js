@@ -19,8 +19,6 @@ AccountRoutes.route('/:address')
   .get(AccountController.getAccount, response)
   .put(AccountController.editAccount, response);
 
-AccountRoutes.put('/:address/core', AccountController.editCoreAccount, response);
-
 AccountRoutes.get('/:address/exists', AccountController.verifyAccount, response);
 
 module.exports = AccountRoutes;
