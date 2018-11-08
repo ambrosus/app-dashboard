@@ -59,6 +59,10 @@ p {
   font-size: 13px;
 }
 
+p + p {
+  margin-top: 20px;
+}
+
 .lead {
   font-size: 17px;
 }

@@ -1,0 +1,125 @@
+@include keyframes(animateGradient) {
+  0% {
+    background-position: 0 100%;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.ui-dark {
+  background: $purple-blue;
+  background-size: 100% 200% !important;
+
+  &.page-loaded {
+    @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
+    @include animation('animateGradient .9s 1');
+    animation-delay: 1s;
+    background-position: 0 100%;
+    animation-fill-mode: forwards;
+  }
+
+  .logo {
+    img {
+      padding-left: 66px;
+      height: 120px;
+    }
+  }
+
+  p,
+  .lead {
+    color: $grey;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #fff;
+  }
+
+  input:not([type="checkbox"]),
+  .input,
+  textarea {
+    color: #fff;
+    box-shadow: 0 1px rgba(#fff, 0.25);
+
+    &:focus {
+      color: #fff;
+      box-shadow: 0 1px #fff, inset 0px -1px #fff;
+    }
+  }
+
+  .custom_checkbox {
+    &__icon {
+      border: 2px solid #fff;
+    }
+  }
+
+  label {
+    .info {
+      .message {
+        background: #fff;
+
+        &:before {
+          border: 7px solid #fff;
+          background: #fff;
+        }
+      }
+    }
+
+    &.error {
+      color: $dark-red;
+
+      input:not([type="checkbox"]),
+      .input,
+      textarea {
+        box-shadow: 0 1px $dark-red;
+      }
+    }
+  }
+
+  app-footer {
+
+    .copyright {
+      > p {
+        color: $grey;
+      }
+    }
+
+    .contact {
+      a {
+        color: $grey;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+
+    .socials {
+
+      li {
+
+        a {
+          svg {
+            path {
+              fill: $grey;
+            }
+          }
+
+          &:hover {
+            svg {
+              path {
+                fill: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
