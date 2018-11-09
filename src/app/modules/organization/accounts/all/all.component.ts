@@ -92,7 +92,7 @@ export class AllComponent implements OnInit, OnDestroy {
         );
         break;
       case 'accountEdit':
-        this.accountsAction = this.accountsService.editAccount(body['address'], body['data']).subscribe(
+        this.accountsAction = this.accountsService.modifyAccount(body['address'], body['data']).subscribe(
           resp => this.getAccounts(),
           err => this.error = err.message,
         );

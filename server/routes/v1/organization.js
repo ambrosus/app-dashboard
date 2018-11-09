@@ -10,6 +10,15 @@ const OrganizationController = _require('/controllers/organization');
 const OrganizationRoutes = express.Router();
 const response = (req, res) => { res.status(req.status).json(req.json); };
 
+OrganizationRoutes.route('/')
+  .get(OrganizationController.getOrganizations, response);
+
+OrganizationRoutes.route('/:organizationId')
+  .get(OrganizationController.getOrganization, response)
+  .put(OrganizationController.modifyOrganization, response);
+
+OrganizationRoutes.get('/:organizationId/accounts', OrganizationController.getOrganizationAccounts, response);
+
 OrganizationRoutes.route('/request')
   .post(OrganizationController.createOrganizationRequest, response);
 
