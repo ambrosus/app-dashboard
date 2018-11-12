@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable, ErrorHandler } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -20,6 +20,20 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({
+  dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
+});
+
+@Injectable()
+export class SentryErrorHandler implements ErrorHandler {
+  constructor() { }
+  handleError(error) {
+    Sentry.captureException(error.originalError || error);
+    throw error;
+  }
+}
 
 @NgModule({
   declarations: [
@@ -44,6 +58,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
   ],
   providers: [
     DeviceDetectorService,
+    { provide: ErrorHandler, useClass: SentryErrorHandler },
   ],
   bootstrap: [AppComponent],
 })
