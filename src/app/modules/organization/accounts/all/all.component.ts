@@ -4,6 +4,7 @@ import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
 import { InviteService } from 'app/services/invite.service';
+import { OrganizationsService } from 'app/services/organizations.service';
 
 @Component({
   selector: 'app-all',
@@ -15,6 +16,7 @@ export class AllComponent implements OnInit, OnDestroy {
   getInvitesSub: Subscription;
   invitesAction: Subscription;
   accountsAction: Subscription;
+  getOrganizationSub: Subscription;
   accounts = [];
   accountsDisabled = [];
   invites = [];
@@ -23,15 +25,18 @@ export class AllComponent implements OnInit, OnDestroy {
   show = 'active';
   success;
   error;
+  organization;
 
   constructor(
     private invitesService: InviteService,
     private storageService: StorageService,
     private accountsService: AccountsService,
+    private organizationsService: OrganizationsService,
   ) { }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
+    this.getOrganization();
     this.getAccounts();
     this.getInvites();
   }
@@ -41,6 +46,7 @@ export class AllComponent implements OnInit, OnDestroy {
     if (this.getInvitesSub) { this.getInvitesSub.unsubscribe(); }
     if (this.invitesAction) { this.invitesAction.unsubscribe(); }
     if (this.accountsAction) { this.accountsAction.unsubscribe(); }
+    if (this.getOrganizationSub) { this.getOrganizationSub.unsubscribe(); }
   }
 
   getNumberOfAccounts() {
@@ -54,33 +60,38 @@ export class AllComponent implements OnInit, OnDestroy {
     }
   }
 
-  getAccounts() {
-    this.getAccountsSub = this.accountsService.getAccounts().subscribe(
-      (accounts: any) => {
-        this.accounts = accounts.filter(account => {
-          account.lastLogin = moment.tz(account.lastLogin, this.account.organization.timeZone).fromNow();
-          return account.active;
-        });
-        this.accountsDisabled = accounts.filter(account => {
-          return !account.active;
-        });
-        console.log('Accounts GET: ', this.accounts);
+  getOrganization() {
+    this.getOrganizationSub = this.organizationsService.getOrganization(this.account.organization).subscribe(
+      (organization: any) => {
+        console.log('[GET] Organization: ', organization);
+        this.organization = organization;
       },
-      err => console.error('Accounts GET error: ', err),
+      err => console.error('[GET] Organization: ', err),
+    );
+  }
+
+  getAccounts() {
+    this.getAccountsSub = this.organizationsService.getOrganizationAccounts(this.account.organization).subscribe(
+      (accounts: any[]) => {
+        console.log('[GET] Accounts: ', accounts);
+        this.accounts = accounts.filter(account => account.permissions.length);
+        this.accountsDisabled = accounts.filter(account => !account.permissions.length);
+      },
+      err => console.error('[GET] Accounts: ', err),
     );
   }
 
   getInvites() {
-    this.getInvitesSub = this.invitesService.getInvites().subscribe(
-      (invites: any) => {
-        this.invites = invites.map(invite => {
-          invite.createdAt = moment.tz(invite.createdAt, this.account.organization.timeZone).fromNow();
-          return invite;
-        });
-        console.log('Invites GET: ', this.invites);
-      },
-      err => console.error('Invites GET error: ', err),
-    );
+    // this.getInvitesSub = this.invitesService.getInvites().subscribe(
+    //   (invites: any) => {
+    //     this.invites = invites.map(invite => {
+    //       invite.createdAt = moment.tz(invite.createdAt, this.account.organization.timeZone).fromNow();
+    //       return invite;
+    //     });
+    //     console.log('Invites GET: ', this.invites);
+    //   },
+    //   err => console.error('Invites GET error: ', err),
+    // );
   }
 
   actions(action, body = {}) {

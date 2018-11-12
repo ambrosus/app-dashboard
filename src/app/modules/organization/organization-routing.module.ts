@@ -35,7 +35,7 @@ const routes: Routes = [
             component: InviteComponent,
           },
           {
-            path: ':email',
+            path: ':address',
             component: AccountComponent,
           },
         ],

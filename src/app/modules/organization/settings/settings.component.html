@@ -3,48 +3,23 @@
 <h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
 <h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>
 
-<!-- Administrator users -->
-<table class="table" *ngIf="accountAdmins.length">
-  <tbody>
-    <tr *ngFor="let account of accountAdmins; let i = index">
-      <td class="table__image" routerLink="../accounts/{{ account.email }}">
-        <div>{{ account.email.charAt(0) }}</div>
-      </td>
-      <td class="table__info" routerLink="../accounts/{{ account.email }}">
-        <p class="table__info__title">{{ account.fullName }}</p>
-        <small class="table__info__meta">{{ account.address }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: green;">Active</span>
-        <p class="table__status__timestamp">Last login: {{ account.lastLogin }}</p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
-          <ul class="table__options__menu">
-            <li routerLink="../accounts/{{ account.email }}">Info</li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<hr>
-
-<form [formGroup]="settingsForm" (ngSubmit)="editOrganization()" class="m-w-4">
-  <div class="form-text m-b-20">
-    <label for="title">Organization name</label>
-    <input formControlName="title" type="text">
-  </div>
-  <div class="form-text m-b-20">
-    <label for="title">Legal address</label>
-    <input formControlName="legalAddress" type="text">
-  </div>
-  <div class="flex flex-direction-r justify-content-fe align-items-c">
-    <button type="submit" class="button button--blue m-l-20">Save</button>
-  </div>
-</form>
-<hr>
-<p>Created on</p>
-<p class="m-b-20" style="color: #fff">{{ organization.createdAt | date: 'MMM d, yyyy HH:mm' }}</p>
-<p>Updated on</p>
-<p style="color: #fff">{{ organization.updatedAt | date: 'MMM d, yyyy HH:mm' }}</p>
+<div *ngIf="organization">
+  <form [formGroup]="settingsForm" (ngSubmit)="editOrganization()" class="m-w-4">
+    <div class="form-text m-b-20">
+      <label for="title">Organization name</label>
+      <input formControlName="title" type="text">
+    </div>
+    <div class="form-text m-b-20">
+      <label for="title">Legal address</label>
+      <input formControlName="legalAddress" type="text">
+    </div>
+    <div class="flex flex-direction-r justify-content-fe align-items-c">
+      <button type="submit" class="button button--blue m-l-20">Save</button>
+    </div>
+  </form>
+  <hr>
+  <p>Created on</p>
+  <p>{{ organization.createdOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
+  <p>Modified on</p>
+  <p>{{ organization.modifiedOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
+</div>

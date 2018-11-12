@@ -65,10 +65,10 @@ export class GeneralComponent implements OnInit, OnDestroy {
     const form = this.editAccountForm;
     const data = form.value;
     const secret = this.storageService.get('secret');
+    const body = {};
 
     if (form.invalid) { return this.error = 'Form is invalid'; }
 
-    const body = {};
     Object.keys(data).map(property => {
       if (data[property]) { body[property] = data[property]; }
     });

@@ -9,25 +9,28 @@
 
 <p class="m-t-20">{{ getNumberOfAccounts() }} accounts</p>
 
-<!-- Active users -->
+<!-- Active accounts -->
 <table class="table" *ngIf="show === 'active'">
   <tbody>
-    <tr *ngFor="let _user of users; let i = index">
-      <td class="table__image" routerLink="{{ _user.email }}">
-        <div>{{ _user.email.charAt(0) }}</div>
+    <tr *ngFor="let _account of accounts; let i = index">
+      <td class="table__image" routerLink="{{ _account.address }}">
+        <div>{{ _account.email.charAt(0) }}</div>
       </td>
-      <td class="table__info" routerLink="{{ _user.email }}">
-        <p class="table__info__title">{{ _user.full_name }}</p>
-        <small class="table__info__meta">{{ _user.address }}</small>
+      <td class="table__info" routerLink="{{ _account.address }}">
+        <p class="table__info__title">
+          {{ _account.fullName || _account.email }}
+          <span *ngIf="organization?.owner === _account.address">(owner)</span>
+        </p>
+        <small class="table__info__meta">{{ _account.address }}</small>
       </td>
       <td class="table__status">
         <span class="table__status__event" style="background-color: green;">Active</span>
-        <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+        <p class="table__status__timestamp">Registered on: {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
         <div class="table__options" appClickThisActive>
           <img src="/assets/raster/menu.png">
           <ul class="table__options__menu">
-            <li routerLink="{{ _user.email }}">Info</li>
-            <li *ngIf="user._id !== _user._id" (click)="actions('userEdit', { email: _user.email, data: { active: false } })">Disable</li>
+            <li routerLink="{{ _account.address }}">Info</li>
+            <li *ngIf="account._id !== _account._id" (click)="actions('accountEdit', { address: _account.address, data: { permissions: [] } })">Disable</li>
           </ul>
         </div>
       </td>
@@ -38,22 +41,25 @@
 <!-- Disabled users -->
 <table class="table" *ngIf="show === 'disabled'">
   <tbody>
-    <tr *ngFor="let _user of usersDisabled; let i = index">
-      <td class="table__image" routerLink="{{ _user.email }}">
-        <div>{{ _user.email.charAt(0) }}</div>
+    <tr *ngFor="let _account of accountsDisabled; let i = index">
+      <td class="table__image" routerLink="{{ _account.address }}">
+        <div>{{ _account.email.charAt(0) }}</div>
       </td>
-      <td class="table__info" routerLink="{{ _user.email }}">
-        <p class="table__info__title">{{ _user.full_name }}</p>
-        <small class="table__info__meta">{{ _user.address }}</small>
+      <td class="table__info" routerLink="{{ _account.address }}">
+        <p class="table__info__title">
+          {{ _account.fullName || _account.email }}
+          <span *ngIf="organization?.owner === _account.address">(owner)</span>
+        </p>
+        <small class="table__info__meta">{{ _account.address }}</small>
       </td>
       <td class="table__status">
         <span class="table__status__event" style="background-color: salmon;">Disabled</span>
-        <p class="table__status__timestamp">Last login: {{ _user.lastLogin }}</p>
+        <p class="table__status__timestamp">Registered on: {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
         <div class="table__options" appClickThisActive>
           <img src="/assets/raster/menu.png">
           <ul class="table__options__menu">
-            <li routerLink="{{ _user.email }}">Info</li>
-            <li (click)="actions('userEdit', { email: _user.email, data: { active: true } })">Activate</li>
+            <li routerLink="{{ _account.address }}">Info</li>
+            <li (click)="actions('accountEdit', { address: _account.address, data: { permissions: [ 'create_asset', 'create_event' ] } })">Activate</li>
           </ul>
         </div>
       </td>
@@ -61,7 +67,7 @@
   </tbody>
 </table>
 
-<!-- Pending users -->
+<!-- Invites/pending users -->
 <table class="table" *ngIf="show === 'pending'">
   <tbody>
     <tr *ngFor="let _invite of invites; let i = index">
@@ -74,11 +80,11 @@
       </td>
       <td class="table__status">
         <span class="table__status__event" style="background-color: orange;">Pending</span>
-        <p class="table__status__timestamp">Invited: {{ _invite.createdAt }}</p>
+        <p class="table__status__timestamp">Invited: {{ _invite.createdOn | date: 'MMM d, yyyy HH:mm' }}</p>
         <div class="table__options" appClickThisActive>
           <img src="/assets/raster/menu.png">
           <ul class="table__options__menu">
-            <li (click)="actions('inviteRevoke', { ids: [_invite._id] })">Revoke</li>
+            <!-- <li (click)="actions('inviteRevoke', { ids: [_invite._id] })">Revoke</li> -->
           </ul>
         </div>
       </td>
