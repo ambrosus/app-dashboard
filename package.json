@@ -35,6 +35,7 @@
     "@ng-select/ng-select": "^2.9.1",
     "@sendgrid/mail": "^6.3.1",
     "@sentry/browser": "^4.3.0",
+    "@sentry/node": "^4.3.0",
     "ambrosus-javascript-sdk": "^0.9.3",
     "angular2-promise-buttons": "^2.1.1",
     "animate.css": "^3.7.0",
