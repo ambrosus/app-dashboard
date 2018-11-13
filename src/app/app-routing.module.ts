@@ -46,7 +46,7 @@ const routes: Routes = [
     canActivateChild: [AuthLoginGuard, PermissionsGuard],
     loadChildren: 'app/modules/organization/organization.module#OrganizationModule',
     runGuardsAndResolvers: 'always',
-    data: { permissions: ['manage_organization'] },
+    data: { permissions: ['manage_accounts'] },
   }, {
     path: 'settings',
     canActivate: [AuthGuard],

@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable, ErrorHandler, isDevMode } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -18,13 +18,30 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
-import { DeviceDetectorModule, DeviceDetectorService } from 'ngx-device-detector';
+import {
+  DeviceDetectorModule,
+  DeviceDetectorService,
+} from 'ngx-device-detector';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+import * as Sentry from '@sentry/browser';
+
+if (!isDevMode) {
+  Sentry.init({
+    dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
+  });
+}
+
+@Injectable()
+export class SentryErrorHandler implements ErrorHandler {
+  constructor() {}
+  handleError(error) {
+    Sentry.captureException(error.originalError || error);
+    throw error;
+  }
+}
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -34,7 +51,9 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     DashboardModule,
     SharedModule,
     DeviceDetectorModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('/ngsw-worker.js', {
+      enabled: environment.production,
+    }),
     Angular2PromiseButtonModule.forRoot({
       spinnerTpl: '<span class="btn-spinner"></span>',
       disableBtn: true,
@@ -44,7 +63,8 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
   ],
   providers: [
     DeviceDetectorService,
+    { provide: ErrorHandler, useClass: SentryErrorHandler },
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -22,11 +22,8 @@ export class AppComponent {
     private renderer: Renderer2,
     private router: Router,
   ) {
-
     this.router.events.subscribe((e: any) => {
-
       if (e instanceof NavigationEnd) {
-
         window.scrollTo(0, 0);
         this.initialLoad = true;
         this.renderer.addClass(document.body, 'page-loaded');
@@ -35,7 +32,7 @@ export class AppComponent {
           this.renderer.removeClass(document.body, this.previousUrl);
         }
 
-        const currentUrlSlug = this.router.url.slice(1);
+        const currentUrlSlug = location.pathname.slice(1);
         if (currentUrlSlug) {
           this.renderer.addClass(document.body, currentUrlSlug);
         }
@@ -44,14 +41,20 @@ export class AppComponent {
     });
   }
 
-  hideHeader() { return location.pathname === '/login' || location.pathname === '/signup'; }
+  hideHeader() {
+    return location.pathname === '/login' || location.pathname === '/signup';
+  }
 
   // Dropdown close on click outside of it
   @HostListener('click', ['$event'])
   onDocumentClick(e) {
     const dropdownParent = this.el.nativeElement.querySelectorAll('.dropdown');
     for (const element of dropdownParent) {
-      if (element && !element.contains(e.target) && element.classList.contains('active')) {
+      if (
+        element &&
+        !element.contains(e.target) &&
+        element.classList.contains('active')
+      ) {
         this.renderer.removeClass(element, 'active');
       }
     }

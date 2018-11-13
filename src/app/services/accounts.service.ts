@@ -53,7 +53,7 @@ export class AccountsService {
     });
   }
 
-  editAccount(address, body) {
+  modifyAccount(address, body) {
     const token = this.getToken();
     const url = `/api/account/${address}?token=${token}`;
 

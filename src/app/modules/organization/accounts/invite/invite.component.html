@@ -1,22 +1,36 @@
 <h4 class="m-v-10">Invite Members</h4>
-<p class="m-b-30">Here you can invite other members of your organization, to access dashboard.</p>
+<p class="m-b-30">
+  Here you can invite other members of your organization, to access dashboard.
+</p>
 
 <h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
 <h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>
 
-<form [formGroup]="inviteForm" (ngSubmit)="invite()">
+<form [formGroup]="inviteForm" (ngSubmit)="sendInvites()">
   <div formArrayName="members">
-    <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i" class="right">
-      <button type="button" class="remove" (click)="remove('members', i)" *ngIf="i > 0">&times;</button>
-      <label>Email
-        <input formControlName="email" type="email">
-      </label>
+    <div
+      *ngFor="
+        let member of inviteForm.get('members')['controls'];
+        let i = index
+      "
+      [formGroupName]="i"
+    >
+      <button
+        type="button"
+        class="remove"
+        (click)="remove('members', i)"
+        *ngIf="i > 0"
+      >
+        &times;
+      </button>
+      <label>Email <input formControlName="email" type="email" /> </label>
     </div>
-    <button type="button" class="addMore" (click)="addMember()">+ Add more</button>
+    <button type="button" class="addMore" (click)="addMember()">
+      + Add more
+    </button>
   </div>
 
   <div class="flex flex-direction-r justify-content-fe align-items-c">
-    <app-spinner *ngIf="spinner"></app-spinner>
-    <button [disabled]="!inviteForm.valid" type="submit" class="button button--blue m-l-20">Send invites</button>
+    <button [disabled]="inviteForm.invalid" type="submit">Send invites</button>
   </div>
 </form>

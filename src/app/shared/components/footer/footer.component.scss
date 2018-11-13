@@ -32,7 +32,7 @@ app-footer {
         &:hover {
           svg {
             path {
-              fill: #fff;
+              fill: #000;
             }
           }
         }
@@ -73,28 +73,6 @@ app-footer {
 
     .socials {
       margin: 0;
-    }
-  }
-}
-
-.login,
-.signup {
-  app-footer {
-
-    .copyright {
-      > p {
-        color: $grey;
-      }
-    }
-
-    .contact {
-      a {
-        color: $grey;
-
-        &:hover {
-          color: #fff;
-        }
-      }
     }
   }
 }

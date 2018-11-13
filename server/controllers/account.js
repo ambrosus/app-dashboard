@@ -36,7 +36,7 @@ exports.getAccount = async (req, res, next) => {
   return next();
 }
 
-exports.editAccount = async (req, res, next) => {
+exports.modifyAccount = async (req, res, next) => {
   const address = req.params.address;
   const token = req.query.token;
   const body = req.body;

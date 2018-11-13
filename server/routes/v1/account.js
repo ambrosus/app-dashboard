@@ -17,7 +17,7 @@ AccountRoutes.post('/secret', AccountController.getEncryptedPrivateKey, response
 
 AccountRoutes.route('/:address')
   .get(AccountController.getAccount, response)
-  .put(AccountController.editAccount, response);
+  .put(AccountController.modifyAccount, response);
 
 AccountRoutes.get('/:address/exists', AccountController.verifyAccount, response);
 

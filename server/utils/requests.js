@@ -9,35 +9,57 @@ const axios = require('axios');
 
 const headers = {
   Accept: 'application/json',
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
 };
 
 exports.httpGet = (url, token = null) => {
-  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  if (token) {
+    headers['Authorization'] = `AMB_TOKEN ${token}`;
+  }
 
   return new Promise((resolve, reject) => {
-    axios.get(url, { headers, data: null })
+    axios
+      .get(url, { headers, data: null })
       .then(resp => resolve(resp.data))
       .catch(error => reject(error.response));
   });
-}
+};
+
+exports.httpDelete = (url, token = null) => {
+  if (token) {
+    headers['Authorization'] = `AMB_TOKEN ${token}`;
+  }
+
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(url, { headers, data: null })
+      .then(resp => resolve(resp.data))
+      .catch(error => reject(error.response));
+  });
+};
 
 exports.httpPost = (url, body, token = null) => {
-  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  if (token) {
+    headers['Authorization'] = `AMB_TOKEN ${token}`;
+  }
 
   return new Promise((resolve, reject) => {
-    axios.post(url, body, { headers, data: null })
+    axios
+      .post(url, body, { headers, data: null })
       .then(resp => resolve(resp.data))
       .catch(error => reject(error.response));
   });
-}
+};
 
 exports.httpPut = (url, body, token = null) => {
-  if (token) { headers['Authorization'] = `AMB_TOKEN ${token}`; }
+  if (token) {
+    headers['Authorization'] = `AMB_TOKEN ${token}`;
+  }
 
   return new Promise((resolve, reject) => {
-    axios.put(url, body, { headers, data: null })
+    axios
+      .put(url, body, { headers, data: null })
       .then(resp => resolve(resp.data))
       .catch(error => reject(error.response));
   });
-}
+};

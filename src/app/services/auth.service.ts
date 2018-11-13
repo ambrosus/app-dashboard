@@ -28,7 +28,9 @@ export class AuthService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
+    if (this.getAccountSub) {
+      this.getAccountSub.unsubscribe();
+    }
   }
 
   isLoggedIn() {
@@ -40,7 +42,9 @@ export class AuthService implements OnDestroy {
 
   getToken(secret = null) {
     secret = secret || this.storageService.get('secret');
-    const validUntil = moment().add(5, 'days').unix();
+    const validUntil = moment()
+      .add(5, 'days')
+      .unix();
     return secret ? this.sdk.getToken(secret, validUntil) : {};
   }
 
@@ -48,13 +52,18 @@ export class AuthService implements OnDestroy {
     return new Observable(observer => {
       let address;
       try {
-        address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
-      } catch (e) { return observer.error({ message: 'Private key is invalid' }); }
+        address = this.web3.eth.accounts.privateKeyToAccount(privateKey)
+          .address;
+      } catch (e) {
+        return observer.error({ message: 'Private key is invalid' });
+      }
 
-      this.http.get(`/api/account/${address}/exists`).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ meta }) => observer.error(meta),
-      );
+      this.http
+        .get(`/api/account/${address}/exists`)
+        .subscribe(
+          ({ data }: any) => observer.next(data),
+          ({ meta }) => observer.error(meta),
+        );
     });
   }
 
@@ -66,25 +75,35 @@ export class AuthService implements OnDestroy {
             console.log('[GET] PrivateKey token: ', data);
             let token = data.token;
             token = JSON.parse(atob(data.token));
-            const [address, privateKey] = this.decryptPrivateKey(token, password);
-            if (!address) { return observer.error({ message: 'Password is incorrect' }); }
+            const [address, privateKey] = this.decryptPrivateKey(
+              token,
+              password,
+            );
+            if (!address) {
+              return observer.error({ message: 'Password is incorrect' });
+            }
 
             this.storageService.set('secret', privateKey);
+            this.storageService.set('token', this.getToken());
 
-            this.getAccountSub = this.accountsService.getAccount(address).subscribe(
-              account => {
-                console.log('[GET] Account: ', account);
-                this.storageService.set('account', account);
-                this.accountsService._account.next(account);
-                this.router.navigate(['/assets']);
-                return observer.next(account);
-              },
-              error => {
-                console.error('[GET] Account: ', error);
-                return observer.error(error);
-              },
-            );
-          } catch (e) { return observer.error({ message: 'Password is incorrect' }); }
+            this.getAccountSub = this.accountsService
+              .getAccount(address)
+              .subscribe(
+                account => {
+                  console.log('[GET] Account: ', account);
+                  this.storageService.set('account', account);
+                  this.accountsService._account.next(account);
+                  this.router.navigate(['/assets']);
+                  return observer.next(account);
+                },
+                error => {
+                  console.error('[GET] Account: ', error);
+                  return observer.error(error);
+                },
+              );
+          } catch (e) {
+            return observer.error({ message: 'Password is incorrect' });
+          }
         },
         ({ meta }) => observer.error(meta),
       );
@@ -100,15 +119,23 @@ export class AuthService implements OnDestroy {
 
   decryptPrivateKey(token, password) {
     try {
-      const { address, privateKey } = this.web3.eth.accounts.decrypt(token, password);
+      const { address, privateKey } = this.web3.eth.accounts.decrypt(
+        token,
+        password,
+      );
       return [address, privateKey];
-    } catch (e) { return [null]; }
+    } catch (e) {
+      return [null];
+    }
   }
 
   privateKeyToAccount(privateKey) {
     try {
-      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey)
+        .address;
       return address;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   }
 }

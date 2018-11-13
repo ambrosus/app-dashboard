@@ -65,10 +65,10 @@ export class GeneralComponent implements OnInit, OnDestroy {
     const form = this.editAccountForm;
     const data = form.value;
     const secret = this.storageService.get('secret');
+    const body = {};
 
     if (form.invalid) { return this.error = 'Form is invalid'; }
 
-    const body = {};
     Object.keys(data).map(property => {
       if (data[property]) { body[property] = data[property]; }
     });
@@ -77,14 +77,14 @@ export class GeneralComponent implements OnInit, OnDestroy {
       body['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
     }
 
-    this.editAccountSub = this.accountsService.editAccount(this.account.address, body).subscribe(
+    this.editAccountSub = this.accountsService.modifyAccount(this.account.address, body).subscribe(
       account => {
         this.success = 'Updated';
         this.storageService.set('account', account);
         this.accountsService._account.next(account);
       },
       err => {
-        console.error('[EDIT] Account: ', err);
+        console.error('[MODIFY] Account: ', err);
         this.error = err ? err.message : 'Edit account error';
       },
     );

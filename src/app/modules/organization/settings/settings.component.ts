@@ -13,9 +13,9 @@ import * as moment from 'moment-timezone';
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   settingsForm: FormGroup;
-  editOrganizationSub: Subscription;
-  accountGetSub: Subscription;
-  getAccountsSub: Subscription;
+  getOrganizationSub: Subscription;
+  modifyOrganizationSub: Subscription;
+  getAccountSub: Subscription;
   error;
   success;
   account;
@@ -29,60 +29,57 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account');
     this.initSettingsForm();
-    this.accountGetSub = this.accountsService._account.subscribe(account => this.account = account);
-    this.getAccounts();
+    this.getOrganization();
+    this.getAccountSub = this.accountsService._account.subscribe(account => this.account = account);
   }
 
   ngOnDestroy() {
-    if (this.editOrganizationSub) { this.editOrganizationSub.unsubscribe(); }
-    if (this.accountGetSub) { this.accountGetSub.unsubscribe(); }
-    if (this.getAccountsSub) { this.getAccountsSub.unsubscribe(); }
+    if (this.getOrganizationSub) { this.getOrganizationSub.unsubscribe(); }
+    if (this.modifyOrganizationSub) { this.modifyOrganizationSub.unsubscribe(); }
+    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
   }
 
-  getAccounts() {
-    this.getAccountsSub = this.accountsService.getAccounts().subscribe(
-      (accounts: any) => {
-        this.accountAdmins = accounts.filter(account => {
-          account.lastLogin = moment.tz(account.lastLogin, this.account.organization.timeZone).fromNow();
-          return account.permissions.indexOf('manage_organization') > -1;
-        });
-        console.log('[GET] Accounts: ', this.accountAdmins);
+  getOrganization() {
+    this.getOrganizationSub = this.organizationsService.getOrganization(this.account.organization).subscribe(
+      (organization: any) => {
+        console.log('[GET] Organization: ', organization);
+        this.organization = organization;
+        const form = this.settingsForm;
+        form.get('title').setValue(organization.title);
+        form.get('legalAddress').setValue(organization.legalAddress);
       },
-      err => console.error('[GET] Accounts: ', err),
+      err => console.error('[GET] Organization: ', err),
     );
   }
 
   initSettingsForm() {
-    this.account = this.storageService.get('account') || {};
-    this.organization = this.account['organization'] || {};
-
     this.settingsForm = new FormGroup({
-      title: new FormControl(this.organization.title, [Validators.required]),
-      legalAddress: new FormControl(this.organization.legalAddress, [Validators.required]),
+      title: new FormControl('', [Validators.required]),
+      legalAddress: new FormControl('', [Validators.required]),
     });
   }
 
   editOrganization() {
     this.error = null;
     this.success = null;
-    const data = this.settingsForm.value;
+    const form = this.settingsForm;
+    const data = form.getRawValue();
 
-    if (this.settingsForm.valid) {
-      this.editOrganizationSub = this.organizationsService.editOrganization(data, this.account.organization._id).subscribe(
-        (resp: any) => {
-          this.success = 'Update success';
-          this.organization = resp;
-          this.accountsService.getAccount(this.account.email).subscribe();
-          console.log('Organization UPDATE: ', resp);
-        },
-        err => {
-          this.error = err.message;
-          console.error('Organization UPDATE: ', err);
-        },
-      );
-    } else {
-      this.error = 'All inputs are required';
-    }
+    if (form.invalid) { return this.error = 'Please fill all required fields'; }
+
+    this.modifyOrganizationSub = this.organizationsService.modifyOrganization(this.account.organization, data).subscribe(
+      organization => {
+        console.log('[MODIFY] Organization: ', organization);
+        this.success = 'Success';
+        this.organization = organization;
+        this.accountsService.getAccount(this.account.address).subscribe();
+      },
+      err => {
+        console.error('[MODIFY] Organization: ', err);
+        this.error = 'Update failed';
+      },
+    );
   }
 }
