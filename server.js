@@ -32,9 +32,12 @@ if (config.production) {
  */
 const app = express();
 
+// Debug
 if (config.production) {
   app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.errorHandler());
 }
+app.use(errorHandler);
 
 app.use(helmet());
 
@@ -69,11 +72,6 @@ app.use('/api', APIRoutes);
 app.get('*', (req, res) =>
   res.sendFile(path.join(__dirname, 'dist/index.html')),
 );
-
-if (config.production) {
-  app.use(Sentry.Handlers.errorHandler());
-}
-app.use(errorHandler);
 
 const server = http.createServer(app);
 server.listen(config.port, () => logger.info('Server running...'));
