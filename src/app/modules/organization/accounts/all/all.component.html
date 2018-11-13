@@ -1,9 +1,17 @@
-<h4 class="m-v-30 relative p-r-40">Accounts <button type="button" routerLink="invite">+</button></h4>
-<hr class="m-b-20">
+<h4 class="m-v-30 relative p-r-40">
+  Accounts <button type="button" routerLink="invite">+</button>
+</h4>
+<hr class="m-b-20" />
 
-<button type="button" class="button button--blue" (click)="show = 'active'">Active</button>
-<button type="button" class="button button--blue" (click)="show = 'pending'">Pending</button>
-<button type="button" class="button" (click)="show = 'disabled'">Disabled</button>
+<button type="button" class="button button--blue" (click)="show = 'active'">
+  Active
+</button>
+<button type="button" class="button button--blue" (click)="show = 'pending'">
+  Pending
+</button>
+<button type="button" class="button" (click)="show = 'disabled'">
+  Disabled
+</button>
 
 <p class="m-v-30" style="color: salmon;">{{ error }}</p>
 
@@ -24,13 +32,28 @@
         <small class="table__info__meta">{{ _account.address }}</small>
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: green;">Active</span>
-        <p class="table__status__timestamp">Registered on: {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
+        <span class="table__status__event" style="background-color: green;"
+          >Active</span
+        >
+        <p class="table__status__timestamp">
+          Registered on:
+          {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}
+        </p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
             <li routerLink="{{ _account.address }}">Info</li>
-            <li *ngIf="account._id !== _account._id" (click)="actions('accountEdit', { address: _account.address, data: { permissions: [] } })">Disable</li>
+            <li
+              *ngIf="account._id !== _account._id"
+              (click)="
+                actions('accountEdit', {
+                  address: _account.address,
+                  data: { permissions: [] }
+                })
+              "
+            >
+              Disable
+            </li>
           </ul>
         </div>
       </td>
@@ -53,13 +76,27 @@
         <small class="table__info__meta">{{ _account.address }}</small>
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: salmon;">Disabled</span>
-        <p class="table__status__timestamp">Registered on: {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
+        <span class="table__status__event" style="background-color: salmon;"
+          >Disabled</span
+        >
+        <p class="table__status__timestamp">
+          Registered on:
+          {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}
+        </p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
             <li routerLink="{{ _account.address }}">Info</li>
-            <li (click)="actions('accountEdit', { address: _account.address, data: { permissions: [ 'create_asset', 'create_event' ] } })">Activate</li>
+            <li
+              (click)="
+                actions('accountEdit', {
+                  address: _account.address,
+                  data: { permissions: ['create_asset', 'create_event'] }
+                })
+              "
+            >
+              Activate
+            </li>
           </ul>
         </div>
       </td>
@@ -70,21 +107,27 @@
 <!-- Invites/pending users -->
 <table class="table" *ngIf="show === 'pending'">
   <tbody>
-    <tr *ngFor="let _invite of invites; let i = index">
+    <tr *ngFor="let invite of invites; let i = index">
       <td class="table__image">
-        <div>{{ _invite.to.charAt(0) }}</div>
+        <div>{{ invite.to.charAt(0) }}</div>
       </td>
       <td class="table__info">
-        <p class="table__info__title">{{ _invite.to }}</p>
-        <small class="table__info__meta">from: {{ _invite.from.full_name }}</small>
+        <p class="table__info__title">{{ invite.to }}</p>
+        <small class="table__info__meta">from: {{ invite.createdBy }}</small>
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: orange;">Pending</span>
-        <p class="table__status__timestamp">Invited: {{ _invite.createdOn | date: 'MMM d, yyyy HH:mm' }}</p>
+        <span class="table__status__event" style="background-color: orange;"
+          >Pending</span
+        >
+        <p class="table__status__timestamp">Invited: {{ invite.createdOn }}</p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <!-- <li (click)="actions('inviteRevoke', { ids: [_invite._id] })">Revoke</li> -->
+            <li
+              (click)="actions('inviteDelete', { inviteId: invite.inviteId })"
+            >
+              Revoke
+            </li>
           </ul>
         </div>
       </td>

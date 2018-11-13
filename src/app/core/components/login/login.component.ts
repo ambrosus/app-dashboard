@@ -1,6 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
@@ -20,8 +25,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   getAccountSub: Subscription;
   loginSub: Subscription;
   forms: {
-    loginForm?: FormGroup,
-    privateKeyForm?: FormGroup
+    loginForm?: FormGroup;
+    privateKeyForm?: FormGroup;
   } = {};
   promiseActionPrivateKeyForm;
   promiseActionLoginForm;
@@ -41,18 +46,25 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: new FormControl(null, [Validators.required]),
     });
     this.forms.privateKeyForm = new FormGroup({
-      privateKey: new FormControl(null, [Validators.required, this.validatePrivateKey]),
+      privateKey: new FormControl(null, [
+        Validators.required,
+        this.validatePrivateKey,
+      ]),
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    console.log('LOGIN');
+  }
 
   validatePrivateKey(control: AbstractControl) {
     try {
       const web3 = new Web3();
       console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
       return null;
-    } catch (e) { return { 'Private key is invalid': control.value }; }
+    } catch (e) {
+      return { 'Private key is invalid': control.value };
+    }
   }
 
   validateEmail(control: AbstractControl) {
@@ -65,8 +77,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
-    if (this.loginSub) { this.loginSub.unsubscribe(); }
+    if (this.getAccountSub) {
+      this.getAccountSub.unsubscribe();
+    }
+    if (this.loginSub) {
+      this.loginSub.unsubscribe();
+    }
   }
 
   // Private key form
@@ -75,11 +91,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.errorPrivateKeyForm = false;
     const form = this.forms.privateKeyForm;
 
-    if (form.invalid) { return this.errorPrivateKeyForm = 'Fill all required fileds'; }
+    if (form.invalid) {
+      return (this.errorPrivateKeyForm = 'Fill all required fileds');
+    }
 
     const { privateKey } = form.value;
     const address = this.authService.privateKeyToAccount(privateKey);
     this.storageService.set('secret', privateKey);
+    this.storageService.set('token', this.authService.getToken());
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
       this.getAccountSub = this.accountsService.getAccount(address).subscribe(
@@ -107,7 +126,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.errorLoginForm = false;
     const form = this.forms.loginForm;
 
-    if (form.invalid) { return this.errorLoginForm = 'All fields are required'; }
+    if (form.invalid) {
+      return (this.errorLoginForm = 'All fields are required');
+    }
 
     const { email, password } = form.value;
 
@@ -116,9 +137,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         resp => resolve(),
         err => {
           console.error('[LOGIN] Error: ', err);
-          this.errorLoginForm = err ? err.message : 'Email or password are incorrect';
+          this.errorLoginForm = err
+            ? err.message
+            : 'Email or password are incorrect';
           reject();
-        });
+        },
+      );
     });
   }
 }

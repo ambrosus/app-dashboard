@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { Subscription } from 'rxjs';
-import { InviteService } from 'app/services/invite.service';
+import { OrganizationsService } from 'app/services/organizations.service';
 
 @Component({
   selector: 'app-invite',
@@ -18,7 +18,7 @@ export class InviteComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private inviteService: InviteService,
+    private organizationsService: OrganizationsService,
   ) {
     this.initInviteForm();
   }
@@ -35,13 +35,17 @@ export class InviteComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnDestroy() {
-    if (this.sendInvitesSub) { this.sendInvitesSub.unsubscribe(); }
+    if (this.sendInvitesSub) {
+      this.sendInvitesSub.unsubscribe();
+    }
   }
 
-  remove(array, index: number) { (<FormArray>this.inviteForm.get(array)).removeAt(index); }
+  remove(array, index: number) {
+    (<FormArray>this.inviteForm.get(array)).removeAt(index);
+  }
 
   addMember() {
     (<FormArray>this.inviteForm.get('members')).push(
@@ -51,30 +55,30 @@ export class InviteComponent implements OnInit, OnDestroy {
     );
   }
 
-  invite() {
+  sendInvites() {
     this.error = false;
     this.success = false;
 
-    const emails = this.inviteForm.value.members.reduce((_emails, member, array, index) => {
-      if (member.email) { _emails.push(member.email); }
-      return _emails;
-    }, []);
+    const email = this.inviteForm.value.members.reduce(
+      (_emails, member, array, index) => {
+        if (member.email) {
+          _emails.push(member.email);
+        }
+        return _emails;
+      },
+      [],
+    );
 
-    const body = { emails };
+    const body = { email };
 
-    if (this.inviteForm.valid && body.emails.length > 0) {
-      this.spinner = true;
-
-      this.sendInvitesSub = this.inviteService.sendInvite(body).subscribe(
-        (resp: any) => {
-          this.spinner = false;
+    if (body.email.length) {
+      this.organizationsService
+        .createInvites(body)
+        .then((invitesCreated: any) => {
           this.success = 'Invites sent';
-        },
-        err => {
-          this.error = 'Invites failed';
-          console.error('Invites SEND error: ', err);
-        },
-      );
+          console.log('[CREATE] Invites: ', invitesCreated);
+        })
+        .catch(error => console.error('[CREATE] Invites: ', error));
     } else {
       this.error = 'Send at least one invite';
     }
