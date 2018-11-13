@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   FormControl,
@@ -9,9 +9,9 @@ import {
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
-import { Subscription } from 'rxjs';
 import { AccountsService } from 'app/services/accounts.service';
 import { StorageService } from 'app/services/storage.service';
+import * as Sentry from '@sentry/browser';
 
 declare let Web3: any;
 
@@ -21,9 +21,7 @@ declare let Web3: any;
   styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class LoginComponent implements OnInit, OnDestroy {
-  getAccountSub: Subscription;
-  loginSub: Subscription;
+export class LoginComponent implements OnInit {
   forms: {
     loginForm?: FormGroup;
     privateKeyForm?: FormGroup;
@@ -53,9 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    console.log('LOGIN');
-  }
+  ngOnInit() {}
 
   validatePrivateKey(control: AbstractControl) {
     try {
@@ -76,15 +72,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  ngOnDestroy() {
-    if (this.getAccountSub) {
-      this.getAccountSub.unsubscribe();
-    }
-    if (this.loginSub) {
-      this.loginSub.unsubscribe();
-    }
-  }
-
   // Private key form
 
   getAccount() {
@@ -101,22 +88,25 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.storageService.set('token', this.authService.getToken());
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.getAccountSub = this.accountsService.getAccount(address).subscribe(
-        account => {
+      this.accountsService
+        .getAccount(address)
+        .then(account => {
           console.log('[GET] Account: ', account);
           this.storageService.set('secret', privateKey);
           this.storageService.set('account', account);
+          Sentry.configureScope(scope => {
+            scope.setUser({ account });
+          });
           this.accountsService._account.next(account);
           this.router.navigate(['/assets']);
           resolve();
-        },
-        err => {
+        })
+        .catch(err => {
           console.error('[GET] Account: ', err);
           this.errorPrivateKeyForm = err ? err.message : 'Login error';
           this.storageService.clear();
           reject();
-        },
-      );
+        });
     });
   }
 
@@ -133,16 +123,21 @@ export class LoginComponent implements OnInit, OnDestroy {
     const { email, password } = form.value;
 
     this.promiseActionLoginForm = new Promise((resolve, reject) => {
-      this.loginSub = this.authService.login(email, password).subscribe(
-        resp => resolve(),
-        err => {
+      this.authService
+        .login(email, password)
+        .then(resp => {
+          Sentry.configureScope(scope => {
+            scope.setUser({ account: resp });
+          });
+          resolve();
+        })
+        .catch(err => {
           console.error('[LOGIN] Error: ', err);
           this.errorLoginForm = err
             ? err.message
             : 'Email or password are incorrect';
           reject();
-        },
-      );
+        });
     });
   }
 }

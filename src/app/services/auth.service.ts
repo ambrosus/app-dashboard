@@ -2,9 +2,9 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
-import { Observable, Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 import { AccountsService } from './accounts.service';
+import { environment } from 'environments/environment';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
@@ -13,9 +13,9 @@ declare let Web3: any;
   providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
-  getAccountSub: Subscription;
   sdk;
   web3;
+  api;
 
   constructor(
     private http: HttpClient,
@@ -25,13 +25,10 @@ export class AuthService implements OnDestroy {
   ) {
     this.sdk = new AmbrosusSDK({ Web3 });
     this.web3 = new Web3();
+    this.api = environment.api;
   }
 
-  ngOnDestroy() {
-    if (this.getAccountSub) {
-      this.getAccountSub.unsubscribe();
-    }
-  }
+  ngOnDestroy() {}
 
   isLoggedIn() {
     const account = <any>this.storageService.get('account');
@@ -49,27 +46,30 @@ export class AuthService implements OnDestroy {
   }
 
   verifyAccount(privateKey) {
-    return new Observable(observer => {
+    return new Promise((resolve, reject) => {
       let address;
       try {
         address = this.web3.eth.accounts.privateKeyToAccount(privateKey)
           .address;
       } catch (e) {
-        return observer.error({ message: 'Private key is invalid' });
+        return reject({ message: 'Private key is invalid' });
       }
+      const url = `${this.api.extended}/account/${address}/exists`;
 
       this.http
-        .get(`/api/account/${address}/exists`)
+        .get(url)
         .subscribe(
-          ({ data }: any) => observer.next(data),
-          ({ meta }) => observer.error(meta),
+          ({ data }: any) => resolve(data),
+          ({ meta }) => reject(meta),
         );
     });
   }
 
   login(email: string, password: string) {
-    return new Observable(observer => {
-      this.http.post('/api/account/secret', { email }).subscribe(
+    return new Promise((resolve, reject) => {
+      const url = `${this.api.extended}/account/secret`;
+
+      this.http.post(url, { email }).subscribe(
         ({ data }: any) => {
           try {
             console.log('[GET] PrivateKey token: ', data);
@@ -80,32 +80,30 @@ export class AuthService implements OnDestroy {
               password,
             );
             if (!address) {
-              return observer.error({ message: 'Password is incorrect' });
+              return reject({ message: 'Password is incorrect' });
             }
 
             this.storageService.set('secret', privateKey);
             this.storageService.set('token', this.getToken());
 
-            this.getAccountSub = this.accountsService
+            this.accountsService
               .getAccount(address)
-              .subscribe(
-                account => {
-                  console.log('[GET] Account: ', account);
-                  this.storageService.set('account', account);
-                  this.accountsService._account.next(account);
-                  this.router.navigate(['/assets']);
-                  return observer.next(account);
-                },
-                error => {
-                  console.error('[GET] Account: ', error);
-                  return observer.error(error);
-                },
-              );
+              .then(account => {
+                console.log('[GET] Account: ', account);
+                this.storageService.set('account', account);
+                this.accountsService._account.next(account);
+                this.router.navigate(['/assets']);
+                resolve(account);
+              })
+              .catch(error => {
+                console.error('[GET] Account: ', error);
+                reject(error);
+              });
           } catch (e) {
-            return observer.error({ message: 'Password is incorrect' });
+            reject({ message: 'Password is incorrect' });
           }
         },
-        ({ meta }) => observer.error(meta),
+        ({ meta }) => reject(meta),
       );
     });
   }

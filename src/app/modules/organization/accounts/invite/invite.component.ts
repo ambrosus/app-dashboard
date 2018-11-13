@@ -1,7 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
-import { StorageService } from 'app/services/storage.service';
-import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
 
 @Component({
@@ -9,17 +7,13 @@ import { OrganizationsService } from 'app/services/organizations.service';
   templateUrl: './invite.component.html',
   styleUrls: ['./invite.component.scss'],
 })
-export class InviteComponent implements OnInit, OnDestroy {
+export class InviteComponent implements OnInit {
   inviteForm: FormGroup;
-  sendInvitesSub: Subscription;
   spinner;
   error;
   success;
 
-  constructor(
-    private storageService: StorageService,
-    private organizationsService: OrganizationsService,
-  ) {
+  constructor(private organizationsService: OrganizationsService) {
     this.initInviteForm();
   }
 
@@ -36,12 +30,6 @@ export class InviteComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {}
-
-  ngOnDestroy() {
-    if (this.sendInvitesSub) {
-      this.sendInvitesSub.unsubscribe();
-    }
-  }
 
   remove(array, index: number) {
     (<FormArray>this.inviteForm.get(array)).removeAt(index);

@@ -1,19 +1,35 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { AuthService } from './auth.service';
+import { environment } from 'environments/environment.prod';
 
 declare let Web3: any;
 
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
-  private _events: BehaviorSubject<any> = new BehaviorSubject({ meta: {}, data: [], pagination: {} });
-  private _assets: BehaviorSubject<any> = new BehaviorSubject({ meta: {}, data: [], pagination: {} });
+  private _events: BehaviorSubject<any> = new BehaviorSubject({
+    meta: {},
+    data: [],
+    pagination: {},
+  });
+  private _assets: BehaviorSubject<any> = new BehaviorSubject({
+    meta: {},
+    data: [],
+    pagination: {},
+  });
   ambrosus;
   web3;
+  api;
+
+  to = (o: Observable<any>) =>
+    o
+      .toPromise()
+      .then(data => [null, data])
+      .catch(err => [err]);
 
   constructor(
     private storageService: StorageService,
@@ -23,22 +39,25 @@ export class AssetsService {
     this.initSDK();
     this.web3 = new Web3();
     this.loadAssets();
+    this.api = environment.api;
   }
 
   loadAssets() {
-    const token = this.authService.getToken();
     const account = <any>this.storageService.get('account') || {};
     const { address } = account;
     const options = {
       limit: 15,
-      token,
       address,
     };
-    this.getAssets(options).subscribe();
+    this.getAssets(options).then();
   }
 
-  get assets(): any { return this._assets.asObservable(); }
-  get events(): any { return this._events.asObservable(); }
+  get assets(): any {
+    return this._assets.asObservable();
+  }
+  get events(): any {
+    return this._events.asObservable();
+  }
 
   set events(options) {
     if (options && options.data) {
@@ -108,62 +127,159 @@ export class AssetsService {
   }
 
   getAssets(options) {
-    return new Observable(observer => {
-      let url = `/api/assets?`;
-      Object.keys(options).map(key => url += `${key}=${options[key]}&`);
+    const { limit, address, next } = options;
 
-      this.http.get(url).subscribe(
-        ({ data }: any) => this.assets = data,
-        ({ error }) => observer.error(error),
-      );
+    return new Promise(async (resolve, reject) => {
+      let url = `${this.api.extended}/asset/query`;
+      let body: any = {
+        query: [
+          {
+            field: 'content.idData.createdBy',
+            value: address,
+            operator: 'equal',
+          },
+        ],
+        limit,
+        next,
+      };
+
+      const [error, assets] = await this.to(this.http.post(url, body));
+      if (error) {
+        return reject(error.meta);
+      }
+
+      const ids = assets.data.reduce((_ids, asset, index, array) => {
+        _ids.push(asset.assetId);
+        return _ids;
+      }, []);
+
+      // Get latest info events
+      url = `${this.api.extended}/event/latest/type`;
+      body = {
+        type: 'ambrosus.asset.info',
+        assets: ids,
+      };
+
+      const [err, infoEvents] = await this.to(this.http.post(url, body));
+      if (err) {
+        return reject(err.meta);
+      }
+
+      // Connect assets with info events
+      assets.data = assets.data.map(asset => {
+        asset.infoEvent = infoEvents.data.find(
+          event => asset.assetId === event.content.idData.assetId,
+        );
+
+        if (asset.infoEvent) {
+          asset.infoEvent = this.findEvent('info', [asset.infoEvent]);
+        }
+
+        return asset;
+      });
+
+      this.assets = assets.data;
+      resolve(this.assets);
     });
   }
 
   getAsset(assetId) {
-    return new Observable(observer => {
-      const token = this.authService.getToken();
-      const url = `/api/assets/${assetId}?token=${token}`;
+    return new Promise(async (resolve, reject) => {
+      let url = `${this.api.extended}/asset/query`;
+      let body: any = {
+        query: [
+          {
+            field: 'assetId',
+            value: assetId,
+            operator: 'equal',
+          },
+        ],
+      };
 
-      this.http.get(url).subscribe(
-        ({ data }: any) => {
-          this.parseAsset(data.data[0]);
-          observer.next(data);
-        },
-        ({ error }) => observer.error(error),
-      );
+      const [error, assets] = await this.to(this.http.post(url, body));
+      if (error) {
+        return reject(error.meta);
+      }
+
+      const ids = assets.data.reduce((_ids, asset, index, array) => {
+        _ids.push(asset.assetId);
+        return _ids;
+      }, []);
+
+      // Get latest info events
+      url = `${this.api.extended}/event/latest/type`;
+      body = {
+        type: 'ambrosus.asset.info',
+        assets: [assetId],
+      };
+
+      const [err, infoEvents] = await this.to(this.http.post(url, body));
+      if (err) {
+        return reject(err.meta);
+      }
+
+      // Connect assets with info events
+      assets.data[0]['infoEvent'] = this.findEvent('info', infoEvents.data);
+
+      this.parseAsset(assets.data[0]);
+      resolve(assets);
     });
   }
 
   getEvents(options) {
-    return new Observable(observer => {
-      let url = `/api/assets/events?`;
-      Object.keys(options).map(key => url += `${key}=${options[key]}&`);
+    const { limit, assetId, next } = options;
 
-      this.http.get(url).subscribe(
-        ({ data }: any) => this.events = data,
-        ({ error }) => observer.error(error),
-      );
+    return new Promise(async (resolve, reject) => {
+      const url = `${this.api.extended}/event/query`;
+      const body: any = {
+        query: [
+          {
+            field: 'content.idData.assetId',
+            value: assetId,
+            operator: 'equal',
+          },
+        ],
+        limit,
+        next,
+      };
+
+      const [err, events] = await this.to(this.http.post(url, body));
+      if (err) {
+        return reject(err.meta);
+      }
+
+      this.events = events.data;
     });
   }
 
   getEvent(eventId) {
-    return new Observable(observer => {
-      const token = this.authService.getToken();
-      const url = `/api/assets/events/${eventId}?token=${token}`;
+    return new Promise(async (resolve, reject) => {
+      const url = `${this.api.extended}/event/query`;
+      const body: any = {
+        query: [
+          {
+            field: 'eventId',
+            value: eventId,
+            operator: 'equal',
+          },
+        ],
+      };
 
-      this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ error }) => observer.error(error),
-      );
+      const [err, events] = await this.to(this.http.post(url, body));
+      if (err) {
+        return reject(err.meta);
+      }
+
+      resolve(events.data[0]);
     });
   }
 
   // Create methods
 
   createAssets(assets, events) {
-    return new Observable(observer => {
+    return new Promise((resolve, reject) => {
       const token = this.authService.getToken();
-      const url = `/api/assets`;
+      const url = `${this.api.core}/assets`;
       const body = { assets, events, token };
 
       this.http.post(url, body).subscribe(
@@ -173,16 +289,16 @@ export class AssetsService {
           data['type'] = 'start';
           data['data'] = data.assets.created;
           this.assets = data;
-          observer.next(data);
+          resolve(data);
         },
-        ({ error }) => observer.error(error),
+        ({ error }) => reject(error),
       );
     });
   }
 
   createEvents(events) {
-    return new Observable(observer => {
-      const url = `/api/assets/events`;
+    return new Promise((resolve, reject) => {
+      const url = `${this.api.core}/assets/events`;
       const body = { events };
 
       this.http.post(url, body).subscribe(
@@ -199,17 +315,21 @@ export class AssetsService {
           // Update _assets
           let assetsData = this._assets.getValue().data;
           assetsData = assetsData.map(asset => {
-            const assetEvents = data.events.created.filter(event => asset.assetId === event.content.idData.assetId);
+            const assetEvents = data.events.created.filter(
+              event => asset.assetId === event.content.idData.assetId,
+            );
             const infoEvent = this.findEvent('info', assetEvents);
-            if (infoEvent) { asset['infoEvent'] = infoEvent; }
+            if (infoEvent) {
+              asset['infoEvent'] = infoEvent;
+            }
             return asset;
           });
           const options = { change: 'data', type: 'all', data: assetsData };
           this.assets = options;
 
-          observer.next(data);
+          resolve(data);
         },
-        ({ error }) => observer.error(error),
+        ({ error }) => reject(error),
       );
     });
   }
@@ -222,24 +342,34 @@ export class AssetsService {
       let type = obj.type.split('.');
       type = type[type.length - 1];
       return [name, type].find(i => i);
-    } catch (e) { return alternative; }
+    } catch (e) {
+      return alternative;
+    }
   }
 
   getImage(obj) {
     try {
       return obj.images.default.url;
-    } catch (e) { return '/assets/raster/logotip.jpg'; }
+    } catch (e) {
+      return '/assets/raster/logotip.jpg';
+    }
   }
 
   getLocation(event) {
     const location = event.location || event;
     const { city, country, name } = location;
-    return [city, country, name].filter(Boolean).join(', ') || 'No place attached';
+    return (
+      [city, country, name].filter(Boolean).join(', ') || 'No place attached'
+    );
   }
 
   sortEventsByTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) { return -1; }
-    if (a.timestamp < b.timestamp) { return 1; }
+    if (a.timestamp > b.timestamp) {
+      return -1;
+    }
+    if (a.timestamp < b.timestamp) {
+      return 1;
+    }
     return 0;
   }
 
@@ -261,7 +391,9 @@ export class AssetsService {
               _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
             }
           });
-        } else { total.push(obj); }
+        } else {
+          total.push(obj);
+        }
 
         return total;
       }, []);
@@ -271,12 +403,32 @@ export class AssetsService {
         eventObject['groups'] = [];
         eventObject['properties'] = [];
         Object.keys(eventObject).map((key: any) => {
-          if (['type', 'name', 'assetType', 'documents', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
+          if (
+            [
+              'type',
+              'name',
+              'assetType',
+              'documents',
+              'images',
+              'eventId',
+              'createdBy',
+              'timestamp',
+              'location',
+              'identifiers',
+              'groups',
+              'properties',
+            ].indexOf(key) === -1
+          ) {
             const property = {
               key,
               value: eventObject[key],
             };
-            eventObject[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
+            eventObject[
+              typeof property.value === 'string' ||
+              Array.isArray(property.value)
+                ? 'properties'
+                : 'groups'
+            ].push(property);
           }
         });
       });
@@ -286,17 +438,37 @@ export class AssetsService {
   }
 
   parseAsset(asset) {
-    if (!asset.infoEvent) { asset.infoEvent = {}; }
+    if (!asset.infoEvent) {
+      asset.infoEvent = {};
+    }
     // Groups and properties
     asset.infoEvent['groups'] = [];
     asset.infoEvent['properties'] = [];
     Object.keys(asset.infoEvent).map((key: any) => {
-      if (['type', 'name', 'assetType', 'images', 'eventId', 'createdBy', 'timestamp', 'location', 'identifiers', 'groups', 'properties'].indexOf(key) === -1) {
+      if (
+        [
+          'type',
+          'name',
+          'assetType',
+          'images',
+          'eventId',
+          'createdBy',
+          'timestamp',
+          'location',
+          'identifiers',
+          'groups',
+          'properties',
+        ].indexOf(key) === -1
+      ) {
         const property = {
           key,
           value: asset.infoEvent[key],
         };
-        asset.infoEvent[typeof property.value === 'string' || Array.isArray(property.value) ? 'properties' : 'groups'].push(property);
+        asset.infoEvent[
+          typeof property.value === 'string' || Array.isArray(property.value)
+            ? 'properties'
+            : 'groups'
+        ].push(property);
       }
     });
   }
@@ -322,12 +494,16 @@ export class AssetsService {
 
           if (obj.type === 'location' && category === 'event') {
             content.data.reduce((location, _event) => {
-              if (_event.type !== 'location') { _event.location = location; }
+              if (_event.type !== 'location') {
+                _event.location = location;
+              }
             }, obj);
           }
 
           const notInclude = ['location', 'identifier', 'identifiers'];
-          if (notInclude.indexOf(obj.type) === -1) { _events.push(obj); }
+          if (notInclude.indexOf(obj.type) === -1) {
+            _events.push(obj);
+          }
 
           return obj;
         });
@@ -340,29 +516,50 @@ export class AssetsService {
     return events;
   }
 
-  sign(data, secret) { return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature; }
+  sign(data, secret) {
+    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret)
+      .signature;
+  }
 
-  calculateHash(data) { return this.web3.eth.accounts.hashMessage(this.serializeForHashing(data)); }
+  calculateHash(data) {
+    return this.web3.eth.accounts.hashMessage(this.serializeForHashing(data));
+  }
 
   serializeForHashing(object) {
-    const isDict = subject => typeof subject === 'object' && !Array.isArray(subject);
+    const isDict = subject =>
+      typeof subject === 'object' && !Array.isArray(subject);
     const isString = subject => typeof subject === 'string';
     const isArray = subject => Array.isArray(subject);
 
     if (isDict(object)) {
-      const content = Object.keys(object).sort().map(key => `"${key}":${this.serializeForHashing(object[key])}`).join(',');
+      const content = Object.keys(object)
+        .sort()
+        .map(key => `"${key}":${this.serializeForHashing(object[key])}`)
+        .join(',');
       return `{${content}}`;
     } else if (isArray(object)) {
-      const content = object.map(item => this.serializeForHashing(item)).join(',');
+      const content = object
+        .map(item => this.serializeForHashing(item))
+        .join(',');
       return `[${content}]`;
-    } else if (isString(object)) { return `"${object}"`; }
+    } else if (isString(object)) {
+      return `"${object}"`;
+    }
 
     return object.toString();
   }
 
-  validTimestamp(timestamp) { return new Date(timestamp).getTime() > 0; }
+  validTimestamp(timestamp) {
+    return new Date(timestamp).getTime() > 0;
+  }
 
-  isLatest(type) { return ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1; }
+  isLatest(type) {
+    return (
+      ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(
+        type,
+      ) === -1
+    );
+  }
 
   findEvent(eventType, events) {
     let e = false;
@@ -378,17 +575,23 @@ export class AssetsService {
           if (obj.type === 'location' || obj.type === 'identifiers') {
             event.content.data.map(_obj => {
               if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
-                _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+                _obj[
+                  obj.type === 'location' ? 'location' : 'identifiers'
+                ] = obj;
               }
             });
           }
 
           switch (eventType) {
             case 'latest':
-              if (this.isLatest(obj.type)) { e = obj; }
+              if (this.isLatest(obj.type)) {
+                e = obj;
+              }
               break;
             default:
-              if (obj.type === eventType) { e = obj; }
+              if (obj.type === eventType) {
+                e = obj;
+              }
           }
         });
       }

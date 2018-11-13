@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
@@ -10,12 +9,7 @@ import { OrganizationsService } from 'app/services/organizations.service';
   templateUrl: './all.component.html',
   styleUrls: ['./all.component.scss'],
 })
-export class AllComponent implements OnInit, OnDestroy {
-  getAccountsSub: Subscription;
-  getInvitesSub: Subscription;
-  invitesAction: Subscription;
-  accountsAction: Subscription;
-  getOrganizationSub: Subscription;
+export class AllComponent implements OnInit {
   accounts = [];
   accountsDisabled = [];
   invites = [];
@@ -39,24 +33,6 @@ export class AllComponent implements OnInit, OnDestroy {
     this.getInvites();
   }
 
-  ngOnDestroy() {
-    if (this.getAccountsSub) {
-      this.getAccountsSub.unsubscribe();
-    }
-    if (this.getInvitesSub) {
-      this.getInvitesSub.unsubscribe();
-    }
-    if (this.invitesAction) {
-      this.invitesAction.unsubscribe();
-    }
-    if (this.accountsAction) {
-      this.accountsAction.unsubscribe();
-    }
-    if (this.getOrganizationSub) {
-      this.getOrganizationSub.unsubscribe();
-    }
-  }
-
   getNumberOfAccounts() {
     switch (this.show) {
       case 'active':
@@ -69,32 +45,26 @@ export class AllComponent implements OnInit, OnDestroy {
   }
 
   getOrganization() {
-    this.getOrganizationSub = this.organizationsService
+    this.organizationsService
       .getOrganization(this.account.organization)
-      .subscribe(
-        (organization: any) => {
-          console.log('[GET] Organization: ', organization);
-          this.organization = organization;
-        },
-        err => console.error('[GET] Organization: ', err),
-      );
+      .then((organization: any) => {
+        console.log('[GET] Organization: ', organization);
+        this.organization = organization;
+      })
+      .catch(err => console.error('[GET] Organization: ', err));
   }
 
   getAccounts() {
-    this.getAccountsSub = this.organizationsService
+    this.organizationsService
       .getOrganizationAccounts(this.account.organization)
-      .subscribe(
-        (accounts: any[]) => {
-          console.log('[GET] Accounts: ', accounts);
-          this.accounts = accounts.filter(
-            account => account.permissions.length,
-          );
-          this.accountsDisabled = accounts.filter(
-            account => !account.permissions.length,
-          );
-        },
-        err => console.error('[GET] Accounts: ', err),
-      );
+      .then((accounts: any[]) => {
+        console.log('[GET] Accounts: ', accounts);
+        this.accounts = accounts.filter(account => account.permissions.length);
+        this.accountsDisabled = accounts.filter(
+          account => !account.permissions.length,
+        );
+      })
+      .catch(err => console.error('[GET] Accounts: ', err));
   }
 
   getInvites(next = null) {
@@ -122,12 +92,10 @@ export class AllComponent implements OnInit, OnDestroy {
         break;
 
       case 'accountEdit':
-        this.accountsAction = this.accountsService
+        this.accountsService
           .modifyAccount(body['address'], body['data'])
-          .subscribe(
-            resp => this.getAccounts(),
-            err => (this.error = err.message),
-          );
+          .then(resp => this.getAccounts())
+          .catch(err => (this.error = err.message));
         break;
     }
   }

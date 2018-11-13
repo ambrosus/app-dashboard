@@ -9,7 +9,6 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
-import { AccountsService } from 'app/services/accounts.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -22,11 +21,7 @@ declare let Web3: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class SignupComponent implements OnInit, OnDestroy {
-  requestOrganizationSub: Subscription;
-  routeSub: Subscription;
-  getInviteSub: Subscription;
-  createAccountSub: Subscription;
-  verifyAccountSub: Subscription;
+  subs: Subscription[] = [];
   forms: {
     privateKeyForm?: FormGroup;
     requestForm?: FormGroup;
@@ -45,7 +40,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-    private accountsService: AccountsService,
     private route: ActivatedRoute,
     private router: Router,
     private sanitizer: DomSanitizer,
@@ -54,12 +48,14 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.routeSub = this.route.queryParams.subscribe(queryParams => {
-      this.inviteId = queryParams.inviteId;
-      if (this.inviteId) {
-        this.verifyInvite();
-      }
-    });
+    this.subs[this.subs.length] = this.route.queryParams.subscribe(
+      queryParams => {
+        this.inviteId = queryParams.inviteId;
+        if (this.inviteId) {
+          this.verifyInvite();
+        }
+      },
+    );
     this.forms.privateKeyForm = new FormGroup({
       privateKey: new FormControl(null, [
         Validators.required,
@@ -78,21 +74,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.requestOrganizationSub) {
-      this.requestOrganizationSub.unsubscribe();
-    }
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
-    if (this.getInviteSub) {
-      this.getInviteSub.unsubscribe();
-    }
-    if (this.createAccountSub) {
-      this.createAccountSub.unsubscribe();
-    }
-    if (this.verifyAccountSub) {
-      this.verifyAccountSub.unsubscribe();
-    }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   validatePrivateKey(control: AbstractControl) {
@@ -143,21 +125,19 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.verifyAccountSub = this.authService
+      this.authService
         .verifyAccount(privateKey)
-        .subscribe(
-          (resp: any) => {
-            console.log('[VERIFY] Account: ', resp);
-            this.errorPrivateKeyForm =
-              'This account is already registered, please use another private key';
-            resolve();
-          },
-          err => {
-            this.generateAddress(privateKey);
-            this.step = 'saveKeys';
-            reject();
-          },
-        );
+        .then((resp: any) => {
+          console.log('[VERIFY] Account: ', resp);
+          this.errorPrivateKeyForm =
+            'This account is already registered, please use another private key';
+          resolve();
+        })
+        .catch(err => {
+          this.generateAddress(privateKey);
+          this.step = 'saveKeys';
+          reject();
+        });
     });
   }
 
@@ -214,22 +194,20 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionRequestForm = new Promise((resolve, reject) => {
-      this.requestOrganizationSub = this.organizationsService
+      this.organizationsService
         .createOrganizationRequest(data)
-        .subscribe(
-          (resp: any) => {
-            console.log('[REQUEST] Organization: ', resp);
-            this.step = 'success';
-            resolve();
-          },
-          err => {
-            console.error('[REQUEST] Organization: ', err);
-            this.errorRequestForm = err
-              ? err.message
-              : 'Request failed, please contact support';
-            reject();
-          },
-        );
+        .then((resp: any) => {
+          console.log('[REQUEST] Organization: ', resp);
+          this.step = 'success';
+          resolve();
+        })
+        .catch(err => {
+          console.error('[REQUEST] Organization: ', err);
+          this.errorRequestForm = err
+            ? err.message
+            : 'Request failed, please contact support';
+          reject();
+        });
     });
   }
 }

@@ -25,13 +25,17 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) { }
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnDestroy() {
-    if (this.assetsCreateSub) { this.assetsCreateSub.unsubscribe(); }
-    if (this.eventsCreateSub) { this.eventsCreateSub.unsubscribe(); }
+    if (this.assetsCreateSub) {
+      this.assetsCreateSub.unsubscribe();
+    }
+    if (this.eventsCreateSub) {
+      this.eventsCreateSub.unsubscribe();
+    }
   }
 
   cancel() {
@@ -55,10 +59,17 @@ export class JsonFormComponent implements OnInit, OnDestroy {
 
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = function(e) {
       const text = reader.result;
       that.textArea = text;
     };
+
+    reader.onerror = function(e) {
+      console.error('[UPLOAD]: ', e);
+    };
+
+    reader.onabort = function(e) {};
+
     reader.readAsText(file);
   }
 
@@ -108,23 +119,47 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     const secret = this.storageService.get('secret');
     let allEvents = [];
 
-    if (!Array.isArray(json)) { json = [json]; }
+    if (!Array.isArray(json)) {
+      json = [json];
+    }
 
     _assetIds.map(assetId => {
       const assetEvents = JSON.parse(JSON.stringify(json));
 
       assetEvents
-        .filter(event => event.content && event.content.idData && event.content.data)
+        .filter(
+          event => event.content && event.content.idData && event.content.data,
+        )
         .map(event => {
           event.content.idData['assetId'] = assetId;
           event.content.idData['createdBy'] = address;
-          event.content.idData['dataHash'] = this.assetsService.calculateHash(event.content.data);
-          if (!event.content.idData['timestamp'] || !this.assetsService.validTimestamp(event.content.idData['timestamp'])) {
-            event.content.idData['timestamp'] = Math.floor(new Date().getTime() / 1000);
-          } else { event.content.idData['timestamp'] = event.content.idData['timestamp'] + 1; }
-          if (!event.content.idData['accessLevel'] && event.content.idData['accessLevel'] !== 0) { event.content.idData['accessLevel'] = 1; }
+          event.content.idData['dataHash'] = this.assetsService.calculateHash(
+            event.content.data,
+          );
+          if (
+            !event.content.idData['timestamp'] ||
+            !this.assetsService.validTimestamp(
+              event.content.idData['timestamp'],
+            )
+          ) {
+            event.content.idData['timestamp'] = Math.floor(
+              new Date().getTime() / 1000,
+            );
+          } else {
+            event.content.idData['timestamp'] =
+              event.content.idData['timestamp'] + 1;
+          }
+          if (
+            !event.content.idData['accessLevel'] &&
+            event.content.idData['accessLevel'] !== 0
+          ) {
+            event.content.idData['accessLevel'] = 1;
+          }
 
-          event.content['signature'] = this.assetsService.sign(event.content.idData, secret);
+          event.content['signature'] = this.assetsService.sign(
+            event.content.idData,
+            secret,
+          );
           event['eventId'] = this.assetsService.calculateHash(event.content);
         });
       allEvents = allEvents.concat(assetEvents);
@@ -139,10 +174,18 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     let json = null;
     try {
       json = JSON.parse(input.value);
-    } catch (e) { }
+    } catch (e) {}
 
     if (json) {
-      if (!confirm(`Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`)) { return; }
+      if (
+        !confirm(
+          `Are you sure you want to proceed creating ${
+            this.for === 'assets' ? 'this asset' : 'these events'
+          }?`,
+        )
+      ) {
+        return;
+      }
 
       this.spinner = true;
 
@@ -150,34 +193,38 @@ export class JsonFormComponent implements OnInit, OnDestroy {
         // Create asset and info event
         const asset = this.generateAsset();
         const infoEvent = this.generateEvents(json, [asset.assetId]);
-        this.assetsCreateSub = this.assetsService.createAssets([asset], infoEvent).subscribe(
-          (resp: any) => {
-            console.log('[CREATE] Asset: ', resp);
-            this.spinner = false;
-            this.success = 'Success';
-            this.sequenceNumber += 1;
-          },
-          err => {
-            console.error('[CREATE] Asset: ', err);
-            this.error = err.message;
-            this.spinner = false;
-          },
-        );
+        this.assetsCreateSub = this.assetsService
+          .createAssets([asset], infoEvent)
+          .subscribe(
+            (resp: any) => {
+              console.log('[CREATE] Asset: ', resp);
+              this.spinner = false;
+              this.success = 'Success';
+              this.sequenceNumber += 1;
+            },
+            err => {
+              console.error('[CREATE] Asset: ', err);
+              this.error = err.message;
+              this.spinner = false;
+            },
+          );
       } else {
         // Edit or add events
         const events = this.generateEvents(json);
-        this.eventsCreateSub = this.assetsService.createEvents(events).subscribe(
-          (resp: any) => {
-            console.log('[CREATE] Events: ', resp);
-            this.spinner = false;
-            this.success = 'Success';
-          },
-          err => {
-            console.error('[CREATE] Events: ', err);
-            this.error = err.message;
-            this.spinner = false;
-          },
-        );
+        this.eventsCreateSub = this.assetsService
+          .createEvents(events)
+          .subscribe(
+            (resp: any) => {
+              console.log('[CREATE] Events: ', resp);
+              this.spinner = false;
+              this.success = 'Success';
+            },
+            err => {
+              console.error('[CREATE] Events: ', err);
+              this.error = err.message;
+              this.spinner = false;
+            },
+          );
       }
     } else {
       this.error = 'Input some valid JSON first';

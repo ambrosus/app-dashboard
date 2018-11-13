@@ -28,6 +28,7 @@ import * as Sentry from '@sentry/browser';
 if (!isDevMode) {
   Sentry.init({
     dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
+    environment: 'prod',
   });
 }
 
