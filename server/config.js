@@ -8,9 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 module.exports = {
   db: process.env.MONGODB_URI,
   port: process.env.PORT || 5000,
-  production: process.env.NODE_ENV
-    ? process.env.NODE_ENV === 'production'
-    : false,
+  production: process.env.NODE_ENV === 'production',
   secret: process.env.SECRET,
   token: process.env.TOKEN,
   email: {
