@@ -28,7 +28,10 @@ Sentry.init({ dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719' 
  */
 const app = express();
 
+// Debug
 app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.errorHandler());
+app.use(errorHandler);
 
 app.use(helmet());
 
@@ -56,9 +59,6 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api', APIRoutes);
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist/index.html')));
-
-app.use(Sentry.Handlers.errorHandler());
-app.use(errorHandler);
 
 const server = http.createServer(app);
 server.listen(config.port, () => logger.info('Server running...'));
