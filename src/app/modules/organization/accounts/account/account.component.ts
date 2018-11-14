@@ -29,9 +29,10 @@ export class AccountComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.params.subscribe(params => {
+    this.subs[this.subs.length] = this.route.params.subscribe(async params => {
       this.address = params.address;
-      this.getAccount();
+      await this.getAccount();
+      this.initForms();
       this.timezones = moment.tz.names();
     });
   }
@@ -53,29 +54,34 @@ export class AccountComponent implements OnInit, OnDestroy {
         Validators.required,
       ]),
       permissions: new FormGroup({
+        super_account: new FormControl({ value: null, disabled: true }),
         manage_accounts: new FormControl(null),
         register_accounts: new FormControl(null),
         create_event: new FormControl(null),
         create_asset: new FormControl(null),
       }),
     });
-    this.account.permissions.map(permission =>
-      this.forms.accountPermissions
-        .get('permissions')
-        .get(permission)
-        .setValue(true),
-    );
+    try {
+      this.account.permissions.map(permission =>
+        this.forms.accountPermissions
+          .get('permissions')
+          .get(permission)
+          .setValue(true),
+      );
+    } catch (e) {}
   }
 
   getAccount() {
-    this.accountsService
-      .getAccount(this.address)
-      .then(account => {
-        console.log('[GET] Account: ', account);
-        this.account = account;
-        this.initForms();
-      })
-      .catch(err => this.router.navigate(['/organization/accounts']));
+    return new Promise((resolve, reject) => {
+      this.accountsService
+        .getAccount(this.address)
+        .then(account => {
+          console.log('[GET] Account: ', account);
+          this.account = account;
+          resolve();
+        })
+        .catch(err => this.router.navigate(['/organization/accounts']));
+    });
   }
 
   modifyAccount() {

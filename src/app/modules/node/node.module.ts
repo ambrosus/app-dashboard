@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NodeService } from 'app/services/node.service';
+import { OrganizationComponent } from './organization/organization.component';
 
 @NgModule({
   imports: [
@@ -22,14 +23,13 @@ import { NodeService } from 'app/services/node.service';
     Angular2PromiseButtonModule.forRoot(),
     FormsModule,
   ],
-  providers: [
-    NodeService,
-  ],
+  providers: [NodeService],
   declarations: [
     DashboardComponent,
     OrganizationsComponent,
     AccountsComponent,
     NodeOutletComponent,
+    OrganizationComponent,
   ],
 })
-export class NodeModule { }
+export class NodeModule {}

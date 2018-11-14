@@ -65,7 +65,7 @@ export class OrganizationsService {
   // Organization requests
 
   createOrganizationRequest(body) {
-    const url = '${this.api.extended}/organization/request';
+    const url = `${this.api.extended}/organization/request`;
 
     return new Promise((resolve, reject) => {
       this.http
@@ -74,6 +74,33 @@ export class OrganizationsService {
           ({ data }: any) => resolve(data),
           ({ meta }) => reject(meta),
         );
+    });
+  }
+
+  getOrganizationRequests(next = '') {
+    const url = `${this.api.extended}/organization/request?next=${next}`;
+
+    return new Promise((resolve, reject) => {
+      this.http
+        .get(url)
+        .subscribe(
+          ({ data }: any) => resolve(data),
+          ({ meta }) => reject(meta),
+        );
+    });
+  }
+
+  handleOrganizationRequest(organizationRequestId, approved) {
+    const url = `${
+      this.api.extended
+    }/organization/request/${organizationRequestId}/${
+      approved ? 'approve' : 'refuse'
+    }`;
+
+    return new Promise((resolve, reject) => {
+      this.http
+        .get(url)
+        .subscribe(resp => resolve(resp), error => reject(error));
     });
   }
 

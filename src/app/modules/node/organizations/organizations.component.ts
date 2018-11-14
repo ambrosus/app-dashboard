@@ -10,13 +10,11 @@ import * as moment from 'moment-timezone';
   styleUrls: ['./organizations.component.scss'],
 })
 export class OrganizationsComponent implements OnInit, OnDestroy {
-  getOrganizationsSub: Subscription;
-  getOrganizationRequestsSub: Subscription;
-  organizationActionSub: Subscription;
+  subs: Subscription[] = [];
   organizations = [];
   organizationsDisabled = [];
   organizationRequests = [];
-  user;
+  account;
   show = 'active';
   success;
   error;
@@ -27,26 +25,13 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.user = this.storageService.get('user') || {};
-    // this.getOrganizations();
-    // this.getOrganizationRequests();
+    this.account = this.storageService.get('account') || {};
+    this.getOrganizations();
+    this.getOrganizationRequests();
   }
 
   ngOnDestroy() {
-    if (this.getOrganizationsSub) {
-      this.getOrganizationsSub.unsubscribe();
-    }
-    if (this.getOrganizationRequestsSub) {
-      this.getOrganizationRequestsSub.unsubscribe();
-    }
-    if (this.organizationActionSub) {
-      this.organizationActionSub.unsubscribe();
-    }
-  }
-
-  getOwnerName(organization) {
-    const owner = organization.owner;
-    return owner ? owner.full_name || owner.email || 'No name' : 'No owner';
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   getNumberOfOrganizations() {
@@ -60,51 +45,59 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // getOrganizations() {
-  //   this.getOrganizationsSub = this.organizationsService.getAll().subscribe(
-  //     (organizations: any) => {
-  //       this.organizations = organizations.filter(organization => {
-  //         organization.createdAt = moment.tz(organization.createdAt, this.user.timeZone).fromNow();
-  //         return organization.active;
-  //       });
-  //       this.organizationsDisabled = organizations.filter(organization => !organization.active);
-  //       console.log('Organizations: ', this.organizations);
-  //       console.log('Organizations disabled: ', this.organizationsDisabled);
-  //     },
-  //     err => console.error('Organizations GET error: ', err),
-  //   );
-  // }
+  getOrganizations(next = '') {
+    this.organizationsService
+      .getOrganizations(next)
+      .then((organizations: any) => {
+        this.organizations = organizations.filter(organization => {
+          organization.createdOn = moment
+            .tz(organization.createdOn, this.account.timeZone || 'UTC')
+            .fromNow();
+          return organization.active;
+        });
+        this.organizationsDisabled = organizations.filter(
+          organization => !organization.active,
+        );
+        console.log('Organizations: ', this.organizations);
+        console.log('Organizations disabled: ', this.organizationsDisabled);
+      })
+      .catch(err => console.error('[GET] Organizations: ', err));
+  }
 
-  // getOrganizationRequests() {
-  //   this.getOrganizationRequestsSub = this.organizationsService.getOrganizationRequests().subscribe(
-  //     (organizationRequests: any) => {
-  //       this.organizationRequests = organizationRequests.map(organizationRequest => {
-  //         organizationRequest.createdAt = moment.tz(organizationRequest.createdAt, this.user.timeZone).fromNow();
-  //         return organizationRequest;
-  //       });
-  //       console.log('Organization requests: ', this.organizationRequests);
-  //     },
-  //     err => console.error('Organization Requests GET error: ', err),
-  //   );
-  // }
+  getOrganizationRequests() {
+    this.organizationsService
+      .getOrganizationRequests()
+      .then((organizationRequests: any) => {
+        this.organizationRequests = organizationRequests.map(
+          organizationRequest => {
+            organizationRequest.createdOn = moment
+              .tz(organizationRequest.createdOn, this.account.timeZone || 'UTC')
+              .fromNow();
+            return organizationRequest;
+          },
+        );
+        console.log('Organization requests: ', this.organizationRequests);
+      })
+      .catch(err => console.error('[GET] Organization requests: ', err));
+  }
 
-  // actions(action, body = {}) {
-  //   switch (action) {
-  //     case 'organizationEdit':
-  //       this.organizationActionSub = this.organizationsService.editOrganization(body['data'], body['organizationID']).subscribe(
-  //         resp => this.getOrganizations(),
-  //         err => this.error = err.message,
-  //       );
-  //       break;
-  //     case 'organizationRequest':
-  //       this.organizationActionSub = this.organizationsService.organizationRequestApproval(body).subscribe(
-  //         resp => {
-  //           this.getOrganizations();
-  //           this.getOrganizationRequests();
-  //         },
-  //         err => this.error = err.message,
-  //       );
-  //       break;
-  //   }
-  // }
+  actions(action, body: any = {}) {
+    switch (action) {
+      case 'organizationModify':
+        this.organizationsService
+          .modifyOrganization(body.organizationId, body.data)
+          .then(resp => this.getOrganizations())
+          .catch(err => console.error('[MODIFY] Organization: ', err));
+        break;
+      case 'organizationRequest':
+        this.organizationsService
+          .handleOrganizationRequest(body.id, body.approved)
+          .then(resp => {
+            this.getOrganizations();
+            this.getOrganizationRequests();
+          })
+          .catch(err => console.error('[HANDLE] Organization request: ', err));
+        break;
+    }
+  }
 }

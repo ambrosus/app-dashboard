@@ -16,15 +16,23 @@ export class InterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
+    let request: HttpRequest<any> = req.clone();
+
     const token = this.authService.getToken();
-    const prefix = req.url.indexOf('/assets') > -1 ? 'AMB' : 'AMB_TOKEN';
-    const request: HttpRequest<any> = req.clone({
-      setHeaders: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `${prefix} ${token}`,
-      },
-    });
+    const tokenNotNeeded = ['/assets'];
+    const useToken = !tokenNotNeeded.filter(
+      route => req.url.indexOf(route) > -1,
+    ).length;
+
+    if (useToken) {
+      request = req.clone({
+        setHeaders: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: useToken ? `AMB_TOKEN ${token}` : '',
+        },
+      });
+    }
 
     return next.handle(request);
   }
