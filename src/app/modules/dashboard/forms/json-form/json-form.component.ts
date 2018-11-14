@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
-import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,9 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './json-form.component.html',
   styleUrls: ['./json-form.component.scss'],
 })
-export class JsonFormComponent implements OnInit, OnDestroy {
-  assetsCreateSub: Subscription;
-  eventsCreateSub: Subscription;
+export class JsonFormComponent implements OnInit {
   error;
   success;
   spinner;
@@ -21,6 +18,8 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   @Input() assetIds: String[];
   @Input() for: 'assets';
 
+  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
+
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
@@ -28,15 +27,6 @@ export class JsonFormComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {}
-
-  ngOnDestroy() {
-    if (this.assetsCreateSub) {
-      this.assetsCreateSub.unsubscribe();
-    }
-    if (this.eventsCreateSub) {
-      this.eventsCreateSub.unsubscribe();
-    }
-  }
 
   cancel() {
     this.router.navigate([`${location.pathname}`]);
@@ -168,7 +158,7 @@ export class JsonFormComponent implements OnInit, OnDestroy {
     return allEvents;
   }
 
-  save(input) {
+  async save(input) {
     this.error = false;
     this.success = false;
     let json = null;
@@ -176,58 +166,63 @@ export class JsonFormComponent implements OnInit, OnDestroy {
       json = JSON.parse(input.value);
     } catch (e) {}
 
-    if (json) {
-      if (
-        !confirm(
-          `Are you sure you want to proceed creating ${
-            this.for === 'assets' ? 'this asset' : 'these events'
-          }?`,
-        )
-      ) {
-        return;
+    if (!json) {
+      this.error = 'Input some valid JSON first';
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to proceed creating ${
+          this.for === 'assets' ? 'this asset' : 'these events'
+        }?`,
+      )
+    ) {
+      return;
+    }
+
+    this.spinner = true;
+
+    if (this.for === 'assets') {
+      // Create asset and info event
+      const asset = this.generateAsset();
+      const infoEvent = this.generateEvents(json, [asset.assetId]);
+
+      let [error, created] = await this.to(
+        this.assetsService.createAssets([asset]),
+      );
+      if (error) {
+        console.error('[CREATE] Asset: ', error);
+      }
+      if (created) {
+        console.log('[CREATE] Event: ', created);
+        this.success = 'Success';
+        this.sequenceNumber += 1;
       }
 
-      this.spinner = true;
-
-      if (this.for === 'assets') {
-        // Create asset and info event
-        const asset = this.generateAsset();
-        const infoEvent = this.generateEvents(json, [asset.assetId]);
-        this.assetsCreateSub = this.assetsService
-          .createAssets([asset], infoEvent)
-          .subscribe(
-            (resp: any) => {
-              console.log('[CREATE] Asset: ', resp);
-              this.spinner = false;
-              this.success = 'Success';
-              this.sequenceNumber += 1;
-            },
-            err => {
-              console.error('[CREATE] Asset: ', err);
-              this.error = err.message;
-              this.spinner = false;
-            },
-          );
-      } else {
-        // Edit or add events
-        const events = this.generateEvents(json);
-        this.eventsCreateSub = this.assetsService
-          .createEvents(events)
-          .subscribe(
-            (resp: any) => {
-              console.log('[CREATE] Events: ', resp);
-              this.spinner = false;
-              this.success = 'Success';
-            },
-            err => {
-              console.error('[CREATE] Events: ', err);
-              this.error = err.message;
-              this.spinner = false;
-            },
-          );
+      [error, created] = await this.to(
+        this.assetsService.createEvents(infoEvent),
+      );
+      if (error) {
+        console.error('[CREATE] Asset: ', error);
+      }
+      if (created) {
+        console.log('[CREATE] Event: ', created);
       }
     } else {
-      this.error = 'Input some valid JSON first';
+      // Edit or add events
+      const events = this.generateEvents(json);
+
+      const [error, created] = await this.to(
+        this.assetsService.createEvents(events),
+      );
+      if (error) {
+        console.error('[CREATE] Events: ', error);
+        this.error = 'Creating events failed';
+      }
+      if (created) {
+        console.log('[CREATE] Events: ', created);
+        this.success = 'Success';
+      }
     }
   }
 }

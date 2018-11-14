@@ -1,8 +1,7 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,31 +9,52 @@ import { Router } from '@angular/router';
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss'],
 })
-export class EventFormComponent implements OnInit, OnDestroy {
-  createEventsSub: Subscription;
+export class EventFormComponent implements OnInit {
   eventForm: FormGroup;
   error;
   success;
   spinner;
-  identifiersAutocomplete = ['UPCE', 'UPC12', 'EAN8', 'EAN13', 'CODE 39', 'CODE 128', 'ITF', 'QR', 'DATAMATRIX', 'RFID', 'NFC',
-    'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI', 'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'];
+  identifiersAutocomplete = [
+    'UPCE',
+    'UPC12',
+    'EAN8',
+    'EAN13',
+    'CODE 39',
+    'CODE 128',
+    'ITF',
+    'QR',
+    'DATAMATRIX',
+    'RFID',
+    'NFC',
+    'GTIN',
+    'GLN',
+    'SSCC',
+    'GSIN',
+    'GINC',
+    'GRAI',
+    'GIAI',
+    'GSRN',
+    'GDTI',
+    'GCN',
+    'CPID',
+    'GMN',
+  ];
 
   @Input() assetIds: String[];
 
-  isObject(value) { return typeof value === 'object'; }
+  isObject(value) {
+    return typeof value === 'object';
+  }
+  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
 
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initForm();
-  }
-
-  ngOnDestroy() {
-    if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
   }
 
   cancel() {
@@ -90,7 +110,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   // Methods for adding/removing new fields to the form
 
-  remove(array, index: number) { (<FormArray>this.eventForm.get(array)).removeAt(index); }
+  remove(array, index: number) {
+    (<FormArray>this.eventForm.get(array)).removeAt(index);
+  }
 
   addDocument() {
     (<FormArray>this.eventForm.get('documents')).push(
@@ -168,7 +190,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
         }
       });
 
-      if (Object.keys(identifiers['identifiers']).length) { data.push(identifiers); }
+      if (Object.keys(identifiers['identifiers']).length) {
+        data.push(identifiers);
+      }
     }
 
     // Information
@@ -177,7 +201,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
     info['type'] = eventForm.type;
     info['name'] = eventForm.name;
     const description = eventForm.description;
-    if (description) { info['description'] = description; }
+    if (description) {
+      info['description'] = description;
+    }
 
     // Documents
     const documents = eventForm.documents;
@@ -190,7 +216,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
         }
       });
 
-      if (Object.keys(_documents).length) { info['documents'] = _documents; }
+      if (Object.keys(_documents).length) {
+        info['documents'] = _documents;
+      }
     }
 
     // Properties
@@ -210,7 +238,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
             _group[property.name] = property.value;
           }
         });
-        if (Object.keys(_group).length) { info[group.title] = _group; }
+        if (Object.keys(_group).length) {
+          info[group.title] = _group;
+        }
       }
     });
 
@@ -220,7 +250,15 @@ export class EventFormComponent implements OnInit, OnDestroy {
     const location = eventForm.location;
     const { lat, lng, name, city, country, locationId, GLN } = location;
 
-    if ((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN) {
+    if (
+      (lat || lat === 0) &&
+      (lng || lng === 0) &&
+      name &&
+      city &&
+      country &&
+      locationId &&
+      GLN
+    ) {
       const _location = {
         type: 'ambrosus.event.location',
         location: {
@@ -264,48 +302,75 @@ export class EventFormComponent implements OnInit, OnDestroy {
     return event;
   }
 
-  save() {
+  async save() {
     this.error = false;
     this.success = false;
+    const form = this.eventForm;
 
-    if (this.eventForm.valid && this.assetIds.length > 0) {
-      const eventForm = this.eventForm.getRawValue();
+    if (form.invalid) {
+      return (this.error = 'Form is invalid');
+    }
+    if (!this.assetIds.length) {
+      return (this.error = 'No assets are selected');
+    }
 
-      // Location Event
-      const location = eventForm.location;
-      const { lat, lng, name, city, country, locationId, GLN } = location;
+    const data = form.getRawValue();
 
-      if ((lat || lat === 0) || (lng || lng === 0) || name || city || country || locationId || GLN) {
-        if (!((lat || lat === 0) && (lng || lng === 0) && name && city && country && locationId && GLN)) {
-          return this.error = 'Event location must either be blank or completely filled';
-        }
+    // Location Event
+    const location = data.location;
+    const { lat, lng, name, city, country, locationId, GLN } = location;
+
+    if (
+      lat ||
+      lat === 0 ||
+      (lng || lng === 0) ||
+      name ||
+      city ||
+      country ||
+      locationId ||
+      GLN
+    ) {
+      if (
+        !(
+          (lat || lat === 0) &&
+          (lng || lng === 0) &&
+          name &&
+          city &&
+          country &&
+          locationId &&
+          GLN
+        )
+      ) {
+        return (this.error =
+          'Event location must either be blank or completely filled');
       }
+    }
 
-      // Confirmation window
-      if (!confirm(`You are about to create an event for ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}, are you sure you want to proceed?`)) { return; }
+    // Confirmation window
+    if (
+      !confirm(
+        `You are about to create an event for ${this.assetIds.length} asset${
+          this.assetIds.length === 1 ? '' : 's'
+        }, are you sure you want to proceed?`,
+      )
+    ) {
+      return;
+    }
 
-      this.spinner = true;
+    // Make a request
+    const events = [];
+    this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
 
-      // Make a request
-      const events = [];
-      this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
-      this.createEventsSub = this.assetsService.createEvents(events).subscribe(
-        (resp: any) => {
-          console.log('[CREATE] Events: ', resp);
-          this.spinner = false;
-          this.success = 'Success';
-        },
-        err => {
-          console.error('[CREATE] Events: ', err);
-          this.error = err.message;
-          this.spinner = false;
-        },
-      );
-
-    } else if (!this.eventForm.valid) {
-      this.error = 'Please fill all required fields';
-    } else if (this.assetIds.length === 0) {
-      this.error = 'There are no assets selected';
+    const [error, created] = await this.to(
+      this.assetsService.createEvents(events),
+    );
+    if (error) {
+      console.error('[CREATE] Events: ', error);
+      this.error = 'Creating events failed';
+    }
+    if (created) {
+      console.log('[CREATE] Events: ', created);
+      this.success = 'Success';
     }
   }
 }

@@ -10,8 +10,7 @@ import { AssetsService } from 'app/services/assets.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class EventComponent implements OnInit, OnDestroy {
-  routeSub: Subscription;
-  routeParamsSub: Subscription;
+  subs: Subscription[] = [];
   assetId;
   eventId;
   event;
@@ -21,25 +20,28 @@ export class EventComponent implements OnInit, OnDestroy {
   isArray = Array.isArray;
   stringify = JSON.stringify;
 
-  isObject(value) { return typeof value === 'object'; }
-  valueJSON(value) { return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, ''); }
+  isObject(value) {
+    return typeof value === 'object';
+  }
+  valueJSON(value) {
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
+  }
 
   constructor(
     private route: ActivatedRoute,
     public assetsService: AssetsService,
-  ) { }
+  ) {}
 
   ngOnDestroy() {
-    if (this.routeSub) { this.routeSub.unsubscribe(); }
-    if (this.routeParamsSub) { this.routeParamsSub.unsubscribe(); }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(
-      data => this.event = data.event,
+    this.subs[this.subs.length] = this.route.data.subscribe(
+      data => (this.event = data.event),
       err => console.error('[GET] Event: ', err),
     );
-    this.routeParamsSub = this.route.params.subscribe(resp => {
+    this.subs[this.subs.length] = this.route.params.subscribe(resp => {
       this.assetId = resp.assetid;
       this.eventId = resp.eventid;
     });

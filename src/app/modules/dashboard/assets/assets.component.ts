@@ -21,12 +21,10 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
   encapsulation: ViewEncapsulation.None,
 })
 export class AssetsComponent implements OnInit, OnDestroy {
-  assetsSub: Subscription;
-  getAssetsSub: Subscription;
-  routerSub: Subscription;
+  subs: Subscription[] = [];
   forms: {
-    table?: FormGroup,
-    search?: FormGroup
+    table?: FormGroup;
+    search?: FormGroup;
   } = {};
   pagination;
   selectButton = 'Select all';
@@ -40,12 +38,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public dialog: MatDialog,
     private storageService: StorageService,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.initSearchForm();
 
-    this.assetsSub = this.assetsService.assets.subscribe(
+    this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
         this.pagination = pagination;
@@ -54,20 +52,21 @@ export class AssetsComponent implements OnInit, OnDestroy {
         // Table form
         this.initTableForm();
         data.map(asset => {
-          (<FormArray>this.forms.table.get('assets')).push(new FormGroup({
-            assetId: new FormControl(asset.assetId),
-            infoEvent: new FormControl(asset.infoEvent),
-            createdAt: new FormControl(asset.content.idData.timestamp),
-            selected: new FormControl(null),
-          }));
+          (<FormArray>this.forms.table.get('assets')).push(
+            new FormGroup({
+              assetId: new FormControl(asset.assetId),
+              infoEvent: new FormControl(asset.infoEvent),
+              createdAt: new FormControl(asset.content.idData.timestamp),
+              selected: new FormControl(null),
+            }),
+          );
         });
       },
     );
   }
 
   ngOnDestroy() {
-    if (this.assetsSub) { this.assetsSub.unsubscribe(); }
-    if (this.getAssetsSub) { this.getAssetsSub.unsubscribe(); }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   initTableForm() {
@@ -95,28 +94,36 @@ export class AssetsComponent implements OnInit, OnDestroy {
       next,
     };
 
-    this.getAssetsSub = this.assetsService.getAssets(options).subscribe();
+    this.assetsService.getAssets(options).then();
   }
 
   JSONparse(value) {
     try {
       return JSON.parse(value);
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   }
 
   select() {
     this.selected = !this.selected;
     this.selectButton = this.selected ? 'Unselect all' : 'Select all';
-    this.forms.table.get('assets')['controls'].map(asset => asset.get('selected').setValue(this.selected));
+    this.forms.table
+      .get('assets')
+      ['controls'].map(asset => asset.get('selected').setValue(this.selected));
   }
 
   bulkEvent() {
     const assetIds = [];
     const data = this.forms.table.getRawValue();
     data.assets.map(asset => {
-      if (asset.selected) { assetIds.push(asset.assetId); }
+      if (asset.selected) {
+        assetIds.push(asset.assetId);
+      }
     });
-    if (!assetIds.length) { return alert(`You didn\'t select any assets. Please do so first.`); }
+    if (!assetIds.length) {
+      return alert(`You didn\'t select any assets. Please do so first.`);
+    }
     const dialogRef = this.dialog.open(EventAddComponent, {
       width: '600px',
       position: { top: '0', right: '0' },
@@ -125,7 +132,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
       },
     });
 
-    dialogRef.afterClosed().subscribe(result => console.log('[Bulk event] was closed'));
+    dialogRef
+      .afterClosed()
+      .subscribe(result => console.log('[Bulk event] was closed'));
   }
 
   search() {

@@ -4,21 +4,20 @@ import { map, first } from 'rxjs/operators';
 import {
   Resolve,
   ActivatedRouteSnapshot,
-  RouterStateSnapshot
+  RouterStateSnapshot,
 } from '@angular/router';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AssetResolver implements Resolve<any> {
-  constructor(private assetService: AssetsService) { }
+  constructor(private assetService: AssetsService) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<any> | Promise<any> | any {
-    return this.assetService.getAsset(route.params.assetid).pipe(
-      map(asset => asset),
-      first(),
-    );
+    return this.assetService
+      .getAsset(route.params.assetid)
+      .then(asset => asset);
   }
 }
