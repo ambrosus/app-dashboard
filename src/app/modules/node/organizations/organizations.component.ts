@@ -51,7 +51,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .then((organizations: any) => {
         this.organizations = organizations.filter(organization => {
           organization.createdOn = moment
-            .tz(organization.createdOn, this.account.timeZone || 'UTC')
+            .tz(organization.createdOn * 1000, this.account.timeZone || 'UTC')
             .fromNow();
           return organization.active;
         });
@@ -71,7 +71,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         this.organizationRequests = organizationRequests.map(
           organizationRequest => {
             organizationRequest.createdOn = moment
-              .tz(organizationRequest.createdOn, this.account.timeZone || 'UTC')
+              .tz(
+                organizationRequest.createdOn * 1000,
+                this.account.timeZone || 'UTC',
+              )
               .fromNow();
             return organizationRequest;
           },
