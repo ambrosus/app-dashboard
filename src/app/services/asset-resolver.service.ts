@@ -16,8 +16,9 @@ export class AssetResolver implements Resolve<any> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Observable<any> | Promise<any> | any {
-    return this.assetService
-      .getAsset(route.params.assetid)
-      .then(asset => asset);
+    return this.assetService.getAsset(route.params.assetid).pipe(
+      map(asset => asset),
+      first(),
+    );
   }
 }

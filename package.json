@@ -4,8 +4,7 @@
   "main": "server.js",
   "scripts": {
     "ng": "ng",
-    "start": "npm run client",
-    "client": "ng serve --aot",
+    "start": "ng serve --aot",
     "build": "ng build --prod --aot",
     "test": "ng test",
     "lint": "nodemon --exec \"ng lint || exit 1\" --ext ts,html,scss",
