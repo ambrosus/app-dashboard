@@ -129,7 +129,7 @@ export class AssetsService {
     address?: String;
     limit?: Number;
     next?: String;
-  }) {
+  }): Promise<void> {
     const { address, limit, next } = options;
 
     let url = `${this.api.extended}/asset/query`;
