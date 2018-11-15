@@ -25,11 +25,6 @@ export class AssetsService {
   web3;
   api;
 
-  to = (O: Observable<any>) =>
-    O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
@@ -38,6 +33,12 @@ export class AssetsService {
     this.web3 = new Web3();
     this.api = environment.api;
     this.loadAssets();
+  }
+
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => [null, response])
+      .catch(error => [error]);
   }
 
   loadAssets() {

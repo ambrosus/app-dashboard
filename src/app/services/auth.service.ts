@@ -19,11 +19,6 @@ export class AuthService implements OnDestroy {
   web3;
   api;
 
-  to = (O: Observable<any>) =>
-    O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -33,6 +28,12 @@ export class AuthService implements OnDestroy {
     this.sdk = new AmbrosusSDK({ Web3 });
     this.web3 = new Web3();
     this.api = environment.api;
+  }
+
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => [null, response])
+      .catch(error => [error]);
   }
 
   ngOnDestroy() {}
