@@ -90,11 +90,11 @@ export class AuthService implements OnDestroy {
             return throwError(error);
           }
 
-          console.log('[GET] Account: ', account);
-          this.storageService.set('account', account);
-          this.accountsService._account.next(account);
+          console.log('[GET] Account: ', account.data);
+          this.storageService.set('account', account.data);
+          this.accountsService._account.next(account.data);
           this.router.navigate(['/assets']);
-          return account;
+          return account.data;
         } catch (e) {
           throwError({ meta: { message: 'Password is incorrect' } });
         }
@@ -110,10 +110,7 @@ export class AuthService implements OnDestroy {
 
   // UTILS
 
-  decryptPrivateKey(
-    token: Object,
-    password: String,
-  ): [null] | [String, String] {
+  decryptPrivateKey(token: Object, password: String) {
     try {
       const { address, privateKey } = this.web3.eth.accounts.decrypt(
         token,

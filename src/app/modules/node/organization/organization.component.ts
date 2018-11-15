@@ -55,14 +55,14 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   getOrganization() {
     return new Promise((resolve, reject) => {
-      this.organizationsService
-        .getOrganization(this.organizationId)
-        .then(organization => {
-          console.log('[GET] Organization: ', organization);
-          this.organization = organization;
+      this.organizationsService.getOrganization(this.organizationId).subscribe(
+        ({ data }: any) => {
+          console.log('[GET] Organization: ', data);
+          this.organization = data;
           resolve();
-        })
-        .catch(err => this.router.navigate(['/node/organizations']));
+        },
+        err => this.router.navigate(['/node/organizations']),
+      );
     });
   }
 
@@ -70,28 +70,30 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.error = false;
     this.success = false;
     const form = this.forms.organization;
-    const data = form.value;
+    const _data = form.value;
     const body = {};
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(data).map(property => {
-      if (data[property]) {
-        body[property] = data[property];
+    Object.keys(_data).map(property => {
+      if (_data[property]) {
+        body[property] = _data[property];
       }
     });
 
     this.organizationsService
       .modifyOrganization(this.organizationId, body)
-      .then(organization => {
-        console.log('[MODIFY] Organization: ', organization);
-        this.getOrganization();
-      })
-      .catch(err => {
-        console.error('[MODIFY] Organization: ', err);
-        this.error = 'Organization update failed';
-      });
+      .subscribe(
+        ({ data }: any) => {
+          console.log('[MODIFY] Organization: ', data);
+          this.getOrganization();
+        },
+        error => {
+          console.error('[MODIFY] Organization: ', error);
+          this.error = 'Organization update failed';
+        },
+      );
   }
 }

@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { NodeRoutingModule } from './node-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { OrganizationsComponent } from './organizations/organizations.component';
-import { AccountsComponent } from './accounts/accounts.component';
 import { NodeOutletComponent } from './node-outlet/node-outlet.component';
 import { SharedModule } from 'app/shared/shared.module';
 import { RouterModule } from '@angular/router';
@@ -27,7 +26,6 @@ import { OrganizationComponent } from './organization/organization.component';
   declarations: [
     DashboardComponent,
     OrganizationsComponent,
-    AccountsComponent,
     NodeOutletComponent,
     OrganizationComponent,
   ],

@@ -41,14 +41,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
   getOrganization() {
     this.organizationsService
       .getOrganization(this.account.organization)
-      .then((organization: any) => {
-        console.log('[GET] Organization: ', organization);
-        this.organization = organization;
-        const form = this.settingsForm;
-        form.get('title').setValue(organization.title);
-        form.get('legalAddress').setValue(organization.legalAddress);
-      })
-      .catch(err => console.error('[GET] Organization: ', err));
+      .subscribe(
+        ({ data }: any) => {
+          console.log('[GET] Organization: ', data);
+          this.organization = data;
+          const form = this.settingsForm;
+          form.get('title').setValue(data.title);
+          form.get('legalAddress').setValue(data.legalAddress);
+        },
+        error => console.error('[GET] Organization: ', error),
+      );
   }
 
   initSettingsForm() {
@@ -62,23 +64,25 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.error = null;
     this.success = null;
     const form = this.settingsForm;
-    const data = form.getRawValue();
+    const _data = form.getRawValue();
 
     if (form.invalid) {
       return (this.error = 'Please fill all required fields');
     }
 
     this.organizationsService
-      .modifyOrganization(this.account.organization, data)
-      .then(organization => {
-        console.log('[MODIFY] Organization: ', organization);
-        this.success = 'Success';
-        this.organization = organization;
-        this.accountsService.getAccount(this.account.address).then();
-      })
-      .catch(err => {
-        console.error('[MODIFY] Organization: ', err);
-        this.error = 'Update failed';
-      });
+      .modifyOrganization(this.account.organization, _data)
+      .subscribe(
+        ({ data }: any) => {
+          console.log('[MODIFY] Organization: ', data);
+          this.success = 'Success';
+          this.organization = data;
+          this.accountsService.getAccount(this.account.address).subscribe();
+        },
+        error => {
+          console.error('[MODIFY] Organization: ', error);
+          this.error = 'Update failed';
+        },
+      );
   }
 }

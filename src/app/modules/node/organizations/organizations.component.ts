@@ -46,42 +46,40 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   }
 
   getOrganizations(next = '') {
-    this.organizationsService
-      .getOrganizations(next)
-      .then((organizations: any) => {
-        this.organizations = organizations.filter(organization => {
+    this.organizationsService.getOrganizations(next).subscribe(
+      ({ data }: any) => {
+        this.organizations = data.filter(organization => {
           organization.createdOn = moment
             .tz(organization.createdOn * 1000, this.account.timeZone || 'UTC')
             .fromNow();
           return organization.active;
         });
-        this.organizationsDisabled = organizations.filter(
+        this.organizationsDisabled = data.filter(
           organization => !organization.active,
         );
         console.log('Organizations: ', this.organizations);
         console.log('Organizations disabled: ', this.organizationsDisabled);
-      })
-      .catch(err => console.error('[GET] Organizations: ', err));
+      },
+      error => console.error('[GET] Organizations: ', error),
+    );
   }
 
   getOrganizationRequests() {
-    this.organizationsService
-      .getOrganizationRequests()
-      .then((organizationRequests: any) => {
-        this.organizationRequests = organizationRequests.map(
-          organizationRequest => {
-            organizationRequest.createdOn = moment
-              .tz(
-                organizationRequest.createdOn * 1000,
-                this.account.timeZone || 'UTC',
-              )
-              .fromNow();
-            return organizationRequest;
-          },
-        );
+    this.organizationsService.getOrganizationRequests().subscribe(
+      ({ data }: any) => {
+        this.organizationRequests = data.map(organizationRequest => {
+          organizationRequest.createdOn = moment
+            .tz(
+              organizationRequest.createdOn * 1000,
+              this.account.timeZone || 'UTC',
+            )
+            .fromNow();
+          return organizationRequest;
+        });
         console.log('Organization requests: ', this.organizationRequests);
-      })
-      .catch(err => console.error('[GET] Organization requests: ', err));
+      },
+      error => console.error('[GET] Organization requests: ', error),
+    );
   }
 
   actions(action, body: any = {}) {
@@ -89,17 +87,21 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       case 'organizationModify':
         this.organizationsService
           .modifyOrganization(body.organizationId, body.data)
-          .then(resp => this.getOrganizations())
-          .catch(err => console.error('[MODIFY] Organization: ', err));
+          .subscribe(
+            resp => this.getOrganizations(),
+            error => console.error('[MODIFY] Organization: ', error),
+          );
         break;
       case 'organizationRequest':
         this.organizationsService
           .handleOrganizationRequest(body.id, body.approved)
-          .then(resp => {
-            this.getOrganizations();
-            this.getOrganizationRequests();
-          })
-          .catch(err => console.error('[HANDLE] Organization request: ', err));
+          .subscribe(
+            resp => {
+              this.getOrganizations();
+              this.getOrganizationRequests();
+            },
+            error => console.error('[HANDLE] Organization request: ', error),
+          );
         break;
     }
   }

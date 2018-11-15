@@ -149,7 +149,7 @@ export class AssetsService {
     if (error) {
       return console.error('[GET] Assets: ', error);
     }
-    console.log('[GET] Assets: ', assets);
+    console.log('[GET] Assets: ', assets.data);
 
     const ids = assets.data.reduce((_ids, asset, index, array) => {
       _ids.push(asset.assetId);
@@ -167,7 +167,7 @@ export class AssetsService {
     if (err) {
       return console.error('[GET] Events: ', err);
     }
-    console.log('[GET] Info events: ', infoEvents);
+    console.log('[GET] Info events: ', infoEvents.data);
 
     // Connect assets with info events
     assets.data = assets.data.map(asset => {
@@ -197,33 +197,37 @@ export class AssetsService {
       ],
     };
 
-    return this.http.post(url, body).pipe(
-      map(async (assets: any) => {
-        const ids = assets.data.reduce((_ids, asset, index, array) => {
-          _ids.push(asset.assetId);
-          return _ids;
-        }, []);
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (assets: any) => {
+          const ids = assets.data.reduce((_ids, asset, index, array) => {
+            _ids.push(asset.assetId);
+            return _ids;
+          }, []);
 
-        // Get latest info events
-        url = `${this.api.extended}/event/latest/type`;
-        body = {
-          type: 'ambrosus.asset.info',
-          assets: [assetId],
-        };
+          // Get latest info events
+          url = `${this.api.extended}/event/latest/type`;
+          body = {
+            type: 'ambrosus.asset.info',
+            assets: [assetId],
+          };
 
-        const [err, infoEvents] = await this.to(this.http.post(url, body));
-        if (err) {
-          return throwError(err);
-        }
+          this.http.post(url, body).subscribe(
+            (infoEvents: any) => {
+              assets.data[0]['infoEvent'] = this.findEvent(
+                'info',
+                infoEvents.data,
+              );
+              this.parseAsset(assets.data[0]);
 
-        // Connect assets with info events
-        assets.data[0]['infoEvent'] = this.findEvent('info', infoEvents.data);
-
-        this.parseAsset(assets.data[0]);
-        return assets;
-      }),
-      catchError(({ meta }: any) => meta),
-    );
+              return observer.next(assets.data[0]);
+            },
+            error => observer.error(error),
+          );
+        },
+        ({ meta }: any) => observer.error(meta),
+      );
+    });
   }
 
   async getEvents(options: {

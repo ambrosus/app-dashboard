@@ -88,9 +88,8 @@ export class LoginComponent implements OnInit {
     this.storageService.set('token', this.authService.getToken());
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.accountsService
-        .getAccount(address)
-        .then(account => {
+      this.accountsService.getAccount(address).subscribe(
+        account => {
           console.log('[GET] Account: ', account);
           this.storageService.set('secret', privateKey);
           this.storageService.set('account', account);
@@ -100,13 +99,14 @@ export class LoginComponent implements OnInit {
           this.accountsService._account.next(account);
           this.router.navigate(['/assets']);
           resolve();
-        })
-        .catch(err => {
-          console.error('[GET] Account: ', err);
-          this.errorPrivateKeyForm = err ? err.message : 'Login error';
+        },
+        error => {
+          console.error('[GET] Account: ', error);
+          this.errorPrivateKeyForm = error ? error.message : 'Login error';
           this.storageService.clear();
           reject();
-        });
+        },
+      );
     });
   }
 
@@ -123,21 +123,21 @@ export class LoginComponent implements OnInit {
     const { email, password } = form.value;
 
     this.promiseActionLoginForm = new Promise((resolve, reject) => {
-      this.authService
-        .login(email, password)
-        .then(resp => {
+      this.authService.login(email, password).subscribe(
+        resp => {
           Sentry.configureScope(scope => {
             scope.setUser({ account: resp });
           });
           resolve();
-        })
-        .catch(err => {
-          console.error('[LOGIN] Error: ', err);
-          this.errorLoginForm = err
-            ? err.message
+        },
+        error => {
+          console.error('[LOGIN] Error: ', error);
+          this.errorLoginForm = error
+            ? error.message
             : 'Email or password are incorrect';
           reject();
-        });
+        },
+      );
     });
   }
 }

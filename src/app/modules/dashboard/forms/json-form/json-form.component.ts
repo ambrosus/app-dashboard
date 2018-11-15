@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-json-form',
@@ -18,8 +19,6 @@ export class JsonFormComponent implements OnInit {
   @Input() assetIds: String[];
   @Input() for: 'assets';
 
-  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
-
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
@@ -27,6 +26,12 @@ export class JsonFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {}
+
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => [null, response])
+      .catch(error => [error]);
+  }
 
   cancel() {
     this.router.navigate([`${location.pathname}`]);

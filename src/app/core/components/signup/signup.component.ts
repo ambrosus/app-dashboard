@@ -97,13 +97,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   verifyInvite() {
-    this.organizationsService
-      .verifyInvite(this.inviteId)
-      .then(inviteVerified => {
-        this.invite = inviteVerified;
-        console.log('[GET] Invite verified: ', inviteVerified);
-      })
-      .catch(error => this.router.navigate(['/login']));
+    this.organizationsService.verifyInvite(this.inviteId).subscribe(
+      ({ data }: any) => {
+        this.invite = data;
+        console.log('[GET] Invite verified: ', data);
+      },
+      error => this.router.navigate(['/login']),
+    );
   }
 
   generateKeys() {
@@ -125,19 +125,19 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.authService
-        .verifyAccount(privateKey)
-        .then((resp: any) => {
+      this.authService.verifyAccount(privateKey).subscribe(
+        resp => {
           console.log('[VERIFY] Account: ', resp);
           this.errorPrivateKeyForm =
             'This account is already registered, please use another private key';
           resolve();
-        })
-        .catch(err => {
+        },
+        error => {
           this.generateAddress(privateKey);
           this.step = 'saveKeys';
           reject();
-        });
+        },
+      );
     });
   }
 
@@ -145,16 +145,14 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.invite) {
       const { address } = this.forms.privateKeyForm.getRawValue();
       const body = { address };
-      this.organizationsService
-        .acceptInvite(this.inviteId, body)
-        .then(inviteAccepted => {
-          this.router.navigate(['/login']);
-        })
-        .catch(error => {
+      this.organizationsService.acceptInvite(this.inviteId, body).subscribe(
+        inviteAccepted => this.router.navigate(['/login']),
+        error => {
           console.error('[ACCEPT] Invite: ', error);
           this.errorPrivateKeyForm =
             'Account creation failed, please contact support';
-        });
+        },
+      );
     } else {
       this.step = 'requestForm';
     }
@@ -194,20 +192,20 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionRequestForm = new Promise((resolve, reject) => {
-      this.organizationsService
-        .createOrganizationRequest(data)
-        .then((resp: any) => {
+      this.organizationsService.createOrganizationRequest(data).subscribe(
+        resp => {
           console.log('[REQUEST] Organization: ', resp);
           this.step = 'success';
           resolve();
-        })
-        .catch(err => {
-          console.error('[REQUEST] Organization: ', err);
-          this.errorRequestForm = err
-            ? err.message
+        },
+        error => {
+          console.error('[REQUEST] Organization: ', error);
+          this.errorRequestForm = error
+            ? error.message
             : 'Request failed, please contact support';
           reject();
-        });
+        },
+      );
     });
   }
 }

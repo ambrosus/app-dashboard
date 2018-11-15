@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-asset-form',
@@ -46,7 +47,6 @@ export class AssetFormComponent implements OnInit {
   isObject(value) {
     return typeof value === 'object';
   }
-  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
 
   constructor(
     private storageService: StorageService,
@@ -56,6 +56,12 @@ export class AssetFormComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+  }
+
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => [null, response])
+      .catch(error => [error]);
   }
 
   cancel() {
