@@ -68,39 +68,44 @@ export class AuthService implements OnDestroy {
   login(email: String, password: String): Observable<any> {
     const url = `${this.api.extended}/account/secret`;
 
-    return this.http.post(url, { email }).pipe(
-      map(async ({ data }: any) => {
-        try {
-          console.log('[GET] PrivateKey token: ', data);
-          let token = data.token;
-          token = JSON.parse(atob(data.token));
-          const [address, privateKey] = this.decryptPrivateKey(token, password);
-          if (!address) {
-            return throwError({ meta: { message: 'Password is incorrect' } });
+    return new Observable(observer => {
+      this.http.post(url, { email }).subscribe(
+        ({ data }: any) => {
+          try {
+            console.log('[GET] PrivateKey token: ', data);
+            let token = data.token;
+            token = JSON.parse(atob(data.token));
+            const [address, privateKey] = this.decryptPrivateKey(
+              token,
+              password,
+            );
+            if (!address) {
+              return throwError({ meta: { message: 'Password is incorrect' } });
+            }
+
+            this.storageService.set('secret', privateKey);
+            this.storageService.set('token', this.getToken());
+
+            this.accountsService.getAccount(address).subscribe(
+              ({ data: _data }: any) => {
+                console.log('[GET] Account: ', _data);
+                this.storageService.set('account', _data);
+                this.accountsService._account.next(_data);
+                this.router.navigate(['/assets']);
+                return observer.next(_data);
+              },
+              err => {
+                console.error('[GET] Account: ', err);
+                return observer.error(err);
+              },
+            );
+          } catch (e) {
+            observer.error({ message: 'Password is incorrect' });
           }
-
-          this.storageService.set('secret', privateKey);
-          this.storageService.set('token', this.getToken());
-
-          const [error, account] = await this.to(
-            this.accountsService.getAccount(address),
-          );
-          if (error) {
-            console.error('[GET] Account: ', error);
-            return throwError(error);
-          }
-
-          console.log('[GET] Account: ', account.data);
-          this.storageService.set('account', account.data);
-          this.accountsService._account.next(account.data);
-          this.router.navigate(['/assets']);
-          return account.data;
-        } catch (e) {
-          throwError({ meta: { message: 'Password is incorrect' } });
-        }
-      }),
-      catchError(({ meta }: any) => meta),
-    );
+        },
+        ({ meta }: any) => observer.error(meta),
+      );
+    });
   }
 
   logout(): void {
