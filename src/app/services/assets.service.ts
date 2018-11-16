@@ -1,10 +1,10 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 declare let Web3: any;
 
@@ -286,13 +286,15 @@ export class AssetsService {
     const data = { created: [], errors: [] };
 
     return this.http.post(url, asset).pipe(
-      map(response => {
+      tap(response => {
         this.creatingAsset.next(response);
 
         data['change'] = 'data';
         data['type'] = 'start';
         data['data'] = [response];
         this.assets = data;
+
+        return response;
       }),
       catchError(error => {
         this.creatingAsset.error({ asset, error });
