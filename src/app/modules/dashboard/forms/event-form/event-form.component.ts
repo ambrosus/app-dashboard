@@ -1,16 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event-form',
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss'],
 })
-export class EventFormComponent implements OnInit {
+export class EventFormComponent implements OnInit, OnDestroy {
+  subs: Subscription[] = [];
   eventForm: FormGroup;
   error;
   success;
@@ -55,6 +56,24 @@ export class EventFormComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+
+    this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
+      response => console.log('[CREATE] Asset: ', response),
+      error => console.error('[CREATE] Asset: ', error),
+    );
+
+    this.subs[this.subs.length] = this.assetsService.creatingEvent.subscribe(
+      response => console.log('[CREATE] Event: ', response),
+      error => console.error('[CREATE] Event: ', error),
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.map(sub => sub.unsubscribe());
+  }
+
+  to(P: Promise<any>) {
+    return P.then(response => response).catch(error => ({ error }));
   }
 
   cancel() {
@@ -361,12 +380,10 @@ export class EventFormComponent implements OnInit {
     const events = [];
     this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
 
-    this.assetsService
-      .createEvents(events)
-      .subscribe(
-        response => console.log('[CREATE] Event: ', response),
-        error => console.error('[CREATE] Event: ', error),
-        () => (this.success = 'Success'),
-      );
+    console.log('Creating events');
+    const eventsCreated = await this.to(
+      this.assetsService.createEvents(events),
+    );
+    this.success = 'Success';
   }
 }

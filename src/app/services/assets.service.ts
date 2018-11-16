@@ -11,6 +11,8 @@ declare let Web3: any;
 @Injectable()
 export class AssetsService {
   inputChanged = new Subject();
+  creatingAsset = new Subject();
+  creatingEvent = new Subject();
   private _events: BehaviorSubject<any> = new BehaviorSubject({
     meta: {},
     data: [],
@@ -279,87 +281,75 @@ export class AssetsService {
 
   // Create methods
 
-  createAssets(assets: Object[]): Observable<any> {
+  createAsset(asset: Object): Observable<any> {
     const url = `${this.api.core}/assets`;
     const data = { created: [], errors: [] };
 
-    return new Observable(observer => {
-      assets.map(async (asset, index, array) => {
-        const assetCreated = await this.to(this.http.post(url, asset));
-        if (assetCreated.error) {
-          data.errors.push({ asset, error: assetCreated.error });
-          observer.error({ asset, error: assetCreated.error });
-        }
-        if (assetCreated) {
-          data.created.push(assetCreated);
-          observer.next(assetCreated);
+    return this.http.post(url, asset).pipe(
+      map(response => {
+        this.creatingAsset.next(response);
+
+        data['change'] = 'data';
+        data['type'] = 'start';
+        data['data'] = [response];
+        this.assets = data;
+      }),
+      catchError(error => {
+        this.creatingAsset.error({ asset, error });
+        return error;
+      }),
+    );
+  }
+
+  async createEvents(events: Object[]): Promise<any> {
+    const data = { created: [], errors: [] };
+
+    try {
+      await events.map(async (event: any, index, array) => {
+        const url = `${this.api.core}/assets/${
+          event.content.idData.assetId
+        }/events`;
+        const eventCreated = await this.to(this.http.post(url, event));
+        if (eventCreated.error) {
+          data.errors.push({ event, error: eventCreated.error });
+          this.creatingEvent.error({ event, error: eventCreated.error });
+        } else {
+          data.created.push(eventCreated);
+          this.creatingEvent.next(eventCreated);
         }
 
         if (index === array.length - 1) {
-          data['change'] = 'data';
-          data['type'] = 'start';
-          data['data'] = data.created;
-          this.assets = data;
+          // Update _events
+          const eventsData = this._events.getValue().data;
+          if (eventsData && eventsData.length) {
+            data['change'] = 'data';
+            data['type'] = 'start';
+            data['data'] = data.created;
+            this.events = data;
+          }
+
+          // Update _assets
+          let assetsData = this._assets.getValue().data;
+          assetsData = assetsData.map(asset => {
+            const assetEvents = data.created.filter(
+              _event => asset.assetId === _event.content.idData.assetId,
+            );
+            const infoEvent = this.findEvent('info', assetEvents);
+            if (infoEvent) {
+              asset['infoEvent'] = infoEvent;
+            }
+            return asset;
+          });
+          const options = { change: 'data', type: 'all', data: assetsData };
+
+          this.assets = options;
         }
       });
 
-      observer.complete();
-    });
-  }
-
-  createEvents(events: Object[]): Observable<any> {
-    const data = { created: [], errors: [] };
-
-    return new Observable(observer => {
-      try {
-        events.map(async (event: any, index, array) => {
-          const url = `${this.api.core}/assets/${
-            event.content.idData.assetId
-          }/events`;
-          const eventCreated = await this.to(this.http.post(url, event));
-          if (eventCreated.error) {
-            data.errors.push({ event, error: eventCreated.error });
-            observer.error({ event, error: eventCreated.error });
-          }
-          if (eventCreated) {
-            data.created.push(eventCreated);
-            observer.next(eventCreated);
-          }
-
-          if (index === array.length - 1) {
-            // Update _events
-            const eventsData = this._events.getValue().data;
-            if (eventsData && eventsData.length) {
-              data['change'] = 'data';
-              data['type'] = 'start';
-              data['data'] = data.created;
-              this.events = data;
-            }
-
-            // Update _assets
-            let assetsData = this._assets.getValue().data;
-            assetsData = assetsData.map(asset => {
-              const assetEvents = data.created.filter(
-                _event => asset.assetId === _event.content.idData.assetId,
-              );
-              const infoEvent = this.findEvent('info', assetEvents);
-              if (infoEvent) {
-                asset['infoEvent'] = infoEvent;
-              }
-              return asset;
-            });
-            const options = { change: 'data', type: 'all', data: assetsData };
-
-            this.assets = options;
-          }
-        });
-
-        observer.complete();
-      } catch (e) {
-        observer.error(e);
-        observer.complete();
-      }
-    });
+      return Promise.resolve(data);
+    } catch (e) {
+      return Promise.reject(data);
+    }
   }
 
   // UTILS
