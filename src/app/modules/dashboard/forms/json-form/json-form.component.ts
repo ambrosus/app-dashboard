@@ -27,12 +27,6 @@ export class JsonFormComponent implements OnInit {
 
   ngOnInit() {}
 
-  to(O: Observable<any>) {
-    return O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-  }
-
   cancel() {
     this.router.navigate([`${location.pathname}`]);
   }
@@ -192,42 +186,31 @@ export class JsonFormComponent implements OnInit {
       const asset = this.generateAsset();
       const infoEvent = this.generateEvents(json, [asset.assetId]);
 
-      let [error, created] = await this.to(
-        this.assetsService.createAssets([asset]),
+      this.assetsService.createAssets([asset]).subscribe(
+        response => console.log('[CREATE] Asset: ', response),
+        error => console.error('[CREATE] Asset: ', error),
+        () => {
+          this.sequenceNumber += 1;
+          this.assetsService
+            .createEvents(infoEvent)
+            .subscribe(
+              response => console.log('[CREATE] Event: ', response),
+              error => console.error('[CREATE] Event: ', error),
+              () => (this.success = 'Success'),
+            );
+        },
       );
-      if (error) {
-        console.error('[CREATE] Asset: ', error);
-      }
-      if (created) {
-        console.log('[CREATE] Event: ', created);
-        this.success = 'Success';
-        this.sequenceNumber += 1;
-      }
-
-      [error, created] = await this.to(
-        this.assetsService.createEvents(infoEvent),
-      );
-      if (error) {
-        console.error('[CREATE] Asset: ', error);
-      }
-      if (created) {
-        console.log('[CREATE] Event: ', created);
-      }
     } else {
       // Edit or add events
       const events = this.generateEvents(json);
 
-      const [error, created] = await this.to(
-        this.assetsService.createEvents(events),
-      );
-      if (error) {
-        console.error('[CREATE] Events: ', error);
-        this.error = 'Creating events failed';
-      }
-      if (created) {
-        console.log('[CREATE] Events: ', created);
-        this.success = 'Success';
-      }
+      this.assetsService
+        .createEvents(events)
+        .subscribe(
+          response => console.log('[CREATE] Event: ', response),
+          error => console.error('[CREATE] Event: ', error),
+          () => (this.success = 'Success'),
+        );
     }
   }
 }

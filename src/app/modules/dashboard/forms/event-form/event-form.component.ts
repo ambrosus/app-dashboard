@@ -57,12 +57,6 @@ export class EventFormComponent implements OnInit {
     this.initForm();
   }
 
-  to(O: Observable<any>) {
-    return O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-  }
-
   cancel() {
     this.router.navigate([`${location.pathname}`]);
   }
@@ -367,16 +361,12 @@ export class EventFormComponent implements OnInit {
     const events = [];
     this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
 
-    const [error, created] = await this.to(
-      this.assetsService.createEvents(events),
-    );
-    if (error) {
-      console.error('[CREATE] Events: ', error);
-      this.error = 'Creating events failed';
-    }
-    if (created) {
-      console.log('[CREATE] Events: ', created);
-      this.success = 'Success';
-    }
+    this.assetsService
+      .createEvents(events)
+      .subscribe(
+        response => console.log('[CREATE] Event: ', response),
+        error => console.error('[CREATE] Event: ', error),
+        () => (this.success = 'Success'),
+      );
   }
 }

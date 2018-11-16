@@ -58,12 +58,6 @@ export class AssetFormComponent implements OnInit {
     this.initForm();
   }
 
-  to(O: Observable<any>) {
-    return O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-  }
-
   cancel() {
     this.router.navigate([`${location.pathname}`]);
   }
@@ -308,26 +302,19 @@ export class AssetFormComponent implements OnInit {
     const asset = this.generateAsset();
     const infoEvent = this.generateInfoEvent(asset.assetId);
 
-    let [error, created] = await this.to(
-      this.assetsService.createAssets([asset]),
+    this.assetsService.createAssets([asset]).subscribe(
+      response => console.log('[CREATE] Asset: ', response),
+      error => console.error('[CREATE] Asset: ', error),
+      () => {
+        this.sequenceNumber += 1;
+        this.assetsService
+          .createEvents([infoEvent])
+          .subscribe(
+            response => console.log('[CREATE] Event: ', response),
+            error => console.error('[CREATE] Event: ', error),
+            () => (this.success = 'Success'),
+          );
+      },
     );
-    if (error) {
-      console.error('[CREATE] Asset: ', error);
-    }
-    if (created) {
-      console.log('[CREATE] Event: ', created);
-      this.success = 'Success';
-      this.sequenceNumber += 1;
-    }
-
-    [error, created] = await this.to(
-      this.assetsService.createEvents([infoEvent]),
-    );
-    if (error) {
-      console.error('[CREATE] Asset: ', error);
-    }
-    if (created) {
-      console.log('[CREATE] Event: ', created);
-    }
   }
 }

@@ -30,27 +30,21 @@ export class AuthService implements OnDestroy {
     this.api = environment.api;
   }
 
-  to(O: Observable<any>) {
-    return O.toPromise()
-      .then(response => [null, response])
-      .catch(error => [error]);
-  }
-
   ngOnDestroy() {}
 
   isLoggedIn(): Boolean {
-    const account = <any>this.storageService.get('account');
+    const account = <any>this.storageService.get('account') || {};
     const secret = this.storageService.get('secret');
 
-    return account && account.address && secret ? true : false;
+    return !!(account.address && secret);
   }
 
-  getToken(): String {
+  getToken(): String | null {
     const secret = this.storageService.get('secret');
     const validUntil = moment()
       .add(5, 'days')
       .unix();
-    return secret ? this.sdk.getToken(secret, validUntil) : '';
+    return secret ? this.sdk.getToken(secret, validUntil) : null;
   }
 
   verifyAccount(privateKey: String): Observable<any> {
@@ -80,7 +74,7 @@ export class AuthService implements OnDestroy {
               password,
             );
             if (!address) {
-              return throwError({ meta: { message: 'Password is incorrect' } });
+              return throwError({ message: 'Password is incorrect' });
             }
 
             this.storageService.set('secret', privateKey);
