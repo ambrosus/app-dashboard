@@ -42,7 +42,6 @@
         <div class="table__options" appClickThisActive>
           <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <li routerLink="{{ _account.address }}">Info</li>
             <li
               *ngIf="account._id !== _account._id"
               (click)="
@@ -86,7 +85,6 @@
         <div class="table__options" appClickThisActive>
           <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <li routerLink="{{ _account.address }}">Info</li>
             <li
               (click)="
                 actions('accountEdit', {

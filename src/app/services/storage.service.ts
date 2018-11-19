@@ -5,17 +5,18 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
   namespace = 'amb_';
+  storage = sessionStorage;
 
-  constructor() { }
+  constructor() {}
 
   // localStorage wrapper
   set(key, value) {
-    localStorage.setItem(`${this.namespace}${key}`, JSON.stringify(value));
+    this.storage.setItem(`${this.namespace}${key}`, JSON.stringify(value));
   }
 
   put(key, value) {
     if (!this.get(key)) {
-      localStorage.setItem(`${this.namespace}${key}`, JSON.stringify(value));
+      this.storage.setItem(`${this.namespace}${key}`, JSON.stringify(value));
     } else {
       return false;
     }
@@ -23,17 +24,17 @@ export class StorageService {
 
   get(key): string {
     try {
-      return JSON.parse(localStorage.getItem(`${this.namespace}${key}`));
+      return JSON.parse(this.storage.getItem(`${this.namespace}${key}`));
     } catch (err) {
-      return localStorage.getItem(`${this.namespace}${key}`);
+      return this.storage.getItem(`${this.namespace}${key}`);
     }
   }
 
   delete(key) {
-    localStorage.removeItem(`${this.namespace}${key}`);
+    this.storage.removeItem(`${this.namespace}${key}`);
   }
 
   clear() {
-    localStorage.clear();
+    this.storage.clear();
   }
 }

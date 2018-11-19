@@ -64,7 +64,7 @@ export class GeneralComponent implements OnInit {
     this.error = false;
     this.success = false;
     const form = this.editAccountForm;
-    const data = form.value;
+    const _data = form.value;
     const secret = this.storageService.get('secret');
     const body = {};
 
@@ -72,28 +72,28 @@ export class GeneralComponent implements OnInit {
       return (this.error = 'Form is invalid');
     }
 
-    Object.keys(data).map(property => {
-      if (data[property]) {
-        body[property] = data[property];
+    Object.keys(_data).map(property => {
+      if (_data[property]) {
+        body[property] = _data[property];
       }
     });
 
-    if (data.password) {
+    if (_data.password) {
       body['token'] = btoa(
-        JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)),
+        JSON.stringify(this.web3.eth.accounts.encrypt(secret, _data.password)),
       );
     }
 
-    this.accountsService
-      .modifyAccount(this.account.address, body)
-      .then(account => {
+    this.accountsService.modifyAccount(this.account.address, body).subscribe(
+      ({ data }: any) => {
         this.success = 'Updated';
-        this.storageService.set('account', account);
-        this.accountsService._account.next(account);
-      })
-      .catch(err => {
-        console.error('[MODIFY] Account: ', err);
-        this.error = err ? err.message : 'Edit account error';
-      });
+        this.storageService.set('account', data);
+        this.accountsService._account.next(data);
+      },
+      error => {
+        console.error('[MODIFY] Account: ', error);
+        this.error = error ? error.message : 'Edit account error';
+      },
+    );
   }
 }

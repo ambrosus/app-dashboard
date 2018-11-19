@@ -24,7 +24,7 @@ label {
   &.error {
     color: $dark-red;
 
-    input:not([type="checkbox"]),
+    input:not([type='checkbox']),
     .input,
     textarea {
       box-shadow: 0 1px $dark-red;
@@ -118,7 +118,7 @@ label {
   }
 }
 
-input:not([type="checkbox"]),
+input:not([type='checkbox']),
 .input,
 textarea {
   font-family: 'Rubiko', sans-serif;
@@ -133,7 +133,7 @@ textarea {
   font-size: 13px;
   line-height: 1.15;
   text-align: left;
-  transition: all .2s;
+  transition: all 0.2s;
   padding-right: 25px;
 
   &:focus {
@@ -176,7 +176,7 @@ textarea {
       background-repeat: no-repeat;
       opacity: 0;
       transform: scale(0);
-      transition: all .2s;
+      transition: all 0.2s;
     }
   }
 
@@ -197,4 +197,8 @@ select:-webkit-autofill {
   background-image: none !important;
   color: rgb(0, 0, 0) !important;
   padding: 10px;
+}
+
+[disabled] + * {
+  opacity: 0.25;
 }

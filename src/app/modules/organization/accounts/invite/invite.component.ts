@@ -59,16 +59,16 @@ export class InviteComponent implements OnInit {
 
     const body = { email };
 
-    if (body.email.length) {
-      this.organizationsService
-        .createInvites(body)
-        .then((invitesCreated: any) => {
-          this.success = 'Invites sent';
-          console.log('[CREATE] Invites: ', invitesCreated);
-        })
-        .catch(error => console.error('[CREATE] Invites: ', error));
-    } else {
+    if (!body.email.length) {
       this.error = 'Send at least one invite';
     }
+
+    this.organizationsService.createInvites(body).subscribe(
+      ({ data }: any) => {
+        this.success = 'Invites sent';
+        console.log('[CREATE] Invites: ', data);
+      },
+      error => console.error('[CREATE] Invites: ', error),
+    );
   }
 }

@@ -18,13 +18,15 @@ export class JsonFormComponent implements OnInit {
   @Input() assetIds: String[];
   @Input() for: 'assets';
 
-  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
-
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
   ) {}
+
+  to(P: Promise<any>) {
+    return P.then(response => response).catch(error => ({ error }));
+  }
 
   ngOnInit() {}
 
@@ -187,42 +189,28 @@ export class JsonFormComponent implements OnInit {
       const asset = this.generateAsset();
       const infoEvent = this.generateEvents(json, [asset.assetId]);
 
-      let [error, created] = await this.to(
-        this.assetsService.createAssets([asset]),
-      );
-      if (error) {
-        console.error('[CREATE] Asset: ', error);
-      }
-      if (created) {
-        console.log('[CREATE] Event: ', created);
-        this.success = 'Success';
-        this.sequenceNumber += 1;
-      }
+      console.log('Creating asset');
+      this.assetsService.createAsset(asset).subscribe(
+        async response => {
+          this.sequenceNumber += 1;
 
-      [error, created] = await this.to(
-        this.assetsService.createEvents(infoEvent),
+          console.log('Creating event');
+          const eventsCreated = await this.to(
+            this.assetsService.createEvents(infoEvent),
+          );
+          this.success = 'Success';
+        },
+        error => (this.error = 'Asset creation failed, aborting'),
       );
-      if (error) {
-        console.error('[CREATE] Asset: ', error);
-      }
-      if (created) {
-        console.log('[CREATE] Event: ', created);
-      }
     } else {
       // Edit or add events
       const events = this.generateEvents(json);
 
-      const [error, created] = await this.to(
+      console.log('Creating events');
+      const eventsCreated = await this.to(
         this.assetsService.createEvents(events),
       );
-      if (error) {
-        console.error('[CREATE] Events: ', error);
-        this.error = 'Creating events failed';
-      }
-      if (created) {
-        console.log('[CREATE] Events: ', created);
-        this.success = 'Success';
-      }
+      this.success = 'Success';
     }
   }
 }

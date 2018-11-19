@@ -1,56 +1,81 @@
 <div *ngIf="account">
   <h4 class="m-v-10">{{ account.email }}</h4>
   <p class="m-b-20">{{ account.address }}</p>
-  <hr class="m-b-20">
+  <hr class="m-b-20" />
   <form [formGroup]="forms.account" (ngSubmit)="modifyAccount()">
-    <label>Public key
-      <input formControlName="address" type="text">
-    </label>
-    <label>Name
-      <input formControlName="fullName" type="text">
-    </label>
-    <label>Email
-      <input formControlName="email" type="email">
-    </label>
-    <label for="timeZone">Time Zone
-      <input formControlName="timeZone" list="timezones" id="timeZone">
+    <label>Public key <input formControlName="address" type="text" /> </label>
+    <label>Name <input formControlName="fullName" type="text" /> </label>
+    <label>Email <input formControlName="email" type="email" /> </label>
+    <label for="timeZone"
+      >Time Zone
+      <input formControlName="timeZone" list="timezones" id="timeZone" />
       <datalist id="timezones">
         <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+        </option>
       </datalist>
     </label>
     <div class="flex flex-direction-r justify-content-fe align-items-c">
-      <button type="submit" [disabled]="forms.account.invalid">Modify account</button>
+      <button type="submit" [disabled]="forms.account.invalid">
+        Modify account
+      </button>
     </div>
   </form>
-  <hr style="margin: 40px 0">
+  <hr style="margin: 40px 0" />
   <h2 style="color: orangered">Danger zone</h2>
   <p>You can add or remove users permissions and access level.</p>
   <p>If you uncheck all permissions, you will disable this user.</p>
   <form [formGroup]="forms.accountPermissions" (ngSubmit)="modifyPermissions()">
-    <label>Access level
-      <input formControlName="accessLevel" type="number" min="0">
+    <label
+      >Access level
+      <input formControlName="accessLevel" type="number" min="0" />
     </label>
     <div formGroupName="permissions">
       <h4>Permissions</h4>
       <label>
-        <input type="checkbox" formControlName="manage_accounts" appCustomCheckbox>
+        <input
+          type="checkbox"
+          formControlName="super_account"
+          appCustomCheckbox
+        />
+        Super account
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          formControlName="manage_accounts"
+          appCustomCheckbox
+        />
         Manage accounts
       </label>
       <label>
-        <input type="checkbox" formControlName="register_accounts" appCustomCheckbox>
+        <input
+          type="checkbox"
+          formControlName="register_accounts"
+          appCustomCheckbox
+        />
         Register accounts
       </label>
       <label>
-        <input type="checkbox" formControlName="create_event" appCustomCheckbox>
+        <input
+          type="checkbox"
+          formControlName="create_event"
+          appCustomCheckbox
+        />
         Create events
       </label>
       <label>
-        <input type="checkbox" formControlName="create_asset" appCustomCheckbox>
+        <input
+          type="checkbox"
+          formControlName="create_asset"
+          appCustomCheckbox
+        />
         Create assets
       </label>
     </div>
     <div class="flex flex-direction-r justify-content-fe align-items-c">
-      <button type="submit" [disabled]="forms.accountPermissions.invalid">Modify permissions</button>
+      <button type="submit" [disabled]="forms.accountPermissions.invalid">
+        Modify permissions
+      </button>
     </div>
   </form>
 </div>

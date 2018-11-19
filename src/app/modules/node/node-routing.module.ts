@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { NodeOutletComponent } from './node-outlet/node-outlet.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { AccountsComponent } from './accounts/accounts.component';
 import { OrganizationsComponent } from './organizations/organizations.component';
+import { OrganizationComponent } from './organization/organization.component';
 
 const routes: Routes = [
   {
@@ -20,15 +20,8 @@ const routes: Routes = [
         component: OrganizationsComponent,
       },
       {
-        path: 'accounts',
-        data: { permissions: ['manage_accounts'] },
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            component: AccountsComponent,
-          },
-        ],
+        path: 'organizations/:organizationId',
+        component: OrganizationComponent,
       },
     ],
   },
@@ -38,4 +31,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class NodeRoutingModule { }
+export class NodeRoutingModule {}

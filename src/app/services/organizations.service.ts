@@ -1,6 +1,29 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+interface Organization {
+  _id?: String;
+  owner?: String;
+  title?: String;
+  timeZone?: String;
+  active?: Boolean;
+  legalAddress?: String;
+  createdOn?: Number;
+  createdBy?: String;
+  organizationId?: Number;
+  modifiedBy?: String;
+  modifiedOn?: Number;
+}
+
+interface OrganizationRequest {
+  title: String;
+  address: String;
+  email: String;
+  message: String;
+}
 
 @Injectable()
 export class OrganizationsService {
@@ -10,150 +33,95 @@ export class OrganizationsService {
     this.api = environment.api;
   }
 
-  getOrganizations(next = '') {
+  getOrganizations(next: String = ''): Observable<any> {
     const url = `${this.api.extended}/organization?next=${next}`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .get(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  getOrganization(organizationId) {
+  getOrganization(organizationId: Number): Observable<any> {
     const url = `${this.api.extended}/organization/${organizationId}`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .get(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  modifyOrganization(organizationId, body) {
+  modifyOrganization(
+    organizationId: Number,
+    body: Organization,
+  ): Observable<any> {
     const url = `${this.api.extended}/organization/${organizationId}`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .put(url, body)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.put(url, body).pipe(catchError(({ meta }: any) => meta));
   }
 
-  getOrganizationAccounts(organizationId) {
+  getOrganizationAccounts(organizationId: Number): Observable<any> {
     const url = `${this.api.extended}/organization/${organizationId}/accounts`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .get(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
   // Organization requests
 
-  createOrganizationRequest(body) {
-    const url = '${this.api.extended}/organization/request';
+  createOrganizationRequest(body: OrganizationRequest): Observable<any> {
+    const url = `${this.api.extended}/organization/request`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(url, body)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
+  }
+
+  getOrganizationRequests(next: String = ''): Observable<any> {
+    const url = `${this.api.extended}/organization/request?next=${next}`;
+
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+  }
+
+  handleOrganizationRequest(
+    organizationRequestId: String,
+    approved: Boolean,
+  ): Observable<any> {
+    const url = `${
+      this.api.extended
+    }/organization/request/${organizationRequestId}/${
+      approved ? 'approve' : 'refuse'
+    }`;
+
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
   // Organization invites
 
-  getInvites(next = '') {
+  getInvites(next: String = ''): Observable<any> {
     const url = `${this.api.extended}/organization/invite?next=${next}`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .get(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  createInvites(body: { email: any[] }) {
+  createInvites(body: { email: any[] }): Observable<any> {
     const url = `${this.api.extended}/organization/invite`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(url, body)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
   }
 
-  resendInvites(body: { email: any[] }) {
+  resendInvites(body: { email: any[] }): Observable<any> {
     const url = `${this.api.extended}/organization/invite/resend`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(url, body)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
   }
 
-  verifyInvite(inviteId: String) {
+  verifyInvite(inviteId: String): Observable<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}/exists`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .get(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  acceptInvite(inviteId: String, body: { address: String }) {
+  acceptInvite(inviteId: String, body: { address: String }): Observable<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}/accept`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(url, body)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
   }
 
-  deleteInvite(inviteId: String) {
+  deleteInvite(inviteId: String): Observable<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}`;
 
-    return new Promise((resolve, reject) => {
-      this.http
-        .delete(url)
-        .subscribe(
-          ({ data }: any) => resolve(data),
-          ({ meta }) => reject(meta),
-        );
-    });
+    return this.http.delete(url).pipe(catchError(({ meta }: any) => meta));
   }
 }

@@ -1,0 +1,29 @@
+<div *ngIf="organization">
+  <h4 class="m-v-10">{{ organization.title }}</h4>
+  <p class="m-b-20">{{ organizationId }}</p>
+  <hr class="m-b-20" />
+  <form [formGroup]="forms.organization" (ngSubmit)="modifyOrganization()">
+    <label>Title <input formControlName="title" type="text" /> </label>
+    <label
+      >Legal address <input formControlName="legalAddress" type="text" />
+    </label>
+    <label>Owner <input formControlName="owner" type="text" /> </label>
+    <label for="timeZone"
+      >Time Zone
+      <input formControlName="timeZone" list="timezones" id="timeZone" />
+      <datalist id="timezones">
+        <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+        </option>
+      </datalist>
+    </label>
+    <label>
+      <input type="checkbox" formControlName="active" appCustomCheckbox />
+      Active
+    </label>
+    <div class="flex flex-direction-r justify-content-fe align-items-c">
+      <button type="submit" [disabled]="forms.organization.invalid">
+        Modify organization
+      </button>
+    </div>
+  </form>
+</div>

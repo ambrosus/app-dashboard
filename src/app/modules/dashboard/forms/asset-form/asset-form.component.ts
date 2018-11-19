@@ -1,15 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-form',
   templateUrl: './asset-form.component.html',
   styleUrls: ['./asset-form.component.scss'],
 })
-export class AssetFormComponent implements OnInit {
+export class AssetFormComponent implements OnInit, OnDestroy {
+  subs: Subscription[] = [];
   assetForm: FormGroup;
   error;
   success;
@@ -46,7 +48,6 @@ export class AssetFormComponent implements OnInit {
   isObject(value) {
     return typeof value === 'object';
   }
-  to = (p: Promise<any>) => p.then(data => [null, data]).catch(err => [err]);
 
   constructor(
     private storageService: StorageService,
@@ -54,8 +55,26 @@ export class AssetFormComponent implements OnInit {
     private router: Router,
   ) {}
 
+  to(P: Promise<any>) {
+    return P.then(response => response).catch(error => ({ error }));
+  }
+
   ngOnInit() {
     this.initForm();
+
+    this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
+      response => console.log('[CREATE] Asset: ', response),
+      error => console.error('[CREATE] Asset: ', error),
+    );
+
+    this.subs[this.subs.length] = this.assetsService.creatingEvent.subscribe(
+      response => console.log('[CREATE] Event: ', response),
+      error => console.error('[CREATE] Event: ', error),
+    );
+  }
+
+  ngOnDestroy() {
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   cancel() {
@@ -302,26 +321,18 @@ export class AssetFormComponent implements OnInit {
     const asset = this.generateAsset();
     const infoEvent = this.generateInfoEvent(asset.assetId);
 
-    let [error, created] = await this.to(
-      this.assetsService.createAssets([asset]),
-    );
-    if (error) {
-      console.error('[CREATE] Asset: ', error);
-    }
-    if (created) {
-      console.log('[CREATE] Event: ', created);
-      this.success = 'Success';
-      this.sequenceNumber += 1;
-    }
+    console.log('Creating asset');
+    this.assetsService.createAsset(asset).subscribe(
+      async response => {
+        this.sequenceNumber += 1;
 
-    [error, created] = await this.to(
-      this.assetsService.createEvents([infoEvent]),
+        console.log('Creating event');
+        const eventsCreated = await this.to(
+          this.assetsService.createEvents([infoEvent]),
+        );
+        this.success = 'Success';
+      },
+      error => (this.error = 'Asset creation failed, aborting'),
     );
-    if (error) {
-      console.error('[CREATE] Asset: ', error);
-    }
-    if (created) {
-      console.log('[CREATE] Event: ', created);
-    }
   }
 }

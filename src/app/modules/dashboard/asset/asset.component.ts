@@ -28,8 +28,12 @@ export class AssetComponent implements OnInit, OnDestroy {
   isArray = Array.isArray;
   stringify = JSON.stringify;
 
-  isObject(value) { return typeof value === 'object'; }
-  valueJSON(value) { return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, ''); }
+  isObject(value) {
+    return typeof value === 'object';
+  }
+  valueJSON(value) {
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -37,33 +41,53 @@ export class AssetComponent implements OnInit, OnDestroy {
     public assetsService: AssetsService,
     public dialog: MatDialog,
     private router: Router,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(({ asset }: any) => this.asset = asset.data[0]);
-    this.routeParamsSub = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
+    this.routeSub = this.route.data.subscribe(
+      ({ asset }: any) => (this.asset = asset),
+    );
+    this.routeParamsSub = this.route.params.subscribe(
+      ({ assetid }: any) => (this.assetId = assetid),
+    );
     this.navigationSub = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) { if (this.dialogRef) { this.dialogRef.close(); } }
+      if (e instanceof NavigationEnd) {
+        if (this.dialogRef) {
+          this.dialogRef.close();
+        }
+      }
     });
-    this.assetsService.events.subscribe(events => this.timeline = events && events.data && events.data.length);
+    this.assetsService.events.subscribe(
+      events => (this.timeline = events && events.data && events.data.length),
+    );
 
     this.account = <any>this.storageService.get('account') || {};
 
     try {
       this.previewAppUrl = this.account.organization.settings.preview_app;
-    } catch (e) { this.previewAppUrl = 'https://amb.to'; }
+    } catch (e) {
+      this.previewAppUrl = 'https://amb.to';
+    }
   }
 
   ngOnDestroy() {
-    if (this.routeSub) { this.routeSub.unsubscribe(); }
-    if (this.routeParamsSub) { this.routeParamsSub.unsubscribe(); }
-    if (this.navigationSub) { this.navigationSub.unsubscribe(); }
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
+    if (this.routeParamsSub) {
+      this.routeParamsSub.unsubscribe();
+    }
+    if (this.navigationSub) {
+      this.navigationSub.unsubscribe();
+    }
   }
 
   JSONparse(value) {
     try {
       return JSON.parse(value);
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   }
 
   downloadQR(el: any) {
@@ -90,6 +114,8 @@ export class AssetComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.dialogRef.afterClosed().subscribe(result => console.log('Event add dialog was closed'));
+    this.dialogRef
+      .afterClosed()
+      .subscribe(result => console.log('Event add dialog was closed'));
   }
 }

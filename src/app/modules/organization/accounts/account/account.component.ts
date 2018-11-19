@@ -29,9 +29,10 @@ export class AccountComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.params.subscribe(params => {
+    this.subs[this.subs.length] = this.route.params.subscribe(async params => {
       this.address = params.address;
-      this.getAccount();
+      await this.getAccount();
+      this.initForms();
       this.timezones = moment.tz.names();
     });
   }
@@ -53,86 +54,91 @@ export class AccountComponent implements OnInit, OnDestroy {
         Validators.required,
       ]),
       permissions: new FormGroup({
+        super_account: new FormControl({ value: null, disabled: true }),
         manage_accounts: new FormControl(null),
         register_accounts: new FormControl(null),
         create_event: new FormControl(null),
         create_asset: new FormControl(null),
       }),
     });
-    this.account.permissions.map(permission =>
-      this.forms.accountPermissions
-        .get('permissions')
-        .get(permission)
-        .setValue(true),
-    );
+    try {
+      this.account.permissions.map(permission =>
+        this.forms.accountPermissions
+          .get('permissions')
+          .get(permission)
+          .setValue(true),
+      );
+    } catch (e) {}
   }
 
   getAccount() {
-    this.accountsService
-      .getAccount(this.address)
-      .then(account => {
-        console.log('[GET] Account: ', account);
-        this.account = account;
-        this.initForms();
-      })
-      .catch(err => this.router.navigate(['/organization/accounts']));
+    return new Promise((resolve, reject) => {
+      this.accountsService.getAccount(this.address).subscribe(
+        ({ data }: any) => {
+          console.log('[GET] Account: ', data);
+          this.account = data;
+          resolve();
+        },
+        error => this.router.navigate(['/organization/accounts']),
+      );
+    });
   }
 
   modifyAccount() {
     this.error = false;
     this.success = false;
     const form = this.forms.account;
-    const data = form.value;
+    const _data = form.value;
     const body = {};
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(data).map(property => {
-      if (data[property]) {
-        body[property] = data[property];
+    Object.keys(_data).map(property => {
+      if (_data[property]) {
+        body[property] = _data[property];
       }
     });
 
-    this.accountsService
-      .modifyAccount(this.account.address, body)
-      .then(account => {
-        console.log('[MODIFY] Account ', account);
+    this.accountsService.modifyAccount(this.account.address, body).subscribe(
+      ({ data }: any) => {
+        console.log('[MODIFY] Account ', data);
         this.getAccount();
-      })
-      .catch(err => {
-        console.error('[MODIFY] Account: ', err);
+      },
+      error => {
+        console.error('[MODIFY] Account: ', error);
         this.error = 'Account update failed';
-      });
+      },
+    );
   }
 
   modifyPermissions() {
     this.error = false;
     this.success = false;
     const form = this.forms.accountPermissions;
-    const data = form.value;
-    const body = { accessLevel: data.accessLevel, permissions: [] };
+    const _data = form.value;
+    const body = { accessLevel: _data.accessLevel, permissions: [] };
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(data.permissions).map(permission => {
-      if (data.permissions[permission]) {
+    Object.keys(_data.permissions).map(permission => {
+      if (_data.permissions[permission]) {
         body.permissions.push(permission);
       }
     });
 
-    this.accountsService
-      .modifyAccount(this.account.address, body)
-      .then(account => {
-        console.log('[MODIFY] Account ', account);
+    this.accountsService.modifyAccount(this.account.address, body).subscribe(
+      ({ data }: any) => {
+        console.log('[MODIFY] Account ', data);
         this.getAccount();
-      })
-      .catch(err => {
-        console.error('[MODIFY] Account: ', err);
+      },
+      error => {
+        console.error('[MODIFY] Account: ', error);
         this.error = 'Account update failed';
-      });
+      },
+    );
   }
 }
