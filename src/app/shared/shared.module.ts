@@ -6,8 +6,8 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { InputDirective } from 'app/shared/directives/input.directive';
 import { RouterModule } from '@angular/router';
 import { ImageCropperModule } from 'ngx-image-cropper';
@@ -34,11 +34,21 @@ import { FooterComponent } from './components/footer/footer.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
-import { IconLeftDirective, IconRightDirective } from './directives/icon.directive';
+import {
+  IconLeftDirective,
+  IconRightDirective,
+} from './directives/icon.directive';
 import { ErrorDirective } from './directives/error.directive';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, HttpClientModule, MatDialogModule, FormsModule, ImageCropperModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    HttpClientModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    ImageCropperModule,
+  ],
   exports: [
     CommonModule,
     InputDirective,
@@ -96,4 +106,4 @@ import { ErrorDirective } from './directives/error.directive';
   ],
   entryComponents: [EventAddComponent],
 })
-export class SharedModule { }
+export class SharedModule {}

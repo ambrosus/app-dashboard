@@ -5,205 +5,107 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-@import 'var';
+@import 'utils';
 
-.header {
+app-header {
   position: relative;
-  z-index: 960;
-  height: 60px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
-  background: $ablue;
-
-  a {
-    color: #fff;
-  }
-
-  &-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    color: #fff;
-  }
-
-  &-menu {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 100%;
-    color: #fff;
-
-    &__item {
-      margin-right: 14px;
-      position: relative;
-
-      &:last-child {
-        margin-right: 0;
-      }
-
-      &.dropdown {
-        padding-left: 40px;
-
-        .avatar {
-          position: absolute;
-          left: 0;
-          top: 50%;
-          margin-top: -16px;
-        }
-      }
-    }
-  }
-}
-
-.header__profile-icon {
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: $ablue;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: capitalize;
-  color: #fff;
-}
-
-.menu-mobile {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  width: 100%;
-  background: #fff;
-  z-index: 99;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.menu-mobile__item {
-  font-weight: 500;
-  padding: 17px;
-  cursor: pointer;
-  line-height: 1.2;
-  word-break: break-word;
-  border-bottom: 1px solid #f1f1f1;
-  text-align: center;
-  font-size: 14px;
-
-  &.current {
-    background-color: #f6f8fe;
-  }
-
-  &.separator {
-    border-bottom: 1px solid #ddd;
-  }
-
-  &.section {
-    background-color: #fafafa;
-  }
-}
-
-.menu-mobile__item__button {
-  background: $aorange;
-  color: #fff;
-}
-
-.header-submenu__item {
-  color: grey;
-  height: 100%;
-  line-height: 50px;
-  padding: 0 10px;
-  cursor: default;
-  user-select: none;
-
-  &.active {
-    color: $ablue;
-  }
-
-  & span {
-    padding: 0;
-    height: 100%;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  max-width: 300px;
-  height: 100%;
+  height: 80px;
+  padding: 20px;
   background-color: #fff;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  transform: translateX(-100%);
-  transition: transform .3s;
+  width: 100%;
+  transition: all 0.1s;
 
-  &.active {
-    transform: translateX(0);
-    box-shadow: 6px 0px 20px 0px rgba(0, 0, 0, .1);
-  }
-
-  &__menu {
-    padding: 30px;
-
-    li {
-      a {
-        display: inline-block;
-        width: 100%;
-        padding: 9px 0;
-        color: #545454;
-
-        &.active {
-          color: $ablue;
-        }
-
-        svg {
-          width: 20px;
-          height: 20px;
-          margin-right: 14px;
-        }
-      }
-    }
-  }
-
-  &__header {
+  .wrapper {
+    width: 100%;
+    max-width: 1440px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #f1f1f1;
+    padding: 0;
+
+    > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .logo {
+    display: inline-block;
+    width: 125px;
+    height: 40px;
+    background-image: url('/assets/raster/logo-header-dark.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 42px;
+    color: #fff;
+    background-color: $light-blue;
+    border: none;
+    text-transform: uppercase;
+  }
+
+  @include breakpoint-min(1200) {
+    padding: 20px 84px;
+
+    nav {
+      display: inline-block;
+      margin-left: 92px;
+
+      ul {
+        li {
+          display: inline-block;
+          margin-right: 24px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          a {
+            font-weight: 500;
+            color: $black;
+
+            &.active {
+              color: $blue;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
-.overlay {
-  content: '';
-  display: block;
-  position: fixed;
-  background: rgba(0, 0, 0, .25);
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 90000;
-  animation: fadeIn .3s;
+.organization,
+.settings,
+.node {
+  app-header {
+    background: $purple-blue;
+
+    .logo {
+      background-image: url('/assets/raster/logo-header-light.png');
+    }
+
+    @include breakpoint-min(1200) {
+      nav {
+        ul {
+          li {
+            a {
+              color: $grey;
+
+              &.active {
+                color: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

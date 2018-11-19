@@ -7,9 +7,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
-import { Router, NavigationStart } from '@angular/router';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-header',
@@ -18,47 +18,57 @@ import { Subscription } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  accountSub: Subscription;
-  navSub: Subscription;
+  subs: Subscription[] = [];
+  forms: {
+    search?: FormGroup;
+  } = {};
   isLoggedin;
-  greeting = 'Hi, welcome!';
   account;
-  overlay = false;
-  sidebar;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private accountsService: AccountsService,
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.navSub = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationStart) {
-        this.sidebar = false;
-      }
-    });
-
-    this.accountSub = this.accountsService._account.subscribe(
-      (account: any) => {
+    this.subs[this.subs.length] = this.accountsService._account.subscribe(
+      account => {
         this.account = account;
-        this.greeting = account.fullName || account.email || 'Hi, welcome!';
         this.isLoggedin = this.authService.isLoggedIn();
         console.log('[GET] Account (header): ', this.account);
       },
     );
+
+    this.initSearchForm();
   }
 
   ngOnDestroy() {
-    if (this.accountSub) { this.accountSub.unsubscribe(); }
-    if (this.navSub) { this.navSub.unsubscribe(); }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
-  logout() { this.authService.logout(); }
+  initSearchForm() {
+    this.forms.search = new FormGroup({
+      input: new FormControl(null, [Validators.required]),
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+  }
 
   checkPermission(routePermissions: string[]): boolean {
     if (!this.account.permissions) {
       return false;
-    } else { return routePermissions.every(routePermission => this.account.permissions.some(accountPermission => accountPermission === routePermission)); }
+    } else {
+      return routePermissions.every(routePermission =>
+        this.account.permissions.some(
+          accountPermission => accountPermission === routePermission,
+        ),
+      );
+    }
+  }
+
+  search() {
+    console.log('Searching...');
   }
 }
