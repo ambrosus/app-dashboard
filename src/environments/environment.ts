@@ -4,6 +4,10 @@
 
 export const environment = {
   production: false,
+  api: {
+    core: 'https://hermes.ambrosus-dev.com',
+    extended: 'https://hermes.ambrosus-dev.com/extended',
+  },
 };
 
 /*

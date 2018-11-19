@@ -5,7 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-
+import { InterceptorService } from 'app/interceptors/interceptor.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, Injectable, ErrorHandler, isDevMode } from '@angular/core';
@@ -28,6 +29,7 @@ import * as Sentry from '@sentry/browser';
 if (!isDevMode) {
   Sentry.init({
     dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
+    environment: 'prod',
   });
 }
 
@@ -63,7 +65,15 @@ export class SentryErrorHandler implements ErrorHandler {
   ],
   providers: [
     DeviceDetectorService,
-    { provide: ErrorHandler, useClass: SentryErrorHandler },
+    {
+      provide: ErrorHandler,
+      useClass: SentryErrorHandler,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: InterceptorService,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })

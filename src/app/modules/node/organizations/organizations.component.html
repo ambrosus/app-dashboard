@@ -1,9 +1,15 @@
 <h4 class="m-v-30 relative p-r-40">Organizations</h4>
-<hr class="m-b-20">
+<hr class="m-b-20" />
 
-<button type="button" class="button button--blue" (click)="show = 'active'">Active</button>
-<button type="button" class="button button--blue" (click)="show = 'pending'">Pending</button>
-<button type="button" class="button" (click)="show = 'disabled'">Disabled</button>
+<button type="button" class="button button--blue" (click)="show = 'active'">
+  Active
+</button>
+<button type="button" class="button button--blue" (click)="show = 'pending'">
+  Pending
+</button>
+<button type="button" class="button" (click)="show = 'disabled'">
+  Disabled
+</button>
 
 <p class="m-v-30" style="color: salmon;">{{ error }}</p>
 
@@ -12,22 +18,35 @@
 <!-- Active organizations -->
 <table class="table" *ngIf="show === 'active'">
   <tbody>
-    <tr *ngFor="let _organization of organizations; let i = index">
-      <td class="table__image">
-        <div>{{ _organization.title ? _organization.title.charAt(0) : 'O' }}</div>
+    <tr *ngFor="let organization of organizations; let i = index">
+      <td class="table__image" routerLink="{{ organization.organizationId }}">
+        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
       </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ _organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ getOwnerName(_organization) }}</small>
+      <td class="table__info" routerLink="{{ organization.organizationId }}">
+        <p class="table__info__title">{{ organization.title }}</p>
+        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: green;">Active</span>
-        <p class="table__status__timestamp">Created: {{ _organization.createdAt }}</p>
+        <span class="table__status__event" style="background-color: green;"
+          >Active</span
+        >
+        <p class="table__status__timestamp">
+          Created: {{ organization.createdOn }}
+        </p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <li>Info</li>
-            <li *ngIf="user.organization._id !== _organization._id" (click)="actions('organizationEdit', { organizationID: _organization._id, data: { active: false } })">Disable</li>
+            <li
+              *ngIf="account.organization !== organization.organizationId"
+              (click)="
+                actions('organizationModify', {
+                  organizationId: organization.organizationId,
+                  data: { active: false }
+                })
+              "
+            >
+              Disable
+            </li>
           </ul>
         </div>
       </td>
@@ -38,22 +57,34 @@
 <!-- Disabled organizations -->
 <table class="table" *ngIf="show === 'disabled'">
   <tbody>
-    <tr *ngFor="let _organization of organizationsDisabled; let i = index">
-      <td class="table__image">
-        <div>{{ _organization.title ? _organization.title.charAt(0) : 'O' }}</div>
+    <tr *ngFor="let organization of organizationsDisabled; let i = index">
+      <td class="table__image" routerLink="{{ organization.organizationId }}">
+        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
       </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ _organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ getOwnerName(_organization) }}</small>
+      <td class="table__info" routerLink="{{ organization.organizationId }}">
+        <p class="table__info__title">{{ organization.title }}</p>
+        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: salmon;">Disabled</span>
-        <p class="table__status__timestamp">Created: {{ _organization.createdAt }}</p>
+        <span class="table__status__event" style="background-color: salmon;"
+          >Disabled</span
+        >
+        <p class="table__status__timestamp">
+          Created: {{ organization.createdOn }}
+        </p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <li>Info</li>
-            <li (click)="actions('organizationEdit', { organizationID: _organization._id, data: { active: true } })">Activate</li>
+            <li
+              (click)="
+                actions('organizationModify', {
+                  organizationId: organization.organizationId,
+                  data: { active: true }
+                })
+              "
+            >
+              Activate
+            </li>
           </ul>
         </div>
       </td>
@@ -61,25 +92,55 @@
   </tbody>
 </table>
 
-<!-- Pending organizations -->
+<!-- Pending organizations / Organization requests -->
 <table class="table" *ngIf="show === 'pending'">
   <tbody>
-    <tr *ngFor="let _organizationRequest of organizationRequests; let i = index">
+    <tr *ngFor="let organizationRequest of organizationRequests; let i = index">
       <td class="table__image">
-        <div>{{ 'a' }}</div>
+        <div>
+          {{
+            organizationRequest.title
+              ? organizationRequest.title.charAt(0)
+              : organizationRequest.email.chartAt(0) || 'R'
+          }}
+        </div>
       </td>
       <td class="table__info">
-        <p class="table__info__title">{{ _organizationRequest.title }}</p>
-        <small class="table__info__meta">For: {{ _organizationRequest.email }}</small>
+        <p class="table__info__title">{{ organizationRequest.title }}</p>
+        <small class="table__info__meta"
+          >For: {{ organizationRequest.email }}</small
+        >
       </td>
       <td class="table__status">
-        <span class="table__status__event" style="background-color: orange;">Pending</span>
-        <p class="table__status__timestamp">Requested: {{ _organizationRequest.createdAt }}</p>
+        <span class="table__status__event" style="background-color: orange;"
+          >Pending</span
+        >
+        <p class="table__status__timestamp">
+          Requested: {{ organizationRequest.createdOn }}
+        </p>
         <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png">
+          <img src="/assets/raster/menu.png" />
           <ul class="table__options__menu">
-            <li (click)="actions('organizationRequest', { approved: true, organizationRequestID: _organizationRequest._id })">Approve</li>
-            <li (click)="actions('organizationRequest', { approved: false, organizationRequestID: _organizationRequest._id })">Decline</li>
+            <li
+              (click)="
+                actions('organizationRequest', {
+                  approved: true,
+                  id: organizationRequest.address
+                })
+              "
+            >
+              Approve
+            </li>
+            <li
+              (click)="
+                actions('organizationRequest', {
+                  approved: false,
+                  id: organizationRequest.address
+                })
+              "
+            >
+              Refuse
+            </li>
           </ul>
         </div>
       </td>

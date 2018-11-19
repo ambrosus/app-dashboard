@@ -9,7 +9,6 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
 import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
-import { AccountsService } from 'app/services/accounts.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -22,11 +21,7 @@ declare let Web3: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class SignupComponent implements OnInit, OnDestroy {
-  requestOrganizationSub: Subscription;
-  routeSub: Subscription;
-  getInviteSub: Subscription;
-  createAccountSub: Subscription;
-  verifyAccountSub: Subscription;
+  subs: Subscription[] = [];
   forms: {
     privateKeyForm?: FormGroup;
     requestForm?: FormGroup;
@@ -45,7 +40,6 @@ export class SignupComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-    private accountsService: AccountsService,
     private route: ActivatedRoute,
     private router: Router,
     private sanitizer: DomSanitizer,
@@ -54,12 +48,14 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.routeSub = this.route.queryParams.subscribe(queryParams => {
-      this.inviteId = queryParams.inviteId;
-      if (this.inviteId) {
-        this.verifyInvite();
-      }
-    });
+    this.subs[this.subs.length] = this.route.queryParams.subscribe(
+      queryParams => {
+        this.inviteId = queryParams.inviteId;
+        if (this.inviteId) {
+          this.verifyInvite();
+        }
+      },
+    );
     this.forms.privateKeyForm = new FormGroup({
       privateKey: new FormControl(null, [
         Validators.required,
@@ -78,21 +74,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.requestOrganizationSub) {
-      this.requestOrganizationSub.unsubscribe();
-    }
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
-    if (this.getInviteSub) {
-      this.getInviteSub.unsubscribe();
-    }
-    if (this.createAccountSub) {
-      this.createAccountSub.unsubscribe();
-    }
-    if (this.verifyAccountSub) {
-      this.verifyAccountSub.unsubscribe();
-    }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   validatePrivateKey(control: AbstractControl) {
@@ -115,13 +97,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   verifyInvite() {
-    this.organizationsService
-      .verifyInvite(this.inviteId)
-      .then(inviteVerified => {
-        this.invite = inviteVerified;
-        console.log('[GET] Invite verified: ', inviteVerified);
-      })
-      .catch(error => this.router.navigate(['/login']));
+    this.organizationsService.verifyInvite(this.inviteId).subscribe(
+      ({ data }: any) => {
+        this.invite = data;
+        console.log('[GET] Invite verified: ', data);
+      },
+      error => this.router.navigate(['/login']),
+    );
   }
 
   generateKeys() {
@@ -143,21 +125,19 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.verifyAccountSub = this.authService
-        .verifyAccount(privateKey)
-        .subscribe(
-          (resp: any) => {
-            console.log('[VERIFY] Account: ', resp);
-            this.errorPrivateKeyForm =
-              'This account is already registered, please use another private key';
-            resolve();
-          },
-          err => {
-            this.generateAddress(privateKey);
-            this.step = 'saveKeys';
-            reject();
-          },
-        );
+      this.authService.verifyAccount(privateKey).subscribe(
+        resp => {
+          console.log('[VERIFY] Account: ', resp);
+          this.errorPrivateKeyForm =
+            'This account is already registered, please use another private key';
+          resolve();
+        },
+        error => {
+          this.generateAddress(privateKey);
+          this.step = 'saveKeys';
+          reject();
+        },
+      );
     });
   }
 
@@ -165,16 +145,14 @@ export class SignupComponent implements OnInit, OnDestroy {
     if (this.invite) {
       const { address } = this.forms.privateKeyForm.getRawValue();
       const body = { address };
-      this.organizationsService
-        .acceptInvite(this.inviteId, body)
-        .then(inviteAccepted => {
-          this.router.navigate(['/login']);
-        })
-        .catch(error => {
+      this.organizationsService.acceptInvite(this.inviteId, body).subscribe(
+        inviteAccepted => this.router.navigate(['/login']),
+        error => {
           console.error('[ACCEPT] Invite: ', error);
           this.errorPrivateKeyForm =
             'Account creation failed, please contact support';
-        });
+        },
+      );
     } else {
       this.step = 'requestForm';
     }
@@ -214,22 +192,20 @@ export class SignupComponent implements OnInit, OnDestroy {
     }
 
     this.promiseActionRequestForm = new Promise((resolve, reject) => {
-      this.requestOrganizationSub = this.organizationsService
-        .createOrganizationRequest(data)
-        .subscribe(
-          (resp: any) => {
-            console.log('[REQUEST] Organization: ', resp);
-            this.step = 'success';
-            resolve();
-          },
-          err => {
-            console.error('[REQUEST] Organization: ', err);
-            this.errorRequestForm = err
-              ? err.message
-              : 'Request failed, please contact support';
-            reject();
-          },
-        );
+      this.organizationsService.createOrganizationRequest(data).subscribe(
+        resp => {
+          console.log('[REQUEST] Organization: ', resp);
+          this.step = 'success';
+          resolve();
+        },
+        error => {
+          console.error('[REQUEST] Organization: ', error);
+          this.errorRequestForm = error
+            ? error.message
+            : 'Request failed, please contact support';
+          reject();
+        },
+      );
     });
   }
 }

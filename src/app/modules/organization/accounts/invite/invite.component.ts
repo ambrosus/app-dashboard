@@ -1,7 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
-import { StorageService } from 'app/services/storage.service';
-import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
 
 @Component({
@@ -9,17 +7,13 @@ import { OrganizationsService } from 'app/services/organizations.service';
   templateUrl: './invite.component.html',
   styleUrls: ['./invite.component.scss'],
 })
-export class InviteComponent implements OnInit, OnDestroy {
+export class InviteComponent implements OnInit {
   inviteForm: FormGroup;
-  sendInvitesSub: Subscription;
   spinner;
   error;
   success;
 
-  constructor(
-    private storageService: StorageService,
-    private organizationsService: OrganizationsService,
-  ) {
+  constructor(private organizationsService: OrganizationsService) {
     this.initInviteForm();
   }
 
@@ -36,12 +30,6 @@ export class InviteComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {}
-
-  ngOnDestroy() {
-    if (this.sendInvitesSub) {
-      this.sendInvitesSub.unsubscribe();
-    }
-  }
 
   remove(array, index: number) {
     (<FormArray>this.inviteForm.get(array)).removeAt(index);
@@ -71,16 +59,16 @@ export class InviteComponent implements OnInit, OnDestroy {
 
     const body = { email };
 
-    if (body.email.length) {
-      this.organizationsService
-        .createInvites(body)
-        .then((invitesCreated: any) => {
-          this.success = 'Invites sent';
-          console.log('[CREATE] Invites: ', invitesCreated);
-        })
-        .catch(error => console.error('[CREATE] Invites: ', error));
-    } else {
+    if (!body.email.length) {
       this.error = 'Send at least one invite';
     }
+
+    this.organizationsService.createInvites(body).subscribe(
+      ({ data }: any) => {
+        this.success = 'Invites sent';
+        console.log('[CREATE] Invites: ', data);
+      },
+      error => console.error('[CREATE] Invites: ', error),
+    );
   }
 }

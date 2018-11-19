@@ -4,13 +4,13 @@ import { map, first } from 'rxjs/operators';
 import {
   Resolve,
   ActivatedRouteSnapshot,
-  RouterStateSnapshot
+  RouterStateSnapshot,
 } from '@angular/router';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AssetResolver implements Resolve<any> {
-  constructor(private assetService: AssetsService) { }
+  constructor(private assetService: AssetsService) {}
 
   resolve(
     route: ActivatedRouteSnapshot,

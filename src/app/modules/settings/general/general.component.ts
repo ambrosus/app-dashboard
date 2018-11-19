@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
-import { Subscription } from 'rxjs';
 
 declare let Web3: any;
 
@@ -12,10 +11,8 @@ declare let Web3: any;
   templateUrl: './general.component.html',
   styleUrls: ['./general.component.scss'],
 })
-export class GeneralComponent implements OnInit, OnDestroy {
+export class GeneralComponent implements OnInit {
   editAccountForm: FormGroup;
-  editAccountSub: Subscription;
-  getAccountSub: Subscription;
   error;
   success;
   spinner = false;
@@ -34,7 +31,10 @@ export class GeneralComponent implements OnInit, OnDestroy {
     this.account = this.storageService.get('account') || {};
 
     this.editAccountForm = new FormGroup({
-      address: new FormControl({ value: this.account.address, disabled: true }, [Validators.required]),
+      address: new FormControl(
+        { value: this.account.address, disabled: true },
+        [Validators.required],
+      ),
       fullName: new FormControl(this.account.fullName, []),
       email: new FormControl(this.account.email, []),
       timeZone: new FormControl(this.account.timeZone, []),
@@ -48,44 +48,51 @@ export class GeneralComponent implements OnInit, OnDestroy {
   comparePasswords(control: FormControl) {
     try {
       const data = this.editAccountForm.value;
-      if (!data.password) { return null; }
+      if (!data.password) {
+        return null;
+      }
 
-      return control.value === data.password ? null : { 'Passwords do not match': true };
-    } catch (e) { return null; }
-  }
-
-  ngOnDestroy() {
-    if (this.editAccountSub) { this.editAccountSub.unsubscribe(); }
-    if (this.getAccountSub) { this.getAccountSub.unsubscribe(); }
+      return control.value === data.password
+        ? null
+        : { 'Passwords do not match': true };
+    } catch (e) {
+      return null;
+    }
   }
 
   editAccount() {
     this.error = false;
     this.success = false;
     const form = this.editAccountForm;
-    const data = form.value;
+    const _data = form.value;
     const secret = this.storageService.get('secret');
     const body = {};
 
-    if (form.invalid) { return this.error = 'Form is invalid'; }
-
-    Object.keys(data).map(property => {
-      if (data[property]) { body[property] = data[property]; }
-    });
-
-    if (data.password) {
-      body['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
+    if (form.invalid) {
+      return (this.error = 'Form is invalid');
     }
 
-    this.editAccountSub = this.accountsService.modifyAccount(this.account.address, body).subscribe(
-      account => {
+    Object.keys(_data).map(property => {
+      if (_data[property]) {
+        body[property] = _data[property];
+      }
+    });
+
+    if (_data.password) {
+      body['token'] = btoa(
+        JSON.stringify(this.web3.eth.accounts.encrypt(secret, _data.password)),
+      );
+    }
+
+    this.accountsService.modifyAccount(this.account.address, body).subscribe(
+      ({ data }: any) => {
         this.success = 'Updated';
-        this.storageService.set('account', account);
-        this.accountsService._account.next(account);
+        this.storageService.set('account', data);
+        this.accountsService._account.next(data);
       },
-      err => {
-        console.error('[MODIFY] Account: ', err);
-        this.error = err ? err.message : 'Edit account error';
+      error => {
+        console.error('[MODIFY] Account: ', error);
+        this.error = error ? error.message : 'Edit account error';
       },
     );
   }

@@ -17,8 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./events-timeline.component.scss'],
 })
 export class EventsTimelineComponent implements OnInit, OnDestroy {
-  eventsSub: Subscription;
-  getEventsSub: Subscription;
+  subs: Subscription[] = [];
   pagination;
 
   @Input() assetId;
@@ -28,17 +27,23 @@ export class EventsTimelineComponent implements OnInit, OnDestroy {
     public assetsService: AssetsService,
     private authService: AuthService,
     public dialog: MatDialog,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadEvents();
-    this.eventsSub = this.assetsService.events.subscribe(({ pagination }: any) => this.pagination = pagination);
+    this.subs[this.subs.length] = this.assetsService.events.subscribe(
+      ({ pagination }: any) => (this.pagination = pagination),
+    );
   }
 
   ngOnDestroy() {
-    if (this.eventsSub) { this.eventsSub.unsubscribe(); }
-    if (this.getEventsSub) { this.getEventsSub.unsubscribe(); }
-    this.assetsService.events = { meta: {}, data: [], pagination: {}, change: 'reset' };
+    this.subs.map(sub => sub.unsubscribe());
+    this.assetsService.events = {
+      meta: {},
+      data: [],
+      pagination: {},
+      change: 'reset',
+    };
   }
 
   loadEvents(next = '') {
@@ -49,6 +54,6 @@ export class EventsTimelineComponent implements OnInit, OnDestroy {
       next,
     };
 
-    this.getEventsSub = this.assetsService.getEvents(options).subscribe();
+    this.assetsService.getEvents(options).then();
   }
 }

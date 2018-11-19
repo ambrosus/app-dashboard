@@ -2,8 +2,8 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-form',
@@ -11,33 +11,70 @@ import { Router } from '@angular/router';
   styleUrls: ['./asset-form.component.scss'],
 })
 export class AssetFormComponent implements OnInit, OnDestroy {
-  createAssetsSub: Subscription;
-  createEventsSub: Subscription;
+  subs: Subscription[] = [];
   assetForm: FormGroup;
   error;
   success;
   spinner;
-  identifiersAutocomplete = ['UPCE', 'UPC12', 'EAN8', 'EAN13', 'CODE 39', 'CODE 128', 'ITF', 'QR', 'DATAMATRIX', 'RFID', 'NFC',
-    'GTIN', 'GLN', 'SSCC', 'GSIN', 'GINC', 'GRAI', 'GIAI', 'GSRN', 'GDTI', 'GCN', 'CPID', 'GMN'];
+  identifiersAutocomplete = [
+    'UPCE',
+    'UPC12',
+    'EAN8',
+    'EAN13',
+    'CODE 39',
+    'CODE 128',
+    'ITF',
+    'QR',
+    'DATAMATRIX',
+    'RFID',
+    'NFC',
+    'GTIN',
+    'GLN',
+    'SSCC',
+    'GSIN',
+    'GINC',
+    'GRAI',
+    'GIAI',
+    'GSRN',
+    'GDTI',
+    'GCN',
+    'CPID',
+    'GMN',
+  ];
   sequenceNumber = 0;
 
   @Input() assetId: String;
 
-  isObject(value) { return typeof value === 'object'; }
+  isObject(value) {
+    return typeof value === 'object';
+  }
 
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) { }
+  ) {}
+
+  to(P: Promise<any>) {
+    return P.then(response => response).catch(error => ({ error }));
+  }
 
   ngOnInit() {
     this.initForm();
+
+    this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
+      response => console.log('[CREATE] Asset: ', response),
+      error => console.error('[CREATE] Asset: ', error),
+    );
+
+    this.subs[this.subs.length] = this.assetsService.creatingEvent.subscribe(
+      response => console.log('[CREATE] Event: ', response),
+      error => console.error('[CREATE] Event: ', error),
+    );
   }
 
   ngOnDestroy() {
-    if (this.createAssetsSub) { this.createAssetsSub.unsubscribe(); }
-    if (this.createEventsSub) { this.createEventsSub.unsubscribe(); }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   cancel() {
@@ -84,7 +121,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
 
   // Methods for adding/removing new fields to the form
 
-  remove(array, index: number) { (<FormArray>this.assetForm.get(array)).removeAt(index); }
+  remove(array, index: number) {
+    (<FormArray>this.assetForm.get(array)).removeAt(index);
+  }
 
   addImage() {
     (<FormArray>this.assetForm.get('images')).push(
@@ -185,7 +224,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
         }
       });
 
-      if (Object.keys(identifiers['identifiers']).length) { data.push(identifiers); }
+      if (Object.keys(identifiers['identifiers']).length) {
+        data.push(identifiers);
+      }
     }
 
     // Information
@@ -195,7 +236,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     info['name'] = assetForm.name;
     info['assetType'] = assetForm.assetType;
     const description = assetForm.description;
-    if (description) { info['description'] = description; }
+    if (description) {
+      info['description'] = description;
+    }
 
     // Images
     const images = assetForm.images;
@@ -208,7 +251,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
         }
       });
 
-      if (Object.keys(_images).length) { info['images'] = _images; }
+      if (Object.keys(_images).length) {
+        info['images'] = _images;
+      }
     }
 
     // Properties
@@ -228,7 +273,9 @@ export class AssetFormComponent implements OnInit, OnDestroy {
             _group[property.name] = property.value;
           }
         });
-        if (Object.keys(_group).length) { info[group.title] = _group; }
+        if (Object.keys(_group).length) {
+          info[group.title] = _group;
+        }
       }
     });
 
@@ -258,30 +305,34 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     return event;
   }
 
-  save() {
+  async save() {
+    const form = this.assetForm;
     this.error = false;
     this.success = false;
 
-    if (this.assetForm.valid) {
-      if (!confirm(`Are you sure you want to proceed creating this asset?`)) { return; }
+    if (form.invalid) {
+      return (this.error = 'Please fill required fields');
+    }
 
-      this.spinner = true;
+    if (!confirm(`Are you sure you want to proceed creating this asset?`)) {
+      return;
+    }
 
-      const asset = this.generateAsset();
-      const infoEvent = this.generateInfoEvent(asset.assetId);
-      this.createAssetsSub = this.assetsService.createAssets([asset], [infoEvent]).subscribe(
-        (resp: any) => {
-          console.log('[CREATE] Asset: ', resp);
-          this.spinner = false;
-          this.success = 'Success';
-          this.sequenceNumber += 1;
-        },
-        err => {
-          console.error('[CREATE] Asset: ', err);
-          this.error = err.message;
-          this.spinner = false;
-        },
-      );
-    } else { this.error = 'Please fill all required fields'; }
+    const asset = this.generateAsset();
+    const infoEvent = this.generateInfoEvent(asset.assetId);
+
+    console.log('Creating asset');
+    this.assetsService.createAsset(asset).subscribe(
+      async response => {
+        this.sequenceNumber += 1;
+
+        console.log('Creating event');
+        const eventsCreated = await this.to(
+          this.assetsService.createEvents([infoEvent]),
+        );
+        this.success = 'Success';
+      },
+      error => (this.error = 'Asset creation failed, aborting'),
+    );
   }
 }

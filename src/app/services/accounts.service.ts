@@ -1,11 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from './storage.service';
-import * as moment from 'moment-timezone';
+import { environment } from 'environments/environment';
+import { catchError } from 'rxjs/operators';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
+
+interface Account {
+  _id?: String;
+  accessLevel?: Number;
+  address?: String;
+  createdBy?: String;
+  createdOn?: Number;
+  email?: String;
+  fullName?: String;
+  organization?: Number;
+  permissions?: String[];
+  registeredBy?: String;
+  registeredOn?: Number;
+  timeZone?: String;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +29,7 @@ declare let Web3: any;
 export class AccountsService {
   _account = new BehaviorSubject({});
   sdk;
+  api;
 
   constructor(
     private http: HttpClient,
@@ -21,102 +38,27 @@ export class AccountsService {
     const account = <any>this.storageService.get('account') || {};
     this._account.next(account);
     this.sdk = new AmbrosusSDK({ Web3 });
+    this.api = environment.api;
   }
 
-  getToken(secret = null) {
-    secret = secret || this.storageService.get('secret');
-    const validUntil = moment().add(5, 'days').unix();
-    return secret ? this.sdk.getToken(secret, validUntil) : {};
+  getAccounts(next: String = ''): Observable<any> {
+    const url = `${this.api.extended}/account&next=${next}`;
+
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  getAccounts(next = null) {
-    const token = this.getToken();
-    const url = `/api/account?token=${token}&next=${next}`;
+  getAccount(address: String): Observable<any> {
+    const url = `${this.api.extended}/account/${address}`;
 
-    return new Observable(observer => {
-      this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ meta }) => observer.error(meta),
-      );
-    });
+    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
   }
 
-  getAccount(address) {
-    const token = this.getToken();
-    const url = `/api/account/${address}?token=${token}`;
+  modifyAccount(address: String, body: Account): Observable<any> {
+    let url = `${this.api.extended}/account/${address}`;
+    if (body.accessLevel || body.permissions) {
+      url = `${this.api.core}/accounts/${address}`;
+    }
 
-    return new Observable(observer => {
-      this.http.get(url).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ meta }) => observer.error(meta),
-      );
-    });
-  }
-
-  modifyAccount(address, body) {
-    const token = this.getToken();
-    const url = `/api/account/${address}?token=${token}`;
-
-    return new Observable(observer => {
-      this.http.put(url, body).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ meta }) => observer.error(meta),
-      );
-    });
-  }
-
-
-  // Deprecated
-
-  editUser(body, email) {
-    const token = this.getToken();
-    const headers = { Authorization: `AMB_TOKEN ${token}` };
-
-    return new Observable(observer => {
-      this.http.put(`/api/users/${email}`, body, { headers }).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ error }) => observer.error(error),
-      );
-    });
-  }
-
-  createUser(body) {
-    const url = `/api/users`;
-
-    return new Observable(observer => {
-      this.http.post(url, body).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ error }) => { console.error('Account CREATE error: ', error); observer.error(error); },
-      );
-    });
-  }
-
-  getUser(email) {
-    return new Observable(observer => {
-      const token = this.getToken();
-      const headers = { Authorization: `AMB_TOKEN ${token}` };
-      const url = `/api/users/${email}`;
-
-      this.http.get(url, { headers }).subscribe(
-        ({ data }: any) => {
-          this._account.next(data);
-          observer.next(data);
-        },
-        ({ error }) => observer.error(error),
-      );
-    });
-  }
-
-  getUsers() {
-    const token = this.getToken();
-    const headers = { Authorization: `AMB_TOKEN ${token}` };
-    const url = `/api/users`;
-
-    return new Observable(observer => {
-      this.http.get(url, { headers }).subscribe(
-        ({ data }: any) => observer.next(data),
-        ({ error }) => observer.error(error),
-      );
-    });
+    return this.http.put(url, body).pipe(catchError(({ meta }: any) => meta));
   }
 }

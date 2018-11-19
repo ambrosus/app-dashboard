@@ -32,7 +32,7 @@ export class AppComponent {
           this.renderer.removeClass(document.body, this.previousUrl);
         }
 
-        const currentUrlSlug = location.pathname.slice(1);
+        const currentUrlSlug = location.pathname.split('/')[1];
         if (currentUrlSlug) {
           this.renderer.addClass(document.body, currentUrlSlug);
         }
