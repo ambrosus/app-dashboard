@@ -9,7 +9,7 @@ import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-header',
@@ -21,9 +21,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
     search?: FormGroup;
+    searchAdvance?: FormGroup;
   } = {};
   isLoggedin;
   account;
+  advancedSearch;
+  identifiersAutocomplete = [
+    'UPCE',
+    'UPC12',
+    'EAN8',
+    'EAN13',
+    'CODE 39',
+    'CODE 128',
+    'ITF',
+    'QR',
+    'DATAMATRIX',
+    'RFID',
+    'NFC',
+    'GTIN',
+    'GLN',
+    'SSCC',
+    'GSIN',
+    'GINC',
+    'GRAI',
+    'GIAI',
+    'GSRN',
+    'GDTI',
+    'GCN',
+    'CPID',
+    'GMN',
+  ];
 
   constructor(
     private authService: AuthService,
@@ -40,6 +67,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
 
     this.initSearchForm();
+    this.initSearchAdvanceForm();
   }
 
   ngOnDestroy() {
@@ -48,8 +76,58 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   initSearchForm() {
     this.forms.search = new FormGroup({
-      input: new FormControl(null, [Validators.required]),
+      input: new FormControl(),
     });
+  }
+
+  initSearchAdvanceForm() {
+    this.forms.searchAdvance = new FormGroup({
+      from: new FormControl(),
+      to: new FormControl(),
+      state: new FormArray([]),
+      identifiers: new FormArray([
+        new FormGroup({
+          name: new FormControl(),
+          value: new FormControl(),
+        }),
+      ]),
+      location: new FormGroup({
+        country: new FormControl(),
+        city: new FormControl(),
+        gln: new FormControl(),
+        locationId: new FormControl(),
+        lat: new FormControl(),
+        lng: new FormControl(),
+      }),
+    });
+  }
+
+  remove(array, index: number) {
+    (<FormArray>this.forms.searchAdvance.get(array)).removeAt(index);
+  }
+
+  addTag(event, input) {
+    let value = event.target.value;
+
+    if (event.keyCode === 13 || event.keyCode === 9) {
+      console.log(event);
+      if (value) {
+        value = value.trim();
+        this.forms.searchAdvance
+          .get('state')
+          ['controls'].push(new FormControl(value));
+        input.value = '';
+      }
+    }
+  }
+
+  addIdentifier() {
+    this.forms.searchAdvance.get('identifiers')['controls'].push(
+      new FormGroup({
+        name: new FormControl(null, []),
+        value: new FormControl(null, []),
+      }),
+    );
   }
 
   logout() {

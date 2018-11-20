@@ -6,9 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 
-
-
-@import "_mixins";
+@import '_mixins';
 
 .card {
   padding: 30px;
@@ -23,14 +21,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     margin-bottom: 15px;
     font-size: 1em;
   }
-}
-
-.wrapper {
-  max-width: 1100px;
-  padding: 0 15px;
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
 }
 
 .button {
@@ -69,21 +59,6 @@ a {
   text-decoration: none;
 }
 
-.avatar {
-  position: relative;
-  height: 32px;
-  width: 32px;
-  background-color: #fcbc58;
-  border: 1px solid #fff;
-  border-radius: 100%;
-  background-size: 100%;
-  background-position: center center;
-  text-align: center;
-  line-height: 29px;
-  font-size: 16px;
-  font-weight: 500;
-}
-
 .animated {
   -webkit-animation-duration: 1s;
   animation-duration: 1s;
@@ -116,7 +91,7 @@ button .btn-spinner:not(:required) {
 }
 
 button.is-loading .btn-spinner {
-  transition: .2s margin ease-in, .4s opacity ease-in;
+  transition: 0.2s margin ease-in, 0.4s opacity ease-in;
   margin-left: 20px;
   opacity: 1;
 }
@@ -144,7 +119,6 @@ button.is-loading .btn-spinner {
     transform: rotate(360deg);
   }
 }
-
 
 .autocomplete-items {
   position: absolute;
@@ -186,7 +160,7 @@ button.is-loading .btn-spinner {
     border-radius: 2px;
     cursor: pointer;
     user-select: none;
-    transition: background-color .2s;
+    transition: background-color 0.2s;
 
     & span {
       display: inline-block;
@@ -241,7 +215,6 @@ button.is-loading .btn-spinner {
   }
 
   &__title {
-
     :first-child {
       margin-bottom: 7px;
     }

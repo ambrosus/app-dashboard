@@ -12,8 +12,42 @@
   background: $purple-blue;
   background-size: 100% 200% !important;
 
+  button,
+  .button {
+    font-size: 15px;
+    line-height: 1.2;
+    color: $purple-blue;
+    background-color: $white;
+    border-radius: 20px;
+    border: 1px solid $white;
+    font-weight: 500;
+    text-align: center;
+    min-width: 192px;
+    cursor: pointer;
+    word-break: keep-all;
+    user-select: none;
+    padding: 11px 15px;
+    transition: all 0.2s;
+
+    &.outline {
+      border: 1px solid $white;
+      background-color: transparent;
+      color: $white;
+
+      &:hover {
+        background-color: $white;
+        color: $purple-blue;
+      }
+    }
+  }
+
   &.page-loaded {
-    @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
+    @include gradient-vertical-three-colors(
+      $dark-purple,
+      $purple-blue,
+      50%,
+      darken($purple-blue, 10)
+    );
     @include animation('animateGradient .9s 1');
     animation-delay: 1s;
     background-position: 0 100%;
@@ -41,15 +75,14 @@
     color: #fff;
   }
 
-  input:not([type="checkbox"]),
+  input:not([type='checkbox']),
   .input,
   textarea {
     color: #fff;
-    box-shadow: 0 1px rgba(#fff, 0.25);
 
     &:focus {
       color: #fff;
-      box-shadow: 0 1px #fff, inset 0px -1px #fff;
+      border-color: #fff;
     }
   }
 
@@ -74,16 +107,15 @@
     &.error {
       color: $dark-red;
 
-      input:not([type="checkbox"]),
+      input:not([type='checkbox']),
       .input,
       textarea {
-        box-shadow: 0 1px $dark-red;
+        border-color: $dark-red !important;
       }
     }
   }
 
   app-footer {
-
     .copyright {
       > p {
         color: $grey;
@@ -101,9 +133,7 @@
     }
 
     .socials {
-
       li {
-
         a {
           svg {
             path {

@@ -7,73 +7,177 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 */
 @import 'utils';
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
+
 app-header {
   position: relative;
-  height: 80px;
-  padding: 20px;
-  background-color: #fff;
+  z-index: 1500;
   width: 100%;
-  transition: all 0.1s;
 
-  .wrapper {
+  .overlay {
     width: 100%;
-    max-width: 1440px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.15);
+    position: fixed;
+    z-index: -5;
+    animation: fadeIn 0.2s forwards;
+  }
 
-    > div {
+  .header {
+    position: relative;
+    height: 80px;
+    background-color: #fff;
+    width: 100%;
+    transition: all 0.2s;
+
+    &.advancedSearch {
+      height: auto;
+
+      .wrapper {
+        .menu {
+          justify-content: flex-end;
+
+          .search {
+            max-width: 100%;
+
+            input {
+              padding-right: 60px;
+            }
+          }
+        }
+      }
+    }
+
+    &__advancedSearch {
+      padding: 40px 20px 60px;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #fff;
+      animation: fadeIn 0.2s forwards;
+
+      form {
+        max-width: 816px;
+      }
+
+      label {
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 11px;
+        margin-bottom: 30px;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1440px;
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       align-items: center;
+      padding: 20px 84px;
+
+      > div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
     }
-  }
 
-  .logo {
-    display: inline-block;
-    width: 125px;
-    height: 40px;
-    background-image: url('/assets/raster/logo-header-dark.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-  }
+    .logo {
+      flex: 0 0 125px;
+      margin-right: 92px;
 
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 42px;
-    color: #fff;
-    background-color: $light-blue;
-    border: none;
-    text-transform: uppercase;
-  }
+      > a {
+        display: inline-block;
+        width: 125px;
+        height: 40px;
+        background-image: url('/assets/raster/logo-header-dark.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    }
 
-  @include breakpoint-min(1200) {
-    padding: 20px 84px;
+    .avatar {
+      flex: 0 0 40px;
+      margin-left: 172px;
 
-    nav {
-      display: inline-block;
-      margin-left: 92px;
+      > div {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 42px;
+        color: #fff;
+        background-color: $light-blue;
+        font-size: 16px;
+        text-transform: uppercase;
+      }
+    }
 
-      ul {
-        li {
-          display: inline-block;
-          margin-right: 24px;
+    .menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1 1 100%;
+      width: 100%;
 
-          &:last-child {
-            margin-right: 0;
-          }
+      .search {
+        max-width: 408px;
+        margin: 0;
+        position: relative;
 
-          a {
-            font-weight: 500;
-            color: $black;
+        input {
+          border-color: #e5e5e5;
+          padding-right: 85px;
+        }
 
-            &.active {
-              color: $blue;
+        a.advanced {
+          position: absolute;
+          font-size: 11px;
+          text-transform: uppercase;
+          font-weight: 500;
+          color: $blue;
+          top: 15px;
+          right: 16px;
+        }
+      }
+
+      nav {
+        display: inline-block;
+
+        ul {
+          li {
+            display: inline-block;
+            margin-right: 24px;
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            a {
+              font-weight: 500;
+              color: $black;
+
+              &.active {
+                color: $blue;
+              }
             }
           }
         }
@@ -86,21 +190,38 @@ app-header {
 .settings,
 .node {
   app-header {
-    background: $purple-blue;
+    .header {
+      .wrapper {
+        background: $purple-blue;
+      }
 
-    .logo {
-      background-image: url('/assets/raster/logo-header-light.png');
-    }
+      .logo {
+        > a {
+          background-image: url('/assets/raster/logo-header-light.png');
+        }
+      }
 
-    @include breakpoint-min(1200) {
-      nav {
-        ul {
-          li {
-            a {
-              color: $grey;
+      .menu {
+        .search {
+          input {
+            border-color: $grey;
+            color: #fff;
+          }
 
-              &.active {
-                color: #fff;
+          a.advanced {
+            color: $light-blue;
+          }
+        }
+
+        nav {
+          ul {
+            li {
+              a {
+                color: $grey;
+
+                &.active {
+                  color: #fff;
+                }
               }
             }
           }
