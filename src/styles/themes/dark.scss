@@ -14,20 +14,9 @@
 
   button,
   .button {
-    font-size: 15px;
-    line-height: 1.2;
     color: $purple-blue;
-    background-color: $white;
-    border-radius: 20px;
+    background: $white;
     border: 1px solid $white;
-    font-weight: 500;
-    text-align: center;
-    min-width: 192px;
-    cursor: pointer;
-    word-break: keep-all;
-    user-select: none;
-    padding: 11px 15px;
-    transition: all 0.2s;
 
     &.outline {
       border: 1px solid $white;
@@ -35,7 +24,7 @@
       color: $white;
 
       &:hover {
-        background-color: $white;
+        background: $white;
         color: $purple-blue;
       }
     }
