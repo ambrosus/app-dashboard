@@ -74,7 +74,7 @@ export class AuthService implements OnDestroy {
               password,
             );
             if (!address) {
-              return throwError({ message: 'Password is incorrect' });
+              return observer.error({ message: 'Password is incorrect' });
             }
 
             this.storageService.set('secret', privateKey);

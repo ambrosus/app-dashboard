@@ -12,8 +12,31 @@
   background: $purple-blue;
   background-size: 100% 200% !important;
 
+  button,
+  .button {
+    color: $purple-blue;
+    background: $white;
+    border: 1px solid $white;
+
+    &.outline {
+      border: 1px solid $white;
+      background-color: transparent;
+      color: $white;
+
+      &:hover {
+        background: $white;
+        color: $purple-blue;
+      }
+    }
+  }
+
   &.page-loaded {
-    @include gradient-vertical-three-colors($dark-purple, $purple-blue, 50%, darken($purple-blue, 10));
+    @include gradient-vertical-three-colors(
+      $dark-purple,
+      $purple-blue,
+      50%,
+      darken($purple-blue, 10)
+    );
     @include animation('animateGradient .9s 1');
     animation-delay: 1s;
     background-position: 0 100%;
@@ -41,15 +64,14 @@
     color: #fff;
   }
 
-  input:not([type="checkbox"]),
+  input:not([type='checkbox']),
   .input,
   textarea {
     color: #fff;
-    box-shadow: 0 1px rgba(#fff, 0.25);
 
     &:focus {
       color: #fff;
-      box-shadow: 0 1px #fff, inset 0px -1px #fff;
+      border-color: #fff;
     }
   }
 
@@ -74,16 +96,15 @@
     &.error {
       color: $dark-red;
 
-      input:not([type="checkbox"]),
+      input:not([type='checkbox']),
       .input,
       textarea {
-        box-shadow: 0 1px $dark-red;
+        border-color: $dark-red !important;
       }
     }
   }
 
   app-footer {
-
     .copyright {
       > p {
         color: $grey;
@@ -101,9 +122,7 @@
     }
 
     .socials {
-
       li {
-
         a {
           svg {
             path {

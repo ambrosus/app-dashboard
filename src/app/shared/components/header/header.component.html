@@ -5,113 +5,145 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<header class="header">
-  <div class="header-container wrapper">
-    <div>
-      <app-svg-icon
-        class="m-r-20"
-        name="menu"
-        width="20px"
-        (click)="sidebar = !sidebar"
-      ></app-svg-icon>
-      <a class="header-logo" routerLink="/">
-        <app-svg-icon name="logo" width="100px"></app-svg-icon>
-      </a>
-    </div>
-    <a routerLink="/login" *ngIf="!isLoggedin">Login</a>
-    <ul class="header-menu" *ngIf="isLoggedin && account">
-      <li
-        id="header-dropdown"
-        class="header-menu__item dropdown hide-all display-640-inline-block p-v-10"
-        appClickThisActive
-      >
-        <div class="avatar" *ngIf="account.fullName || account.email">
-          <span>{{
-            account.fullName
-              ? account.fullName.charAt(0)
-              : account.email
-              ? account.email.charAt(0)
-              : 'A'
-          }}</span>
-        </div>
-        {{ greeting }}
-        <ul class="dropdown-menu">
-          <li *ngIf="account">
-            <p
-              class="p-a-10 color-blacks--base"
-              *ngIf="!account.fullName && !account.email"
+<header class="header" [ngClass]="{ advancedSearch: advancedSearch }">
+  <div class="wrapper">
+    <div class="logo"><a routerLink="/"></a></div>
+
+    <div class="menu">
+      <!-- Desktop menu -->
+      <nav *ngIf="!advancedSearch">
+        <ul>
+          <li *ngIf="checkPermission(['super_account'])">
+            <a routerLink="/node" routerLinkActive="active">Node</a>
+          </li>
+          <li *ngIf="checkPermission(['manage_accounts'])">
+            <a routerLink="/organization" routerLinkActive="active"
+              >Organizations</a
             >
-              {{ account.address }}
-            </p>
-            <p class="p-a-10 color-blacks--base">
-              {{ account.fullName || account.email }}
-            </p>
-            <p class="p-a-10" *ngIf="account.organization">
-              {{ account.organization.title }}
-            </p>
           </li>
-          <li class="separator color-ablue--base">
-            <span (click)="logout()">Logout</span>
-          </li>
+          <li><a routerLink="/assets" routerLinkActive="active">Assets</a></li>
         </ul>
-      </li>
-      <!-- end Desktop menu -->
-    </ul>
+      </nav>
+      <!-- Search (simple) -->
+      <form class="search" [formGroup]="forms.search" (ngSubmit)="search()">
+        <a class="advanced" (click)="advancedSearch = !advancedSearch">{{
+          advancedSearch ? 'close' : 'advanced'
+        }}</a>
+        <input
+          formControlName="input"
+          type="search"
+          placeholder="Search Assets (by ID or Text)"
+        />
+      </form>
+    </div>
+
+    <div class="avatar">
+      <div>
+        {{
+          account.email ? account.email.charAt(0) : account.address.charAt(2)
+        }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Search (advanced) -->
+  <div class="header__advancedSearch" *ngIf="advancedSearch">
+    <form
+      class="center"
+      [formGroup]="forms.searchAdvance"
+      (ngSubmit)="search()"
+      (keydown.enter)="$event.preventDefault()"
+    >
+      <div class="group">
+        <label class="w25"
+          >Created from <input type="date" formControlName="from" />
+        </label>
+        <label class="w25"
+          >To <input type="date" formControlName="to" />
+        </label>
+        <label class="w50"
+          >Asset state
+          <div class="tags" formArrayName="state">
+            <div
+              class="tag"
+              *ngFor="
+                let tag of forms.searchAdvance.get('state')['controls'];
+                let i = index
+              "
+            >
+              {{ tag.value }}
+              <a class="remove" (click)="remove('state', i)">&times;</a>
+            </div>
+            <input type="text" (keyup)="addTag($event, tagInput)" #tagInput />
+          </div>
+        </label>
+      </div>
+      <div formArrayName="identifiers" class="right">
+        <div
+          class="group"
+          *ngFor="
+            let identifier of forms.searchAdvance.get('identifiers')[
+              'controls'
+            ];
+            let i = index
+          "
+          [formGroupName]="i"
+        >
+          <label class="w50"
+            >Identifier name
+            <input
+              formControlName="name"
+              [appAutocompleteinput]="{
+                control: identifier.get('name'),
+                array: identifiersAutocomplete
+              }"
+              type="text"
+            />
+          </label>
+          <label class="w50"
+            >Value <input formControlName="value" type="text" />
+            <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0"
+              >&times;</a
+            >
+          </label>
+        </div>
+        <a class="addMore" (click)="addIdentifier()">+ Add more</a>
+      </div>
+
+      <h5 class="left" style="margin: 30px 0;">Location</h5>
+      <div formGroupName="location" style="margin-bottom: 40px">
+        <div class="group">
+          <label class="w50"
+            >City <input formControlName="city" type="text" />
+          </label>
+          <label class="w50"
+            >Country <input formControlName="country" type="text" />
+          </label>
+        </div>
+        <div class="group">
+          <label class="w50"
+            >GLN <input formControlName="gln" type="text" />
+          </label>
+          <label class="w50"
+            >Location ID <input formControlName="locationId" type="text" />
+          </label>
+        </div>
+        <div class="group">
+          <label class="w50"
+            >Latitude <input formControlName="lat" type="number" />
+          </label>
+          <label class="w50"
+            >Longitude <input formControlName="lng" type="number" />
+          </label>
+        </div>
+      </div>
+      <button type="submit">Search</button>
+    </form>
   </div>
 </header>
 
-<!-- Sidebar -->
-<aside class="sidebar" *ngIf="isLoggedin" [ngClass]="{ active: sidebar }">
-  <header class="sidebar__header">
-    <a routerLink="/">
-      <img
-        src="/assets/raster/amb-logo.png"
-        style="height: 18px;"
-        alt="Ambrosus Logo"
-      />
-    </a>
-    <app-svg-icon
-      name="arrow-left"
-      height="15px"
-      (click)="sidebar = !sidebar"
-    ></app-svg-icon>
-  </header>
-  <ul class="sidebar__menu">
-    <li>
-      <a routerLink="/assets" routerLinkActive="active" appIconLeft="blue-stack"
-        >Assets</a
-      >
-    </li>
-    <li *ngIf="checkPermission(['super_account'])">
-      <a
-        routerLink="/node/organizations"
-        routerLinkActive="active"
-        appIconLeft="display"
-        >Node Organizations</a
-      >
-    </li>
-    <li *ngIf="checkPermission(['manage_accounts'])">
-      <a
-        routerLink="/organization/accounts"
-        routerLinkActive="active"
-        appIconLeft="header-user"
-        >Accounts</a
-      >
-    </li>
-    <li *ngIf="checkPermission(['manage_accounts'])">
-      <a
-        routerLink="/organization/settings"
-        routerLinkActive="active"
-        appIconLeft="settings-gear"
-        >Organization</a
-      >
-    </li>
-    <li>
-      <a routerLink="/settings" routerLinkActive="active" appIconLeft="cog"
-        >Settings</a
-      >
-    </li>
-  </ul>
-</aside>
-
-<div class="overlay" *ngIf="sidebar" (click)="sidebar = !sidebar"></div>
+<div
+  class="overlay"
+  *ngIf="advancedSearch"
+  (click)="advancedSearch = false"
+></div>

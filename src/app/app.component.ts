@@ -32,7 +32,12 @@ export class AppComponent {
           this.renderer.removeClass(document.body, this.previousUrl);
         }
 
-        const currentUrlSlug = location.pathname.split('/')[1];
+        const currentLocation = location.pathname.split('/');
+        let currentUrlSlug = currentLocation[1];
+        currentUrlSlug =
+          currentUrlSlug === 'dashboard'
+            ? currentLocation[2]
+            : currentLocation[1];
         if (currentUrlSlug) {
           this.renderer.addClass(document.body, currentUrlSlug);
         }
@@ -42,7 +47,10 @@ export class AppComponent {
   }
 
   hideHeader() {
-    return location.pathname === '/login' || location.pathname === '/signup';
+    return (
+      location.pathname.indexOf('/login') > -1 ||
+      location.pathname.indexOf('/signup') > -1
+    );
   }
 
   // Dropdown close on click outside of it

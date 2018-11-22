@@ -5,205 +5,228 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-@import 'var';
-
-.header {
-  position: relative;
-  z-index: 960;
-  height: 60px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
-  background: $ablue;
-
-  a {
-    color: #fff;
-  }
-
-  &-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    color: #fff;
-  }
-
-  &-menu {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 100%;
-    color: #fff;
-
-    &__item {
-      margin-right: 14px;
-      position: relative;
-
-      &:last-child {
-        margin-right: 0;
-      }
-
-      &.dropdown {
-        padding-left: 40px;
-
-        .avatar {
-          position: absolute;
-          left: 0;
-          top: 50%;
-          margin-top: -16px;
-        }
-      }
-    }
-  }
-}
-
-.header__profile-icon {
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: $ablue;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: capitalize;
-  color: #fff;
-}
-
-.menu-mobile {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  width: 100%;
-  background: #fff;
-  z-index: 99;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.menu-mobile__item {
-  font-weight: 500;
-  padding: 17px;
-  cursor: pointer;
-  line-height: 1.2;
-  word-break: break-word;
-  border-bottom: 1px solid #f1f1f1;
-  text-align: center;
-  font-size: 14px;
-
-  &.current {
-    background-color: #f6f8fe;
-  }
-
-  &.separator {
-    border-bottom: 1px solid #ddd;
-  }
-
-  &.section {
-    background-color: #fafafa;
-  }
-}
-
-.menu-mobile__item__button {
-  background: $aorange;
-  color: #fff;
-}
-
-.header-submenu__item {
-  color: grey;
-  height: 100%;
-  line-height: 50px;
-  padding: 0 10px;
-  cursor: default;
-  user-select: none;
-
-  &.active {
-    color: $ablue;
-  }
-
-  & span {
-    padding: 0;
-    height: 100%;
-  }
-}
+@import 'utils';
 
 @keyframes fadeIn {
-  from {
+  0% {
     opacity: 0;
   }
 
-  to {
-    opacity: 1;
+  100% {
+    opacity: 100%;
   }
 }
 
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
+app-header {
+  position: relative;
+  z-index: 1500;
   width: 100%;
-  max-width: 300px;
-  height: 100%;
-  background-color: #fff;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 99999;
-  transform: translateX(-100%);
-  transition: transform .3s;
 
-  &.active {
-    transform: translateX(0);
-    box-shadow: 6px 0px 20px 0px rgba(0, 0, 0, .1);
+  .overlay {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.15);
+    position: fixed;
+    z-index: -5;
+    animation: fadeIn 0.2s forwards;
   }
 
-  &__menu {
-    padding: 30px;
+  .header {
+    position: relative;
+    height: 80px;
+    background-color: #fff;
+    width: 100%;
+    transition: all 0.2s;
 
-    li {
-      a {
+    &.advancedSearch {
+      height: auto;
+
+      .wrapper {
+        .menu {
+          justify-content: flex-end;
+
+          .search {
+            max-width: 100%;
+
+            input {
+              padding-right: 60px;
+            }
+          }
+        }
+      }
+    }
+
+    &__advancedSearch {
+      padding: 40px 20px 60px;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #fff;
+      animation: fadeIn 0.2s forwards;
+
+      form {
+        max-width: 816px;
+      }
+
+      label {
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 11px;
+        margin-bottom: 30px;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1440px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 84px;
+
+      > div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+
+    .logo {
+      flex: 0 0 125px;
+      margin-right: 92px;
+
+      > a {
         display: inline-block;
-        width: 100%;
-        padding: 9px 0;
-        color: #545454;
+        width: 125px;
+        height: 40px;
+        background-image: url('/assets/raster/logo-header-dark.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    }
 
-        &.active {
-          color: $ablue;
+    .avatar {
+      flex: 0 0 40px;
+      margin-left: 172px;
+
+      > div {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 42px;
+        color: #fff;
+        background-color: $light-blue;
+        font-size: 16px;
+        text-transform: uppercase;
+      }
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1 1 100%;
+      width: 100%;
+
+      .search {
+        max-width: 408px;
+        margin: 0;
+        position: relative;
+
+        input {
+          border-color: #e5e5e5;
+          padding-right: 85px;
         }
 
-        svg {
-          width: 20px;
-          height: 20px;
-          margin-right: 14px;
+        a.advanced {
+          position: absolute;
+          font-size: 11px;
+          text-transform: uppercase;
+          font-weight: 500;
+          color: $blue;
+          top: 15px;
+          right: 16px;
+        }
+      }
+
+      nav {
+        display: inline-block;
+
+        ul {
+          li {
+            display: inline-block;
+            margin-right: 24px;
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            a {
+              font-weight: 500;
+              color: $black;
+
+              &.active {
+                color: $blue;
+              }
+            }
+          }
         }
       }
     }
   }
-
-  &__header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #f1f1f1;
-  }
 }
 
-.overlay {
-  content: '';
-  display: block;
-  position: fixed;
-  background: rgba(0, 0, 0, .25);
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 90000;
-  animation: fadeIn .3s;
+.organization,
+.settings,
+.node {
+  app-header {
+    .header {
+      .wrapper {
+        background: $purple-blue;
+      }
+
+      .logo {
+        > a {
+          background-image: url('/assets/raster/logo-header-light.png');
+        }
+      }
+
+      .menu {
+        .search {
+          input {
+            border-color: $grey;
+            color: #fff;
+          }
+
+          a.advanced {
+            color: $light-blue;
+          }
+        }
+
+        nav {
+          ul {
+            li {
+              a {
+                color: $grey;
+
+                &.active {
+                  color: #fff;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

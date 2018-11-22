@@ -2,10 +2,10 @@ button,
 .button {
   font-size: 15px;
   line-height: 1.2;
-  color: $purple-blue;
-  background-color: $white;
+  color: $white;
+  background: linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
   border-radius: 20px;
-  border: 1px solid $white;
+  border: 1px solid $purple-blue;
   font-weight: 500;
   text-align: center;
   min-width: 192px;
@@ -13,16 +13,16 @@ button,
   word-break: keep-all;
   user-select: none;
   padding: 11px 15px;
-  transition: all .2s;
+  transition: all 0.2s;
 
   &.outline {
-    border: 1px solid $white;
+    border: 1px solid linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
     background-color: transparent;
-    color: $white;
+    color: $purple-blue;
 
     &:hover {
-      background-color: $white;
-      color: $purple-blue;
+      background: linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
+      color: $white;
     }
   }
 }

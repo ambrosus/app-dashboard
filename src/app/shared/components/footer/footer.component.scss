@@ -9,6 +9,8 @@ app-footer {
   text-align: center;
   user-select: none;
   flex-shrink: 0;
+  position: relative;
+  z-index: 500;
 
   .socials {
     margin: 30px 0;
@@ -25,14 +27,14 @@ app-footer {
 
           path {
             fill: $grey;
-            transition: fill .2s;
+            transition: fill 0.2s;
           }
         }
 
         &:hover {
           svg {
             path {
-              fill: #000;
+              fill: $blue;
             }
           }
         }
@@ -53,6 +55,7 @@ app-footer {
 
   .contact {
     a {
+      color: $grey;
       font-size: 11px;
     }
   }

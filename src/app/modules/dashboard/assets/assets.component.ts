@@ -24,7 +24,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
     table?: FormGroup;
-    search?: FormGroup;
   } = {};
   pagination;
   selectButton = 'Select all';
@@ -41,8 +40,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.initSearchForm();
-
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
@@ -72,12 +69,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   initTableForm() {
     this.forms.table = new FormGroup({
       assets: new FormArray([]),
-    });
-  }
-
-  initSearchForm() {
-    this.forms.search = new FormGroup({
-      input: new FormControl(null, [Validators.required]),
     });
   }
 
@@ -135,9 +126,5 @@ export class AssetsComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .subscribe(result => console.log('[Bulk event] was closed'));
-  }
-
-  search() {
-    console.log('search');
   }
 }

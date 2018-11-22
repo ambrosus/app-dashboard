@@ -16,10 +16,11 @@ app-root > * {
 
 router-outlet + * {
   flex-grow: 1;
+  position: relative;
+  z-index: 1000;
 }
 
 body {
-
   &.login,
   &.signup {
     @extend .ui-dark;
