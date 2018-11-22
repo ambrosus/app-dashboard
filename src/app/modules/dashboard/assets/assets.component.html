@@ -5,86 +5,81 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<main class="main p-a-20">
-  <h2 class="center m-t-30">My assets</h2>
-  <p class="center m-b-30">
-    Showing {{ forms.table.get('assets')['controls'].length }} results
-  </p>
+<div class="wrapper">
+  <header class="header">
+    <div>
+      <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
+      <p class="meta">
+        {{
+          selected
+            ? 'of ' + forms.table.value.assets.length
+            : forms.table.value.assets.length + ' results'
+        }}
+      </p>
+    </div>
+    <div style="flex: 0 0 auto;">
+      <button type="button" *ngIf="!selected">Create Asset</button>
+      <button
+        type="button"
+        class="transparent light"
+        *ngIf="selected"
+        (click)="select()"
+        style="margin-right: 10px;"
+      >
+        {{ selectButton }}
+      </button>
+      <button
+        type="button"
+        class="outline"
+        *ngIf="selected"
+        (click)="bulkEvent()"
+      >
+        Bulk event
+      </button>
+    </div>
+  </header>
 
-  <!-- Table -->
-  <form [formGroup]="forms.table">
-    <table class="table">
-      <thead>
-        <tr>
-          <td colspan="3" style="text-align: left;">
-            <button type="button" class="button m-r-10" (click)="select()">
-              {{ selectButton }}
-            </button>
-            <button type="button" class="button" (click)="bulkEvent()">
-              Bulk event
-            </button>
-          </td>
-          <td style="text-align: right;">
-            <button
-              type="button"
-              class="button button--blue m-l-auto"
-              routerLink="/assets/new"
-            >
-              Create New Asset
-            </button>
-          </td>
-        </tr>
-      </thead>
-      <tbody formArrayName="assets">
-        <tr
-          *ngFor="
-            let asset of forms.table.get('assets')['controls'];
-            let i = index
+  <form [formGroup]="forms.table" (change)="isSelected()">
+    <div class="table" formArrayName="assets">
+      <div
+        [ngClass]="{ selected: asset.value.selected }"
+        class="item"
+        *ngFor="
+          let asset of forms.table.get('assets')['controls'];
+          let i = index
+        "
+        [formGroupName]="i"
+      >
+        <label
+          class="image"
+          [style.backgroundImage]="
+            'url(' + assetsService.getImage(asset.value.infoEvent) + ')'
           "
-          [formGroupName]="i"
         >
-          <td class="table__checkbox">
-            <input formControlName="selected" type="checkbox" />
-          </td>
-          <td
-            class="table__image"
-            routerLink="/assets/{{ asset.value.assetId }}"
-          >
-            <img src="{{ assetsService.getImage(asset.value.infoEvent) }}" />
-          </td>
-          <td
-            class="table__info"
-            routerLink="/assets/{{ asset.value.assetId }}"
-          >
-            <p class="table__info__title">
-              {{ assetsService.getName(asset.value.infoEvent) }}
-            </p>
-            <small class="table__info__meta">{{ asset.value.assetId }}</small>
-          </td>
-          <td
-            class="table__status"
-            routerLink="/assets/{{ asset.value.assetId }}"
-          >
-            <p>Created</p>
-            <p class="table__status__timestamp">
-              {{ asset.value.createdAt * 1000 | date: 'd MMM yyyy HH:mm' }}
-            </p>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot *ngIf="pagination && pagination.hasNext">
-        <tr>
-          <td colspan="4">
-            <button
-              type="button"
-              class="button button--blue"
-              (click)="loadAssets(pagination.next)"
-            >
-              Load more
-            </button>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
+          <input formControlName="selected" type="checkbox" />
+        </label>
+        <div class="body">
+          <a routerLink="/assets/{{ asset.value.assetId }}">
+            <div class="body__main">
+              <h5 class="title">
+                {{ assetsService.getName(asset.value.infoEvent) }}
+              </h5>
+              <p class="assetId">{{ asset.value.assetId }}</p>
+              <p class="createdBy">
+                by <span class="account-image"></span>
+                <span class="address">{{ asset.value.createdBy }}</span>
+              </p>
+            </div>
+            <div class="body__latest" *ngIf="asset.value.latestEvent"></div>
+          </a>
+        </div>
+      </div>
+    </div>
   </form>
-</main>
+
+  <div class="center" *ngIf="pagination && pagination.hasNext">
+    <button class="transparent" (click)="loadAssets(pagination.next)">
+      Show more
+    </button>
+  </div>
+</div>

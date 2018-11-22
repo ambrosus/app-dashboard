@@ -25,7 +25,11 @@
         </ul>
       </nav>
       <!-- Search (simple) -->
-      <form class="search" [formGroup]="forms.search" (ngSubmit)="search()">
+      <form
+        class="form search"
+        [formGroup]="forms.search"
+        (ngSubmit)="search()"
+      >
         <a class="advanced" (click)="advancedSearch = !advancedSearch">{{
           advancedSearch ? 'close' : 'advanced'
         }}</a>
@@ -49,7 +53,7 @@
   <!-- Search (advanced) -->
   <div class="header__advancedSearch" *ngIf="advancedSearch">
     <form
-      class="center"
+      class="form center"
       [formGroup]="forms.searchAdvance"
       (ngSubmit)="search()"
       (keydown.enter)="$event.preventDefault()"

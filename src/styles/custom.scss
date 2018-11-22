@@ -245,23 +245,23 @@ button.is-loading .btn-spinner {
   }
 }
 
-.item {
-  color: #777;
-  border-bottom: 1px dashed #e0e6f6;
-  display: flex;
-  flex-direction: row;
-  padding: 7px 0px;
+// .item {
+//   color: #777;
+//   border-bottom: 1px dashed #e0e6f6;
+//   display: flex;
+//   flex-direction: row;
+//   padding: 7px 0px;
 
-  &__title,
-  &__value {
-    width: 50%;
-  }
+//   &__title,
+//   &__value {
+//     width: 50%;
+//   }
 
-  &__title {
-    margin-right: 15px;
-  }
+//   &__title {
+//     margin-right: 15px;
+//   }
 
-  &:last-of-type {
-    border: none;
-  }
-}
+//   &:last-of-type {
+//     border: none;
+//   }
+// }

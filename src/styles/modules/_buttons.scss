@@ -17,12 +17,26 @@ button,
 
   &.outline {
     border: 1px solid linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
-    background-color: transparent;
+    background: transparent;
     color: $purple-blue;
 
     &:hover {
       background: linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
       color: $white;
+    }
+  }
+
+  &.transparent {
+    border-color: transparent;
+    background: transparent;
+    color: $blue;
+
+    &.light {
+      color: $grey;
+    }
+
+    &:hover {
+      background: rgba($grey, 0.07);
     }
   }
 }

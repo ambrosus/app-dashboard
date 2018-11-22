@@ -26,10 +26,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
     table?: FormGroup;
   } = {};
   pagination;
-  selectButton = 'Select all';
   loader;
   error;
   selected;
+  allSelected = false;
+  selectButton = 'Select all';
   back;
 
   constructor(
@@ -53,8 +54,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
             new FormGroup({
               assetId: new FormControl(asset.assetId),
               infoEvent: new FormControl(asset.infoEvent),
+              createdBy: new FormControl(asset.content.idData.createdBy),
               createdAt: new FormControl(asset.content.idData.timestamp),
-              selected: new FormControl(null),
+              selected: new FormControl(false),
             }),
           );
         });
@@ -73,6 +75,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   loadAssets(next = '', limit = 15) {
+    this.selected = 0;
     this.dialog.closeAll();
     this.loader = true;
     const token = this.authService.getToken();
@@ -97,11 +100,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   select() {
-    this.selected = !this.selected;
-    this.selectButton = this.selected ? 'Unselect all' : 'Select all';
-    this.forms.table
-      .get('assets')
-      ['controls'].map(asset => asset.get('selected').setValue(this.selected));
+    this.allSelected = !this.allSelected;
+    this.selectButton = this.allSelected ? 'Unselect all' : 'Select all';
+    this.selected = this.forms.table.get('assets')['controls'].filter(asset => {
+      asset.get('selected').setValue(this.allSelected);
+      return asset.get('selected').value;
+    }).length;
+  }
+
+  isSelected() {
+    const table = this.forms.table.value;
+    this.selected = table.assets.filter(asset => asset.selected).length;
   }
 
   bulkEvent() {

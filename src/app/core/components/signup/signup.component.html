@@ -62,6 +62,7 @@
     </div>
 
     <form
+      class="form"
       [formGroup]="forms.privateKeyForm"
       (ngSubmit)="verifyAccount()"
       style="max-width: 624px"
@@ -174,7 +175,11 @@
     <p class="meta">
       For better customer experience please share a few more details.
     </p>
-    <form [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+    <form
+      class="form"
+      [formGroup]="forms.requestForm"
+      (ngSubmit)="requestOrganization()"
+    >
       <label [ngClass]="{ error: errorRequestForm }"
         >Organization name (optional)
         <input

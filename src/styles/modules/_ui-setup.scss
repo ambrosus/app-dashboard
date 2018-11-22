@@ -20,7 +20,7 @@ body {
   font-size: 13px;
   color: $black;
   font-family: 'Rubik', sans-serif;
-  background-color: #e5e5e5;
+  background-color: #fff;
   font-weight: normal;
   font-style: normal;
   position: relative;
@@ -76,8 +76,15 @@ h5,
 h6 {
   line-height: 1.17;
   color: $black;
-  font-weight: 500;
+  font-weight: 300;
   margin-bottom: 15px;
+}
+
+h4,
+h5,
+h6 {
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
 h1,
