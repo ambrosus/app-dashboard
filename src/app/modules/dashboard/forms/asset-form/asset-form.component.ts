@@ -123,7 +123,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       const value = event.target.value;
       const form = this.assetForm.value;
       let name = value.split('/');
-      name = form.documents.length ? name[name.length - 1] : 'default';
+      name = form.images.length ? name[name.length - 1] : 'default';
       if (value) {
         (<FormArray>this.assetForm.get('images')).push(
           new FormGroup({
