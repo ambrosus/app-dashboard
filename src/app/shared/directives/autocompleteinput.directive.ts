@@ -14,7 +14,7 @@ export class AutocompleteinputDirective implements OnInit {
 
   ngOnInit() {
     // Create div to hold autocomplete items
-    this.div.setAttribute('class', 'autocomplete-items');
+    this.div.setAttribute('class', 'autocomplete');
     // Append div below the input
     this.el.nativeElement.parentNode.appendChild(this.div);
   }

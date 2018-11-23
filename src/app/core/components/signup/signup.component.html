@@ -5,9 +5,7 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<a class="logo" routerLink="/login"
-  ><img src="/assets/raster/login-logo.png" alt="Ambrosus"
-/></a>
+<a class="logo" routerLink="/login"><img src="/assets/raster/login-logo.png" alt="Ambrosus" /></a>
 
 <div [ngSwitch]="step">
   <!-- STEP 1: Options -->
@@ -48,12 +46,7 @@
   <div *ngSwitchCase="'registerKey'">
     <div class="block-center">
       <h2>
-        <app-svg-icon
-          class="back"
-          name="back-arrow"
-          height="8"
-          (click)="step = 'options'"
-        ></app-svg-icon>
+        <app-svg-icon class="back" name="back-arrow" height="8" (click)="step = 'options'"></app-svg-icon>
         Register your public key
       </h2>
       <p class="meta" style="margin-bottom: 60px;">
@@ -61,32 +54,17 @@
       </p>
     </div>
 
-    <form
-      class="form"
-      [formGroup]="forms.privateKeyForm"
-      (ngSubmit)="verifyAccount()"
-      style="max-width: 624px"
-    >
-      <label [ngClass]="{ error: errorPrivateKeyForm }"
-        >Your private key
+    <form class="form" [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+      <label [ngClass]="{ error: errorPrivateKeyForm }">
+        <span>Your private key</span>
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
-          <span class="message"
-            >For maximum security, your private key will <b>never</b> leave your
-            browser.</span
-          >
+          <span class="message">For maximum security, your private key will <b>never</b> leave your
+            browser.</span>
         </span>
-        <input
-          formControlName="privateKey"
-          type="text"
-          [appError]="[forms.privateKeyForm, true]"
-        />
+        <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]" />
       </label>
-      <button
-        type="submit"
-        [disabled]="forms.privateKeyForm.invalid"
-        [promiseBtn]="promiseActionPrivateKeyForm"
-      >
+      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">
         Continue
       </button>
     </form>
@@ -95,12 +73,7 @@
   <!-- STEP 2: Generate keys -->
   <div *ngSwitchCase="'generateKeys'" class="block-center">
     <h2>
-      <app-svg-icon
-        class="back"
-        name="back-arrow"
-        height="8"
-        (click)="step = 'options'"
-      ></app-svg-icon>
+      <app-svg-icon class="back" name="back-arrow" height="8" (click)="step = 'options'"></app-svg-icon>
       Generate new keys
     </h2>
     <p class="meta" style="margin-bottom: 60px;">
@@ -141,29 +114,20 @@
       <p>{{ forms.privateKeyForm.getRawValue().privateKey }}</p>
 
       <h6>
-        <a download="keys.json" [attr.href]="downloadJSON()"
-          >Download Keystore file (JSON)
-          <app-svg-icon
-            name="download"
-            width="32"
-            height="29"
-            fill="#333"
-          ></app-svg-icon>
+        <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
+          <app-svg-icon name="download" width="32" height="29" fill="#333"></app-svg-icon>
         </a>
       </h6>
     </div>
     <p class="right" style="margin-bottom: 40px">
       <a>How to secure the keys?</a>
     </p>
-    <label class="center">
-      <input
-        type="checkbox"
-        [checked]="saved"
-        (change)="saved = !saved"
-        appCustomCheckbox
-      />
-      I have saved my keys
-    </label>
+    <div class="form">
+      <label style="text-align: center">
+        <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox />
+        I have saved my keys
+      </label>
+    </div>
     <button type="button" [disabled]="!saved" (click)="savedKeys()">
       Continue
     </button>
@@ -175,48 +139,24 @@
     <p class="meta">
       For better customer experience please share a few more details.
     </p>
-    <form
-      class="form"
-      [formGroup]="forms.requestForm"
-      (ngSubmit)="requestOrganization()"
-    >
-      <label [ngClass]="{ error: errorRequestForm }"
-        >Organization name (optional)
-        <input
-          formControlName="title"
-          type="text"
-          name="new-title"
-          autocomplete="new_title"
-          [appError]="[forms.requestForm, true]"
-        />
+    <form class="form" [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
+      <label [ngClass]="{ error: errorRequestForm }">
+        <span>Organization name</span>
+        <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.requestForm, true]" />
       </label>
-      <label [ngClass]="{ error: errorRequestForm }"
-        >Your email
-        <input
-          formControlName="email"
-          name="new-email2"
-          autocomplete="off"
-          type="email"
-          [appError]="[forms.requestForm]"
-        />
+      <label [ngClass]="{ error: errorRequestForm }">
+        <span>Your email *</span>
+        <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.requestForm]" />
       </label>
-      <label [ngClass]="{ error: errorRequestForm }"
-        >What makes you interested in our solution?
-        <textarea
-          formControlName="message"
-          [appError]="[forms.requestForm]"
-          rows="3"
-        ></textarea>
+      <label [ngClass]="{ error: errorRequestForm }">
+        <span>What makes you interested in our solution? *</span>
+        <textarea formControlName="message" [appError]="[forms.requestForm]" rows="2"></textarea>
       </label>
       <label>
         <input type="checkbox" formControlName="terms" appCustomCheckbox /> I
         have read and accepted <a>Terms of Service</a>
       </label>
-      <button
-        type="submit"
-        [disabled]="forms.requestForm.invalid"
-        [promiseBtn]="promiseActionRequestForm"
-      >
+      <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">
         Register
       </button>
     </form>
@@ -224,10 +164,7 @@
 
   <!-- STEP 5: Success -->
   <div *ngSwitchCase="'success'" class="block-center">
-    <img
-      src="/assets/svg/success.svg"
-      style="margin: 80px 0 47px; height: 24px"
-    />
+    <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px" />
     <h2 style="margin: 0; margin-bottom: 20px">Thank you!</h2>
     <p class="meta">
       Your application has been successfully submitted for approval.<br />Once

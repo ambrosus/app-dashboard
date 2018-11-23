@@ -18,7 +18,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 }
 
 app-header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 1500;
   width: 100%;
 
@@ -61,20 +63,19 @@ app-header {
     &__advancedSearch {
       padding: 40px 20px 60px;
       width: 100%;
-      position: absolute;
+      position: fixed;
       left: 0;
-      top: 100%;
+      top: 80px;
+      height: calc(100% - 80px);
       background: #fff;
       animation: fadeIn 0.2s forwards;
+      overflow-y: auto;
 
       form {
         max-width: 816px;
       }
 
       label {
-        text-transform: uppercase;
-        font-weight: 500;
-        font-size: 11px;
         margin-bottom: 30px;
 
         &:last-of-type {

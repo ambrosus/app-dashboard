@@ -10,9 +10,11 @@ import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
+import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -38,7 +40,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public dialog: MatDialog,
     private storageService: StorageService,
-  ) {}
+    private router: Router,
+  ) { }
 
   ngOnInit() {
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
@@ -62,6 +65,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
         });
       },
     );
+
+    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationEnd) {
+        this.dialog.closeAll();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -125,8 +134,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       return alert(`You didn\'t select any assets. Please do so first.`);
     }
     const dialogRef = this.dialog.open(EventAddComponent, {
-      width: '600px',
-      position: { top: '0', right: '0' },
+      panelClass: 'dialog',
       data: {
         assetIds,
       },
@@ -135,5 +143,15 @@ export class AssetsComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .subscribe(result => console.log('[Bulk event] was closed'));
+  }
+
+  createAsset() {
+    const dialogRef = this.dialog.open(AssetAddComponent, {
+      panelClass: 'dialog',
+    });
+
+    dialogRef
+      .afterClosed()
+      .subscribe(result => console.log('[Create asset] was closed'));
   }
 }

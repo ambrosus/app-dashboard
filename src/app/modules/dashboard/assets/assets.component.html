@@ -10,30 +10,15 @@
     <div>
       <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
       <p class="meta">
-        {{
-          selected
-            ? 'of ' + forms.table.value.assets.length
-            : forms.table.value.assets.length + ' results'
-        }}
+        {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
       </p>
     </div>
     <div style="flex: 0 0 auto;">
-      <button type="button" *ngIf="!selected">Create Asset</button>
-      <button
-        type="button"
-        class="transparent light"
-        *ngIf="selected"
-        (click)="select()"
-        style="margin-right: 10px;"
-      >
+      <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
+      <button type="button" class="transparent light" *ngIf="selected" (click)="select()" style="margin-right: 10px;">
         {{ selectButton }}
       </button>
-      <button
-        type="button"
-        class="outline"
-        *ngIf="selected"
-        (click)="bulkEvent()"
-      >
+      <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">
         Bulk event
       </button>
     </div>
@@ -41,21 +26,13 @@
 
   <form [formGroup]="forms.table" (change)="isSelected()">
     <div class="table" formArrayName="assets">
-      <div
-        [ngClass]="{ selected: asset.value.selected }"
-        class="item"
-        *ngFor="
+      <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="
           let asset of forms.table.get('assets')['controls'];
           let i = index
-        "
-        [formGroupName]="i"
-      >
-        <label
-          class="image"
-          [style.backgroundImage]="
+        " [formGroupName]="i">
+        <label class="image" [style.backgroundImage]="
             'url(' + assetsService.getImage(asset.value.infoEvent) + ')'
-          "
-        >
+          ">
           <input formControlName="selected" type="checkbox" />
         </label>
         <div class="body">

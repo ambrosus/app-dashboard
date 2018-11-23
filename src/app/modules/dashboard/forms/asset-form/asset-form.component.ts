@@ -4,11 +4,13 @@ import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-asset-form',
   templateUrl: './asset-form.component.html',
   styleUrls: ['./asset-form.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AssetFormComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
@@ -53,7 +55,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) {}
+  ) { }
 
   to(P: Promise<any>) {
     return P.then(response => response).catch(error => ({ error }));

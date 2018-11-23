@@ -1,5 +1,43 @@
-@import 'var';
+@import 'utils';
 
-.event-add-close {
-    height: 20px; width: 20px; cursor: pointer; position: relative; left: 385; bottom: 5;
+app-event-add {
+
+  .header {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin-bottom: 0;
+    }
+
+    .title {
+      color: $light-blue;
+      font-weight: 400;
+
+      .meta {
+        font-size: 18px;
+        margin-left: 5px;
+      }
+    }
+
+    .menu {
+      li {
+        display: inline-block;
+        margin-right: 24px;
+        font-size: 14px;
+        font-weight: 500;
+
+        &.active {
+          color: $blue;
+        }
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+  }
 }

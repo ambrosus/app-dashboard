@@ -4,11 +4,13 @@ import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-event-form',
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class EventFormComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
@@ -52,7 +54,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForm();
@@ -369,7 +371,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     if (
       !confirm(
         `You are about to create an event for ${this.assetIds.length} asset${
-          this.assetIds.length === 1 ? '' : 's'
+        this.assetIds.length === 1 ? '' : 's'
         }, are you sure you want to proceed?`,
       )
     ) {

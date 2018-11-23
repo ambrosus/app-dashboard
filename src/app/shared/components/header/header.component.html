@@ -17,64 +17,44 @@
             <a routerLink="/node" routerLinkActive="active">Node</a>
           </li>
           <li *ngIf="checkPermission(['manage_accounts'])">
-            <a routerLink="/organization" routerLinkActive="active"
-              >Organizations</a
-            >
+            <a routerLink="/organization" routerLinkActive="active">Organizations</a>
           </li>
           <li><a routerLink="/assets" routerLinkActive="active">Assets</a></li>
         </ul>
       </nav>
       <!-- Search (simple) -->
-      <form
-        class="form search"
-        [formGroup]="forms.search"
-        (ngSubmit)="search()"
-      >
+      <form class="form search" [formGroup]="forms.search" (ngSubmit)="search()">
         <a class="advanced" (click)="advancedSearch = !advancedSearch">{{
           advancedSearch ? 'close' : 'advanced'
         }}</a>
-        <input
-          formControlName="input"
-          type="search"
-          placeholder="Search Assets (by ID or Text)"
-        />
+        <input formControlName="input" type="search" placeholder="Search Assets (by ID or Text)" />
       </form>
     </div>
 
     <div class="avatar">
-      <div>
-        {{
-          account.email ? account.email.charAt(0) : account.address.charAt(2)
-        }}
-      </div>
+      <div>{{ account.email ? account.email.charAt(0) : account.address.charAt(2) }}</div>
     </div>
   </div>
 
   <!-- Search (advanced) -->
   <div class="header__advancedSearch" *ngIf="advancedSearch">
-    <form
-      class="form center"
-      [formGroup]="forms.searchAdvance"
-      (ngSubmit)="search()"
-      (keydown.enter)="$event.preventDefault()"
-    >
+    <form class="form center" [formGroup]="forms.searchAdvance" (ngSubmit)="search()" (keydown.enter)="$event.preventDefault()">
       <div class="group">
-        <label class="w25"
-          >Created from <input type="date" formControlName="from" />
+        <label class="w25">
+          <span>Created from</span>
+          <input type="date" formControlName="from" />
         </label>
-        <label class="w25"
-          >To <input type="date" formControlName="to" />
+        <label class="w25">
+          <span>To</span>
+          <input type="date" formControlName="to" />
         </label>
-        <label class="w50"
-          >Asset state
+        <label class="w50">
+          <span>Asset state</span>
           <div class="tags" formArrayName="state">
-            <div
-              class="tag"
-              *ngFor="
+            <div class="tag" *ngFor="
                 let tag of forms.searchAdvance.get('state')['controls'];
                 let i = index
-              "
-            >
+              ">
               {{ tag.value }}
               <a class="remove" (click)="remove('state', i)">&times;</a>
             </div>
@@ -82,33 +62,17 @@
           </div>
         </label>
       </div>
+      <h5 class="left" style="margin-bottom: 25px;">Identifiers</h5>
       <div formArrayName="identifiers" class="right">
-        <div
-          class="group"
-          *ngFor="
-            let identifier of forms.searchAdvance.get('identifiers')[
-              'controls'
-            ];
-            let i = index
-          "
-          [formGroupName]="i"
-        >
-          <label class="w50"
-            >Identifier name
-            <input
-              formControlName="name"
-              [appAutocompleteinput]="{
-                control: identifier.get('name'),
-                array: identifiersAutocomplete
-              }"
-              type="text"
-            />
+        <div class="group" *ngFor="let identifier of forms.searchAdvance.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+          <label class="w50">
+            <span>Name</span>
+            <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), farray: identifiersAutocomplete }" type="text" />
           </label>
-          <label class="w50"
-            >Value <input formControlName="value" type="text" />
-            <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0"
-              >&times;</a
-            >
+          <label class="w50">
+            <span>Value</span>
+            <input formControlName="value" type="text" />
+            <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0">&times;</a>
           </label>
         </div>
         <a class="addMore" (click)="addIdentifier()">+ Add more</a>
@@ -117,27 +81,33 @@
       <h5 class="left" style="margin: 30px 0;">Location</h5>
       <div formGroupName="location" style="margin-bottom: 40px">
         <div class="group">
-          <label class="w50"
-            >City <input formControlName="city" type="text" />
+          <label class="w50">
+            <span>City</span>
+            <input formControlName="city" type="text" />
           </label>
-          <label class="w50"
-            >Country <input formControlName="country" type="text" />
-          </label>
-        </div>
-        <div class="group">
-          <label class="w50"
-            >GLN <input formControlName="gln" type="text" />
-          </label>
-          <label class="w50"
-            >Location ID <input formControlName="locationId" type="text" />
+          <label class="w50">
+            <span>Country</span>
+            <input formControlName="country" type="text" />
           </label>
         </div>
         <div class="group">
-          <label class="w50"
-            >Latitude <input formControlName="lat" type="number" />
+          <label class="w50">
+            <span>GLN</span>
+            <input formControlName="gln" type="text" />
           </label>
-          <label class="w50"
-            >Longitude <input formControlName="lng" type="number" />
+          <label class="w50">
+            <span>Location ID</span>
+            <input formControlName="locationId" type="text" />
+          </label>
+        </div>
+        <div class="group">
+          <label class="w50">
+            <span>Latitude</span>
+            <input formControlName="lat" type="number" />
+          </label>
+          <label class="w50">
+            <span>Longitude</span>
+            <input formControlName="lng" type="number" />
           </label>
         </div>
       </div>
@@ -146,8 +116,4 @@
   </div>
 </header>
 
-<div
-  class="overlay"
-  *ngIf="advancedSearch"
-  (click)="advancedSearch = false"
-></div>
+<div class="overlay" *ngIf="advancedSearch" (click)="advancedSearch = false"></div>

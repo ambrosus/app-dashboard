@@ -1,26 +1,38 @@
-@import 'var';
+@import 'utils';
 
-.jsonInput {
-  font-size: 14px;
-  font-family: monospace;
-  box-shadow: 0 2px 20px 0 rgba(74, 124, 226, 0.09);
-  padding: 20px;
-  background: #fff;
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
-  height: 300px;
-  min-height: 300px;
-  white-space: pre;
-  line-height: 1.4;
-  color: #333;
-  border: 2px solid $ablue;
+app-asset-add {
 
-  &::placeholder {
-    font-size: 13px;
-    color: #777;
-  }
-  &.invalid {
-    border: 2px solid red;
+  .header {
+    padding: 45px 65px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin-bottom: 0;
+    }
+
+    .title {
+      color: $light-blue;
+      font-weight: 400;
+    }
+
+    .menu {
+      li {
+        display: inline-block;
+        margin-right: 24px;
+        font-size: 14px;
+        font-weight: 500;
+
+        &.active {
+          color: $blue;
+        }
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
   }
 }
