@@ -5,6 +5,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-event-form',
@@ -54,7 +55,12 @@ export class EventFormComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) { }
+
+  sanitizeUrl(url) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
 
   ngOnInit() {
     this.initForm();
@@ -88,12 +94,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required]),
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
-      documents: new FormArray([
-        new FormGroup({
-          name: new FormControl(null, []),
-          url: new FormControl(null, []),
-        }),
-      ]),
+      documents: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -124,13 +125,22 @@ export class EventFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.eventForm.get(array)).removeAt(index);
   }
 
-  addDocument() {
-    (<FormArray>this.eventForm.get('documents')).push(
-      new FormGroup({
-        name: new FormControl(null, []),
-        url: new FormControl(null, []),
-      }),
-    );
+  addDocument(event, input) {
+    if (event.keyCode === 13) {
+      const value = event.target.value;
+      const form = this.eventForm.value;
+      let name = value.split('/');
+      name = form.documents.length ? name[name.length - 1] : 'default';
+      if (value) {
+        (<FormArray>this.eventForm.get('documents')).push(
+          new FormGroup({
+            name: new FormControl(name, []),
+            url: new FormControl(event.target.value, []),
+          }),
+        );
+      }
+      input.value = '';
+    }
   }
 
   addIdentifier() {

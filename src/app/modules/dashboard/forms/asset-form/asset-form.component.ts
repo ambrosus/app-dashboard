@@ -122,10 +122,12 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     if (event.keyCode === 13) {
       const value = event.target.value;
       const form = this.assetForm.value;
+      let name = value.split('/');
+      name = form.documents.length ? name[name.length - 1] : 'default';
       if (value) {
         (<FormArray>this.assetForm.get('images')).push(
           new FormGroup({
-            name: new FormControl(`form.images.length ? 'image' : 'default'`, []),
+            name: new FormControl(name, []),
             url: new FormControl(event.target.value, []),
           }),
         );

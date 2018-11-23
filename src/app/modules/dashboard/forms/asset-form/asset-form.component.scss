@@ -21,6 +21,7 @@ app-asset-form {
     margin-top: 10px;
 
     > div {
+      position: relative;
       width: 84px;
       height: 84px;
       background-color: #fafafa;
@@ -33,6 +34,9 @@ app-asset-form {
         &:after {
           content: 'x';
           display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
           height: 100%;
           background-color: rgba($blue, 0.75);
