@@ -130,7 +130,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
       const value = event.target.value;
       const form = this.eventForm.value;
       let name = value.split('/');
-      name = form.documents.length ? name[name.length - 1] : 'default';
+      name = name[name.length - 1];
       if (value) {
         (<FormArray>this.eventForm.get('documents')).push(
           new FormGroup({
