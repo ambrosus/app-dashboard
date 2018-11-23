@@ -51,10 +51,7 @@
         <label class="w50">
           <span>Asset state</span>
           <div class="tags" formArrayName="state">
-            <div class="tag" *ngFor="
-                let tag of forms.searchAdvance.get('state')['controls'];
-                let i = index
-              ">
+            <div class="tag" *ngFor="let tag of forms.searchAdvance.get('state')['controls']; let i = index">
               {{ tag.value }}
               <a class="remove" (click)="remove('state', i)">&times;</a>
             </div>

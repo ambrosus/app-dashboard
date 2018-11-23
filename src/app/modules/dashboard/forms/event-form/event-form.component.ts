@@ -106,25 +106,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
           value: new FormControl(null, []),
         }),
       ]),
-      groups: new FormArray([
-        new FormGroup({
-          title: new FormControl(null, []),
-          content: new FormArray([
-            new FormGroup({
-              name: new FormControl(null, []),
-              value: new FormControl(null, []),
-            }),
-          ]),
-        }),
-      ]),
+      groups: new FormArray([]),
       location: new FormGroup({
         lat: new FormControl(null, []),
         lng: new FormControl(null, []),
-        name: new FormControl(null, []),
         city: new FormControl(null, []),
         country: new FormControl(null, []),
         locationId: new FormControl(null, []),
-        GLN: new FormControl(null, []),
+        gln: new FormControl(null, []),
       }),
     });
   }
@@ -269,16 +258,15 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
     // Location Event
     const location = eventForm.location;
-    const { lat, lng, name, city, country, locationId, GLN } = location;
+    const { lat, lng, name, city, country, locationId, gln } = location;
 
     if (
       (lat || lat === 0) &&
       (lng || lng === 0) &&
-      name &&
       city &&
       country &&
       locationId &&
-      GLN
+      gln
     ) {
       const _location = {
         type: 'ambrosus.event.location',
@@ -289,11 +277,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
             coordinates: [lat, lng],
           },
         },
-        name,
         city,
         country,
         locationId,
-        GLN,
+        gln,
       };
 
       data.push(_location);
@@ -339,27 +326,25 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
     // Location Event
     const location = data.location;
-    const { lat, lng, name, city, country, locationId, GLN } = location;
+    const { lat, lng, city, country, locationId, gln } = location;
 
     if (
       lat ||
       lat === 0 ||
       (lng || lng === 0) ||
-      name ||
       city ||
       country ||
       locationId ||
-      GLN
+      gln
     ) {
       if (
         !(
           (lat || lat === 0) &&
           (lng || lng === 0) &&
-          name &&
           city &&
           country &&
           locationId &&
-          GLN
+          gln
         )
       ) {
         return (this.error =

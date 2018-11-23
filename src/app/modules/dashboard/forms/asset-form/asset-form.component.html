@@ -5,10 +5,10 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<form class="form" [formGroup]="assetForm" (ngSubmit)="save()">
+<form class="form" [formGroup]="assetForm" (ngSubmit)="save()" (keydown.enter)="$event.preventDefault()">
 
   <section>
-    <h5 style="margin-bottom: 25px;">Information</h5>
+    <h5 style=" margin-bottom: 25px;">Information</h5>
     <label>
       <span>Name *</span>
       <input formControlName="name" type="text">
@@ -26,7 +26,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <textarea formControlName="description" rows="1"></textarea>
     </label>
 
-    <h5 style="margin: 50px 0 25px">Images</h5>
+    <div formArrayName="images">
+      <h5 style="margin: 50px 0 25px">Images</h5>
+      <input type="url" placeholder="Enter an image url" (keydown)="addImage($event, imageInput)" #imageInput>
+      <div class="image-preview">
+        <div *ngFor="let image of assetForm.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrl(image.url)" (click)="remove('images', i)"></div>
+      </div>
+    </div>
   </section>
 
   <section style="background: #fafafa;">
@@ -102,55 +108,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <a class="addMore" (click)="addIdentifier()">+ Add more</a>
     </div>
   </section>
-
-  <!-- <ul class="accordions">
-
-    <li class="accordion">
-      <h5 class="accordion__title active" appAccordion>
-        <span>Information</span>
-        <img src="/assets/raster/arrow-down.png">
-      </h5>
-      <div class="accordion__content active">
-
-        <h5>Identifiers (optional)</h5>
-        <div formArrayName="identifiers" class="right">
-          <div *ngFor="let identifier of assetForm.get('identifiers')['controls']; let i = index" [formGroupName]="i">
-            <button type="button" class="remove" (click)="remove('identifiers', i)">&times;</button>
-            <label style="position: relative;">Identifier
-              <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: identifiersAutocomplete }" type="text">
-            </label>
-            <label>Value
-              <input formControlName="value" type="text">
-            </label>
-          </div>
-          <button type="button" class="addMore" (click)="addIdentifier()">+ Add identifier</button>
-        </div>
-      </div>
-    </li>
-
-    <li class="accordion">
-      <h5 class="accordion__title" appAccordion>
-        <span>Images (optional)</span>
-        <img src="/assets/raster/arrow-down.png">
-      </h5>
-      <div class="accordion__content right" formArrayName="images">
-        <div *ngFor="let image of assetForm.get('images')['controls']; let i = index" [formGroupName]="i">
-          <button type="button" class="remove" (click)="remove('images', i)" *ngIf="i > 0">&times;</button>
-          <label>Image name
-            <input formControlName="name" type="text">
-          </label>
-          <label>Image URL
-            <input formControlName="url" type="url">
-          </label>
-        </div>
-        <button type="button" class="addMore" (click)="addImage()">+ Add image</button>
-      </div>
-    </li>
-
-
-
-    </li>
-  </ul> -->
 
   <section class="right">
     <button type="button" class="transparent light" (click)="cancel()" style="margin-right: 10px;">Cancel</button>

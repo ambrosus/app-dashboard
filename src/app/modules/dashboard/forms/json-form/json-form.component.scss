@@ -1,18 +1,22 @@
-.json {
-  font-size: 12px;
-  font-family: monospace;
-  height: 300px;
-  min-height: 300px;
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
-  padding: 20px;
-  background: #fff;
-  white-space: pre;
-  line-height: 1.4;
-  color: #333;
+@import 'utils';
 
-  &:focus {
-    outline: 2px solid lightblue;
+app-json-form {
+  .form {
+    max-width: 100%;
+    text-align: left;
+
+    textarea {
+      font-size: 12px;
+      font-family: monospace;
+      white-space: pre;
+      height: 400px;
+      min-height: 300px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+      line-height: 1.4;
+      color: $black;
+      background: #fff;
+    }
   }
 }

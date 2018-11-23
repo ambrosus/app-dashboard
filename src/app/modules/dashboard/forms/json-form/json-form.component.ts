@@ -2,11 +2,13 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Router } from '@angular/router';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-json-form',
   templateUrl: './json-form.component.html',
   styleUrls: ['./json-form.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class JsonFormComponent implements OnInit {
   error;
@@ -22,13 +24,13 @@ export class JsonFormComponent implements OnInit {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
-  ) {}
+  ) { }
 
   to(P: Promise<any>) {
     return P.then(response => response).catch(error => ({ error }));
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   cancel() {
     this.router.navigate([`${location.pathname}`]);
@@ -51,16 +53,16 @@ export class JsonFormComponent implements OnInit {
 
     const reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       const text = reader.result;
       that.textArea = text;
     };
 
-    reader.onerror = function(e) {
+    reader.onerror = function (e) {
       console.error('[UPLOAD]: ', e);
     };
 
-    reader.onabort = function(e) {};
+    reader.onabort = function (e) { };
 
     reader.readAsText(file);
   }
@@ -166,7 +168,7 @@ export class JsonFormComponent implements OnInit {
     let json = null;
     try {
       json = JSON.parse(input.value);
-    } catch (e) {}
+    } catch (e) { }
 
     if (!json) {
       this.error = 'Input some valid JSON first';
@@ -175,7 +177,7 @@ export class JsonFormComponent implements OnInit {
     if (
       !confirm(
         `Are you sure you want to proceed creating ${
-          this.for === 'assets' ? 'this asset' : 'these events'
+        this.for === 'assets' ? 'this asset' : 'these events'
         }?`,
       )
     ) {

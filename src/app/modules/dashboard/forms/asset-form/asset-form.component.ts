@@ -5,6 +5,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-asset-form',
@@ -55,7 +56,12 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) { }
+
+  sanitizeUrl(url) {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
+  }
 
   to(P: Promise<any>) {
     return P.then(response => response).catch(error => ({ error }));
@@ -89,12 +95,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required]),
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
-      images: new FormArray([
-        new FormGroup({
-          name: new FormControl({ value: 'default', disabled: true }, []),
-          url: new FormControl('', []),
-        }),
-      ]),
+      images: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -107,17 +108,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
           value: new FormControl(null, []),
         }),
       ]),
-      groups: new FormArray([
-        new FormGroup({
-          title: new FormControl(null, []),
-          content: new FormArray([
-            new FormGroup({
-              name: new FormControl(null, []),
-              value: new FormControl(null, []),
-            }),
-          ]),
-        }),
-      ]),
+      groups: new FormArray([]),
     });
   }
 
@@ -127,13 +118,20 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     (<FormArray>this.assetForm.get(array)).removeAt(index);
   }
 
-  addImage() {
-    (<FormArray>this.assetForm.get('images')).push(
-      new FormGroup({
-        name: new FormControl(null, []),
-        url: new FormControl(null, []),
-      }),
-    );
+  addImage(event, input) {
+    if (event.keyCode === 13) {
+      const value = event.target.value;
+      const form = this.assetForm.value;
+      if (value) {
+        (<FormArray>this.assetForm.get('images')).push(
+          new FormGroup({
+            name: new FormControl(`form.images.length ? 'image' : 'default'`, []),
+            url: new FormControl(event.target.value, []),
+          }),
+        );
+      }
+      input.value = '';
+    }
   }
 
   addIdentifier() {

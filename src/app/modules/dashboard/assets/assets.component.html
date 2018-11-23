@@ -26,13 +26,8 @@
 
   <form [formGroup]="forms.table" (change)="isSelected()">
     <div class="table" formArrayName="assets">
-      <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="
-          let asset of forms.table.get('assets')['controls'];
-          let i = index
-        " [formGroupName]="i">
-        <label class="image" [style.backgroundImage]="
-            'url(' + assetsService.getImage(asset.value.infoEvent) + ')'
-          ">
+      <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
+        <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.infoEvent) + ')'">
           <input formControlName="selected" type="checkbox" />
         </label>
         <div class="body">

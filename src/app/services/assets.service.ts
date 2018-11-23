@@ -310,7 +310,7 @@ export class AssetsService {
       await events.map(async (event: any, index, array) => {
         const url = `${this.api.core}/assets/${
           event.content.idData.assetId
-        }/events`;
+          }/events`;
         const eventCreated = await this.to(this.http.post(url, event));
         if (eventCreated.error) {
           data.errors.push({ event, error: eventCreated.error });
@@ -371,7 +371,7 @@ export class AssetsService {
     try {
       return obj.images.default.url;
     } catch (e) {
-      return '/assets/raster/logotip.jpg';
+      return '/assets/raster/assets-image-default.png';
     }
   }
 
@@ -445,7 +445,7 @@ export class AssetsService {
             };
             eventObject[
               typeof property.value === 'string' ||
-              Array.isArray(property.value)
+                Array.isArray(property.value)
                 ? 'properties'
                 : 'groups'
             ].push(property);
