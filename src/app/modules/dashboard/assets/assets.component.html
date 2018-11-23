@@ -11,13 +11,11 @@
       <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
       <p class="meta">
         {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
+        <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
       </p>
     </div>
     <div style="flex: 0 0 auto;">
       <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
-      <button type="button" class="transparent light" *ngIf="selected" (click)="select()" style="margin-right: 10px;">
-        {{ selectButton }}
-      </button>
       <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">
         Bulk event
       </button>

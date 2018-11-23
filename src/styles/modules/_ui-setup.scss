@@ -20,7 +20,7 @@ body {
   font-size: 13px;
   color: $black;
   font-family: 'Rubik', sans-serif;
-  background-color: #fff;
+  background-color: #fafafa;
   font-weight: normal;
   font-style: normal;
   position: relative;
@@ -137,4 +137,13 @@ a {
     font-size: 12px;
     text-transform: uppercase;
   }
+}
+
+hr {
+  box-sizing: content-box;
+  height: 1px;
+  overflow: visible;
+  background: #ddd;
+  width: 100%;
+  margin: 25px 0;
 }

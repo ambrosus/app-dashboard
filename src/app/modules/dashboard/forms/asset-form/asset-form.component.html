@@ -37,17 +37,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
   <section style="background: #fafafa;">
     <h2 style="margin-bottom: 24px;">Properties</h2>
-    <div class="title-options">
-      <div>
-        <h5>Content</h5>
-      </div>
-      <div>
-        <ul>
-          <li (click)="addGroup()">+ Add Group</li>
-        </ul>
-      </div>
-    </div>
-
     <!-- Properties -->
     <div formArrayName="properties" class="right">
       <div class="group" *ngFor="let property of assetForm.get('properties')['controls']; let i = index" [formGroupName]="i">
@@ -61,7 +50,11 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <a class="remove" (click)="remove('properties', i)" *ngIf="i !== 0">&times;</a>
         </label>
       </div>
-      <a class="addMore" (click)="addProperty()">+ Add more</a>
+      <a class="addMore" (click)="addProperty()">+ Add property</a>
+      <hr />
+      <div class="left">
+        <a class="addMore" (click)="addGroup()" style="font-size: 14px;">+ Add group</a>
+      </div>
     </div>
 
     <!-- Groups -->
@@ -85,7 +78,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
             </label>
           </div>
         </div>
-        <a class="addMore" (click)="addGroupProperty(i)">+ Add more</a>
+        <a class="addMore" (click)="addGroupProperty(i)">+ Add property</a>
       </div>
     </div>
   </section>
@@ -105,7 +98,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0">&times;</a>
         </label>
       </div>
-      <a class="addMore" (click)="addIdentifier()">+ Add more</a>
+      <a class="addMore" (click)="addIdentifier()">+ Add identifier</a>
     </div>
   </section>
 
