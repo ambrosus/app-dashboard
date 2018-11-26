@@ -120,23 +120,9 @@
       }
     }
 
-    .socials {
-      li {
-        a {
-          svg {
-            path {
-              fill: $grey;
-            }
-          }
-
-          &:hover {
-            svg {
-              path {
-                fill: #fff;
-              }
-            }
-          }
-        }
+    .logo {
+      path {
+        fill: #fff;
       }
     }
   }

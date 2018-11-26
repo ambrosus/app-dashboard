@@ -12,34 +12,8 @@ app-footer {
   position: relative;
   z-index: 500;
 
-  .socials {
-    margin: 30px 0;
-    align-self: center;
-
-    li {
-      display: inline-block;
-      margin: 0 10px;
-
-      a {
-        svg {
-          width: 16px;
-          height: 16px;
-
-          path {
-            fill: $grey;
-            transition: fill 0.2s;
-          }
-        }
-
-        &:hover {
-          svg {
-            path {
-              fill: $blue;
-            }
-          }
-        }
-      }
-    }
+  .logo {
+    margin: 20px 0px;
   }
 
   .copyright,
@@ -65,6 +39,10 @@ app-footer {
     flex-direction: row;
     justify-content: space-between;
 
+    .logo {
+      margin: 0;
+    }
+
     .copyright {
       text-align: left;
     }
@@ -72,10 +50,6 @@ app-footer {
     .contact {
       text-align: right;
       user-select: auto;
-    }
-
-    .socials {
-      margin: 0;
     }
   }
 }
