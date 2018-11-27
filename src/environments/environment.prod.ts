@@ -6,10 +6,12 @@ try {
   core = `https://${core}`;
 } catch (e) { }
 
+if (location.hostname === 'localhost') { core = 'https://hermes.ambrosus-dev.com'; }
+
 export const environment = {
   production: true,
   api: {
     core,
-    extended: '${core}/extended',
+    extended: `${core}/extended`,
   },
 };
