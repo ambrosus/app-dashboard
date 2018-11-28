@@ -35,7 +35,7 @@ app-header {
     animation: fadeIn 0.2s forwards;
   }
 
-  .header {
+  > .header {
     position: relative;
     height: 80px;
     background-color: #fff;
@@ -60,7 +60,7 @@ app-header {
       }
     }
 
-    &__advancedSearch {
+    .searchAdvanced {
       padding: 40px 20px 60px;
       width: 100%;
       position: fixed;
@@ -98,6 +98,60 @@ app-header {
         flex-direction: row;
         align-items: center;
       }
+
+      > .menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        flex: 1 1 100%;
+        width: 100%;
+
+        .search {
+          max-width: 408px;
+          margin: 0;
+          position: relative;
+
+          input {
+            border-color: #e5e5e5;
+            padding-right: 85px;
+          }
+
+          a.advanced {
+            position: absolute;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: $blue;
+            top: 15px;
+            right: 16px;
+          }
+        }
+
+        nav {
+          display: inline-block;
+
+          ul {
+            li {
+              display: inline-block;
+              margin-right: 24px;
+
+              &:last-child {
+                margin-right: 0;
+              }
+
+              a {
+                font-weight: 500;
+                color: $black;
+
+                &.active {
+                  color: $blue;
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     .logo {
@@ -117,8 +171,10 @@ app-header {
     .avatar {
       flex: 0 0 40px;
       margin-left: 172px;
+      position: relative;
 
       > div {
+        flex: 0 0 40px;
         width: 40px;
         height: 40px;
         border-radius: 50%;
@@ -130,60 +186,6 @@ app-header {
         text-transform: uppercase;
       }
     }
-
-    .menu {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      flex: 1 1 100%;
-      width: 100%;
-
-      .search {
-        max-width: 408px;
-        margin: 0;
-        position: relative;
-
-        input {
-          border-color: #e5e5e5;
-          padding-right: 85px;
-        }
-
-        a.advanced {
-          position: absolute;
-          font-size: 11px;
-          text-transform: uppercase;
-          font-weight: 500;
-          color: $blue;
-          top: 15px;
-          right: 16px;
-        }
-      }
-
-      nav {
-        display: inline-block;
-
-        ul {
-          li {
-            display: inline-block;
-            margin-right: 24px;
-
-            &:last-child {
-              margin-right: 0;
-            }
-
-            a {
-              font-weight: 500;
-              color: $black;
-
-              &.active {
-                color: $blue;
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -191,41 +193,30 @@ app-header {
 .settings,
 .node {
   app-header {
-    .header {
+    > .header {
       .wrapper {
         background: $purple-blue;
+
+        > .menu {
+          nav {
+            ul {
+              li {
+                a {
+                  color: $grey;
+
+                  &.active {
+                    color: #fff;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
 
       .logo {
         > a {
           background-image: url('/assets/raster/logo-header-light.png');
-        }
-      }
-
-      .menu {
-        .search {
-          input {
-            border-color: $grey;
-            color: #fff;
-          }
-
-          a.advanced {
-            color: $light-blue;
-          }
-        }
-
-        nav {
-          ul {
-            li {
-              a {
-                color: $grey;
-
-                &.active {
-                  color: #fff;
-                }
-              }
-            }
-          }
         }
       }
     }

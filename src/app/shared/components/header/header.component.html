@@ -5,7 +5,7 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<header class="header" [ngClass]="{ advancedSearch: advancedSearch }">
+<header class="header" [ngClass]="{ 'advancedSearch': advancedSearch }">
   <div class="wrapper">
     <div class="logo"><a routerLink="/"></a></div>
 
@@ -31,13 +31,14 @@
       </form>
     </div>
 
-    <div class="avatar">
+    <div class="avatar" [appToggleClass]="'openMenu'">
       <div>{{ account.email ? account.email.charAt(0) : account.address.charAt(2) }}</div>
+      <app-drop-down [items]="dropDownItems"></app-drop-down>
     </div>
   </div>
 
   <!-- Search (advanced) -->
-  <div class="header__advancedSearch" *ngIf="advancedSearch">
+  <div class="searchAdvanced" *ngIf="advancedSearch">
     <form class="form center" [formGroup]="forms.searchAdvance" (ngSubmit)="search()" (keydown.enter)="$event.preventDefault()">
       <div class="group">
         <label class="w25">
@@ -64,7 +65,7 @@
         <div class="group" *ngFor="let identifier of forms.searchAdvance.get('identifiers')['controls']; let i = index" [formGroupName]="i">
           <label class="w50">
             <span>Name</span>
-            <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), farray: identifiersAutocomplete }" type="text" />
+            <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
           </label>
           <label class="w50">
             <span>Value</span>

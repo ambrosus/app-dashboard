@@ -35,7 +35,7 @@ if (!isDevMode) {
 
 @Injectable()
 export class SentryErrorHandler implements ErrorHandler {
-  constructor() {}
+  constructor() { }
   handleError(error) {
     Sentry.captureException(error.originalError || error);
     throw error;
@@ -77,4 +77,4 @@ export class SentryErrorHandler implements ErrorHandler {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

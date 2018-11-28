@@ -1,12 +1,14 @@
-import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[appClickThisActive]',
 })
 export class ClickThisActiveDirective {
 
-  constructor(private el: ElementRef,
-              private renderer: Renderer2) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+  ) { }
 
   @HostListener('click') onClick() {
     const hasClass = this.el.nativeElement.classList.contains('active');

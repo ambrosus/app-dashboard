@@ -1,34 +1,36 @@
-<h4 class="m-b-30 center">Edit profile</h4>
-
-<div class="card m-w-4 block-center">
-  <form [formGroup]="editAccountForm" (ngSubmit)="editAccount()" class="m-w-4">
-    <label>Your Public key
-      <input formControlName="address" type="text">
-    </label>
-    <label>Your Full name
+<form class="form" [formGroup]="editAccountForm" (ngSubmit)="save()" style="max-width: 100%;">
+  <label>
+    <span>Public key</span>
+    <input formControlName="address" type="text">
+  </label>
+  <div class="group">
+    <label class="w50">
+      <span>Full name</span>
       <input formControlName="fullName" type="text">
     </label>
-    <label>Your Email
+    <label class="w50">
+      <span>Email</span>
       <input formControlName="email" type="email">
     </label>
-    <label for="timeZone">Your Time Zone
-      <input formControlName="timeZone" list="timezones" id="timeZone">
-      <datalist id="timezones">
-        <option *ngFor="let timezone of timezones" value="{{ timezone }}">
-      </datalist>
-    </label>
-    <label>Password
+  </div>
+  <label for="timeZone">
+    <span>Time zone</span>
+    <input formControlName="timeZone" list="timezones" id="timeZone">
+    <datalist id="timezones">
+      <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+    </datalist>
+  </label>
+  <div class="group">
+    <label class="w50">
+      <span>Password</span>
       <input formControlName="password" type="password" placeholder="*******">
     </label>
-    <label>Password Confirm
+    <label class="w50">
+      <span>Password Confirm</span>
       <input formControlName="passwordConfirm" type="password" placeholder="*******">
     </label>
-    <div class="flex flex-direction-r justify-content-fe align-items-c">
-      <app-spinner *ngIf="spinner"></app-spinner>
-      <button type="submit" class="button button--blue m-l-20" [disabled]="editAccountForm.invalid">Edit account</button>
-    </div>
-  </form>
-</div>
-
-<h5 class="m-v-30 center" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-<h5 class="m-v-30 center" *ngIf="success" style="color: #57b846">{{ success }}</h5>
+  </div>
+  <div class="right" style="margin-top: 30px;">
+    <button type="submit" [disabled]="editAccountForm.invalid">Save</button>
+  </div>
+</form>

@@ -30,7 +30,7 @@ export class AuthService implements OnDestroy {
     this.api = environment.api;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   isLoggedIn(): Boolean {
     const account = <any>this.storageService.get('account') || {};

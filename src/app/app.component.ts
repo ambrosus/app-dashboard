@@ -52,19 +52,4 @@ export class AppComponent {
       location.pathname.indexOf('/signup') > -1
     );
   }
-
-  // Dropdown close on click outside of it
-  @HostListener('click', ['$event'])
-  onDocumentClick(e) {
-    const dropdownParent = this.el.nativeElement.querySelectorAll('.dropdown');
-    for (const element of dropdownParent) {
-      if (
-        element &&
-        !element.contains(e.target) &&
-        element.classList.contains('active')
-      ) {
-        this.renderer.removeClass(element, 'active');
-      }
-    }
-  }
 }

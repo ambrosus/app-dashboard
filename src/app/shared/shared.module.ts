@@ -39,6 +39,8 @@ import {
   IconRightDirective,
 } from './directives/icon.directive';
 import { ErrorDirective } from './directives/error.directive';
+import { DropDownComponent } from './components/drop-down/drop-down.component';
+import { ToggleClassDirective } from './directives/toggle-class.directive';
 
 @NgModule({
   imports: [
@@ -77,6 +79,8 @@ import { ErrorDirective } from './directives/error.directive';
     IconLeftDirective,
     IconRightDirective,
     ErrorDirective,
+    DropDownComponent,
+    ToggleClassDirective,
   ],
   declarations: [
     InputDirective,
@@ -103,7 +107,9 @@ import { ErrorDirective } from './directives/error.directive';
     IconLeftDirective,
     IconRightDirective,
     ErrorDirective,
+    DropDownComponent,
+    ToggleClassDirective,
   ],
   entryComponents: [EventAddComponent],
 })
-export class SharedModule {}
+export class SharedModule { }

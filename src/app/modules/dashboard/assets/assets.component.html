@@ -16,9 +16,7 @@
     </div>
     <div style="flex: 0 0 auto;">
       <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
-      <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">
-        Bulk event
-      </button>
+      <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">Bulk event</button>
     </div>
   </header>
 
@@ -48,8 +46,6 @@
   </form>
 
   <div class="center" *ngIf="pagination && pagination.hasNext">
-    <button class="transparent" (click)="loadAssets(pagination.next)">
-      Show more
-    </button>
+    <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
   </div>
 </div>

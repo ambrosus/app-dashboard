@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { autocomplete } from 'app/constant';
 
 @Component({
   selector: 'app-asset-form',
@@ -19,31 +20,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   error;
   success;
   spinner;
-  identifiersAutocomplete = [
-    'UPCE',
-    'UPC12',
-    'EAN8',
-    'EAN13',
-    'CODE 39',
-    'CODE 128',
-    'ITF',
-    'QR',
-    'DATAMATRIX',
-    'RFID',
-    'NFC',
-    'GTIN',
-    'GLN',
-    'SSCC',
-    'GSIN',
-    'GINC',
-    'GRAI',
-    'GIAI',
-    'GSRN',
-    'GDTI',
-    'GCN',
-    'CPID',
-    'GMN',
-  ];
+  autocomplete: any[] = autocomplete;
   sequenceNumber = 0;
 
   @Input() assetId: String;

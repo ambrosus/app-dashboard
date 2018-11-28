@@ -1,0 +1,25 @@
+<nav class="dropDown">
+  <ul class="menu">
+    <li class="item" [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index" (click)="item.click ? item.click() : ''">
+      <hr class="separator" *ngIf="item.type === 'separator'; else link">
+      <ng-template #link>
+        <a *ngIf="item.link; else noLink" [routerLink]="item.link">
+          <app-svg-icon class="icon" [name]="item.icon" width="18" height="18" fill="#333" *ngIf="item.icon"></app-svg-icon>
+          <span class="body">
+            <span class="title" *ngIf="item.title">{{ item.title }}</span>
+            <span class="meta" *ngIf="item.meta">{{ item.meta }}</span>
+          </span>
+        </a>
+        <ng-template #noLink>
+          <a>
+            <app-svg-icon class="icon" [name]="item.icon" width="18" height="18" fill="#333" *ngIf="item.icon"></app-svg-icon>
+            <span class="body">
+              <span class="title" *ngIf="item.title">{{ item.title }}</span>
+              <span class="meta" *ngIf="item.meta">{{ item.meta }}</span>
+            </span>
+          </a>
+        </ng-template>
+      </ng-template>
+    </li>
+  </ul>
+</nav>

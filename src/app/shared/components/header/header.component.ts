@@ -10,6 +10,7 @@ import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { autocomplete } from 'app/constant';
 
 @Component({
   selector: 'app-header',
@@ -24,38 +25,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     searchAdvance?: FormGroup;
   } = {};
   isLoggedin;
-  account;
+  account: any = {};
   advancedSearch;
-  identifiersAutocomplete = [
-    'UPCE',
-    'UPC12',
-    'EAN8',
-    'EAN13',
-    'CODE 39',
-    'CODE 128',
-    'ITF',
-    'QR',
-    'DATAMATRIX',
-    'RFID',
-    'NFC',
-    'GTIN',
-    'GLN',
-    'SSCC',
-    'GSIN',
-    'GINC',
-    'GRAI',
-    'GIAI',
-    'GSRN',
-    'GDTI',
-    'GCN',
-    'CPID',
-    'GMN',
-  ];
+  autocomplete: any[] = autocomplete;
+  dropDownItems: any = {};
 
   constructor(
     private authService: AuthService,
     private accountsService: AccountsService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.subs[this.subs.length] = this.accountsService._account.subscribe(
@@ -68,6 +46,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.initSearchForm();
     this.initSearchAdvanceForm();
+
+    this.logout = this.logout.bind(this);
+    this.dropDownItems = {
+      title: 'Profile menu',
+      items: [
+        {
+          type: 'header',
+          title: this.account.fullName || 'No name',
+          meta: this.account.email || this.account.address,
+        },
+        {
+          type: 'separator',
+        },
+        {
+          type: 'link',
+          title: 'Settings',
+          icon: 'settings',
+          link: '/settings',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          type: 'action',
+          title: 'Logout',
+          icon: 'logout',
+          click: this.logout,
+        },
+      ],
+    };
   }
 
   ngOnDestroy() {
@@ -115,7 +123,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         value = value.trim();
         this.forms.searchAdvance
           .get('state')
-          ['controls'].push(new FormControl(value));
+        ['controls'].push(new FormControl(value));
         input.value = '';
       }
     }

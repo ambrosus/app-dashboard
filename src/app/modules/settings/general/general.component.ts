@@ -15,7 +15,6 @@ export class GeneralComponent implements OnInit {
   editAccountForm: FormGroup;
   error;
   success;
-  spinner = false;
   account;
   timezones = [];
   web3;
@@ -51,48 +50,34 @@ export class GeneralComponent implements OnInit {
       if (!data.password) {
         return null;
       }
-
-      return control.value === data.password
-        ? null
-        : { 'Passwords do not match': true };
+      return control.value === data.password ? null : { 'Passwords do not match': true };
     } catch (e) {
       return null;
     }
   }
 
-  editAccount() {
-    this.error = false;
-    this.success = false;
+  save() {
     const form = this.editAccountForm;
-    const _data = form.value;
+    const data = form.value;
     const secret = this.storageService.get('secret');
-    const body = {};
 
     if (form.invalid) {
       return (this.error = 'Form is invalid');
     }
 
-    Object.keys(_data).map(property => {
-      if (_data[property]) {
-        body[property] = _data[property];
-      }
-    });
-
-    if (_data.password) {
-      body['token'] = btoa(
-        JSON.stringify(this.web3.eth.accounts.encrypt(secret, _data.password)),
-      );
+    if (data.password) {
+      data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
     }
 
-    this.accountsService.modifyAccount(this.account.address, body).subscribe(
-      ({ data }: any) => {
-        this.success = 'Updated';
-        this.storageService.set('account', data);
-        this.accountsService._account.next(data);
+    this.accountsService.modifyAccount(this.account.address, data).subscribe(
+      (resp: any) => {
+        console.log('[MODIFY] Account updated');
+        this.storageService.set('account', resp.data);
+        this.accountsService._account.next(resp.data);
       },
       error => {
         console.error('[MODIFY] Account: ', error);
-        this.error = error ? error.message : 'Edit account error';
+        this.error = 'Edit account error';
       },
     );
   }
