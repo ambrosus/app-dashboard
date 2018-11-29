@@ -90,13 +90,18 @@
                     >Decline</button>
                   </div>
 
-                  <div class="org-status">
+                  <div class="org-status inline" [class.m-t-10]="organization.active === undefined">
                     <h5
+                    class="inline"
                     [class.green]="organization.active"
                     [class.grey]="organization.active === false"
                     [class.orange]="organization.active === undefined"
                     >{{organization.active ? 'ACTIVE' : organization.active === undefined ? 'PENDING' : !organization.active ? 'DISABLED' : ''}}</h5>
+                    <div class="inline dotted-icon">
+                      <img src="/assets/svg/org-dot-menu.svg" />
+                    </div>
                   </div>
+
                 </div>
               </div>
             </a>
