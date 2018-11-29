@@ -86,7 +86,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     if (this.jsonEvents) { return this.jsonEvents; }
     try {
       this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
-      this.jsonEvents = JSON.stringify(this.jsonEventsRaw, null, 2);
+      this.jsonEvents = JSON.stringify(this.jsonEventsRaw.data, null, 2);
     } catch (error) {
       console.error('[GET] Max events: ', error);
     }
