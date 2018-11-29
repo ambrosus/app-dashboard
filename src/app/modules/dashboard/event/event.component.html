@@ -131,4 +131,12 @@
       </section>
     </main>
   </div>
+
+  <!-- Location -->
+  <section class="location" *ngIf="location">
+    <agm-map [zoom]="15" [zoomControl]="false" [streetViewControl]="false" [latitude]="location.lat" [longitude]="location.lng">
+      <agm-marker [latitude]="location.lat" [longitude]="location.lng" [iconUrl]="'/assets/svg/map-icon.svg'">
+        ></agm-marker>
+    </agm-map>
+  </section>
 </div>

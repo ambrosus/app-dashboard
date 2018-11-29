@@ -15,7 +15,7 @@ export class EventComponent implements OnInit, OnDestroy {
   assetId;
   eventId;
   event;
-  eventObjects = [];
+  location: any = false;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -43,6 +43,12 @@ export class EventComponent implements OnInit, OnDestroy {
       data => {
         console.log('Event: ', data);
         this.event = data.event;
+        try {
+          this.location = {
+            lat: this.event.info.location.location.geometry.coordinates[0],
+            lng: this.event.info.location.location.geometry.coordinates[1],
+          };
+        } catch (e) { }
       },
       err => console.error('Event: ', err),
     );
@@ -50,8 +56,6 @@ export class EventComponent implements OnInit, OnDestroy {
       this.assetId = resp.assetid;
       this.eventId = resp.eventid;
     });
-
-    this.eventObjects = this.assetsService.parseEvent(this.event);
   }
 
   sanitizeUrl(url) {
