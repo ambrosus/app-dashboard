@@ -56,7 +56,7 @@
               {{ tag.value }}
               <a class="remove" (click)="remove('state', i)">&times;</a>
             </div>
-            <input type="text" (keyup)="addTag($event, tagInput)" #tagInput />
+            <input type="text" (keyup)="addTag($event, tagInput)" placeholder="ie. sold" #tagInput />
           </div>
         </label>
       </div>

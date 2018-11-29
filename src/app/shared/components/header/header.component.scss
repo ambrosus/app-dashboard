@@ -188,37 +188,3 @@ app-header {
     }
   }
 }
-
-.organization,
-.settings,
-.node {
-  app-header {
-    > .header {
-      .wrapper {
-        background: $purple-blue;
-
-        > .menu {
-          nav {
-            ul {
-              li {
-                a {
-                  color: $grey;
-
-                  &.active {
-                    color: #fff;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      .logo {
-        > a {
-          background-image: url('/assets/raster/logo-header-light.png');
-        }
-      }
-    }
-  }
-}
