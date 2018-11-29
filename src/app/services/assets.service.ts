@@ -261,6 +261,33 @@ export class AssetsService {
     this.events = events;
   }
 
+  async getMaxEvents(options: {
+    assetId: String;
+    limit?: Number;
+  }): Promise<any> {
+    const { assetId, limit } = options;
+
+    const url = `${this.api.extended}/event/query`;
+    const body: any = {
+      query: [
+        {
+          field: 'content.idData.assetId',
+          value: assetId,
+          operator: 'equal',
+        },
+      ],
+      limit,
+    };
+
+    const events = await this.to(this.http.post(url, body));
+    if (events.error) {
+      throw new Error(events.error);
+    }
+    console.log('[GET] Max events: ', events);
+
+    return events;
+  }
+
   getEvent(eventId: String): Observable<any> {
     const url = `${this.api.extended}/event/query`;
     const body: any = {

@@ -56,11 +56,26 @@
                 </ul>
               </div>
             </div>
+            <button class="transparent" (click)="viewJSON()" style="margin-top: 15px;">{{ json || 'View as JSON' }}</button>
           </div>
         </div>
       </div>
     </header>
-    <main class="amb__main">
+    <main class="amb__main json" *ngIf="json">
+
+      <h5>JSON</h5>
+      <p *ngIf="jsonEventsRaw?.pagination?.hasNext" style="margin: 5px 0; color: red;">
+        This asset has more than 200 events, to download all of them please contact support.</p>
+      <textarea>{{ jsonEvents }}</textarea>
+
+      <div class="action">
+        <button class="transparent" (click)="json = ''">View as Data</button>
+        <a [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()" class="button outline">
+          Download JSON
+        </a>
+      </div>
+    </main>
+    <main class="amb__main" *ngIf="!json">
 
       <!-- Images -->
       <section class="images" *ngIf="asset.info?.images" style="margin-bottom: 25px;">

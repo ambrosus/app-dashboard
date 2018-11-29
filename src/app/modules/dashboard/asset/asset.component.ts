@@ -22,6 +22,9 @@ export class AssetComponent implements OnInit, OnDestroy {
   assetId: string;
   timeline;
   dialogRef;
+  json: any = '';
+  jsonEventsRaw: any;
+  jsonEvents: any;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -75,6 +78,25 @@ export class AssetComponent implements OnInit, OnDestroy {
     if (this.navigationSub) {
       this.navigationSub.unsubscribe();
     }
+  }
+
+  async viewJSON() {
+    if (this.json) { return this.json = ''; }
+    this.json = 'View as Data';
+    if (this.jsonEvents) { return this.jsonEvents; }
+    try {
+      this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
+      this.jsonEvents = JSON.stringify(this.jsonEventsRaw, null, 2);
+    } catch (error) {
+      console.error('[GET] Max events: ', error);
+    }
+  }
+
+  downloadJSON() {
+    const url =
+      'data:application/json;charset=utf-8,' +
+      encodeURIComponent(this.jsonEvents);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   sanitizeUrl(url) {
