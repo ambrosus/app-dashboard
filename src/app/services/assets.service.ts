@@ -500,7 +500,7 @@ export class AssetsService {
   parseTimelineEvents(e) {
     const events = e.reduce((_events, { content, eventId }) => {
       const timestamp = content.idData.timestamp;
-      const author = content.idData.createdBy;
+      const createdBy = content.idData.createdBy;
 
       if (content && content.data) {
         content.data.map(obj => {
@@ -510,9 +510,8 @@ export class AssetsService {
           const namespace = parts[parts.length - 3] || 'ambrosus';
 
           obj.timestamp = timestamp;
-          obj.author = author;
+          obj.createdBy = createdBy;
           obj.name = obj.name || type;
-          obj.action = type;
           obj.type = type;
           obj.eventId = eventId;
 

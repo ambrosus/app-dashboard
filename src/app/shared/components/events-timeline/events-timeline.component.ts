@@ -9,12 +9,13 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
-import { MatDialog } from '@angular/material/dialog';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-events-timeline',
   templateUrl: './events-timeline.component.html',
   styleUrls: ['./events-timeline.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class EventsTimelineComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
@@ -26,13 +27,12 @@ export class EventsTimelineComponent implements OnInit, OnDestroy {
   constructor(
     public assetsService: AssetsService,
     private authService: AuthService,
-    public dialog: MatDialog,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadEvents();
     this.subs[this.subs.length] = this.assetsService.events.subscribe(
-      ({ pagination }: any) => (this.pagination = pagination),
+      ({ pagination }: any) => this.pagination = pagination,
     );
   }
 
