@@ -75,8 +75,29 @@
       }
     }
 
+    .org-body {
+      width: 100%;
+    }
+
     .body {
+
       .body__main {
+
+        .org {
+          margin-bottom: 20px;
+          
+          .title {
+            display: inline;
+            color: $black;
+          }
+
+          .credits {
+            display: inline;
+            color: $_7;
+            float: right;
+          }
+        }
+
         .assetId {
           color: #333;
           margin-bottom: 15px;
@@ -89,7 +110,17 @@
           margin-top: 0;
 
           .address {
+            color: $grey;
+          }
+
+          .author-name {
             color: $blue;
+            margin-right: 5px;
+          }
+
+          .time-ago {
+            margin-left: 30px;
+            color: $black;
           }
         }
 

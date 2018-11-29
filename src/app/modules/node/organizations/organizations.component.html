@@ -1,149 +1,108 @@
-<h4 class="m-v-30 relative p-r-40">Organizations</h4>
-<hr class="m-b-20" />
-
-<button type="button" class="button button--blue" (click)="show = 'active'">
-  Active
-</button>
-<button type="button" class="button button--blue" (click)="show = 'pending'">
-  Pending
-</button>
-<button type="button" class="button" (click)="show = 'disabled'">
-  Disabled
-</button>
-
-<p class="m-v-30" style="color: salmon;">{{ error }}</p>
-
-<p class="m-t-20">Showing {{ getNumberOfOrganizations() }} organizations</p>
-
-<!-- Active organizations -->
-<table class="table" *ngIf="show === 'active'">
-  <tbody>
-    <tr *ngFor="let organization of organizations; let i = index">
-      <td class="table__image" routerLink="{{ organization.organizationId }}">
-        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ organization.organizationId }}">
-        <p class="table__info__title">{{ organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: green;"
-          >Active</span
-        >
-        <p class="table__status__timestamp">
-          Created: {{ organization.createdOn }}
+<!--
+  Copyright: Ambrosus Technologies GmbH
+  Email: tech@ambrosus.com
+  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<div class="dash-container">
+  <div class="wrapper">
+    <header class="header">
+      <div>
+        <h1>Organizations</h1>
+        <p class="meta">
+          {{ organizationsArray.length }} {{ organizationsArray.length === 1 ? 'result' : 'results' }}
         </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              *ngIf="account.organization !== organization.organizationId"
-              (click)="
-                actions('organizationModify', {
-                  organizationId: organization.organizationId,
-                  data: { active: false }
-                })
-              "
-            >
-              Disable
-            </li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </div>
+      <div style="flex: 0 0 auto;">
+        <button type="button" *ngIf="!selected">Add</button>
+      </div>
+    </header>
 
-<!-- Disabled organizations -->
-<table class="table" *ngIf="show === 'disabled'">
-  <tbody>
-    <tr *ngFor="let organization of organizationsDisabled; let i = index">
-      <td class="table__image" routerLink="{{ organization.organizationId }}">
-        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ organization.organizationId }}">
-        <p class="table__info__title">{{ organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: salmon;"
-          >Disabled</span
-        >
-        <p class="table__status__timestamp">
-          Created: {{ organization.createdOn }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="
-                actions('organizationModify', {
-                  organizationId: organization.organizationId,
-                  data: { active: true }
-                })
-              "
-            >
-              Activate
-            </li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <div class="inline-list">
+      <ul>
+        <li (click)="renderOrg('all')" [class.selected]="show==='all'">All</li>
+        <li (click)="renderOrg('active')" [class.selected]="show==='active'">
+          Active
+        </li>
+        <li (click)="renderOrg('pending')" [class.selected]="show==='pending'">Pending</li>
+        <li (click)="renderOrg('disabled')" [class.selected]="show==='disabled'">Disabled</li>
+        <li (click)="renderOrg('declined')" [class.selected]="show==='declined'">Declined</li>
+      </ul>
+    </div>
 
-<!-- Pending organizations / Organization requests -->
-<table class="table" *ngIf="show === 'pending'">
-  <tbody>
-    <tr *ngFor="let organizationRequest of organizationRequests; let i = index">
-      <td class="table__image">
-        <div>
-          {{
-            organizationRequest.title
-              ? organizationRequest.title.charAt(0)
-              : organizationRequest.email.chartAt(0) || 'R'
-          }}
+    <div *ngIf="organizationsArray.length === 0 && !loading">
+      <h2>No organizations to display :/</h2>
+    </div>
+
+    <div *ngIf="loading">
+      <h2>Loading organizations ... </h2>
+    </div>
+
+    <div *ngIf="!loading">
+      <div class="table org-table" *ngFor="let organization of organizationsArray; let i = index">
+        <div class="item">
+          <label class="image">
+            <img src="/assets/svg/org-icon.svg" >
+          </label>
+          <div class="body org-body">
+            <a>
+              <div class="body__main">
+                <div class="org">
+                  <h5 class="title">
+                    {{ organization.title }}
+                  </h5>
+                  <h5 class="credits">
+                    {{organization.credits ? organization.credits : '' }}
+                  </h5>
+                </div>
+                <!-- <p class="assetId">{{ organization.createdBy ? organization.createdBy: '' }}</p> -->
+                <p class="createdBy">
+                  by <span class="account-image"></span>
+                  <span class="author-name">{{ organization.ownerName ? + organization.ownerName + ',' : '' }} </span>
+                  <span class="address">{{ organization.owner || organization.email }}</span>
+                  <span class="time-ago">{{ organization.createdOn }}</span>
+                </p>
+                <hr>
+                <div class="inline-list">
+                  <ul class="inline" *ngIf="organization.active && organization.info">
+                    <li><img src="/assets/svg/org-users-icon.svg"><p>112</p></li>
+                    <li><img src="/assets/svg/org-asset-icon.svg"><p>2,356</p></li>
+                    <li><img src="/assets/svg/org-event-icon.svg"><p>45,222</p></li>
+                  </ul>
+
+                  <div class="inline" *ngIf="organization.active === undefined">
+                    <button type="button" class="outline" 
+                      (click)="
+                        actions('organizationRequest', {
+                          approved: true,
+                          id: organizationRequest.address
+                        })
+                      "
+                    >Approve</button>
+                    <button type="button" class="transparent light"
+                      (click)="
+                        actions('organizationRequest', {
+                          approved: false,
+                          id: organizationRequest.address
+                        })
+                      "
+                    >Decline</button>
+                  </div>
+
+                  <div class="org-status">
+                    <h5
+                    [class.green]="organization.active"
+                    [class.grey]="organization.active === false"
+                    [class.orange]="organization.active === undefined"
+                    >{{organization.active ? 'ACTIVE' : organization.active === undefined ? 'PENDING' : !organization.active ? 'DISABLED' : ''}}</h5>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
-      </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ organizationRequest.title }}</p>
-        <small class="table__info__meta"
-          >For: {{ organizationRequest.email }}</small
-        >
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: orange;"
-          >Pending</span
-        >
-        <p class="table__status__timestamp">
-          Requested: {{ organizationRequest.createdOn }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="
-                actions('organizationRequest', {
-                  approved: true,
-                  id: organizationRequest.address
-                })
-              "
-            >
-              Approve
-            </li>
-            <li
-              (click)="
-                actions('organizationRequest', {
-                  approved: false,
-                  id: organizationRequest.address
-                })
-              "
-            >
-              Refuse
-            </li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </div>
+    </div>
+  </div>
+</div>

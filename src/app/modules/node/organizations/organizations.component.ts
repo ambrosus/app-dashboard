@@ -11,13 +11,16 @@ import * as moment from 'moment-timezone';
 })
 export class OrganizationsComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
+  organizationsAll = [];
   organizations = [];
   organizationsDisabled = [];
   organizationRequests = [];
+  organizationsArray = [];
   account;
-  show = 'active';
+  show = 'all';
   success;
   error;
+  loading: Boolean = true;
 
   constructor(
     private storageService: StorageService,
@@ -27,27 +30,33 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
     this.getOrganizations();
-    this.getOrganizationRequests();
   }
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  getNumberOfOrganizations() {
-    switch (this.show) {
+  renderOrg(display) {
+    this.show = display;
+    this.loading = false;
+    switch (display) {
+      case 'all':
+        return this.organizationsArray = this.organizationsAll;
       case 'active':
-        return this.organizations.length;
+        return this.organizationsArray = this.organizations;
       case 'pending':
-        return this.organizationRequests.length;
+        return this.organizationsArray = this.organizationRequests;
       case 'disabled':
-        return this.organizationsDisabled.length;
+        return this.organizationsArray = this.organizationsDisabled;
+      case 'declined':
+        return this.organizationsArray = [];
     }
   }
 
   getOrganizations(next = '') {
     this.organizationsService.getOrganizations(next).subscribe(
       ({ data }: any) => {
+        this.organizationsAll = data;
         this.organizations = data.filter(organization => {
           organization.createdOn = moment
             .tz(organization.createdOn * 1000, this.account.timeZone || 'UTC')
@@ -57,6 +66,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         this.organizationsDisabled = data.filter(
           organization => !organization.active,
         );
+        this.getOrganizationRequests();
         console.log('Organizations: ', this.organizations);
         console.log('Organizations disabled: ', this.organizationsDisabled);
       },
@@ -76,6 +86,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
             .fromNow();
           return organizationRequest;
         });
+        this.organizationsAll = this.organizationsAll.concat(this.organizationRequests);
+        this.renderOrg('all');
         console.log('Organization requests: ', this.organizationRequests);
       },
       error => console.error('[GET] Organization requests: ', error),
