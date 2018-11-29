@@ -26,6 +26,10 @@ app-root {
 
 body {
 
+  &.assets {
+    background: #fafafa;
+  }
+
   &.login,
   &.signup {
     @extend .ui-dark;

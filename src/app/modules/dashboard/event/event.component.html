@@ -1,93 +1,142 @@
-<div class="object" *ngIf="event">
-
-  <div *ngFor="let eventObject of eventObjects">
-    <header class="object__header">
-      <div class="object__title">
-        <h3>{{ assetsService.getName(eventObject) }}</h3>
-        <p>{{ eventId }}</p>
+<div class="amb">
+  <div class="wrapper">
+    <header class="amb__header">
+      <div class="accordions">
+        <div class="accordion">
+          <div class="info title" appAccordion>
+            <h2>{{ event.info.name || 'No title' }}</h2>
+            <p class="assetId">{{ eventId }}</p>
+            <p class="createdBy">
+              by <span class="account-image"></span>
+              <span class="address" *ngIf="event.content?.idData?.createdBy">{{ event.content.idData.createdBy }}</span>
+            </p>
+          </div>
+          <div class="content">
+            <div class="meta">
+              <div class="w50">
+                <h5>Event metadata</h5>
+                <ul class="properties">
+                  <li *ngIf="eventId">
+                    <h6>Event id</h6>
+                    <p>{{ eventId }}</p>
+                  </li>
+                  <li *ngIf="event.content?.idData?.assetId">
+                    <h6>Asset id</h6>
+                    <p>{{ event.content.idData.assetId }}</p>
+                  </li>
+                  <li *ngIf="event.content?.idData?.createdBy">
+                    <h6>Created by</h6>
+                    <p>{{ event.content.idData.createdBy }}</p>
+                  </li>
+                  <li *ngIf="event.content?.idData?.timestamp">
+                    <h6>Timestamp</h6>
+                    <p>{{ event.content.idData.timestamp }}</p>
+                  </li>
+                  <li *ngIf="event.content?.idData?.accessLevel">
+                    <h6>Access level</h6>
+                    <p>{{ event.content.idData.accessLevel }}</p>
+                  </li>
+                  <li *ngIf="event.content?.idData?.dataHash">
+                    <h6>Data hash</h6>
+                    <p>{{ event.content.idData.dataHash }}</p>
+                  </li>
+                </ul>
+              </div>
+              <div class="w50">
+                <h5>Bundle metadata</h5>
+                <ul class="properties">
+                  <li *ngIf="event.metadata?.bundleId">
+                    <h6>Bundle id</h6>
+                    <p>{{ event.metadata.bundleId }}</p>
+                  </li>
+                  <li *ngIf="event.metadata?.bundleTransactionHash">
+                    <h6>Bundle transaction hash</h6>
+                    <p>{{ event.metadata.bundleTransactionHash }}</p>
+                  </li>
+                  <li *ngIf="event.metadata?.bundleUploadTimestamp">
+                    <h6>Bundle upload timestamp</h6>
+                    <p>{{ event.metadata.bundleUploadTimestamp }}</p>
+                  </li>
+                  <li *ngIf="event.metadata?.entityUploadTimestamp">
+                    <h6>Entity upload timestamp</h6>
+                    <p>{{ event.metadata.entityUploadTimestamp }}</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
-
-    <main class="object__body">
-
-      <!-- Identifiers -->
-      <div class="object__identifiers" *ngIf="eventObject | checkIf: 'eventObject.identifiers.identifiers'">
-        <h5 class="object__subtitle">Identifiers</h5>
-
-        <ul>
-          <li class="item" *ngFor="let key of objectKeys(eventObject.identifiers.identifiers)">
-            <span class="item__title">{{ key }}</span>
-            <span class="item__value">{{ eventObject.identifiers.identifiers[key][0] }}</span>
-          </li>
-        </ul>
-      </div>
+    <main class="amb__main">
 
       <!-- Images -->
-      <div class="object__images" *ngIf="eventObject.images">
-        <h5 class="object__subtitle">Images</h5>
+      <section class="images" *ngIf="event.info?.images" style="margin-bottom: 25px;">
+        <div class="image" *ngFor="let image of objectKeys(event.info.images)" [style.backgroundImage]="sanitizeUrl(event.info.images[image]['url'])"></div>
+      </section>
 
-        <img *ngFor="let image of objectKeys(eventObject.images)" src="{{ eventObject.images[image]['url'] }}">
-      </div>
+      <!-- Description -->
+      <section *ngIf="event.info?.description">
+        <h5>Description</h5>
+        <p style="color: #333;">{{ event.info.description }}</p>
+      </section>
 
-      <!-- Documents -->
-      <div class="object__images" *ngIf="eventObject.documents">
-        <h5 class="object__subtitle">Documents</h5>
-
-        <a *ngFor="let document of objectKeys(eventObject.documents)" href="{{ eventObject.documents[document]['url'] }}" target="_blank">
-          <img src="/assets/raster/documents.png">
-        </a>
-      </div>
-
-      <!-- Properties -->
-      <div class="object__properties" *ngIf="eventObject.properties && eventObject.properties.length">
-        <h5 class="object__subtitle">Properties</h5>
-
-        <ul>
-          <li class="item" *ngFor="let property of eventObject.properties">
-            <span class="item__title" *ngIf="!isArray(property.value)">{{ property.key }}</span>
-            <span class="item__value" [ngClass]="{ 'item__value--json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></span>
+      <!-- Identifiers -->
+      <section *ngIf="event.info?.identifiers?.identifiers">
+        <h5>Identifiers</h5>
+        <ul class="properties">
+          <li *ngFor="let key of objectKeys(event.info.identifiers.identifiers)">
+            <h6>{{ key }}</h6>
+            <p>{{ event.info.identifiers.identifiers[key][0] }}</p>
           </li>
         </ul>
-      </div>
+      </section>
 
-      <!-- Groups -->
-      <div class="object__groups" *ngIf="eventObject.groups && eventObject.groups.length">
-        <div *ngFor="let group of eventObject.groups">
-          <h5 class="object__subtitle">{{ group.key }}</h5>
+      <!-- Documents -->
+      <section *ngIf="event.info?.documents">
+        <h5>Documents</h5>
 
-          <ul>
-            <li class="item" *ngFor="let property of objectKeys(group.value)">
-              <span class="item__title" *ngIf="!isArray(group.value[property])">{{ property }}</span>
-              <span class="item__value" [ngClass]="{ 'item__value--json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></span>
+        <ul class="properties">
+          <li class="property" *ngFor="let document of objectKeys(event.info.documents)">
+            <h6 *ngIf="event.info?.documents[document]?.name">{{ event.info.documents[document].name }}</h6>
+            <a *ngIf="event.info?.documents[document]?.url" [href]="event.info.documents[document].url">
+              {{ assetsService.getUrlName(event.info.documents[document].url) }}
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Properties -->
+      <section *ngIf="event.info?.properties && event.info.properties.length">
+        <h5>Properties</h5>
+        <ul class="properties">
+          <li *ngFor="let property of event.info.properties">
+            <h6 *ngIf="!isArray(property.value)">{{ property.key }}</h6>
+            <p [ngClass]="{ 'json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="groups" *ngIf="event.info?.groups && event.info.groups.length">
+        <div class="group w50" *ngFor="let group of event.info.groups">
+          <h5>{{ group.key }}</h5>
+
+          <ul class="properties">
+            <li *ngFor="let property of objectKeys(group.value)">
+              <h6 *ngIf="!isArray(group.value[property])">{{ property }}</h6>
+              <p [ngClass]="{ 'json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></p>
             </li>
           </ul>
         </div>
-      </div>
-
+      </section>
     </main>
   </div>
 
-  <!-- Event metadata -->
-  <div class="p-a-30" *ngIf="event | checkIf: 'event.content.idData'">
-    <h3 class="m-b-20 color-ablue--base">Event metadata</h3>
-
-    <p>Timestamp</p>
-    <p class="m-b-10 color-blacks--base">{{ event.content.idData.timestamp }} ({{ event.content.idData.timestamp * 1000 | date:'EEE, MMM d yyyy hh:mm' }})</p>
-
-    <p>Event ID</p>
-    <p class="m-b-10 color-blacks--base">{{ eventId }}</p>
-
-    <p>Asset ID</p>
-    <p class="m-b-10 color-blacks--base">{{ assetId }}</p>
-
-    <p>Access level</p>
-    <p class="m-b-10 color-blacks--base">{{ event.content.idData.accessLevel }}</p>
-
-    <p>Created by</p>
-    <p class="m-b-10 color-blacks--base">{{ event.content.idData.createdBy }}</p>
-
-    <p>Data hash</p>
-    <p class="m-b-10 color-blacks--base">{{ event.content.idData.dataHash }}</p>
-  </div>
-
+  <!-- Location -->
+  <section class="location" *ngIf="location">
+    <agm-map [zoom]="15" [zoomControl]="false" [streetViewControl]="false" [latitude]="location.lat" [longitude]="location.lng">
+      <agm-marker [latitude]="location.lat" [longitude]="location.lng" [iconUrl]="'/assets/svg/map-icon.svg'">
+        ></agm-marker>
+    </agm-map>
+  </section>
 </div>

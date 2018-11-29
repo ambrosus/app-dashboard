@@ -56,7 +56,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           (<FormArray>this.forms.table.get('assets')).push(
             new FormGroup({
               assetId: new FormControl(asset.assetId),
-              infoEvent: new FormControl(asset.infoEvent),
+              info: new FormControl(asset.info),
               createdBy: new FormControl(asset.content.idData.createdBy),
               createdAt: new FormControl(asset.content.idData.timestamp),
               selected: new FormControl(false),

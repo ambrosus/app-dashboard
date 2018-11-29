@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-asset',
@@ -17,12 +18,13 @@ export class AssetComponent implements OnInit, OnDestroy {
   routeParamsSub: Subscription;
   navigationSub: Subscription;
   eventsSub: Subscription;
-  asset;
+  asset: any = {};
   assetId: string;
-  account;
-  previewAppUrl;
   timeline;
   dialogRef;
+  json: any = '';
+  jsonEventsRaw: any;
+  jsonEvents: any;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -41,14 +43,18 @@ export class AssetComponent implements OnInit, OnDestroy {
     public assetsService: AssetsService,
     public dialog: MatDialog,
     private router: Router,
-  ) {}
+    private sanitizer: DomSanitizer,
+  ) { }
 
   ngOnInit() {
     this.routeSub = this.route.data.subscribe(
-      ({ asset }: any) => (this.asset = asset),
+      ({ asset }: any) => {
+        console.log('Asset: ', asset);
+        this.asset = asset;
+      },
     );
     this.routeParamsSub = this.route.params.subscribe(
-      ({ assetid }: any) => (this.assetId = assetid),
+      ({ assetid }: any) => this.assetId = assetid,
     );
     this.navigationSub = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
@@ -60,14 +66,6 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.assetsService.events.subscribe(
       events => (this.timeline = events && events.data && events.data.length),
     );
-
-    this.account = <any>this.storageService.get('account') || {};
-
-    try {
-      this.previewAppUrl = this.account.organization.settings.preview_app;
-    } catch (e) {
-      this.previewAppUrl = 'https://amb.to';
-    }
   }
 
   ngOnDestroy() {
@@ -80,6 +78,29 @@ export class AssetComponent implements OnInit, OnDestroy {
     if (this.navigationSub) {
       this.navigationSub.unsubscribe();
     }
+  }
+
+  async viewJSON() {
+    if (this.json) { return this.json = ''; }
+    this.json = 'View as Data';
+    if (this.jsonEvents) { return this.jsonEvents; }
+    try {
+      this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
+      this.jsonEvents = JSON.stringify(this.jsonEventsRaw, null, 2);
+    } catch (error) {
+      console.error('[GET] Max events: ', error);
+    }
+  }
+
+  downloadJSON() {
+    const url =
+      'data:application/json;charset=utf-8,' +
+      encodeURIComponent(this.jsonEvents);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+
+  sanitizeUrl(url) {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
   }
 
   JSONparse(value) {
@@ -107,8 +128,7 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   openAddEventDialog() {
     this.dialogRef = this.dialog.open(EventAddComponent, {
-      width: '600px',
-      position: { right: '0' },
+      panelClass: 'dialog',
       data: {
         assetIds: [this.assetId],
       },

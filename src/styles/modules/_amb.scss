@@ -1,0 +1,235 @@
+.amb {
+
+  .properties {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    > li {
+      display: inline-block;
+      min-width: 200px;
+      padding-right: 25px;
+      margin-bottom: 15px;
+
+      > h6 {
+        text-transform: uppercase;
+        font-size: 11px;
+        color: $grey;
+      }
+
+      > p {
+        color: $black;
+
+        &.json {
+          white-space: pre-wrap;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  &__main {
+    padding: 40px 20px;
+
+    &.json {
+
+      h5 {
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 12px;
+        color: $grey;
+        margin-bottom: 15px;
+      }
+
+      .action {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+      }
+
+      textarea {
+        font-size: 12px;
+        font-family: monospace;
+        white-space: pre;
+        height: 400px;
+        min-height: 300px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        line-height: 1.4;
+        color: $black;
+        text-align: left;
+        text-overflow: ellipsis;
+        transition: all 0.2s;
+        padding: 12px 16px;
+        padding-right: 25px;
+        background-color: #fff;
+        font-weight: 400;
+        border: 1px solid $grey;
+
+        &:focus {
+          border-color: $black;
+        }
+      }
+    }
+
+    section {
+      margin-bottom: 40px;
+      cursor: initial;
+
+      &.groups {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        > .group {
+          padding-right: 25px;
+          margin-bottom: 40px;
+
+          h5 {
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-bottom: 25px;
+          }
+        }
+      }
+
+      > h5 {
+        margin-bottom: 25px;
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      &.qr {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        a {
+          color: $blue;
+        }
+      }
+    }
+
+    .images {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      > div {
+        position: relative;
+        width: 84px;
+        height: 84px;
+        background-color: #fafafa;
+        margin: 0 25px 25px 0;
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+
+  &__header {
+    padding: 0 20px;
+
+    .accordions {
+      > .accordion {
+        > .title {
+          padding: 45px 0 25px;
+        }
+      }
+    }
+
+    .content {
+      .meta {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+
+        > div {
+          padding-right: 30px;
+
+          h5 {
+            margin-bottom: 20px;
+          }
+        }
+      }
+    }
+
+    .info {
+      &.title {
+        h2 {
+          color: $light-blue;
+        }
+
+        .assetId {
+          color: $black;
+          margin-bottom: 25px;
+        }
+
+        .createdBy {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          margin-top: 0;
+          font-size: 12px;
+
+          .address {
+            color: $grey;
+            font-size: 12px;
+          }
+        }
+
+        .account-image {
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          background: $grey;
+          margin: 0 8px;
+          border-radius: 50%;
+          position: relative;
+          background-color: #fafafa;
+          background-image: url('/assets/raster/account-image-default.png');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: 50%;
+        }
+      }
+    }
+  }
+
+  section {
+    &.location {
+      width: 100%;
+      height: 300px;
+      background: #fafafa;
+
+      agm-map {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .timeline {
+    background: #fafafa;
+    padding: 40px 20px 75px;
+
+    header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+
+      h2 {
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+    }
+  }
+}

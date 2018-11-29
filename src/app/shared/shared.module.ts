@@ -41,6 +41,7 @@ import {
 import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
 import { ToggleClassDirective } from './directives/toggle-class.directive';
+import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   imports: [
@@ -50,6 +51,9 @@ import { ToggleClassDirective } from './directives/toggle-class.directive';
     MatDialogModule,
     ReactiveFormsModule,
     ImageCropperModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyCIf-xvKaHu8pgMCuOgw8Ft9gnMgmAOBVw',
+    }),
   ],
   exports: [
     CommonModule,
@@ -81,6 +85,7 @@ import { ToggleClassDirective } from './directives/toggle-class.directive';
     ErrorDirective,
     DropDownComponent,
     ToggleClassDirective,
+    AgmCoreModule,
   ],
   declarations: [
     InputDirective,

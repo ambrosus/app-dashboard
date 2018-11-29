@@ -1,67 +1,162 @@
-<div class="object" *ngIf="asset">
+<div class="amb">
+  <div class="wrapper">
+    <header class="amb__header">
+      <div class="accordions">
+        <div class="accordion">
+          <div class="info title" appAccordion>
+            <h2>{{ assetsService.getName(asset.info) }}</h2>
+            <p class="assetId">{{ asset.assetId }}</p>
+            <p class="createdBy">
+              by <span class="account-image"></span>
+              <span class="address" *ngIf="asset.content?.idData?.createdBy">{{ asset.content.idData.createdBy }}</span>
+            </p>
+          </div>
+          <div class="content">
+            <div class="meta">
+              <div class="w50">
+                <h5>Asset metadata</h5>
+                <ul class="properties">
+                  <li *ngIf="asset.assetId">
+                    <h6>Asset id</h6>
+                    <p>{{ asset.assetId }}</p>
+                  </li>
+                  <li *ngIf="asset.content?.idData?.createdBy">
+                    <h6>Created by</h6>
+                    <p>{{ asset.content.idData.createdBy }}</p>
+                  </li>
+                  <li *ngIf="asset.content?.idData?.timestamp">
+                    <h6>Timestamp</h6>
+                    <p>{{ asset.content.idData.timestamp }}</p>
+                  </li>
+                  <li *ngIf="asset.content?.idData?.accessLevel">
+                    <h6>Access level</h6>
+                    <p>{{ asset.content.idData.accessLevel }}</p>
+                  </li>
+                </ul>
+              </div>
+              <div class="w50">
+                <h5>Bundle metadata</h5>
+                <ul class="properties">
+                  <li *ngIf="asset.metadata?.bundleId">
+                    <h6>Bundle id</h6>
+                    <p>{{ asset.metadata.bundleId }}</p>
+                  </li>
+                  <li *ngIf="asset.metadata?.bundleTransactionHash">
+                    <h6>Bundle transaction hash</h6>
+                    <p>{{ asset.metadata.bundleTransactionHash }}</p>
+                  </li>
+                  <li *ngIf="asset.metadata?.bundleUploadTimestamp">
+                    <h6>Bundle upload timestamp</h6>
+                    <p>{{ asset.metadata.bundleUploadTimestamp }}</p>
+                  </li>
+                  <li *ngIf="asset.metadata?.entityUploadTimestamp">
+                    <h6>Entity upload timestamp</h6>
+                    <p>{{ asset.metadata.entityUploadTimestamp }}</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <button class="transparent" (click)="viewJSON()" style="margin-top: 15px;">{{ json || 'View as JSON' }}</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="amb__main json" *ngIf="json">
 
-  <header class="object__header">
-    <app-qr-code [value]="previewAppUrl + '/' + assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
-    <div class="object__title">
-      <h3>{{ assetsService.getName(asset.infoEvent) }}</h3>
-      <p>{{ assetId }}</p>
-    </div>
-  </header>
+      <h5>JSON</h5>
+      <p *ngIf="jsonEventsRaw?.pagination?.hasNext" style="margin: 5px 0; color: red;">
+        This asset has more than 200 events, to download all of them please contact support.</p>
+      <textarea>{{ jsonEvents }}</textarea>
 
-  <main class="object__body" *ngIf="asset.infoEvent">
+      <div class="action">
+        <button class="transparent" (click)="json = ''">View as Data</button>
+        <a [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()" class="button outline">
+          Download JSON
+        </a>
+      </div>
+    </main>
+    <main class="amb__main" *ngIf="!json">
 
-    <!-- Identifiers -->
-    <div class="object__identifiers" *ngIf="asset | checkIf: 'asset.infoEvent.identifiers.identifiers'">
-      <h5 class="object__subtitle">Identifiers</h5>
+      <!-- Images -->
+      <section class="images" *ngIf="asset.info?.images" style="margin-bottom: 25px;">
+        <div class="image" *ngFor="let image of objectKeys(asset.info.images)" [style.backgroundImage]="sanitizeUrl(asset.info.images[image]['url'])"></div>
+      </section>
 
-      <ul>
-        <li class="item" *ngFor="let key of objectKeys(asset.infoEvent.identifiers.identifiers)">
-          <span class="item__title">{{ key }}</span>
-          <span class="item__value">{{ asset.infoEvent.identifiers.identifiers[key][0] }}</span>
-        </li>
-      </ul>
-    </div>
+      <!-- Description -->
+      <section *ngIf="asset.info?.description">
+        <h5>Description</h5>
+        <p style="color: #333;">{{ asset.info.description }}</p>
+      </section>
 
-    <!-- Images -->
-    <div class="object__images" *ngIf="asset | checkIf: 'asset.infoEvent.images'">
-      <h5 class="object__subtitle">Images</h5>
+      <!-- QR code -->
+      <section class="qr">
+        <app-qr-code class="qr" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+        <a [href]="'https://amb.to/' + asset.assetId" target="_blank">Check on amb.to</a>
+      </section>
 
-      <img *ngFor="let image of objectKeys(asset.infoEvent.images)" src="{{ asset.infoEvent.images[image]['url'] }}">
-    </div>
-
-    <!-- Properties -->
-    <div class="object__properties" *ngIf="asset.infoEvent.properties && asset.infoEvent.properties.length">
-      <h5 class="object__subtitle">Properties</h5>
-
-      <ul>
-        <li class="item" *ngFor="let property of asset.infoEvent.properties">
-          <span class="item__title" *ngIf="!isArray(property.value)">{{ property.key }}</span>
-          <span class="item__value" [ngClass]="{ 'item__value--json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Groups -->
-    <div class="object__groups" *ngIf="asset.infoEvent.groups && asset.infoEvent.groups.length">
-      <div *ngFor="let group of asset.infoEvent.groups">
-        <h5 class="object__subtitle">{{ group.key }}</h5>
-
-        <ul>
-          <li class="item" *ngFor="let property of objectKeys(group.value)">
-            <span class="item__title" *ngIf="!isArray(group.value[property])">{{ property }}</span>
-            <span class="item__value" [ngClass]="{ 'item__value--json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></span>
+      <!-- Identifiers -->
+      <section *ngIf="asset.info?.identifiers?.identifiers">
+        <h5>Identifiers</h5>
+        <ul class="properties">
+          <li *ngFor="let key of objectKeys(asset.info.identifiers.identifiers)">
+            <h6>{{ key }}</h6>
+            <p>{{ asset.info.identifiers.identifiers[key][0] }}</p>
           </li>
         </ul>
-      </div>
-    </div>
+      </section>
 
-  </main>
+      <!-- Documents -->
+      <section *ngIf="asset.info?.documents">
+        <h5>Documents</h5>
 
-  <!-- Events -->
-  <div class="p-a-30">
-    <h3 class="m-b-20">Events <button type="button" (click)="openAddEventDialog()">+</button></h3>
-    <p *ngIf="!timeline">No events</p>
-    <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.infoEvent)"></app-events-timeline>
+        <ul class="properties">
+          <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
+            <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>
+            <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url">
+              {{ assetsService.getUrlName(asset.info.documents[document].url) }}
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Properties -->
+      <section *ngIf="asset.info?.properties && asset.info.properties.length">
+        <h5>Properties</h5>
+        <ul class="properties">
+          <li *ngFor="let property of asset.info.properties">
+            <h6 *ngIf="!isArray(property.value)">{{ property.key }}</h6>
+            <p [ngClass]="{ 'json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="groups" *ngIf="asset.info?.groups && asset.info.groups.length">
+        <div class="group w50" *ngFor="let group of asset.info.groups">
+          <h5>{{ group.key }}</h5>
+
+          <ul class="properties">
+            <li *ngFor="let property of objectKeys(group.value)">
+              <h6 *ngIf="!isArray(group.value[property])">{{ property }}</h6>
+              <p [ngClass]="{ 'json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></p>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
   </div>
+  <section class="timeline">
+    <div class="wrapper">
+      <header>
+        <h2>Events</h2>
+        <div style="flex: 0 0 auto;">
+          <button type="button" class="outline" (click)="openAddEventDialog()">Add event</button>
+        </div>
+      </header>
 
+      <h4 *ngIf="!timeline; else timeline">No events</h4>
+      <ng-template #timeline>
+        <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.info)"></app-events-timeline>
+      </ng-template>
+    </div>
+  </section>
 </div>

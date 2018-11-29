@@ -41,41 +41,41 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.account = account;
         this.isLoggedin = this.authService.isLoggedIn();
         console.log('[GET] Account (header): ', this.account);
+
+        this.logout = this.logout.bind(this);
+        this.dropDownItems = {
+          title: 'Profile menu',
+          items: [
+            {
+              type: 'header',
+              title: this.account.fullName || 'No name',
+              meta: this.account.email || this.account.address,
+            },
+            {
+              type: 'separator',
+            },
+            {
+              type: 'link',
+              title: 'Settings',
+              icon: 'settings',
+              link: '/settings',
+            },
+            {
+              type: 'separator',
+            },
+            {
+              type: 'action',
+              title: 'Logout',
+              icon: 'logout',
+              click: this.logout,
+            },
+          ],
+        };
       },
     );
 
     this.initSearchForm();
     this.initSearchAdvanceForm();
-
-    this.logout = this.logout.bind(this);
-    this.dropDownItems = {
-      title: 'Profile menu',
-      items: [
-        {
-          type: 'header',
-          title: this.account.fullName || 'No name',
-          meta: this.account.email || this.account.address,
-        },
-        {
-          type: 'separator',
-        },
-        {
-          type: 'link',
-          title: 'Settings',
-          icon: 'settings',
-          link: '/settings',
-        },
-        {
-          type: 'separator',
-        },
-        {
-          type: 'action',
-          title: 'Logout',
-          icon: 'logout',
-          click: this.logout,
-        },
-      ],
-    };
   }
 
   ngOnDestroy() {
@@ -118,7 +118,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     let value = event.target.value;
 
     if (event.keyCode === 13 || event.keyCode === 9) {
-      console.log(event);
       if (value) {
         value = value.trim();
         this.forms.searchAdvance

@@ -24,14 +24,14 @@
     <form [formGroup]="forms.table" (change)="isSelected()">
       <div class="table" formArrayName="assets">
         <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
-          <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.infoEvent) + ')'">
+          <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
             <input formControlName="selected" type="checkbox" />
           </label>
           <div class="body">
             <a routerLink="/assets/{{ asset.value.assetId }}">
               <div class="body__main">
                 <h5 class="title">
-                  {{ assetsService.getName(asset.value.infoEvent) }}
+                  {{ assetsService.getName(asset.value.info) }}
                 </h5>
                 <p class="assetId">{{ asset.value.assetId }}</p>
                 <p class="createdBy">
@@ -49,5 +49,5 @@
     <div class="center" *ngIf="pagination && pagination.hasNext">
       <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
     </div>
-  </div>
+    </div>
 </div>
