@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   validatePrivateKey(control: AbstractControl) {
     try {
@@ -74,70 +74,62 @@ export class LoginComponent implements OnInit {
 
   // Private key form
 
-  getAccount() {
-    this.errorPrivateKeyForm = false;
-    const form = this.forms.privateKeyForm;
+  async getAccount(): Promise<any> {
+    try {
+      this.errorPrivateKeyForm = false;
+      const form = this.forms.privateKeyForm;
 
-    if (form.invalid) {
-      return (this.errorPrivateKeyForm = 'Fill all required fileds');
+      if (form.invalid) {
+        throw new Error('Fill all required fileds');
+      }
+
+      const { privateKey } = form.value;
+      const address = this.authService.privateKeyToAccount(privateKey);
+      this.storageService.set('secret', privateKey);
+      this.storageService.set('token', this.authService.getToken());
+
+      this.promiseActionPrivateKeyForm = new Promise(async (resolve, reject) => {
+        const account = await this.accountsService.getAccount(address);
+        console.log('[GET] Account: ', account);
+        this.storageService.set('secret', privateKey);
+        this.storageService.set('account', account);
+        Sentry.configureScope(scope => {
+          scope.setUser({ account });
+        });
+        this.accountsService._account.next(account);
+        this.router.navigate(['/assets']);
+        return account;
+      });
+    } catch (error) {
+      console.error('[GET] Account: ', error);
+      this.errorPrivateKeyForm = error;
+      this.storageService.clear();
     }
-
-    const { privateKey } = form.value;
-    const address = this.authService.privateKeyToAccount(privateKey);
-    this.storageService.set('secret', privateKey);
-    this.storageService.set('token', this.authService.getToken());
-
-    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.accountsService.getAccount(address).subscribe(
-        account => {
-          console.log('[GET] Account: ', account);
-          this.storageService.set('secret', privateKey);
-          this.storageService.set('account', account);
-          Sentry.configureScope(scope => {
-            scope.setUser({ account });
-          });
-          this.accountsService._account.next(account);
-          this.router.navigate(['/assets']);
-          resolve();
-        },
-        error => {
-          console.error('[GET] Account: ', error);
-          this.errorPrivateKeyForm = error ? error.message : 'Login error';
-          this.storageService.clear();
-          reject();
-        },
-      );
-    });
   }
 
   // Login form
 
-  login() {
-    this.errorLoginForm = false;
-    const form = this.forms.loginForm;
+  async login(): Promise<any> {
+    try {
+      this.errorLoginForm = false;
+      const form = this.forms.loginForm;
 
-    if (form.invalid) {
-      return (this.errorLoginForm = 'All fields are required');
+      if (form.invalid) {
+        throw new Error('All fields are required');
+      }
+
+      const { email, password } = form.value;
+
+      this.promiseActionLoginForm = new Promise(async (resolve, reject) => {
+        const account = await this.authService.login(email, password);
+        Sentry.configureScope(scope => {
+          scope.setUser({ account });
+        });
+        return account;
+      });
+    } catch (error) {
+      console.error('[LOGIN] Error: ', error);
+      this.errorLoginForm = error;
     }
-
-    const { email, password } = form.value;
-
-    this.promiseActionLoginForm = new Promise((resolve, reject) => {
-      this.authService.login(email, password).subscribe(
-        resp => {
-          Sentry.configureScope(scope => {
-            scope.setUser({ account: resp });
-          });
-          resolve();
-        },
-        error => {
-          console.error('[LOGIN] Error: ', error);
-          this.errorLoginForm = error
-            ? error.message
-            : 'Email or password are incorrect';
-          reject();
-        },
-      );
-    });
   }
 }

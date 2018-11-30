@@ -1,12 +1,14 @@
-import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[appInput]',
 })
 export class InputDirective {
 
-  constructor(private el: ElementRef,
-              private renderer: Renderer2) {}
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+  ) { }
 
   @HostListener('focus') onFocus() {
     this.renderer.addClass(this.el.nativeElement.parentNode, 'active');

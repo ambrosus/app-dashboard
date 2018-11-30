@@ -1,16 +1,18 @@
-<header>
-  <div class="wrapper">
-    <div class="info">
-      <div class="image"></div>
-      <div class="details">
-        <h1>{{ account.fullName || account.email || 'Account details' }}</h1>
-        <p class="meta">{{ account.address }}</p>
+<div class="settings">
+  <header>
+    <div class="wrapper">
+      <div class="info">
+        <div class="image"></div>
+        <div class="details">
+          <h1>{{ account.fullName || account.email || 'Account details' }}</h1>
+          <p class="meta">{{ account.address }}</p>
+        </div>
       </div>
     </div>
-  </div>
-</header>
-<main>
-  <div class="wrapper">
-    <router-outlet></router-outlet>
-  </div>
-</main>
+  </header>
+  <main>
+    <div class="wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

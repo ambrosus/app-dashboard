@@ -52,7 +52,7 @@ export class SignupComponent implements OnInit, OnDestroy {
       queryParams => {
         this.inviteId = queryParams.inviteId;
         if (this.inviteId) {
-          this.verifyInvite();
+          this.verifyInvite().then();
         }
       },
     );
@@ -96,14 +96,13 @@ export class SignupComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  verifyInvite() {
-    this.organizationsService.verifyInvite(this.inviteId).subscribe(
-      ({ data }: any) => {
-        this.invite = data;
-        console.log('[GET] Invite verified: ', data);
-      },
-      error => this.router.navigate(['/login']),
-    );
+  async verifyInvite(): Promise<any> {
+    try {
+      this.invite = this.organizationsService.verifyInvite(this.inviteId);
+      console.log('[GET] Invite verified: ', this.invite);
+    } catch (error) {
+      this.router.navigate(['/login']);
+    }
   }
 
   generateKeys() {
@@ -115,44 +114,45 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.step = 'saveKeys';
   }
 
-  verifyAccount() {
+  async verifyAccount(): Promise<any> {
     this.errorPrivateKeyForm = false;
     const form = this.forms.privateKeyForm;
     const { privateKey } = form.getRawValue();
 
-    if (form.invalid) {
-      return (this.errorPrivateKeyForm = 'Public key is required');
-    }
+    try {
+      if (form.invalid) {
+        throw new Error('Public key is required');
+      }
 
-    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.authService.verifyAccount(privateKey).subscribe(
-        resp => {
-          console.log('[VERIFY] Account: ', resp);
-          this.errorPrivateKeyForm =
-            'This account is already registered, please use another private key';
-          resolve();
-        },
-        error => {
-          this.generateAddress(privateKey);
-          this.step = 'saveKeys';
-          reject();
-        },
-      );
-    });
+      this.promiseActionPrivateKeyForm = new Promise(async (resolve, reject) => {
+        this.authService.verifyAccount(privateKey)
+          .then(resp => {
+            console.log('[VERIFY] Account: ', resp);
+            throw new Error('This account is already registered, please use another private key');
+          })
+          .catch(error => {
+            this.generateAddress(privateKey);
+            return this.step = 'saveKeys';
+          });
+      });
+    } catch (error) {
+      console.error('[VERIFY] Account: ', error);
+      this.errorPrivateKeyForm = error;
+    }
   }
 
-  savedKeys() {
+  async savedKeys(): Promise<any> {
     if (this.invite) {
       const { address } = this.forms.privateKeyForm.getRawValue();
       const body = { address };
-      this.organizationsService.acceptInvite(this.inviteId, body).subscribe(
-        inviteAccepted => this.router.navigate(['/login']),
-        error => {
-          console.error('[ACCEPT] Invite: ', error);
-          this.errorPrivateKeyForm =
-            'Account creation failed, please contact support';
-        },
-      );
+
+      try {
+        await this.organizationsService.acceptInvite(this.inviteId, body);
+        this.router.navigate(['/login']);
+      } catch (error) {
+        console.error('[ACCEPT] Invite: ', error);
+        this.errorPrivateKeyForm = 'Account creation failed, please contact support';
+      }
     } else {
       this.step = 'requestForm';
     }
@@ -180,32 +180,26 @@ export class SignupComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
-  requestOrganization() {
+  async requestOrganization(): Promise<any> {
     this.errorRequestForm = false;
     const { address } = this.forms.privateKeyForm.getRawValue();
     const form = this.forms.requestForm;
     const data = form.getRawValue();
     data.address = address;
 
-    if (form.invalid) {
-      return (this.errorRequestForm = 'Please fill all required fields');
-    }
+    try {
+      if (form.invalid) {
+        throw new Error('Please fill all required fields');
+      }
 
-    this.promiseActionRequestForm = new Promise((resolve, reject) => {
-      this.organizationsService.createOrganizationRequest(data).subscribe(
-        resp => {
-          console.log('[REQUEST] Organization: ', resp);
-          this.step = 'success';
-          resolve();
-        },
-        error => {
-          console.error('[REQUEST] Organization: ', error);
-          this.errorRequestForm = error
-            ? error.message
-            : 'Request failed, please contact support';
-          reject();
-        },
-      );
-    });
+      this.promiseActionRequestForm = new Promise(async (resolve, reject) => {
+        const organizationRequest = await this.organizationsService.createOrganizationRequest(data);
+        console.log('[REQUEST] Organization: ', organizationRequest);
+        return this.step = 'success';
+      });
+    } catch (error) {
+      console.error('[REQUEST] Organization: ', error);
+      this.errorRequestForm = error;
+    }
   }
 }

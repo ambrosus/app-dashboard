@@ -25,7 +25,7 @@ import { ClickThisActiveDirective } from './directives/click-this-active.directi
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { EventAddComponent } from './../modules/dashboard/event-add/event-add.component';
+import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
@@ -40,7 +40,7 @@ import {
 } from './directives/icon.directive';
 import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
-import { ToggleClassDirective } from './directives/toggle-class.directive';
+import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive';
 import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
@@ -84,7 +84,7 @@ import { AgmCoreModule } from '@agm/core';
     IconRightDirective,
     ErrorDirective,
     DropDownComponent,
-    ToggleClassDirective,
+    ToggleDropDownDirective,
     AgmCoreModule,
   ],
   declarations: [
@@ -113,7 +113,7 @@ import { AgmCoreModule } from '@agm/core';
     IconRightDirective,
     ErrorDirective,
     DropDownComponent,
-    ToggleClassDirective,
+    ToggleDropDownDirective,
   ],
   entryComponents: [EventAddComponent],
 })

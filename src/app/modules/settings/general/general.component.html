@@ -1,4 +1,4 @@
-<form class="form" [formGroup]="editAccountForm" (ngSubmit)="save()" style="max-width: 100%;">
+<form class="form" [formGroup]="editAccountForm" (ngSubmit)="save()">
   <label>
     <span>Public key</span>
     <input formControlName="address" type="text">
@@ -31,6 +31,6 @@
     </label>
   </div>
   <div class="right" style="margin-top: 30px;">
-    <button type="submit" [disabled]="editAccountForm.invalid">Save</button>
+    <button type="submit" class="outline" [disabled]="editAccountForm.invalid">Save</button>
   </div>
 </form>

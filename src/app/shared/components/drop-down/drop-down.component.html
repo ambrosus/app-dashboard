@@ -1,6 +1,6 @@
 <nav class="dropDown">
-  <ul class="menu">
-    <li class="item" [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index" (click)="item.click ? item.click() : ''">
+  <ul>
+    <li [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index" (click)="item.click ? call(item.click, item.args) : ''">
       <hr class="separator" *ngIf="item.type === 'separator'; else link">
       <ng-template #link>
         <a *ngIf="item.link; else noLink" [routerLink]="item.link">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +9,7 @@ import * as moment from 'moment-timezone';
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AccountComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
@@ -16,7 +17,9 @@ export class AccountComponent implements OnInit, OnDestroy {
     account?: FormGroup;
     accountPermissions?: FormGroup;
   } = {};
-  account;
+  account: any = {
+    permissions: [],
+  };
   address;
   timezones = [];
   error;
@@ -26,15 +29,13 @@ export class AccountComponent implements OnInit, OnDestroy {
     private accountsService: AccountsService,
     private route: ActivatedRoute,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.params.subscribe(async params => {
-      this.address = params.address;
-      await this.getAccount();
-      this.initForms();
-      this.timezones = moment.tz.names();
-    });
+    this.initForms();
+    this.subs[this.subs.length] = this.route.params.subscribe(params => this.address = params.address);
+    this.getAccount().then();
+    this.timezones = moment.tz.names();
   }
 
   ngOnDestroy() {
@@ -50,9 +51,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     });
 
     this.forms.accountPermissions = new FormGroup({
-      accessLevel: new FormControl(this.account.accessLevel, [
-        Validators.required,
-      ]),
+      accessLevel: new FormControl(this.account.accessLevel, [Validators.required]),
       permissions: new FormGroup({
         super_account: new FormControl({ value: null, disabled: true }),
         manage_accounts: new FormControl(null),
@@ -68,77 +67,64 @@ export class AccountComponent implements OnInit, OnDestroy {
           .get(permission)
           .setValue(true),
       );
-    } catch (e) {}
+    } catch (e) { }
   }
 
-  getAccount() {
-    return new Promise((resolve, reject) => {
-      this.accountsService.getAccount(this.address).subscribe(
-        ({ data }: any) => {
-          console.log('[GET] Account: ', data);
-          this.account = data;
-          resolve();
-        },
-        error => this.router.navigate(['/organization/accounts']),
-      );
-    });
+  async getAccount(): Promise<any> {
+    try {
+      this.account = await this.accountsService.getAccount(this.address);
+      this.initForms();
+      console.log('[GET] Account: ', this.account);
+    } catch (error) {
+      this.router.navigate(['/organization/accounts']);
+    }
   }
 
-  modifyAccount() {
-    this.error = false;
-    this.success = false;
+  async saveAccount(): Promise<any> {
     const form = this.forms.account;
-    const _data = form.value;
+    const data = form.value;
     const body = {};
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(_data).map(property => {
-      if (_data[property]) {
-        body[property] = _data[property];
+    Object.keys(data).map(p => {
+      if (data[p]) {
+        body[p] = data[p];
       }
     });
 
-    this.accountsService.modifyAccount(this.account.address, body).subscribe(
-      ({ data }: any) => {
-        console.log('[MODIFY] Account ', data);
-        this.getAccount();
-      },
-      error => {
-        console.error('[MODIFY] Account: ', error);
-        this.error = 'Account update failed';
-      },
-    );
+    try {
+      const account = await this.accountsService.modifyAccount(this.account.address, body);
+      console.log('[MODIFY] Account ', account);
+      this.getAccount();
+    } catch (error) {
+      console.error('[MODIFY] Account: ', error);
+    }
   }
 
-  modifyPermissions() {
-    this.error = false;
-    this.success = false;
+  async savePermissions(): Promise<any> {
     const form = this.forms.accountPermissions;
-    const _data = form.value;
-    const body = { accessLevel: _data.accessLevel, permissions: [] };
+    const data = form.value;
+    const body = { accessLevel: data.accessLevel, permissions: [] };
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(_data.permissions).map(permission => {
-      if (_data.permissions[permission]) {
+    Object.keys(data.permissions).map(permission => {
+      if (data.permissions[permission]) {
         body.permissions.push(permission);
       }
     });
 
-    this.accountsService.modifyAccount(this.account.address, body).subscribe(
-      ({ data }: any) => {
-        console.log('[MODIFY] Account ', data);
-        this.getAccount();
-      },
-      error => {
-        console.error('[MODIFY] Account: ', error);
-        this.error = 'Account update failed';
-      },
-    );
+    try {
+      const account = await this.accountsService.modifyAccount(this.account.address, body);
+      console.log('[MODIFY] Account ', account);
+      this.getAccount();
+    } catch (error) {
+      console.error('[MODIFY] Account: ', error);
+    }
   }
 }

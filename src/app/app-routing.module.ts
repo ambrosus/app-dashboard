@@ -31,7 +31,7 @@ const routes: Routes = [
   }, {
     path: 'assets',
     canActivate: [AuthGuard],
-    loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
+    loadChildren: 'app/modules/assets/assets.module#AssetsModule',
     runGuardsAndResolvers: 'always',
   }, {
     path: 'node',

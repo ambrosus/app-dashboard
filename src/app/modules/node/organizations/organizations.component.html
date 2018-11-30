@@ -1,149 +1,169 @@
-<h4 class="m-v-30 relative p-r-40">Organizations</h4>
-<hr class="m-b-20" />
+<div class="wrapper">
+  <header class="header">
+    <div>
+      <h1>Organizations</h1>
+    </div>
+  </header>
+  <main>
+    <ul class="showMenu">
+      <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
+      <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
+      <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
+      <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
+      <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
+    </ul>
 
-<button type="button" class="button button--blue" (click)="show = 'active'">
-  Active
-</button>
-<button type="button" class="button button--blue" (click)="show = 'pending'">
-  Pending
-</button>
-<button type="button" class="button" (click)="show = 'disabled'">
-  Disabled
-</button>
-
-<p class="m-v-30" style="color: salmon;">{{ error }}</p>
-
-<p class="m-t-20">Showing {{ getNumberOfOrganizations() }} organizations</p>
-
-<!-- Active organizations -->
-<table class="table" *ngIf="show === 'active'">
-  <tbody>
-    <tr *ngFor="let organization of organizations; let i = index">
-      <td class="table__image" routerLink="{{ organization.organizationId }}">
-        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ organization.organizationId }}">
-        <p class="table__info__title">{{ organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: green;"
-          >Active</span
-        >
-        <p class="table__status__timestamp">
-          Created: {{ organization.createdOn }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              *ngIf="account.organization !== organization.organizationId"
-              (click)="
-                actions('organizationModify', {
-                  organizationId: organization.organizationId,
-                  data: { active: false }
-                })
-              "
-            >
-              Disable
-            </li>
-          </ul>
+    <div class="table organizations">
+      <!-- Active -->
+      <div *ngIf="show === 'all' || show === 'active'">
+        <div class="item" *ngFor="let organization of organizations">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a [routerLink]="organization.organizationId">
+              <div class="body__main">
+                <h5 class="title">
+                  {{ organization.title || 'No title' }}
+                </h5>
+                <p class="createdBy">
+                  owner <span class="account-image"></span>
+                  <span class="address">{{ organization.owner }}</span>
+                </p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div></div>
+              <div>
+                <span class="status" style="color: #40D685;">Active</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Deactivate',
+                      click: actions,
+                      args: [self, 'organizationModify', { id: organization.organizationId, data: { active: false } }]
+                    }]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </div>
+      <!-- Pending -->
+      <div *ngIf="show === 'all' || show === 'pending'">
+        <div class="item" *ngFor="let organization of organizationRequests">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a>
+              <div class="body__main">
+                <h5 class="title">
+                  {{ organization.title || 'No title' }}
+                </h5>
+                <p class="createdBy">
+                  owner <span class="account-image"></span>
+                  <span class="address">{{ organization.address }}</span>
+                </p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div>
+                <button type="button" class="outline" style="margin-right: 5px;" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
+                <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
+              </div>
+              <div>
+                <span class="status" style="color: #F7A120;">Pending</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [
+                      {
+                        type: 'action',
+                        title: 'Approve',
+                        click: actions,
+                        args: [self, 'organizationRequest', { id: organization.address, approved: true }]
+                      },
+                      {
+                        type: 'action',
+                        title: 'Decline',
+                        click: actions,
+                        args: [self, 'organizationRequest', { id: organization.address, approved: false }]
+                      }
+                    ]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Disabled -->
+      <div *ngIf="show === 'all' || show === 'disabled'">
+        <div class="item" *ngFor="let organization of organizationsDisabled">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a [routerLink]="organization.organizationId">
+              <div class="body__main">
+                <h5 class="title">
+                  {{ organization.title || 'No title' }}
+                </h5>
+                <p class="createdBy">
+                  owner <span class="account-image"></span>
+                  <span class="address">{{ organization.owner }}</span>
+                </p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div></div>
+              <div>
+                <span class="status" style="color: #D64040;">Disabled</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Activate',
+                      click: actions,
+                      args: [self, 'organizationModify', { id: organization.organizationId, data: { active: true } }]
+                    }]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Declined -->
+      <div *ngIf="show === 'all' || show === 'declined'">
+        <div class="item" *ngFor="let organization of organizationRequestsDeclined">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a>
+              <div class="body__main">
+                <h5 class="title">
+                  {{ organization.title || 'No title' }}
+                </h5>
+                <p class="createdBy">
+                  owner <span class="account-image"></span>
+                  <span class="address">{{ organization.address }}</span>
+                </p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div>
+              </div>
+              <div>
+                <span class="status" style="color: #D64040;">Declined</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- Disabled organizations -->
-<table class="table" *ngIf="show === 'disabled'">
-  <tbody>
-    <tr *ngFor="let organization of organizationsDisabled; let i = index">
-      <td class="table__image" routerLink="{{ organization.organizationId }}">
-        <div>{{ organization.title ? organization.title.charAt(0) : 'O' }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ organization.organizationId }}">
-        <p class="table__info__title">{{ organization.title }}</p>
-        <small class="table__info__meta">Owner: {{ organization.owner }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: salmon;"
-          >Disabled</span
-        >
-        <p class="table__status__timestamp">
-          Created: {{ organization.createdOn }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="
-                actions('organizationModify', {
-                  organizationId: organization.organizationId,
-                  data: { active: true }
-                })
-              "
-            >
-              Activate
-            </li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- Pending organizations / Organization requests -->
-<table class="table" *ngIf="show === 'pending'">
-  <tbody>
-    <tr *ngFor="let organizationRequest of organizationRequests; let i = index">
-      <td class="table__image">
-        <div>
-          {{
-            organizationRequest.title
-              ? organizationRequest.title.charAt(0)
-              : organizationRequest.email.chartAt(0) || 'R'
-          }}
-        </div>
-      </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ organizationRequest.title }}</p>
-        <small class="table__info__meta"
-          >For: {{ organizationRequest.email }}</small
-        >
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: orange;"
-          >Pending</span
-        >
-        <p class="table__status__timestamp">
-          Requested: {{ organizationRequest.createdOn }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="
-                actions('organizationRequest', {
-                  approved: true,
-                  id: organizationRequest.address
-                })
-              "
-            >
-              Approve
-            </li>
-            <li
-              (click)="
-                actions('organizationRequest', {
-                  approved: false,
-                  id: organizationRequest.address
-                })
-              "
-            >
-              Refuse
-            </li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  </main>
+</div>

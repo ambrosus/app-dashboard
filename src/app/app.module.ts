@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CoreModule } from './core/core.module';
-import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AssetsModule } from './modules/assets/assets.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
@@ -50,7 +50,7 @@ export class SentryErrorHandler implements ErrorHandler {
     HttpClientModule,
     ReactiveFormsModule,
     CoreModule,
-    DashboardModule,
+    AssetsModule,
     SharedModule,
     DeviceDetectorModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {

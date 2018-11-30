@@ -11,6 +11,7 @@ import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { autocomplete } from 'app/constant';
+import { Router, NavigationStart } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -33,6 +34,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private accountsService: AccountsService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -68,6 +70,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
               title: 'Logout',
               icon: 'logout',
               click: this.logout,
+              args: [],
             },
           ],
         };
@@ -76,6 +79,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.initSearchForm();
     this.initSearchAdvanceForm();
+
+    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
+      if (e instanceof NavigationStart) {
+        this.advancedSearch = false;
+      }
+    });
   }
 
   ngOnDestroy() {

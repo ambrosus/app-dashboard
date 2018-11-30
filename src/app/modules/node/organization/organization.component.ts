@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -9,13 +9,14 @@ import * as moment from 'moment-timezone';
   selector: 'app-organization',
   templateUrl: './organization.component.html',
   styleUrls: ['./organization.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class OrganizationComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
     organization?: FormGroup;
   } = {};
-  organization;
+  organization: any = {};
   organizationId;
   timezones = [];
   error;
@@ -25,15 +26,13 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     private organizationsService: OrganizationsService,
     private route: ActivatedRoute,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.params.subscribe(async params => {
-      this.organizationId = params.organizationId;
-      await this.getOrganization();
-      this.initForm();
-      this.timezones = moment.tz.names();
-    });
+    this.initForm();
+    this.subs[this.subs.length] = this.route.params.subscribe(params => this.organizationId = params.organizationId);
+    this.getOrganization().then();
+    this.timezones = moment.tz.names();
   }
 
   ngOnDestroy() {
@@ -53,47 +52,40 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     });
   }
 
-  getOrganization() {
-    return new Promise((resolve, reject) => {
-      this.organizationsService.getOrganization(this.organizationId).subscribe(
-        ({ data }: any) => {
-          console.log('[GET] Organization: ', data);
-          this.organization = data;
-          resolve();
-        },
-        err => this.router.navigate(['/node/organizations']),
-      );
-    });
+  async getOrganization(): Promise<any> {
+    try {
+      this.organization = await this.organizationsService.getOrganization(this.organizationId);
+      console.log('[GET] Organization: ', this.organization);
+      this.initForm();
+    } catch (e) {
+      this.router.navigate(['/node/organizations']);
+    }
   }
 
-  modifyOrganization() {
+  async save(): Promise<any> {
     this.error = false;
     this.success = false;
     const form = this.forms.organization;
-    const _data = form.value;
-    const body = {};
+    const data = form.value;
+    const body = { active: data.active };
 
     if (form.invalid) {
       this.error = 'Form is invalid';
     }
 
-    Object.keys(_data).map(property => {
-      if (_data[property]) {
-        body[property] = _data[property];
+    Object.keys(data).map(property => {
+      if (data[property]) {
+        body[property] = data[property];
       }
     });
 
-    this.organizationsService
-      .modifyOrganization(this.organizationId, body)
-      .subscribe(
-        ({ data }: any) => {
-          console.log('[MODIFY] Organization: ', data);
-          this.getOrganization();
-        },
-        error => {
-          console.error('[MODIFY] Organization: ', error);
-          this.error = 'Organization update failed';
-        },
-      );
+    try {
+      const organization = await this.organizationsService.modifyOrganization(this.organizationId, body);
+
+      console.log('[MODIFY] Organization: ', organization);
+      this.getOrganization();
+    } catch (e) {
+      console.log('[MODIFY] Organization: ', e);
+    }
   }
 }

@@ -24,13 +24,13 @@ export class AllComponent implements OnInit {
     private storageService: StorageService,
     private accountsService: AccountsService,
     private organizationsService: OrganizationsService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
     this.getOrganization();
-    this.getAccounts();
-    this.getInvites();
+    this.getAccounts().then();
+    this.getInvites().then();
   }
 
   getNumberOfAccounts() {
@@ -44,67 +44,57 @@ export class AllComponent implements OnInit {
     }
   }
 
-  getOrganization() {
-    this.organizationsService
-      .getOrganization(this.account.organization)
-      .subscribe(
-        ({ data }: any) => {
-          console.log('[GET] Organization: ', data);
-          this.organization = data;
-        },
-        error => console.error('[GET] Organization: ', error),
-      );
+  async getOrganization(): Promise<any> {
+    try {
+      this.organization = await this.organizationsService.getOrganization(this.account.organization);
+      console.log('[GET] Organization: ', this.organization);
+    } catch (error) {
+      console.error('[GET] Organization: ', error);
+    }
   }
 
-  getAccounts() {
-    this.organizationsService
-      .getOrganizationAccounts(this.account.organization)
-      .subscribe(
-        ({ data }: any) => {
-          console.log('[GET] Accounts: ', data);
-          this.accounts = data.filter(account => account.permissions.length);
-          this.accountsDisabled = data.filter(
-            account => !account.permissions.length,
-          );
-        },
-        error => console.error('[GET] Accounts: ', error),
-      );
+  async getAccounts(): Promise<any> {
+    try {
+      this.accounts = await this.organizationsService.getOrganizationAccounts(this.account.organization);
+      console.log('[GET] Organization accounts: ', this.accounts);
+      this.accounts = this.accounts.filter(account => account.permissions.length);
+      this.accountsDisabled = this.accounts.filter(account => !account.permissions.length);
+    } catch (error) {
+      console.error('[GET] Accounts: ', error);
+    }
   }
 
-  getInvites(next = null) {
-    this.organizationsService.getInvites(next).subscribe(
-      ({ data }: any) => {
-        this.invites = data.map(invite => {
-          invite.createdOn = moment
-            .tz(invite.createdOn * 1000, this.account.timeZone || 'UTC')
-            .fromNow();
-          return invite;
-        });
-        console.log('[GET] Invites: ', this.invites);
-      },
-      error => console.error('[GET] Invites: ', error),
-    );
+  async getInvites(next = ''): Promise<any> {
+    try {
+      this.invites = await this.organizationsService.getInvites(next);
+      console.log('[GET] Invites: ', this.invites);
+      this.invites = this.invites.map(invite => {
+        invite.createdOn = moment.tz(invite.createdOn * 1000, this.account.timeZone || 'UTC').fromNow();
+        return invite;
+      });
+    } catch (error) {
+      console.error('[GET] Invites: ', error);
+    }
   }
 
-  actions(action, body: any = {}) {
+  async actions(action, body: any = {}): Promise<any> {
     switch (action) {
       case 'inviteDelete':
-        this.organizationsService
-          .deleteInvite(body.inviteId)
-          .subscribe(
-            inviteDeleted => this.getInvites(),
-            error => (this.error = 'Invite remove failed'),
-          );
+        try {
+          await this.organizationsService.deleteInvite(body.inviteId);
+          await this.getInvites();
+        } catch (error) {
+          console.error('[DELETE] Invite: ', error);
+        }
         break;
 
       case 'accountEdit':
-        this.accountsService
-          .modifyAccount(body['address'], body['data'])
-          .subscribe(
-            resp => this.getAccounts(),
-            error =>
-              (this.error = error ? error.message : 'Account edit error'),
-          );
+        try {
+          await this.accountsService.modifyAccount(body['address'], body['data']);
+          await this.getAccounts();
+        } catch (error) {
+          console.error('[MODIFY] Account: ', error);
+        }
         break;
     }
   }

@@ -128,9 +128,9 @@ export class AssetsService {
   }
 
   async getAssets(options: {
-    address?: String;
-    limit?: Number;
-    next?: String;
+    address?: string;
+    limit?: number;
+    next?: string;
   }): Promise<void> {
     const { address, limit, next } = options;
 
@@ -187,7 +187,7 @@ export class AssetsService {
     this.assets = assets;
   }
 
-  getAsset(assetId: String): Observable<any> {
+  getAsset(assetId: string): Observable<any> {
     let url = `${this.api.extended}/asset/query`;
     let body: any = {
       query: [
@@ -234,9 +234,9 @@ export class AssetsService {
   }
 
   async getEvents(options: {
-    assetId: String;
-    limit?: Number;
-    next?: String;
+    assetId: string;
+    limit?: number;
+    next?: string;
   }): Promise<void> {
     const { assetId, limit, next } = options;
 
@@ -262,8 +262,8 @@ export class AssetsService {
   }
 
   async getMaxEvents(options: {
-    assetId: String;
-    limit?: Number;
+    assetId: string;
+    limit?: number;
   }): Promise<any> {
     const { assetId, limit } = options;
 
@@ -288,7 +288,7 @@ export class AssetsService {
     return events;
   }
 
-  getEvent(eventId: String): Observable<any> {
+  getEvent(eventId: string): Observable<any> {
     const url = `${this.api.extended}/event/query`;
     const body: any = {
       query: [
@@ -375,9 +375,9 @@ export class AssetsService {
         }
       });
 
-      return Promise.resolve(data);
+      return data;
     } catch (e) {
-      return Promise.reject(data);
+      throw e;
     }
   }
 
@@ -412,7 +412,7 @@ export class AssetsService {
     const location = event.location || event;
     const { city, country, name } = location;
     return (
-      [city, country, name].filter(Boolean).join(', ') || 'No place attached'
+      [city, country, name].filter(item => !!item).join(', ') || 'No place attached'
     );
   }
 
@@ -567,8 +567,7 @@ export class AssetsService {
   }
 
   sign(data, secret) {
-    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret)
-      .signature;
+    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature;
   }
 
   calculateHash(data) {
@@ -578,7 +577,7 @@ export class AssetsService {
   serializeForHashing(object) {
     const isDict = subject =>
       typeof subject === 'object' && !Array.isArray(subject);
-    const isString = subject => typeof subject === 'string';
+    const isstring = subject => typeof subject === 'string';
     const isArray = subject => Array.isArray(subject);
 
     if (isDict(object)) {
@@ -592,11 +591,11 @@ export class AssetsService {
         .map(item => this.serializeForHashing(item))
         .join(',');
       return `[${content}]`;
-    } else if (isString(object)) {
+    } else if (isstring(object)) {
       return `"${object}"`;
     }
 
-    return object.toString();
+    return object.tostring();
   }
 
   validTimestamp(timestamp) {
@@ -604,11 +603,7 @@ export class AssetsService {
   }
 
   isLatest(type) {
-    return (
-      ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(
-        type,
-      ) === -1
-    );
+    return (['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1);
   }
 
   findEvent(eventType, events) {

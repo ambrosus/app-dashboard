@@ -1,7 +1,7 @@
 .table {
   margin-bottom: 50px;
 
-  > .item {
+  .item {
     display: flex;
     flex-direction: row;
     background-color: transparent;
@@ -48,9 +48,9 @@
       }
     }
 
-    label {
+    label,
+    div {
       position: relative;
-      user-select: none;
 
       &.image {
         width: 84px;
@@ -61,6 +61,9 @@
         background-position: 50% 50%;
         background-repeat: no-repeat;
       }
+    }
+
+    label {
 
       input[type='checkbox'] {
         position: absolute;
@@ -76,7 +79,32 @@
     }
 
     .body {
-      .body__main {
+      &__meta {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #eee;
+        padding: 25px 0;
+
+        .status {
+          display: inline-block;
+          position: relative;
+          font-size: 14px;
+          font-weight: 500;
+          margin-right: 20px;
+          top: 2px;
+        }
+
+        .verticalMenu {
+          display: inline-block;
+          position: relative;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      &__main {
         .assetId {
           color: #333;
           margin-bottom: 15px;
@@ -106,6 +134,43 @@
           background-size: cover;
           background-repeat: no-repeat;
           background-position: 50%;
+        }
+      }
+    }
+  }
+
+  &.organizations {
+
+    .item {
+      padding: 0;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba($grey, 0.1);
+      margin-bottom: 15px;
+
+      .image {
+        height: auto;
+        width: 110px;
+        background-color: #fff;
+        margin-right: 0;
+        border-radius: 4px 0 0 4px;
+        flex: 0 0 110px;
+        background-image: url('/assets/raster/organization-logo-default.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: top center;
+        border-right: 1px solid #fafafa;
+      }
+
+      .body {
+        width: 100%;
+        padding: 0 25px;
+
+        &__main {
+          padding: 25px 0;
+
+          h5 {
+            margin-bottom: 20px;
+          }
         }
       }
     }

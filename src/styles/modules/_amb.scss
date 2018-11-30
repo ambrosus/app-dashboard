@@ -233,3 +233,46 @@
     }
   }
 }
+
+.settings {
+  label {
+    &:last-of-type {
+      margin-bottom: 15px !important;
+    }
+  }
+
+  .form {
+    max-width: 100%;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .details {
+      h1 {
+        margin-top: 0;
+      }
+    }
+
+    .image {
+      flex: 0 0 85px;
+      width: 85px;
+      height: 85px;
+      display: inline-block;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: 50%;
+      background-color: #eee;
+      background-image: url('/assets/raster/account-image-default.png');
+      margin-right: 50px;
+    }
+  }
+
+  > header,
+  > main {
+    padding: 35px 25px;
+  }
+}

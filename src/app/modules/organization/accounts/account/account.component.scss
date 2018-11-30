@@ -1,0 +1,11 @@
+@import 'utils';
+
+app-account {
+  .active {
+    color: $green;
+  }
+
+  .disabled {
+    color: $red;
+  }
+}

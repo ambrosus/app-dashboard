@@ -9,17 +9,10 @@ import { OrganizationsService } from 'app/services/organizations.service';
 })
 export class InviteComponent implements OnInit {
   inviteForm: FormGroup;
-  spinner;
-  error;
-  success;
 
-  constructor(private organizationsService: OrganizationsService) {
-    this.initInviteForm();
-  }
-
-  stringify = JSON.stringify;
-
-  initInviteForm() {
+  constructor(
+    private organizationsService: OrganizationsService,
+  ) {
     this.inviteForm = new FormGroup({
       members: new FormArray([
         new FormGroup({
@@ -29,7 +22,9 @@ export class InviteComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  stringify = JSON.stringify;
+
+  ngOnInit() { }
 
   remove(array, index: number) {
     (<FormArray>this.inviteForm.get(array)).removeAt(index);
@@ -43,32 +38,27 @@ export class InviteComponent implements OnInit {
     );
   }
 
-  sendInvites() {
-    this.error = false;
-    this.success = false;
+  async sendInvites(): Promise<any> {
+    try {
+      const email = this.inviteForm.value.members.reduce(
+        (emails, member, array, index) => {
+          if (member.email) {
+            emails.push(member.email);
+          }
+          return emails;
+        },
+        [],
+      );
 
-    const email = this.inviteForm.value.members.reduce(
-      (_emails, member, array, index) => {
-        if (member.email) {
-          _emails.push(member.email);
-        }
-        return _emails;
-      },
-      [],
-    );
+      if (!email.length) {
+        throw new Error('Send at least one invite');
+      }
 
-    const body = { email };
+      const invitesSent = await this.organizationsService.createInvites({ email });
+      console.log('[CREATE] Invites: ', invitesSent);
 
-    if (!body.email.length) {
-      this.error = 'Send at least one invite';
+    } catch (error) {
+      console.error('[CREATE] Invites: ', error);
     }
-
-    this.organizationsService.createInvites(body).subscribe(
-      ({ data }: any) => {
-        this.success = 'Invites sent';
-        console.log('[CREATE] Invites: ', data);
-      },
-      error => console.error('[CREATE] Invites: ', error),
-    );
   }
 }

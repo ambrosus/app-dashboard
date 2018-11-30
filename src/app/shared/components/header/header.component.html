@@ -31,7 +31,7 @@
       </form>
     </div>
 
-    <div class="avatar" [appToggleClass]="'openMenu'">
+    <div class="avatar" appToggleDropDown>
       <div>{{ account.email ? account.email.charAt(0) : account.address.charAt(2) }}</div>
       <app-drop-down [items]="dropDownItems"></app-drop-down>
     </div>

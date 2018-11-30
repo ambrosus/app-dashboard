@@ -1,0 +1,11 @@
+@import 'utils';
+
+app-organization {
+  .active {
+    color: $green;
+  }
+
+  .disabled {
+    color: $red;
+  }
+}

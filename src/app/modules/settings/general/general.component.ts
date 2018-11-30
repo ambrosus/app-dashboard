@@ -56,29 +56,28 @@ export class GeneralComponent implements OnInit {
     }
   }
 
-  save() {
+  async save(): Promise<any> {
     const form = this.editAccountForm;
     const data = form.value;
     const secret = this.storageService.get('secret');
 
-    if (form.invalid) {
-      return (this.error = 'Form is invalid');
-    }
+    try {
+      if (form.invalid) {
+        throw new Error('Form is invalid');
+      }
 
-    if (data.password) {
-      data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
-    }
+      if (data.password) {
+        data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
+      }
 
-    this.accountsService.modifyAccount(this.account.address, data).subscribe(
-      (resp: any) => {
-        console.log('[MODIFY] Account updated');
-        this.storageService.set('account', resp.data);
-        this.accountsService._account.next(resp.data);
-      },
-      error => {
-        console.error('[MODIFY] Account: ', error);
-        this.error = 'Edit account error';
-      },
-    );
+      this.account = await this.accountsService.modifyAccount(this.account.address, data);
+      console.log('[MODIFY] Account updated');
+      this.storageService.set('account', this.account);
+      this.accountsService._account.next(this.account);
+
+    } catch (error) {
+      console.error('[MODIFY] Account: ', error);
+      this.error = error;
+    }
   }
 }

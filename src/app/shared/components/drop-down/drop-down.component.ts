@@ -13,6 +13,11 @@ export class DropDownComponent implements OnInit {
 
   constructor() { }
 
+  call(method, args) {
+    console.log(method, args);
+    method.call(...args);
+  }
+
   ngOnInit() {
     console.log(this.items);
   }
