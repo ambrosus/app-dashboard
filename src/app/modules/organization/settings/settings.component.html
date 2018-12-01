@@ -1,13 +1,20 @@
-<div class="settings">
+<div class="page" *ngIf="organization.organizationId">
   <header>
     <div class="wrapper">
-      <div class="info">
+      <div class="flex">
         <div class="image"></div>
-        <div class="details">
-          <h1>{{ organization.title || 'Organization details' }}</h1>
-          <p class="meta" *ngIf="organization.createdOn">
-            Created on: {{ organization.createdOn * 1000 | date:'EEE, MMM d, yyyy' }}
-          </p>
+        <div>
+          <div class="flex between">
+            <h1>{{ organization.title || 'Organization details' }}</h1>
+            <div class="flex-0">
+              <h5 [ngClass]="organization.active ? 'active' : 'disabled'" style="margin-bottom: 5px;">
+                {{ organization.active ? 'Active' : 'Disabled' }}
+              </h5>
+              <span class="meta" *ngIf="organization.createdOn">
+                {{ organization.createdOn * 1000 | date:'EEE, MMM d, yyyy' }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -32,6 +39,10 @@
             </datalist>
           </label>
         </div>
+        <label>
+          <input type="checkbox" formControlName="active" appCustomCheckbox />
+          Active
+        </label>
         <div>
           <button type="submit" class="outline" [disabled]="forms.settings.invalid" [promiseBtn]="promise.save">
             Save

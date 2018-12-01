@@ -4,7 +4,6 @@ import { AppRoutingModule } from 'app/app-routing.module';
 import { TermsComponent } from './components/terms/terms.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SignupComponent } from './components/signup/signup.component';
 import { OrganizationsService } from '../services/organizations.service';
@@ -15,7 +14,6 @@ import { OrganizationsService } from '../services/organizations.service';
     AppRoutingModule,
     NgSelectModule,
     ReactiveFormsModule,
-    Angular2PromiseButtonModule.forRoot(),
   ],
   exports: [AppRoutingModule],
   declarations: [

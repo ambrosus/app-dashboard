@@ -1,44 +1,45 @@
-<div class="wrapper">
+<div class="page">
   <header class="header">
-    <div>
+    <div class="wrapper">
       <h1>Organizations</h1>
     </div>
   </header>
   <main>
-    <ul class="showMenu">
-      <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
-      <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
-      <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
-      <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
-      <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
-    </ul>
+    <div class="wrapper">
+      <ul class="showMenu">
+        <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
+        <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
+        <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
+        <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
+        <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
+      </ul>
 
-    <div class="table organizations">
-      <!-- Active -->
-      <div *ngIf="show === 'all' || show === 'active'">
-        <h3 *ngIf="!organizations.length && show !== 'all'">No active organizations</h3>
-        <div class="item" *ngFor="let organization of organizations">
-          <div class="image">
-          </div>
-          <div class="body">
-            <a [routerLink]="organization.organizationId">
-              <div class="body__main">
-                <h5 class="title">
-                  {{ organization.title || 'No title' }}
-                </h5>
-                <p class="createdBy">
-                  owner <span class="account-image"></span>
-                  <span class="address">{{ organization.owner }}</span>
-                </p>
-              </div>
-            </a>
-            <div class="body__meta">
-              <div></div>
-              <div>
-                <span class="status" style="color: #40D685;">Active</span>
-                <span class="verticalMenu" appToggleDropDown>
-                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                  <app-drop-down [items]="{
+      <div class="table organizations">
+        <!-- Active -->
+        <div *ngIf="show === 'all' || show === 'active'">
+          <h3 *ngIf="!organizations.length && show !== 'all'">No active organizations</h3>
+          <div class="item" *ngFor="let organization of organizations">
+            <div class="image">
+            </div>
+            <div class="body">
+              <a [routerLink]="organization.organizationId">
+                <div class="body__main">
+                  <h5 class="title">
+                    {{ organization.title || 'No title' }}
+                  </h5>
+                  <p class="createdBy">
+                    owner <span class="account-image"></span>
+                    <span class="address">{{ organization.owner }}</span>
+                  </p>
+                </div>
+              </a>
+              <div class="body__meta">
+                <div></div>
+                <div>
+                  <span class="status" style="color: #40D685;">Active</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Deactivate',
@@ -46,40 +47,40 @@
                       args: [self, 'organizationModify', { id: organization.organizationId, data: { active: false } }]
                     }]
                   }"></app-drop-down>
-                </span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Pending -->
-      <div *ngIf="show === 'all' || show === 'pending'">
-        <h3 *ngIf="!organizationRequests.length && show !== 'all'">No pending organizations</h3>
-        <div class="item" *ngFor="let organization of organizationRequests">
-          <div class="image">
-          </div>
-          <div class="body">
-            <a>
-              <div class="body__main">
-                <h5 class="title">
-                  {{ organization.title || 'No title' }}
-                </h5>
-                <p class="createdBy">
-                  owner <span class="account-image"></span>
-                  <span class="address">{{ organization.address }}</span>
-                </p>
-              </div>
-            </a>
-            <div class="body__meta">
-              <div>
-                <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
-                <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
-              </div>
-              <div>
-                <span class="status" style="color: #F7A120;">Pending</span>
-                <span class="verticalMenu" appToggleDropDown>
-                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                  <app-drop-down [items]="{
+        <!-- Pending -->
+        <div *ngIf="show === 'all' || show === 'pending'">
+          <h3 *ngIf="!organizationRequests.length && show !== 'all'">No pending organizations</h3>
+          <div class="item" *ngFor="let organization of organizationRequests">
+            <div class="image">
+            </div>
+            <div class="body">
+              <a>
+                <div class="body__main">
+                  <h5 class="title">
+                    {{ organization.title || 'No title' }}
+                  </h5>
+                  <p class="createdBy">
+                    owner <span class="account-image"></span>
+                    <span class="address">{{ organization.address }}</span>
+                  </p>
+                </div>
+              </a>
+              <div class="body__meta">
+                <div>
+                  <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
+                  <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
+                </div>
+                <div>
+                  <span class="status" style="color: #F7A120;">Pending</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
                     items: [
                       {
                         type: 'action',
@@ -95,37 +96,37 @@
                       }
                     ]
                   }"></app-drop-down>
-                </span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Disabled -->
-      <div *ngIf="show === 'all' || show === 'disabled'">
-        <h3 *ngIf="!organizationsDisabled.length && show !== 'all'">No disabled organizations</h3>
-        <div class="item" *ngFor="let organization of organizationsDisabled">
-          <div class="image">
-          </div>
-          <div class="body">
-            <a [routerLink]="organization.organizationId">
-              <div class="body__main">
-                <h5 class="title">
-                  {{ organization.title || 'No title' }}
-                </h5>
-                <p class="createdBy">
-                  owner <span class="account-image"></span>
-                  <span class="address">{{ organization.owner }}</span>
-                </p>
-              </div>
-            </a>
-            <div class="body__meta">
-              <div></div>
-              <div>
-                <span class="status" style="color: #D64040;">Disabled</span>
-                <span class="verticalMenu" appToggleDropDown>
-                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                  <app-drop-down [items]="{
+        <!-- Disabled -->
+        <div *ngIf="show === 'all' || show === 'disabled'">
+          <h3 *ngIf="!organizationsDisabled.length && show !== 'all'">No disabled organizations</h3>
+          <div class="item" *ngFor="let organization of organizationsDisabled">
+            <div class="image">
+            </div>
+            <div class="body">
+              <a [routerLink]="organization.organizationId">
+                <div class="body__main">
+                  <h5 class="title">
+                    {{ organization.title || 'No title' }}
+                  </h5>
+                  <p class="createdBy">
+                    owner <span class="account-image"></span>
+                    <span class="address">{{ organization.owner }}</span>
+                  </p>
+                </div>
+              </a>
+              <div class="body__meta">
+                <div></div>
+                <div>
+                  <span class="status" style="color: #D64040;">Disabled</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Activate',
@@ -133,41 +134,41 @@
                       args: [self, 'organizationModify', { id: organization.organizationId, data: { active: true } }]
                     }]
                   }"></app-drop-down>
-                </span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Declined -->
-      <div *ngIf="show === 'all' || show === 'declined'">
-        <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'">No declined organizations</h3>
-        <div class="item" *ngFor="let organization of organizationRequestsDeclined">
-          <div class="image">
-          </div>
-          <div class="body">
-            <a>
-              <div class="body__main">
-                <h5 class="title">
-                  {{ organization.title || 'No title' }}
-                </h5>
-                <p class="createdBy">
-                  owner <span class="account-image"></span>
-                  <span class="address">{{ organization.address }}</span>
-                </p>
-              </div>
-            </a>
-            <div class="body__meta">
-              <div>
-              </div>
-              <div>
-                <span class="status" style="color: #D64040;">Declined</span>
+        <!-- Declined -->
+        <div *ngIf="show === 'all' || show === 'declined'">
+          <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'">No declined organizations</h3>
+          <div class="item" *ngFor="let organization of organizationRequestsDeclined">
+            <div class="image">
+            </div>
+            <div class="body">
+              <a>
+                <div class="body__main">
+                  <h5 class="title">
+                    {{ organization.title || 'No title' }}
+                  </h5>
+                  <p class="createdBy">
+                    owner <span class="account-image"></span>
+                    <span class="address">{{ organization.address }}</span>
+                  </p>
+                </div>
+              </a>
+              <div class="body__meta">
+                <div>
+                </div>
+                <div>
+                  <span class="status" style="color: #D64040;">Declined</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </main>
 </div>

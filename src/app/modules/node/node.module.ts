@@ -8,7 +8,6 @@ import { NodeOutletComponent } from './node-outlet/node-outlet.component';
 import { SharedModule } from 'app/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { NodeService } from 'app/services/node.service';
 import { OrganizationComponent } from './organization/organization.component';
 
@@ -19,7 +18,6 @@ import { OrganizationComponent } from './organization/organization.component';
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
-    Angular2PromiseButtonModule.forRoot(),
     FormsModule,
   ],
   providers: [NodeService],
@@ -30,4 +28,4 @@ import { OrganizationComponent } from './organization/organization.component';
     OrganizationComponent,
   ],
 })
-export class NodeModule {}
+export class NodeModule { }

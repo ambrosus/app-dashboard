@@ -1,4 +1,14 @@
+@import 'utils';
+
 app-settings {
   display: block;
   background: #fff;
+
+  .active {
+    color: $green;
+  }
+
+  .disabled {
+    color: $red;
+  }
 }

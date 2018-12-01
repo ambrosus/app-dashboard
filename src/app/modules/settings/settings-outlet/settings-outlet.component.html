@@ -1,11 +1,11 @@
-<div class="settings">
+<div class="page" *ngIf="account.address">
   <header>
     <div class="wrapper">
-      <div class="info">
+      <div class="flex">
         <div class="image"></div>
-        <div class="details">
+        <div>
           <h1>{{ account.fullName || account.email || 'Account details' }}</h1>
-          <p class="meta">{{ account.address }}</p>
+          <p style="margin-top: 10px;">{{ account.address }}</p>
         </div>
       </div>
     </div>

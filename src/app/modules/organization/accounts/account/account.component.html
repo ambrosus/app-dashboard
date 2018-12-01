@@ -1,11 +1,11 @@
-<div class="settings">
+<div class="page" *ngIf="account.address">
   <header>
     <div class="wrapper">
-      <div class="info">
+      <div class="flex">
         <div class="image"></div>
-        <div class="details">
+        <div>
           <h1>{{ account.fullName || account.email || 'Account details' }}</h1>
-          <p class="meta">{{ account.address }}</p>
+          <p style="margin-top: 10px;">{{ account.address }}</p>
         </div>
       </div>
     </div>
@@ -44,10 +44,10 @@
 
       <hr style="margin: 40px 0;">
 
-      <h2 [ngClass]="this.account.permissions.length ? 'active' : 'disabled'">
+      <h4 [ngClass]="this.account.permissions.length ? 'active' : 'disabled'">
         {{ this.account.permissions.length ? 'Active' : 'Disabled' }}
-      </h2>
-      <p style="margin-bottom: 30px;">
+      </h4>
+      <p style="margin: 15px 0 30px;">
         You can add or remove account permissions and access level.<br>
         If you uncheck all permissions, you will disable this account.
       </p>

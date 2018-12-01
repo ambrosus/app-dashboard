@@ -5,34 +5,31 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<header class="header">
-  <div>
+<header>
+  <div class="flex between">
     <h2 class="title">Invite Members</h2>
-  </div>
-  <div>
-    <ul class="menu">
+    <ul class="menu flex-0">
       <li [ngClass]="{ 'active': form }" (click)="form = true">Form</li>
     </ul>
   </div>
 </header>
-
-<form class="form" [formGroup]="forms.invite" (ngSubmit)="send()">
-
-  <section>
-    <div formArrayName="members" class="right">
-      <div *ngFor="let member of forms.invite.get('members')['controls']; let i = index" [formGroupName]="i">
-        <label>
-          <span>Email</span>
-          <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
-        </label>
+<main>
+  <form class="form" [formGroup]="forms.invite" (ngSubmit)="send()">
+    <section>
+      <div formArrayName="members" class="right">
+        <div *ngFor="let member of forms.invite.get('members')['controls']; let i = index" [formGroupName]="i">
+          <label>
+            <span>Email</span>
+            <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
+          </label>
+        </div>
+        <a class="addMore" (click)="addMember()">+ Add invite</a>
       </div>
-      <a class="addMore" (click)="addMember()">+ Add invite</a>
+    </section>
+
+    <div>
+      <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
     </div>
-  </section>
-
-  <div>
-    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
-    <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
-  </div>
-
-</form>
+  </form>
+</main>

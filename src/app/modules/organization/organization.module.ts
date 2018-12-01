@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -21,7 +20,6 @@ import { OrganizationOutletComponent } from './organization-outlet/organization-
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
-    Angular2PromiseButtonModule.forRoot(),
     FormsModule,
   ],
   declarations: [

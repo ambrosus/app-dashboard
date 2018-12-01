@@ -11,7 +11,7 @@
 <app-tabs>
   <app-tab label="Private Key">
     <form class="form" [formGroup]="forms.privateKey" (ngSubmit)="getAccount()" style="max-width: 624px">
-      <label [ngClass]="{ error: errorPrivateKeyForm }">
+      <label>
         <span>Your private key</span>
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
@@ -19,7 +19,7 @@
         </span>
         <input formControlName="privateKey" type="text" [appError]="[forms.privateKey, true]" />
       </label>
-      <div style="text-align: center; margin-top: 45px;">
+      <div style="justify-content: center; margin-top: 45px;">
         <button type="submit" [disabled]="forms.privateKey.invalid" [promiseBtn]="promise.privateKey">
           Log in
         </button>
@@ -28,11 +28,11 @@
   </app-tab>
   <app-tab label="Email & Password">
     <form class="form" [formGroup]="forms.email" (ngSubmit)="login()" style="max-width: 410px;">
-      <label [ngClass]="{ error: errorLoginForm }">
+      <label>
         <span>Your email</span>
         <input formControlName="email" type="email" name="new-email" autocomplete="new-password" [appError]="[forms.email]" />
       </label>
-      <label [ngClass]="{ error: errorLoginForm }">
+      <label>
         <span>Your password</span>
         <span class="show-password" (click)="showPassword = !showPassword">
           <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
@@ -40,7 +40,7 @@
         </span>
         <input formControlName="password" name="new_password" autocomplete="new-password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.email, true]" />
       </label>
-      <div style="text-align: center; margin-top: 45px;">
+      <div style="justify-content: center; margin-top: 45px;">
         <button type="submit" [disabled]="forms.email.invalid" [promiseBtn]="promise.login">
           Log in
         </button>

@@ -18,6 +18,12 @@ app-root {
       flex-grow: 1;
       position: relative;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+
+      > router-outlet + * {
+        flex: 1 1 auto;
+      }
     }
   }
 }
@@ -57,6 +63,44 @@ body {
     padding: 0;
     padding-top: 80px;
     padding-bottom: 40px;
+
+    header {
+      padding: 40px;
+
+      .title {
+        color: $light-blue;
+        font-weight: 400;
+      }
+
+      .menu {
+
+        li {
+          display: inline-block;
+          margin-right: 24px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+
+          &.active {
+            color: $blue;
+          }
+
+          &:last-of-type {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    main {
+      .form {
+        > div {
+          &:last-child {
+            padding: 0 40px;
+          }
+        }
+      }
+    }
   }
 }
 

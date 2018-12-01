@@ -20,13 +20,8 @@
 
     &.outline {
       border: 1px solid $white;
-      background-color: transparent;
       color: $white;
-
-      &:hover {
-        background: $white;
-        color: $purple-blue;
-      }
+      background: transparent;
     }
   }
 

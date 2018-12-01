@@ -36,6 +36,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       title: new FormControl('', [Validators.required]),
       timeZone: new FormControl(''),
       legalAddress: new FormControl(''),
+      active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();
 
@@ -58,6 +59,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       form.get('title').setValue(this.organization.title);
       form.get('timeZone').setValue(this.organization.timeZone);
       form.get('legalAddress').setValue(this.organization.legalAddress);
+      form.get('active').setValue(this.organization.active);
     } catch (error) {
       console.error('[GET] Organization: ', error);
     }
@@ -68,13 +70,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
       try {
         const form = this.forms.settings;
         const data = form.value;
+        const body = {
+          active: data.active,
+        };
 
         if (form.invalid) {
           throw new Error('Please fill all required fields');
         }
 
-        this.organization = await this.organizationsService.modifyOrganization(this.account.organization, data);
-        await this.accountsService.getAccount(this.account.address);
+        Object.keys(data).map(p => {
+          if (data[p]) {
+            body[p] = data[p];
+          }
+        });
+
+        this.organization = await this.organizationsService.modifyOrganization(this.account.organization, body);
+        await this.getOrganization();
 
         resolve();
       } catch (error) {

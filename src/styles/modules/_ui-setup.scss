@@ -47,15 +47,12 @@ ul {
 
 // Paragraph and lead
 
-p,
-.lead {
-  line-height: 1.2;
-  color: $grey;
-  font-weight: 400;
-}
-
 p {
   font-size: 13px;
+  line-height: 1.5;
+  color: $grey;
+  font-weight: 400;
+  margin: 0;
 }
 
 p + p {
@@ -73,14 +70,13 @@ h6 {
   line-height: 1.17;
   color: $black;
   font-weight: 300;
-  margin-bottom: 15px;
+  margin: 0;
 }
 
 h4,
 h5,
 h6 {
   font-weight: 500;
-  margin-bottom: 10px;
 }
 
 h1 {
@@ -126,12 +122,6 @@ a {
   @extend p;
   font-size: 11px;
   color: $grey;
-
-  &__caption {
-    @extend .meta;
-    font-size: 12px;
-    text-transform: uppercase;
-  }
 }
 
 hr {

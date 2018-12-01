@@ -48,3 +48,36 @@
 .w100 {
   width: 100%;
 }
+
+.flex {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    flex: 1 1 auto;
+  }
+
+  > * + * {
+    margin: 15px 0 0;
+  }
+
+  @include breakpoint-min(768) {
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+
+    > * + * {
+      margin: 0 0 0 30px;
+    }
+  }
+
+  &.between {
+    @include breakpoint-min(768) {
+      justify-content: space-between;
+    }
+  }
+}
+
+.flex-0 {
+  flex: 0 0 auto;
+}

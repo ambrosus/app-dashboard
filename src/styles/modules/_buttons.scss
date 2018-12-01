@@ -19,7 +19,7 @@ button,
   border: 1px solid $purple-blue;
   font-weight: 500;
   text-align: center;
-  min-width: 192px;
+  width: 192px;
   cursor: pointer;
   word-break: keep-all;
   user-select: none;
@@ -32,13 +32,12 @@ button,
   }
 
   &.outline {
-    border: 1px solid linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
+    border: 1px solid $purple-blue;
     background: transparent;
     color: $purple-blue;
 
     &:hover {
-      background: linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
-      color: $white;
+      opacity: .75;
     }
   }
 
@@ -58,7 +57,7 @@ button,
 
   > .spinner {
     display: inline-block;
-    border: 2px solid $light-blue;
+    border: 2px solid $grey;
     border-right-color: transparent;
     border-radius: 50%;
     box-sizing: border-box;
@@ -72,6 +71,8 @@ button,
   }
 
   &.loading {
+    opacity: 0.25;
+
     > .spinner {
       animation: 1.25s linear infinite rotate;
       opacity: 1;

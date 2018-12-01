@@ -1,4 +1,15 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .amb {
+  animation: fadeIn 0.2s forwards;
 
   .properties {
     display: flex;
@@ -234,31 +245,22 @@
   }
 }
 
-.settings {
-  .info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.page {
+  animation: fadeIn 0.2s forwards;
+  padding-top: 25px;
 
-    .details {
-      h1 {
-        margin-top: 0;
-      }
-    }
-
-    .image {
-      flex: 0 0 85px;
-      width: 85px;
-      height: 85px;
-      display: inline-block;
-      border-radius: 50%;
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: 50%;
-      background-color: #eee;
-      background-image: url('/assets/raster/account-image-default.png');
-      margin-right: 50px;
-    }
+  .image {
+    flex: 0 0 85px;
+    width: 85px;
+    height: 85px;
+    display: inline-block;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+    background-color: #eee;
+    background-image: url('/assets/raster/account-image-default.png');
+    margin-right: 15px;
   }
 
   > header,

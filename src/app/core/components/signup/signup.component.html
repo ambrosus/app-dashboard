@@ -11,11 +11,11 @@
   <!-- STEP 1: Options -->
   <div *ngSwitchCase="'options'" class="block-center">
     <h2>Registration</h2>
-    <p class="meta" style="margin: 0">
+    <p>
       Public/private key pair is required to access the blockchain and complete
       transactions.
     </p>
-    <p class="meta" style="margin-bottom: 90px">
+    <p style="margin-bottom: 90px">
       You are free to either register your own key or use our secure key
       generator.<br />Don’t worry, in either case,
       <b>we do not store your private key.</b>
@@ -64,7 +64,7 @@
         </span>
         <input formControlName="privateKey" type="text" [appError]="[forms.privateKey, true]" />
       </label>
-      <div style="text-align: center; margin-top: 45px;">
+      <div style="justify-content: center; margin-top: 45px;">
         <button type="submit" [disabled]="forms.privateKey.invalid" [promiseBtn]="promise.privateKey">
           Continue
         </button>
@@ -130,7 +130,7 @@
         I have saved my keys
       </label>
     </div>
-    <div style="text-align: center; margin-top: 45px;">
+    <div style="justify-content: center; margin-top: 45px;">
       <button type="button" [disabled]="!saved" (click)="savedKeys()">
         Continue
       </button>
@@ -157,10 +157,10 @@
         <textarea formControlName="message" [appError]="[forms.request]" rows="2"></textarea>
       </label>
       <label>
-        <input type="checkbox" formControlName="terms" appCustomCheckbox /> I
-        have read and accepted <a>Terms of Service</a>
+        <input type="checkbox" formControlName="terms" appCustomCheckbox />
+        I've read <a>Terms of Service</a>
       </label>
-      <div style="text-align: center; margin-top: 45px;">
+      <div style="justify-content: center; margin-top: 45px;">
         <button type="submit" [disabled]="forms.request.invalid" [promiseBtn]="promise.request">
           Register
         </button>

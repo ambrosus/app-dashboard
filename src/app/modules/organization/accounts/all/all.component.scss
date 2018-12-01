@@ -2,47 +2,20 @@
 
 app-all {
   display: block;
-  width: 100%;
-  padding: 36px 25px 55px;
 
-  .wrapper {
-    width: 100%;
-    max-width: 840px;
-    margin: 0 auto;
+  .showMenu {
+    margin-bottom: 20px;
 
-    .showMenu {
-      margin-bottom: 20px;
+    > li {
+      display: inline-block;
+      padding: 13px;
+      font-weight: 500;
+      color: $black;
+      cursor: pointer;
+      user-select: none;
 
-      > li {
-        display: inline-block;
-        padding: 13px;
-        font-weight: 500;
-        color: $black;
-        cursor: pointer;
-        user-select: none;
-
-        &.active {
-          color: $blue;
-        }
-      }
-    }
-
-    > header {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 45px;
-      margin-top: 20px;
-
-      h1 {
-        margin-top: 0;
-        margin-bottom: 7px;
-      }
-
-      .meta {
-        text-transform: uppercase;
-        font-weight: 500;
+      &.active {
+        color: $blue;
       }
     }
   }

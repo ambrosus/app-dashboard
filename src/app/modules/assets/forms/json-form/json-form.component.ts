@@ -164,7 +164,7 @@ export class JsonFormComponent implements OnInit {
           resolve();
         }
       } catch (error) {
-        console.error('[CREATE] ${this.for}', error);
+        console.error(`[CREATE] ${this.for}`, error);
         reject();
       }
     });

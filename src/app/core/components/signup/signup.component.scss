@@ -8,13 +8,7 @@ app-signup {
   width: 100%;
   text-align: center;
 
-  .form {
-    label {
-      margin-bottom: 25px;
-    }
-  }
-
-  div {
+  > div {
     width: 100%;
   }
 
