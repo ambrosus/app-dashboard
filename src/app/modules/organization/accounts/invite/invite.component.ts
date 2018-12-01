@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { OrganizationsService } from 'app/services/organizations.service';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-invite',
   templateUrl: './invite.component.html',
   styleUrls: ['./invite.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class InviteComponent implements OnInit {
   inviteForm: FormGroup;
+  form = true;
 
   constructor(
     private organizationsService: OrganizationsService,
+    private router: Router,
   ) {
     this.inviteForm = new FormGroup({
       members: new FormArray([
@@ -38,7 +43,11 @@ export class InviteComponent implements OnInit {
     );
   }
 
-  async sendInvites(): Promise<any> {
+  cancel() {
+    this.router.navigate([`${location.pathname}`]);
+  }
+
+  async send(): Promise<any> {
     try {
       const email = this.inviteForm.value.members.reduce(
         (emails, member, array, index) => {

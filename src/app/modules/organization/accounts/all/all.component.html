@@ -1,134 +1,137 @@
-<h4 class="m-v-30 relative p-r-40">
-  Accounts <button type="button" routerLink="invite">+</button>
-</h4>
-<hr class="m-b-20" />
+<div class="wrapper">
+  <header class="header">
+    <div>
+      <h1>Accounts</h1>
+    </div>
+    <div style="flex: 0 0 auto;">
+      <button type="button" (click)="openInviteDialog()">Invite</button>
+    </div>
+  </header>
+  <main>
+    <ul class="showMenu">
+      <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
+      <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
+      <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
+      <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
+    </ul>
 
-<button type="button" class="button button--blue" (click)="show = 'active'">
-  Active
-</button>
-<button type="button" class="button button--blue" (click)="show = 'pending'">
-  Pending
-</button>
-<button type="button" class="button" (click)="show = 'disabled'">
-  Disabled
-</button>
-
-<p class="m-v-30" style="color: salmon;">{{ error }}</p>
-
-<p class="m-t-20">{{ getNumberOfAccounts() }} accounts</p>
-
-<!-- Active accounts -->
-<table class="table" *ngIf="show === 'active'">
-  <tbody>
-    <tr *ngFor="let _account of accounts; let i = index">
-      <td class="table__image" routerLink="{{ _account.address }}">
-        <div>{{ _account.email.charAt(0) }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ _account.address }}">
-        <p class="table__info__title">
-          {{ _account.fullName || _account.email }}
-          <span *ngIf="organization?.owner === _account.address">(owner)</span>
-        </p>
-        <small class="table__info__meta">{{ _account.address }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: green;"
-          >Active</span
-        >
-        <p class="table__status__timestamp">
-          Registered on:
-          {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              *ngIf="account._id !== _account._id"
-              (click)="
-                actions('accountEdit', {
-                  address: _account.address,
-                  data: { permissions: [] }
-                })
-              "
-            >
-              Disable
-            </li>
-          </ul>
+    <div class="table accounts">
+      <!-- Active -->
+      <div *ngIf="show === 'all' || show === 'active'">
+        <div class="item" *ngFor="let acc of accounts">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a [routerLink]="acc.address">
+              <div class="body__main">
+                <h5 class="title">
+                  {{ acc.fullName || 'No name' }}
+                </h5>
+                <p class="assetId">{{ acc.address }}</p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div></div>
+              <div>
+                <span class="status" style="color: #40D685;">Active</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Deactivate',
+                      click: actions,
+                      args: [self, 'accountModify', { address: acc.address, data: { permissions: [] } }]
+                    }]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- Disabled users -->
-<table class="table" *ngIf="show === 'disabled'">
-  <tbody>
-    <tr *ngFor="let _account of accountsDisabled; let i = index">
-      <td class="table__image" routerLink="{{ _account.address }}">
-        <div>{{ _account.email.charAt(0) }}</div>
-      </td>
-      <td class="table__info" routerLink="{{ _account.address }}">
-        <p class="table__info__title">
-          {{ _account.fullName || _account.email }}
-          <span *ngIf="organization?.owner === _account.address">(owner)</span>
-        </p>
-        <small class="table__info__meta">{{ _account.address }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: salmon;"
-          >Disabled</span
-        >
-        <p class="table__status__timestamp">
-          Registered on:
-          {{ _account.registeredOn * 1000 | date: 'MMM d, yyyy HH:mm' }}
-        </p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="
-                actions('accountEdit', {
-                  address: _account.address,
-                  data: { permissions: ['create_asset', 'create_event'] }
-                })
-              "
-            >
-              Activate
-            </li>
-          </ul>
+      </div>
+      <!-- Pending -->
+      <div *ngIf="show === 'all' || show === 'pending'">
+        <div class="item" *ngFor="let invite of invites">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a>
+              <div class="body__main">
+                <h5 class="title">
+                  {{ invite.to }}
+                </h5>
+                <p class="createdBy">
+                  from <span class="account-image"></span>
+                  <span class="address">{{ invite.createdBy }}</span>
+                </p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div>
+                <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Resend</button>
+              </div>
+              <div>
+                <span class="status" style="color: #F7A120;">Pending</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [
+                      {
+                        type: 'action',
+                        title: 'Approve',
+                        click: actions,
+                        args: [self, 'organizationRequest', { id: organization.address, approved: true }]
+                      },
+                      {
+                        type: 'action',
+                        title: 'Decline',
+                        click: actions,
+                        args: [self, 'organizationRequest', { id: organization.address, approved: false }]
+                      }
+                    ]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- Invites/pending users -->
-<table class="table" *ngIf="show === 'pending'">
-  <tbody>
-    <tr *ngFor="let invite of invites; let i = index">
-      <td class="table__image">
-        <div>{{ invite.to.charAt(0) }}</div>
-      </td>
-      <td class="table__info">
-        <p class="table__info__title">{{ invite.to }}</p>
-        <small class="table__info__meta">from: {{ invite.createdBy }}</small>
-      </td>
-      <td class="table__status">
-        <span class="table__status__event" style="background-color: orange;"
-          >Pending</span
-        >
-        <p class="table__status__timestamp">Invited: {{ invite.createdOn }}</p>
-        <div class="table__options" appClickThisActive>
-          <img src="/assets/raster/menu.png" />
-          <ul class="table__options__menu">
-            <li
-              (click)="actions('inviteDelete', { inviteId: invite.inviteId })"
-            >
-              Revoke
-            </li>
-          </ul>
+      </div>
+      <!-- Disabled -->
+      <div *ngIf="show === 'all' || show === 'disabled'">
+        <div class="item" *ngFor="let acc of accountsDisabled">
+          <div class="image">
+          </div>
+          <div class="body">
+            <a [routerLink]="acc.address">
+              <div class="body__main">
+                <h5 class="title">
+                  {{ acc.fullName || 'No name' }}
+                </h5>
+                <p class="assetId">{{ acc.address }}</p>
+              </div>
+            </a>
+            <div class="body__meta">
+              <div></div>
+              <div>
+                <span class="status" style="color: #D64040;">Disabled</span>
+                <span class="verticalMenu" appToggleDropDown>
+                  <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                  <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Activate',
+                      click: actions,
+                      args: [self, 'accountModify', { address: acc.address, data: { permissions: ['create_asset', 'create_event'] } }]
+                    }]
+                  }"></app-drop-down>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </div>
+    </div>
+
+  </main>
+</div>

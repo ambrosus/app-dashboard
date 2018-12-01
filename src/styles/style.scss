@@ -26,7 +26,9 @@ app-root {
 
 body {
 
-  &.assets {
+  &.assets,
+  &.organization,
+  &.node {
     background: #fafafa;
   }
 

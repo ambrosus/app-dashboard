@@ -1,6 +1,9 @@
 @import 'utils';
 
 app-account {
+  display: block;
+  background: #fff;
+
   .active {
     color: $green;
   }

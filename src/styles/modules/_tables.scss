@@ -139,27 +139,15 @@
     }
   }
 
-  &.organizations {
+  &.organizations,
+  &.accounts {
 
     .item {
       padding: 0;
       border-radius: 4px;
       box-shadow: 0 2px 8px rgba($grey, 0.1);
       margin-bottom: 15px;
-
-      .image {
-        height: auto;
-        width: 110px;
-        background-color: #fff;
-        margin-right: 0;
-        border-radius: 4px 0 0 4px;
-        flex: 0 0 110px;
-        background-image: url('/assets/raster/organization-logo-default.png');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: top center;
-        border-right: 1px solid #fafafa;
-      }
+      background: #fff;
 
       .body {
         width: 100%;
@@ -171,6 +159,54 @@
           h5 {
             margin-bottom: 20px;
           }
+        }
+      }
+    }
+  }
+
+  &.organizations {
+
+    .image {
+      height: auto;
+      width: 110px;
+      background-color: #fff;
+      margin-right: 0;
+      border-radius: 4px 0 0 4px;
+      flex: 0 0 110px;
+      background-image: url('/assets/raster/organization-logo-default.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: top center;
+      border-right: 1px solid #fafafa;
+    }
+  }
+
+  &.accounts {
+
+    .image {
+      height: 48px !important;
+      width: 48px !important;
+      border-radius: 50%;
+      flex: 0 0 48px;
+      margin: 10px 40px 0 20px;
+      background-image: url('/assets/raster/account-image-default.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: 50%;
+      margin: 20px 0 25px 25px;
+      margin-right: 0 !important;
+    }
+
+    .body {
+      &__main {
+
+        h5 {
+          margin-bottom: 10px !important;
+        }
+
+        .assetId {
+          color: $grey;
+          margin-bottom: 0;
         }
       }
     }

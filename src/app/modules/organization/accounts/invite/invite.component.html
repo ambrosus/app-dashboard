@@ -1,25 +1,38 @@
-<h4 class="m-v-10">Invite Members</h4>
-<p class="m-b-30">
-  Here you can invite other members of your organization, to access dashboard.
-</p>
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<header class="header">
+  <div>
+    <h2 class="title">Invite Members</h2>
+  </div>
+  <div>
+    <ul class="menu">
+      <li [ngClass]="{ 'active': form }" (click)="form = true">Form</li>
+    </ul>
+  </div>
+</header>
 
-<form [formGroup]="inviteForm" (ngSubmit)="sendInvites()">
-  <div formArrayName="members">
-    <div *ngFor="
-        let member of inviteForm.get('members')['controls'];
-        let i = index
-      " [formGroupName]="i">
-      <button type="button" class="remove" (click)="remove('members', i)" *ngIf="i > 0">
-        &times;
-      </button>
-      <label>Email <input formControlName="email" type="email" /> </label>
+<form class="form" [formGroup]="inviteForm" (ngSubmit)="send()">
+
+  <section>
+    <div formArrayName="members" class="right">
+      <div *ngFor="let member of inviteForm.get('members')['controls']; let i = index" [formGroupName]="i">
+        <label>
+          <span>Email</span>
+          <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
+        </label>
+      </div>
+      <a class="addMore" (click)="addMember()">+ Add invite</a>
     </div>
-    <button type="button" class="addMore" (click)="addMember()">
-      + Add more
-    </button>
-  </div>
+  </section>
 
-  <div class="flex flex-direction-r justify-content-fe align-items-c">
-    <button [disabled]="inviteForm.invalid" type="submit">Send invites</button>
-  </div>
+  <section class="right">
+    <button type="button" class="transparent light" (click)="cancel()" style="margin-right: 10px;">Cancel</button>
+    <button type="submit" [disabled]="inviteForm.invalid">Invite</button>
+  </section>
+
 </form>

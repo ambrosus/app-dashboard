@@ -14,10 +14,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   encapsulation: ViewEncapsulation.None,
 })
 export class AssetComponent implements OnInit, OnDestroy {
-  routeSub: Subscription;
-  routeParamsSub: Subscription;
-  navigationSub: Subscription;
-  eventsSub: Subscription;
+  subs: Subscription[] = [];
   asset: any = {};
   assetId: string;
   timeline;
@@ -47,16 +44,16 @@ export class AssetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.routeSub = this.route.data.subscribe(
+    this.subs[this.subs.length] = this.route.data.subscribe(
       ({ asset }: any) => {
         console.log('Asset: ', asset);
         this.asset = asset;
       },
     );
-    this.routeParamsSub = this.route.params.subscribe(
+    this.subs[this.subs.length] = this.route.params.subscribe(
       ({ assetid }: any) => this.assetId = assetid,
     );
-    this.navigationSub = this.router.events.subscribe((e: any) => {
+    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         if (this.dialogRef) {
           this.dialogRef.close();
@@ -69,15 +66,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
-    if (this.routeParamsSub) {
-      this.routeParamsSub.unsubscribe();
-    }
-    if (this.navigationSub) {
-      this.navigationSub.unsubscribe();
-    }
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   async viewJSON() {
