@@ -8,11 +8,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { InputDirective } from 'app/shared/directives/input.directive';
 import { RouterModule } from '@angular/router';
 import { ImageCropperModule } from 'ngx-image-cropper';
-import { SpinnerComponent } from 'app/shared/components/spinner/spinner.component';
-import { AssetsLoaderIndicatorComponent } from 'app/shared/components/assets-loader-indicator/assets-loader-indicator.component';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
@@ -21,9 +18,7 @@ import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 import { EventsTimelineComponent } from 'app/shared/components/events-timeline/events-timeline.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
-import { ClickThisActiveDirective } from './directives/click-this-active.directive';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
-import { NotificationComponent } from './components/notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
 import { CheckIfPipe } from './pipes/checkIf.pipe';
@@ -31,8 +26,6 @@ import { CustomCheckboxDirective } from './directives/custom-checkbox.directive'
 
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
 import {
   IconLeftDirective,
@@ -42,6 +35,7 @@ import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
 import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive';
 import { AgmCoreModule } from '@agm/core';
+import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 @NgModule({
   imports: [
@@ -57,11 +51,6 @@ import { AgmCoreModule } from '@agm/core';
   ],
   exports: [
     CommonModule,
-    InputDirective,
-    SpinnerComponent,
-    TabsComponent,
-    TabComponent,
-    AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AccordionDirective,
     AutofocusDirective,
@@ -70,15 +59,12 @@ import { AgmCoreModule } from '@agm/core';
     LoopExcludePipe,
     EventsTimelineComponent,
     SvgIconComponent,
-    ClickThisActiveDirective,
     QrCodeComponent,
-    NotificationComponent,
     MatDialogModule,
     CheckIfPipe,
     ImageCropperModule,
     CustomCheckboxDirective,
     FooterComponent,
-    SidebarComponent,
     HeaderComponent,
     IconLeftDirective,
     IconRightDirective,
@@ -86,13 +72,10 @@ import { AgmCoreModule } from '@agm/core';
     DropDownComponent,
     ToggleDropDownDirective,
     AgmCoreModule,
+    TabComponent,
+    TabsComponent,
   ],
   declarations: [
-    InputDirective,
-    SpinnerComponent,
-    TabsComponent,
-    TabComponent,
-    AssetsLoaderIndicatorComponent,
     AutocompleteinputDirective,
     AutofocusDirective,
     AccordionDirective,
@@ -101,19 +84,18 @@ import { AgmCoreModule } from '@agm/core';
     LoopExcludePipe,
     EventsTimelineComponent,
     SvgIconComponent,
-    ClickThisActiveDirective,
     QrCodeComponent,
-    NotificationComponent,
     CheckIfPipe,
     CustomCheckboxDirective,
     FooterComponent,
-    SidebarComponent,
     HeaderComponent,
     IconLeftDirective,
     IconRightDirective,
     ErrorDirective,
     DropDownComponent,
     ToggleDropDownDirective,
+    TabComponent,
+    TabsComponent,
   ],
   entryComponents: [EventAddComponent],
 })

@@ -106,7 +106,7 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   async savePermissions(): Promise<any> {
     const form = this.forms.accountPermissions;
-    const data = form.value;
+    const data = form.getRawValue();
     const body = { accessLevel: data.accessLevel, permissions: [] };
 
     if (form.invalid) {

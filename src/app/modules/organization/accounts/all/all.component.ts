@@ -98,6 +98,15 @@ export class AllComponent implements OnInit, OnDestroy {
         }
         break;
 
+      case 'inviteResend':
+        try {
+          await this.organizationsService.resendInvites(args[1]);
+          await this.getInvites();
+        } catch (error) {
+          console.error('[RESEND] Invite: ', error);
+        }
+        break;
+
       case 'accountModify':
         try {
           await this.accountsService.modifyAccount(args[1]['address'], args[1]['data']);
@@ -116,6 +125,9 @@ export class AllComponent implements OnInit, OnDestroy {
 
     this.dialogRef
       .afterClosed()
-      .subscribe(result => console.log('Invite dialog was closed'));
+      .subscribe(result => {
+        console.log('Invite dialog was closed');
+        this.getInvites().then();
+      });
   }
 }

@@ -142,6 +142,22 @@
   &.organizations,
   &.accounts {
 
+    div {
+      &.image {
+        height: auto;
+        width: 110px;
+        background-color: #fff;
+        margin-right: 0;
+        border-radius: 4px 0 0 4px;
+        flex: 0 0 110px;
+        background-image: url('/assets/raster/organization-logo-default.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: top center;
+        border-right: 1px solid #fafafa;
+      }
+    }
+
     .item {
       padding: 0;
       border-radius: 4px;
@@ -164,37 +180,22 @@
     }
   }
 
-  &.organizations {
-
-    .image {
-      height: auto;
-      width: 110px;
-      background-color: #fff;
-      margin-right: 0;
-      border-radius: 4px 0 0 4px;
-      flex: 0 0 110px;
-      background-image: url('/assets/raster/organization-logo-default.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: top center;
-      border-right: 1px solid #fafafa;
-    }
-  }
-
   &.accounts {
 
-    .image {
-      height: 48px !important;
-      width: 48px !important;
-      border-radius: 50%;
-      flex: 0 0 48px;
-      margin: 10px 40px 0 20px;
-      background-image: url('/assets/raster/account-image-default.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: 50%;
-      margin: 20px 0 25px 25px;
-      margin-right: 0 !important;
+    div {
+      &.image {
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        flex: 0 0 48px;
+        margin: 10px 40px 0 20px;
+        background-image: url('/assets/raster/account-image-default.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        margin: 20px 0 25px 25px;
+        margin-right: 0;
+      }
     }
 
     .body {

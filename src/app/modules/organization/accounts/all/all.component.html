@@ -25,7 +25,7 @@
             <a [routerLink]="acc.address">
               <div class="body__main">
                 <h5 class="title">
-                  {{ acc.fullName || 'No name' }}
+                  {{ acc.fullName || acc.email || 'No name' }}
                 </h5>
                 <p class="assetId">{{ acc.address }}</p>
               </div>
@@ -59,8 +59,9 @@
             <a>
               <div class="body__main">
                 <h5 class="title">
-                  {{ invite.to }}
+                  {{ invite.email }}
                 </h5>
+                <p class="address" style="margin-bottom: 10px;">Created {{ invite.createdOn }}</p>
                 <p class="createdBy">
                   from <span class="account-image"></span>
                   <span class="address">{{ invite.createdBy }}</span>
@@ -69,7 +70,7 @@
             </a>
             <div class="body__meta">
               <div>
-                <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Resend</button>
+                <button type="button" class="transparent" (click)="actions('inviteResend', { email: [ invite.email ] })">Resend</button>
               </div>
               <div>
                 <span class="status" style="color: #F7A120;">Pending</span>
@@ -79,15 +80,15 @@
                     items: [
                       {
                         type: 'action',
-                        title: 'Approve',
+                        title: 'Revoke',
                         click: actions,
-                        args: [self, 'organizationRequest', { id: organization.address, approved: true }]
+                        args: [self, 'inviteDelete', { inviteId: invite.inviteId }]
                       },
                       {
                         type: 'action',
-                        title: 'Decline',
+                        title: 'Resend',
                         click: actions,
-                        args: [self, 'organizationRequest', { id: organization.address, approved: false }]
+                        args: [self, 'inviteResend', { email: [ invite.email ] }]
                       }
                     ]
                   }"></app-drop-down>
@@ -106,7 +107,7 @@
             <a [routerLink]="acc.address">
               <div class="body__main">
                 <h5 class="title">
-                  {{ acc.fullName || 'No name' }}
+                  {{ acc.fullName || acc.email || 'No name' }}
                 </h5>
                 <p class="assetId">{{ acc.address }}</p>
               </div>

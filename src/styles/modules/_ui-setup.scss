@@ -123,12 +123,12 @@ a {
 }
 
 .subtitle {
-  @extend .h5;
+  @extend h5;
   color: $black;
 }
 
 .meta {
-  @extend .p;
+  @extend p;
   font-size: 11px;
   color: $grey;
 
