@@ -5,7 +5,7 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<form class="form" [formGroup]="assetForm" (ngSubmit)="save()" (keydown.enter)="$event.preventDefault()">
+<form class="form" [formGroup]="forms.asset" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
 
   <section>
     <h5 style=" margin-bottom: 25px;">Information</h5>
@@ -30,7 +30,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <h5 style="margin: 50px 0 25px">Images</h5>
       <input type="url" placeholder="Enter an image url" (keydown)="addImage($event, imageInput)" #imageInput>
       <div class="image-preview">
-        <div *ngFor="let image of assetForm.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrl(image.url)" (click)="remove('images', i)"></div>
+        <div *ngFor="let image of forms.asset.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrl(image.url)" (click)="remove('images', i)"></div>
       </div>
     </div>
   </section>
@@ -39,7 +39,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <h2 style="margin-bottom: 24px;">Properties</h2>
     <!-- Properties -->
     <div formArrayName="properties" class="right">
-      <div class="group" *ngFor="let property of assetForm.get('properties')['controls']; let i = index" [formGroupName]="i">
+      <div class="group" *ngFor="let property of forms.asset.get('properties')['controls']; let i = index" [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
           <input formControlName="name" type="text" />
@@ -59,7 +59,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
     <!-- Groups -->
     <div formArrayName="groups" class="right" style="margin-top: 25px;">
-      <div *ngFor="let group of assetForm.get('groups')['controls']; let i = index" [formGroupName]="i">
+      <div *ngFor="let group of forms.asset.get('groups')['controls']; let i = index" [formGroupName]="i">
         <label>
           <span>Group name</span>
           <input formControlName="title" type="text" />
@@ -87,7 +87,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <section>
     <h5 style="margin-bottom: 25px;">Identifiers</h5>
     <div formArrayName="identifiers" class="right">
-      <div class="group" *ngFor="let identifier of assetForm.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+      <div class="group" *ngFor="let identifier of forms.asset.get('identifiers')['controls']; let i = index" [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
           <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
@@ -102,8 +102,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
   </section>
 
-  <section class="right">
-    <button type="button" class="transparent light" (click)="cancel()" style="margin-right: 10px;">Cancel</button>
-    <button type="submit">Create</button>
-  </section>
+  <div>
+    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+    <button type="submit" [disabled]="forms.asset.invalid" [promiseBtn]="promise.create">Create</button>
+  </div>
 </form>

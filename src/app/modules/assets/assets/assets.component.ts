@@ -14,7 +14,7 @@ import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { AuthService } from 'app/services/auth.service';
 import { StorageService } from 'app/services/storage.service';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -67,7 +67,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     );
 
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) {
+      if (e instanceof NavigationStart) {
         this.dialog.closeAll();
       }
     });
@@ -133,25 +133,17 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (!assetIds.length) {
       return alert(`You didn\'t select any assets. Please do so first.`);
     }
-    const dialogRef = this.dialog.open(EventAddComponent, {
+    this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
       data: {
         assetIds,
       },
     });
-
-    dialogRef
-      .afterClosed()
-      .subscribe(result => console.log('[Bulk event] was closed'));
   }
 
   createAsset() {
-    const dialogRef = this.dialog.open(AssetAddComponent, {
+    this.dialog.open(AssetAddComponent, {
       panelClass: 'dialog',
     });
-
-    dialogRef
-      .afterClosed()
-      .subscribe(result => console.log('[Create asset] was closed'));
   }
 }

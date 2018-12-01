@@ -23,14 +23,11 @@ declare let Web3: any;
 })
 export class LoginComponent implements OnInit {
   forms: {
-    loginForm?: FormGroup;
-    privateKeyForm?: FormGroup;
+    email?: FormGroup;
+    privateKey?: FormGroup;
   } = {};
-  promiseActionPrivateKeyForm;
-  promiseActionLoginForm;
+  promise: any = {};
   showPassword;
-  errorPrivateKeyForm;
-  errorLoginForm;
 
   constructor(
     private authService: AuthService,
@@ -39,11 +36,11 @@ export class LoginComponent implements OnInit {
     private accountsService: AccountsService,
     private storageService: StorageService,
   ) {
-    this.forms.loginForm = new FormGroup({
+    this.forms.email = new FormGroup({
       email: new FormControl(null, [Validators.required, this.validateEmail]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.forms.privateKeyForm = new FormGroup({
+    this.forms.privateKey = new FormGroup({
       privateKey: new FormControl(null, [
         Validators.required,
         this.validatePrivateKey,
@@ -74,23 +71,22 @@ export class LoginComponent implements OnInit {
 
   // Private key form
 
-  async getAccount(): Promise<any> {
-    try {
-      this.errorPrivateKeyForm = false;
-      const form = this.forms.privateKeyForm;
+  public async getAccount(): Promise<any> {
+    this.promise['privateKey'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.privateKey;
 
-      if (form.invalid) {
-        throw new Error('Fill all required fileds');
-      }
+        if (form.invalid) {
+          throw new Error('Fill all required fileds');
+        }
 
-      const { privateKey } = form.value;
-      const address = this.authService.privateKeyToAccount(privateKey);
-      this.storageService.set('secret', privateKey);
-      this.storageService.set('token', this.authService.getToken());
+        const { privateKey } = form.value;
+        const address = this.authService.privateKeyToAccount(privateKey);
+        this.storageService.set('secret', privateKey);
+        this.storageService.set('token', this.authService.getToken());
 
-      this.promiseActionPrivateKeyForm = new Promise(async (resolve, reject) => {
         const account = await this.accountsService.getAccount(address);
-        console.log('[GET] Account: ', account);
+
         this.storageService.set('secret', privateKey);
         this.storageService.set('account', account);
         Sentry.configureScope(scope => {
@@ -98,38 +94,39 @@ export class LoginComponent implements OnInit {
         });
         this.accountsService._account.next(account);
         this.router.navigate(['/assets']);
-        return account;
-      });
-    } catch (error) {
-      console.error('[GET] Account: ', error);
-      this.errorPrivateKeyForm = error;
-      this.storageService.clear();
-    }
+
+        resolve();
+      } catch (error) {
+        console.error('[GET] Account: ', error);
+        this.storageService.clear();
+        reject();
+      }
+    });
   }
 
   // Login form
 
-  async login(): Promise<any> {
-    try {
-      this.errorLoginForm = false;
-      const form = this.forms.loginForm;
+  login() {
+    this.promise['login'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.email;
 
-      if (form.invalid) {
-        throw new Error('All fields are required');
-      }
+        if (form.invalid) {
+          throw new Error('All fields are required');
+        }
 
-      const { email, password } = form.value;
+        const { email, password } = form.value;
 
-      this.promiseActionLoginForm = new Promise(async (resolve, reject) => {
         const account = await this.authService.login(email, password);
         Sentry.configureScope(scope => {
           scope.setUser({ account });
         });
-        return account;
-      });
-    } catch (error) {
-      console.error('[LOGIN] Error: ', error);
-      this.errorLoginForm = error;
-    }
+
+        resolve();
+      } catch (error) {
+        console.error('[LOGIN] Error: ', error);
+        reject();
+      }
+    });
   }
 }

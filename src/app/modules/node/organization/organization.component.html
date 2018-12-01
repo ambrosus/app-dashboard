@@ -41,8 +41,10 @@
           <input type="checkbox" formControlName="active" appCustomCheckbox />
           Active
         </label>
-        <div class="right" style="margin-top: 30px;">
-          <button type="submit" class="outline" [disabled]="forms.organization.invalid">Save</button>
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.organization.invalid" [promiseBtn]="promise.save">
+            Save
+          </button>
         </div>
       </form>
     </div>

@@ -1,4 +1,4 @@
-<form class="form" [formGroup]="editAccountForm" (ngSubmit)="save()">
+<form class="form" [formGroup]="forms.edit" (ngSubmit)="save()">
   <label>
     <span>Public key</span>
     <input formControlName="address" type="text">
@@ -30,7 +30,9 @@
       <input formControlName="passwordConfirm" type="password" placeholder="*******">
     </label>
   </div>
-  <div class="right" style="margin-top: 30px;">
-    <button type="submit" class="outline" [disabled]="editAccountForm.invalid">Save</button>
+  <div>
+    <button type="submit" class="outline" [disabled]="forms.edit.invalid" [promiseBtn]="promise.save">
+      Save
+    </button>
   </div>
 </form>

@@ -16,6 +16,7 @@
     <div class="table organizations">
       <!-- Active -->
       <div *ngIf="show === 'all' || show === 'active'">
+        <h3 *ngIf="!organizations.length && show !== 'all'">No active organizations</h3>
         <div class="item" *ngFor="let organization of organizations">
           <div class="image">
           </div>
@@ -53,6 +54,7 @@
       </div>
       <!-- Pending -->
       <div *ngIf="show === 'all' || show === 'pending'">
+        <h3 *ngIf="!organizationRequests.length && show !== 'all'">No pending organizations</h3>
         <div class="item" *ngFor="let organization of organizationRequests">
           <div class="image">
           </div>
@@ -70,7 +72,7 @@
             </a>
             <div class="body__meta">
               <div>
-                <button type="button" class="outline" style="margin-right: 5px;" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
+                <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
                 <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
               </div>
               <div>
@@ -101,6 +103,7 @@
       </div>
       <!-- Disabled -->
       <div *ngIf="show === 'all' || show === 'disabled'">
+        <h3 *ngIf="!organizationsDisabled.length && show !== 'all'">No disabled organizations</h3>
         <div class="item" *ngFor="let organization of organizationsDisabled">
           <div class="image">
           </div>
@@ -138,6 +141,7 @@
       </div>
       <!-- Declined -->
       <div *ngIf="show === 'all' || show === 'declined'">
+        <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'">No declined organizations</h3>
         <div class="item" *ngFor="let organization of organizationRequestsDeclined">
           <div class="image">
           </div>

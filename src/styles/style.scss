@@ -5,8 +5,7 @@
 app-root {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  align-items: stretch;
+  min-height: 100vh;
 
   > * {
     flex-shrink: 0;
@@ -46,17 +45,18 @@ body {
 
 .dialog {
   width: 100%;
-  max-width: 758px !important;
+  max-width: 750px !important;
   position: fixed !important;
   top: 0;
   right: 0;
   height: 100%;
 
   mat-dialog-container {
-    box-shadow: -8px 8px 8px rgba($grey, 0.25);
+    box-shadow: none;
     border-radius: 0;
     padding: 0;
     padding-top: 80px;
+    padding-bottom: 40px;
   }
 }
 

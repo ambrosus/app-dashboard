@@ -235,16 +235,6 @@
 }
 
 .settings {
-  label {
-    &:last-of-type {
-      margin-bottom: 15px !important;
-    }
-  }
-
-  .form {
-    max-width: 100%;
-  }
-
   .info {
     display: flex;
     flex-direction: row;

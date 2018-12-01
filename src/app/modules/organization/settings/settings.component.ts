@@ -13,12 +13,15 @@ import * as moment from 'moment-timezone';
   encapsulation: ViewEncapsulation.None,
 })
 export class SettingsComponent implements OnInit, OnDestroy {
-  settingsForm: FormGroup;
+  forms: {
+    settings?: FormGroup,
+  } = {};
   subs: Subscription[] = [];
   account: any = {};
   organization: any = {};
   accountAdmins = [];
   timezones = [];
+  promise: any = {};
 
   constructor(
     private storageService: StorageService,
@@ -28,7 +31,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.account = this.storageService.get('account');
-    this.settingsForm = new FormGroup({
+    this.forms.settings = new FormGroup({
       owner: new FormControl({ value: '', disabled: true }),
       title: new FormControl('', [Validators.required]),
       timeZone: new FormControl(''),
@@ -50,7 +53,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.organization = await this.organizationsService.getOrganization(this.account.organization);
       console.log('[GET] Organization: ', this.organization);
 
-      const form = this.settingsForm;
+      const form = this.forms.settings;
       form.get('owner').setValue(this.organization.owner);
       form.get('title').setValue(this.organization.title);
       form.get('timeZone').setValue(this.organization.timeZone);
@@ -60,20 +63,24 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async save(): Promise<any> {
-    try {
-      const form = this.settingsForm;
-      const data = form.value;
+  save() {
+    this.promise['save'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.settings;
+        const data = form.value;
 
-      if (form.invalid) {
-        throw new Error('Please fill all required fields');
+        if (form.invalid) {
+          throw new Error('Please fill all required fields');
+        }
+
+        this.organization = await this.organizationsService.modifyOrganization(this.account.organization, data);
+        await this.accountsService.getAccount(this.account.address);
+
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Organization: ', error);
+        reject();
       }
-
-      this.organization = await this.organizationsService.modifyOrganization(this.account.organization, data);
-      console.log('[MODIFY] Organization: ', this.organization);
-      this.accountsService.getAccount(this.account.address).then();
-    } catch (error) {
-      console.error('[MODIFY] Organization: ', error);
-    }
+    });
   }
 }

@@ -23,6 +23,7 @@ app-header {
   left: 0;
   z-index: 1500;
   width: 100%;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, .02);
 
   .overlay {
     width: 100%;
@@ -73,14 +74,6 @@ app-header {
 
       form {
         max-width: 816px;
-      }
-
-      label {
-        margin-bottom: 30px;
-
-        &:last-of-type {
-          margin-bottom: 0;
-        }
       }
     }
 

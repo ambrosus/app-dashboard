@@ -5,7 +5,7 @@ import { AccountsService } from 'app/services/accounts.service';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { MatDialog } from '@angular/material';
 import { Subscription } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { InviteComponent } from '../invite/invite.component';
 
 @Component({
@@ -24,7 +24,6 @@ export class AllComponent implements OnInit, OnDestroy {
   show = 'all';
   organization;
   self = this;
-  dialogRef;
 
   constructor(
     private storageService: StorageService,
@@ -36,10 +35,8 @@ export class AllComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) {
-        if (this.dialogRef) {
-          this.dialogRef.close();
-        }
+      if (e instanceof NavigationStart) {
+        this.dialog.closeAll();
       }
     });
     this.account = this.storageService.get('account') || {};
@@ -119,11 +116,9 @@ export class AllComponent implements OnInit, OnDestroy {
   }
 
   openInviteDialog() {
-    this.dialogRef = this.dialog.open(InviteComponent, {
+    this.dialog.open(InviteComponent, {
       panelClass: 'dialog',
-    });
-
-    this.dialogRef
+    })
       .afterClosed()
       .subscribe(result => {
         console.log('Invite dialog was closed');

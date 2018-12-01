@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
@@ -16,11 +16,11 @@ import { autocomplete } from 'app/constant';
 })
 export class EventFormComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
-  eventForm: FormGroup;
-  error;
-  success;
-  spinner;
+  forms: {
+    event?: FormGroup,
+  } = {};
   autocomplete: any[] = autocomplete;
+  promise: any = {};
 
   @Input() assetIds: String[];
 
@@ -57,16 +57,12 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  to(P: Promise<any>) {
-    return P.then(response => response).catch(error => ({ error }));
-  }
-
   cancel() {
     this.router.navigate([`${location.pathname}`]);
   }
 
   private initForm() {
-    this.eventForm = new FormGroup({
+    this.forms.event = new FormGroup({
       type: new FormControl(null, [Validators.required]),
       name: new FormControl(null, [Validators.required]),
       description: new FormControl(null, []),
@@ -99,17 +95,17 @@ export class EventFormComponent implements OnInit, OnDestroy {
   // Methods for adding/removing new fields to the form
 
   remove(array, index: number) {
-    (<FormArray>this.eventForm.get(array)).removeAt(index);
+    (<FormArray>this.forms.event.get(array)).removeAt(index);
   }
 
   addDocument(event, input) {
     if (event.keyCode === 13) {
       const value = event.target.value;
-      const form = this.eventForm.value;
+      const form = this.forms.event.value;
       let name = value.split('/');
       name = name[name.length - 1];
       if (value) {
-        (<FormArray>this.eventForm.get('documents')).push(
+        (<FormArray>this.forms.event.get('documents')).push(
           new FormGroup({
             name: new FormControl(name, []),
             url: new FormControl(event.target.value, []),
@@ -121,7 +117,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   addIdentifier() {
-    (<FormArray>this.eventForm.get('identifiers')).push(
+    (<FormArray>this.forms.event.get('identifiers')).push(
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
@@ -130,7 +126,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   addProperty() {
-    (<FormArray>this.eventForm.get('properties')).push(
+    (<FormArray>this.forms.event.get('properties')).push(
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
@@ -139,7 +135,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   addGroup() {
-    (<FormArray>this.eventForm.get('groups')).push(
+    (<FormArray>this.forms.event.get('groups')).push(
       new FormGroup({
         title: new FormControl(null, []),
         content: new FormArray([
@@ -153,7 +149,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   addGroupProperty(i) {
-    const groups = <FormArray>this.eventForm.get('groups');
+    const groups = <FormArray>this.forms.event.get('groups');
     (<FormArray>groups.at(i).get('content')).push(
       new FormGroup({
         name: new FormControl(null, []),
@@ -163,14 +159,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   removeGroupProperty(i, j) {
-    const groups = <FormArray>this.eventForm.get('groups');
+    const groups = <FormArray>this.forms.event.get('groups');
     (<FormArray>groups.at(i).get('content')).removeAt(j);
   }
 
   private generateEvent(assetId) {
     const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
-    const eventForm = this.eventForm.getRawValue();
+    const eventForm = this.forms.event.getRawValue();
 
     const data = [];
 
@@ -247,14 +243,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     const location = eventForm.location;
     const { lat, lng, name, city, country, locationId, gln } = location;
 
-    if (
-      (lat || lat === 0) &&
-      (lng || lng === 0) &&
-      city &&
-      country &&
-      locationId &&
-      gln
-    ) {
+    if ((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && gln) {
       const _location = {
         type: 'ambrosus.event.location',
         location: {
@@ -297,67 +286,44 @@ export class EventFormComponent implements OnInit, OnDestroy {
     return event;
   }
 
-  async save() {
-    this.error = false;
-    this.success = false;
-    const form = this.eventForm;
+  create() {
+    this.promise['create'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.event;
 
-    if (form.invalid) {
-      return (this.error = 'Form is invalid');
-    }
-    if (!this.assetIds.length) {
-      return (this.error = 'No assets are selected');
-    }
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
+        if (!this.assetIds.length) {
+          throw new Error('No assets are selected');
+        }
 
-    const data = form.getRawValue();
+        const data = form.getRawValue();
 
-    // Location Event
-    const location = data.location;
-    const { lat, lng, city, country, locationId, gln } = location;
+        // Location Event
+        const location = data.location;
+        const { lat, lng, city, country, locationId, gln } = location;
 
-    if (
-      lat ||
-      lat === 0 ||
-      (lng || lng === 0) ||
-      city ||
-      country ||
-      locationId ||
-      gln
-    ) {
-      if (
-        !(
-          (lat || lat === 0) &&
-          (lng || lng === 0) &&
-          city &&
-          country &&
-          locationId &&
-          gln
-        )
-      ) {
-        return (this.error =
-          'Event location must either be blank or completely filled');
+        if (lat || lat === 0 || (lng || lng === 0) || city || country || locationId || gln) {
+          if (!((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && gln)) {
+            throw new Error('Event location must either be blank or completely filled');
+          }
+        }
+
+        if (!confirm(
+          `You are about to create an event for ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}, are you sure you want to proceed?`)) { return; }
+
+        // Make a request
+        const events = [];
+        this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
+
+        const eventsCreated = await this.assetsService.createEvents(events);
+
+        resolve();
+      } catch (error) {
+        console.error('[CREATE] Events: ', error);
+        reject();
       }
-    }
-
-    // Confirmation window
-    if (
-      !confirm(
-        `You are about to create an event for ${this.assetIds.length} asset${
-        this.assetIds.length === 1 ? '' : 's'
-        }, are you sure you want to proceed?`,
-      )
-    ) {
-      return;
-    }
-
-    // Make a request
-    const events = [];
-    this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
-
-    console.log('Creating events');
-    const eventsCreated = await this.to(
-      this.assetsService.createEvents(events),
-    );
-    this.success = 'Success';
+    });
   }
 }

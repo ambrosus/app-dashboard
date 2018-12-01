@@ -11,11 +11,8 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class JsonFormComponent implements OnInit {
-  error;
-  success;
-  spinner;
-  textArea: any = '';
   sequenceNumber = 0;
+  promise: any = {};
 
   @Input() assetIds: String[];
   @Input() for: 'assets';
@@ -26,10 +23,6 @@ export class JsonFormComponent implements OnInit {
     private router: Router,
   ) { }
 
-  to(P: Promise<any>) {
-    return P.then(response => response).catch(error => ({ error }));
-  }
-
   ngOnInit() { }
 
   cancel() {
@@ -39,32 +32,11 @@ export class JsonFormComponent implements OnInit {
   validateJSON(input) {
     try {
       JSON.parse(input.value);
-      this.error = false;
       return true;
     } catch (error) {
-      this.error = 'JSON is invalid, please fix it first';
+      console.error('JSON is invalid, please fix it first');
       return false;
     }
-  }
-
-  uploadJSON(event) {
-    const file = event.target.files[0];
-    const that = this;
-
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-      const text = reader.result;
-      that.textArea = text;
-    };
-
-    reader.onerror = function (e) {
-      console.error('[UPLOAD]: ', e);
-    };
-
-    reader.onabort = function (e) { };
-
-    reader.readAsText(file);
   }
 
   insertTab(e, jsonInput) {
@@ -162,57 +134,39 @@ export class JsonFormComponent implements OnInit {
     return allEvents;
   }
 
-  async save(input) {
-    this.error = false;
-    this.success = false;
-    let json = null;
-    try {
-      json = JSON.parse(input.value);
-    } catch (e) { }
+  create(input) {
+    this.promise['create'] = new Promise(async (resolve, reject) => {
+      try {
+        const json = JSON.parse(input.value);
 
-    if (!json) {
-      this.error = 'Input some valid JSON first';
-    }
+        if (!confirm(`Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`)) { return; }
 
-    if (
-      !confirm(
-        `Are you sure you want to proceed creating ${
-        this.for === 'assets' ? 'this asset' : 'these events'
-        }?`,
-      )
-    ) {
-      return;
-    }
+        if (this.for === 'assets') {
+          // Create asset and info event
+          const asset = this.generateAsset();
+          const infoEvent = this.generateEvents(json, [asset.assetId]);
 
-    this.spinner = true;
-
-    if (this.for === 'assets') {
-      // Create asset and info event
-      const asset = this.generateAsset();
-      const infoEvent = this.generateEvents(json, [asset.assetId]);
-
-      console.log('Creating asset');
-      this.assetsService.createAsset(asset).subscribe(
-        async response => {
-          this.sequenceNumber += 1;
-
-          console.log('Creating event');
-          const eventsCreated = await this.to(
-            this.assetsService.createEvents(infoEvent),
+          this.assetsService.createAsset(asset).subscribe(
+            async response => {
+              this.sequenceNumber += 1;
+              const eventsCreated = await this.assetsService.createEvents(infoEvent);
+              resolve();
+            },
+            error => {
+              throw new Error('Asset creation failed, aborting');
+            },
           );
-          this.success = 'Success';
-        },
-        error => (this.error = 'Asset creation failed, aborting'),
-      );
-    } else {
-      // Edit or add events
-      const events = this.generateEvents(json);
+        } else {
+          // Edit or add events
+          const events = this.generateEvents(json);
 
-      console.log('Creating events');
-      const eventsCreated = await this.to(
-        this.assetsService.createEvents(events),
-      );
-      this.success = 'Success';
-    }
+          const eventsCreated = await this.assetsService.createEvents(events);
+          resolve();
+        }
+      } catch (error) {
+        console.error('[CREATE] ${this.for}', error);
+        reject();
+      }
+    });
   }
 }

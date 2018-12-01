@@ -10,23 +10,27 @@
 
 <app-tabs>
   <app-tab label="Private Key">
-    <form class="form" [formGroup]="forms.privateKeyForm" (ngSubmit)="getAccount()" style="max-width: 624px">
+    <form class="form" [formGroup]="forms.privateKey" (ngSubmit)="getAccount()" style="max-width: 624px">
       <label [ngClass]="{ error: errorPrivateKeyForm }">
         <span>Your private key</span>
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
           <span class="message">For maximum security, your private key will <b>never</b> leave your browser.</span>
         </span>
-        <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]" />
+        <input formControlName="privateKey" type="text" [appError]="[forms.privateKey, true]" />
       </label>
-      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">Log in</button>
+      <div style="text-align: center; margin-top: 45px;">
+        <button type="submit" [disabled]="forms.privateKey.invalid" [promiseBtn]="promise.privateKey">
+          Log in
+        </button>
+      </div>
     </form>
   </app-tab>
   <app-tab label="Email & Password">
-    <form class="form" [formGroup]="forms.loginForm" (ngSubmit)="login()">
+    <form class="form" [formGroup]="forms.email" (ngSubmit)="login()" style="max-width: 410px;">
       <label [ngClass]="{ error: errorLoginForm }">
         <span>Your email</span>
-        <input formControlName="email" type="email" name="new-email" autocomplete="new-password" [appError]="[forms.loginForm]" />
+        <input formControlName="email" type="email" name="new-email" autocomplete="new-password" [appError]="[forms.email]" />
       </label>
       <label [ngClass]="{ error: errorLoginForm }">
         <span>Your password</span>
@@ -34,11 +38,13 @@
           <app-svg-icon *ngIf="!showPassword" name="eye_open" width="16" height="16"></app-svg-icon>
           <app-svg-icon *ngIf="showPassword" name="eye_close" width="16" height="16"></app-svg-icon>
         </span>
-        <input formControlName="password" name="new_password" autocomplete="new-password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.loginForm, true]" />
+        <input formControlName="password" name="new_password" autocomplete="new-password" [type]="showPassword ? 'text' : 'password'" [appError]="[forms.email, true]" />
       </label>
-      <button type="submit" [disabled]="forms.loginForm.invalid" [promiseBtn]="promiseActionLoginForm">
-        Log in
-      </button>
+      <div style="text-align: center; margin-top: 45px;">
+        <button type="submit" [disabled]="forms.email.invalid" [promiseBtn]="promise.login">
+          Log in
+        </button>
+      </div>
     </form>
   </app-tab>
 </app-tabs>

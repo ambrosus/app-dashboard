@@ -19,8 +19,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
   organization: any = {};
   organizationId;
   timezones = [];
-  error;
-  success;
+  promise: any = {};
 
   constructor(
     private organizationsService: OrganizationsService,
@@ -62,30 +61,30 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     }
   }
 
-  async save(): Promise<any> {
-    this.error = false;
-    this.success = false;
-    const form = this.forms.organization;
-    const data = form.value;
-    const body = { active: data.active };
+  save() {
+    this.promise['save'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.organization;
+        const data = form.value;
+        const body = { active: data.active };
 
-    if (form.invalid) {
-      this.error = 'Form is invalid';
-    }
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
 
-    Object.keys(data).map(property => {
-      if (data[property]) {
-        body[property] = data[property];
+        Object.keys(data).map(property => {
+          if (data[property]) {
+            body[property] = data[property];
+          }
+        });
+
+        const organization = await this.organizationsService.modifyOrganization(this.organizationId, body);
+        await this.getOrganization();
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Organization: ', error);
+        reject();
       }
     });
-
-    try {
-      const organization = await this.organizationsService.modifyOrganization(this.organizationId, body);
-
-      console.log('[MODIFY] Organization: ', organization);
-      this.getOrganization();
-    } catch (e) {
-      console.log('[MODIFY] Organization: ', e);
-    }
   }
 }

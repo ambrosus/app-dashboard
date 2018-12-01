@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
@@ -18,7 +18,6 @@ export class AssetComponent implements OnInit, OnDestroy {
   asset: any = {};
   assetId: string;
   timeline;
-  dialogRef;
   json: any = '';
   jsonEventsRaw: any;
   jsonEvents: any;
@@ -29,9 +28,6 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   isObject(value) {
     return typeof value === 'object';
-  }
-  valueJSON(value) {
-    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
 
   constructor(
@@ -50,19 +46,13 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.asset = asset;
       },
     );
-    this.subs[this.subs.length] = this.route.params.subscribe(
-      ({ assetid }: any) => this.assetId = assetid,
-    );
+    this.subs[this.subs.length] = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
+    this.assetsService.events.subscribe(events => this.timeline = events && events.data && !!events.data.length);
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationEnd) {
-        if (this.dialogRef) {
-          this.dialogRef.close();
-        }
+      if (e instanceof NavigationStart) {
+        this.dialog.closeAll();
       }
     });
-    this.assetsService.events.subscribe(
-      events => (this.timeline = events && events.data && events.data.length),
-    );
   }
 
   ngOnDestroy() {
@@ -92,14 +82,6 @@ export class AssetComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
   }
 
-  JSONparse(value) {
-    try {
-      return JSON.parse(value);
-    } catch (e) {
-      return false;
-    }
-  }
-
   downloadQR(el: any) {
     const data = el.el.nativeElement.children[0].src;
     const filename = `QR_code_${this.assetId}.png`;
@@ -116,15 +98,11 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   openAddEventDialog() {
-    this.dialogRef = this.dialog.open(EventAddComponent, {
+    this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
       data: {
         assetIds: [this.assetId],
       },
     });
-
-    this.dialogRef
-      .afterClosed()
-      .subscribe(result => console.log('Event add dialog was closed'));
   }
 }

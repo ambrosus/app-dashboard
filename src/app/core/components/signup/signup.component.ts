@@ -23,14 +23,10 @@ declare let Web3: any;
 export class SignupComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
-    privateKeyForm?: FormGroup;
-    requestForm?: FormGroup;
+    privateKey?: FormGroup;
+    request?: FormGroup;
   } = {};
-  errorPrivateKeyForm;
-  errorRequestForm;
-  success;
-  promiseActionPrivateKeyForm;
-  promiseActionRequestForm;
+  promise: any = {};
   web3;
   saved = false;
   step = 'options';
@@ -52,24 +48,24 @@ export class SignupComponent implements OnInit, OnDestroy {
       queryParams => {
         this.inviteId = queryParams.inviteId;
         if (this.inviteId) {
-          this.verifyInvite().then();
+          this.verifyInvite();
         }
       },
     );
-    this.forms.privateKeyForm = new FormGroup({
-      privateKey: new FormControl(null, [
+    this.forms.privateKey = new FormGroup({
+      privateKey: new FormControl('', [
         Validators.required,
         this.validatePrivateKey,
       ]),
-      address: new FormControl({ value: null, disabled: true }, [
+      address: new FormControl({ value: '', disabled: true }, [
         Validators.required,
       ]),
     });
-    this.forms.requestForm = new FormGroup({
-      title: new FormControl(null, []),
-      email: new FormControl(null, [Validators.required, this.validateEmail]),
-      message: new FormControl(null, [Validators.required]),
-      terms: new FormControl(null, [Validators.requiredTrue]),
+    this.forms.request = new FormGroup({
+      title: new FormControl('', []),
+      email: new FormControl('', [Validators.required, this.validateEmail]),
+      message: new FormControl('', [Validators.required]),
+      terms: new FormControl('', [Validators.requiredTrue]),
     });
   }
 
@@ -98,7 +94,7 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   async verifyInvite(): Promise<any> {
     try {
-      this.invite = this.organizationsService.verifyInvite(this.inviteId);
+      this.invite = await this.organizationsService.verifyInvite(this.inviteId);
       console.log('[GET] Invite verified: ', this.invite);
     } catch (error) {
       this.router.navigate(['/login']);
@@ -106,25 +102,22 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   generateKeys() {
-    const { address, privateKey } = this.web3.eth.accounts.create(
-      this.web3.utils.randomHex(32),
-    );
-    this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
-    this.forms.privateKeyForm.get('address').setValue(address);
+    const { address, privateKey } = this.web3.eth.accounts.create(this.web3.utils.randomHex(32));
+    this.forms.privateKey.get('privateKey').setValue(privateKey);
+    this.forms.privateKey.get('address').setValue(address);
     this.step = 'saveKeys';
   }
 
-  async verifyAccount(): Promise<any> {
-    this.errorPrivateKeyForm = false;
-    const form = this.forms.privateKeyForm;
-    const { privateKey } = form.getRawValue();
+  verifyAccount() {
+    this.promise['privateKey'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.privateKey;
+        const { privateKey } = form.getRawValue();
 
-    try {
-      if (form.invalid) {
-        throw new Error('Public key is required');
-      }
+        if (form.invalid) {
+          throw new Error('Public key is required');
+        }
 
-      this.promiseActionPrivateKeyForm = new Promise(async (resolve, reject) => {
         this.authService.verifyAccount(privateKey)
           .then(resp => {
             console.log('[VERIFY] Account: ', resp);
@@ -132,26 +125,27 @@ export class SignupComponent implements OnInit, OnDestroy {
           })
           .catch(error => {
             this.generateAddress(privateKey);
+            resolve();
             return this.step = 'saveKeys';
           });
-      });
-    } catch (error) {
-      console.error('[VERIFY] Account: ', error);
-      this.errorPrivateKeyForm = error;
-    }
+      } catch (error) {
+        console.error('[VERIFY] Account: ', error);
+        reject();
+      }
+    });
   }
 
   async savedKeys(): Promise<any> {
     if (this.invite) {
-      const { address } = this.forms.privateKeyForm.getRawValue();
-      const body = { address };
-
       try {
+        const { address } = this.forms.privateKey.getRawValue();
+        const body = { address };
+
         await this.organizationsService.acceptInvite(this.inviteId, body);
         this.router.navigate(['/login']);
       } catch (error) {
         console.error('[ACCEPT] Invite: ', error);
-        this.errorPrivateKeyForm = 'Account creation failed, please contact support';
+        throw error;
       }
     } else {
       this.step = 'requestForm';
@@ -159,15 +153,12 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   generateAddress(privateKey) {
-    this.errorPrivateKeyForm = false;
     try {
-      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey)
-        .address;
-      this.forms.privateKeyForm.get('privateKey').setValue(privateKey);
-      this.forms.privateKeyForm.get('address').setValue(address);
+      const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      this.forms.privateKey.get('privateKey').setValue(privateKey);
+      this.forms.privateKey.get('address').setValue(address);
     } catch (e) {
-      this.errorPrivateKeyForm = 'Private key is invalid';
-      this.forms.privateKeyForm.get('address').setValue(null);
+      this.forms.privateKey.get('address').setValue(null);
     }
   }
 
@@ -175,31 +166,31 @@ export class SignupComponent implements OnInit, OnDestroy {
     const url =
       'data:application/json;charset=utf-8,' +
       encodeURIComponent(
-        JSON.stringify(this.forms.privateKeyForm.getRawValue(), null, 2),
+        JSON.stringify(this.forms.privateKey.getRawValue(), null, 2),
       );
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   async requestOrganization(): Promise<any> {
-    this.errorRequestForm = false;
-    const { address } = this.forms.privateKeyForm.getRawValue();
-    const form = this.forms.requestForm;
-    const data = form.getRawValue();
-    data.address = address;
+    this.promise['request'] = new Promise(async (resolve, reject) => {
+      try {
+        const { address } = this.forms.privateKey.getRawValue();
+        const form = this.forms.request;
+        const data = form.getRawValue();
+        data.address = address;
 
-    try {
-      if (form.invalid) {
-        throw new Error('Please fill all required fields');
-      }
+        if (form.invalid) {
+          throw new Error('Please fill all required fields');
+        }
 
-      this.promiseActionRequestForm = new Promise(async (resolve, reject) => {
         const organizationRequest = await this.organizationsService.createOrganizationRequest(data);
         console.log('[REQUEST] Organization: ', organizationRequest);
+        resolve();
         return this.step = 'success';
-      });
-    } catch (error) {
-      console.error('[REQUEST] Organization: ', error);
-      this.errorRequestForm = error;
-    }
+      } catch (error) {
+        console.error('[REQUEST] Organization: ', error);
+        reject();
+      }
+    });
   }
 }

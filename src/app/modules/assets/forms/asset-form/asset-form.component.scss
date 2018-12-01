@@ -1,18 +1,6 @@
 @import 'utils';
 
 app-asset-form {
-  form {
-    &.form {
-      max-width: 100%;
-      text-align: left;
-
-      label {
-        &:last-of-type {
-          margin-bottom: 15px;
-        }
-      }
-    }
-  }
 
   .image-preview {
     display: flex;

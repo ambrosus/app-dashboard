@@ -35,8 +35,10 @@
             </option>
           </datalist>
         </label>
-        <div class="right" style="margin-top: 30px;">
-          <button type="submit" class="outline" [disabled]="forms.account.invalid">Save account</button>
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.account.invalid" [promiseBtn]="promise.saveAccount">
+            Save account
+          </button>
         </div>
       </form>
 
@@ -77,8 +79,8 @@
             Create assets
           </label>
         </div>
-        <div class="right">
-          <button type="submit" class="outline" [disabled]="forms.accountPermissions.invalid" style="margin-top: 30px">
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.accountPermissions.invalid" [promiseBtn]="promise.savePermissions">
             Save permissions
           </button>
         </div>

@@ -12,11 +12,12 @@ declare let Web3: any;
   styleUrls: ['./general.component.scss'],
 })
 export class GeneralComponent implements OnInit {
-  editAccountForm: FormGroup;
-  error;
-  success;
+  forms: {
+    edit?: FormGroup,
+  } = {};
   account;
   timezones = [];
+  promise: any = {};
   web3;
 
   constructor(
@@ -29,7 +30,7 @@ export class GeneralComponent implements OnInit {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
-    this.editAccountForm = new FormGroup({
+    this.forms.edit = new FormGroup({
       address: new FormControl(
         { value: this.account.address, disabled: true },
         [Validators.required],
@@ -46,7 +47,7 @@ export class GeneralComponent implements OnInit {
 
   comparePasswords(control: FormControl) {
     try {
-      const data = this.editAccountForm.value;
+      const data = this.forms.edit.value;
       if (!data.password) {
         return null;
       }
@@ -56,28 +57,30 @@ export class GeneralComponent implements OnInit {
     }
   }
 
-  async save(): Promise<any> {
-    const form = this.editAccountForm;
-    const data = form.value;
-    const secret = this.storageService.get('secret');
+  save() {
+    this.promise['save'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.edit;
+        const data = form.value;
+        const secret = this.storageService.get('secret');
 
-    try {
-      if (form.invalid) {
-        throw new Error('Form is invalid');
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
+
+        if (data.password) {
+          data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
+        }
+
+        this.account = await this.accountsService.modifyAccount(this.account.address, data);
+        this.storageService.set('account', this.account);
+        this.accountsService._account.next(this.account);
+
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Account: ', error);
+        reject();
       }
-
-      if (data.password) {
-        data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
-      }
-
-      this.account = await this.accountsService.modifyAccount(this.account.address, data);
-      console.log('[MODIFY] Account updated');
-      this.storageService.set('account', this.account);
-      this.accountsService._account.next(this.account);
-
-    } catch (error) {
-      console.error('[MODIFY] Account: ', error);
-      this.error = error;
-    }
+    });
   }
 }

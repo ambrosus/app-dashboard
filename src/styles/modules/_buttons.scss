@@ -1,5 +1,16 @@
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 button,
 .button {
+  position: relative;
   font-size: 15px;
   line-height: 1.2;
   color: $white;
@@ -14,6 +25,11 @@ button,
   user-select: none;
   padding: 11px 15px;
   transition: all 0.2s;
+
+  + button,
+  + .button {
+    margin-left: 10px;
+  }
 
   &.outline {
     border: 1px solid linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
@@ -37,6 +53,32 @@ button,
 
     &:hover {
       background: rgba($grey, 0.07);
+    }
+  }
+
+  > .spinner {
+    display: inline-block;
+    border: 2px solid $light-blue;
+    border-right-color: transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    position: absolute;
+    top: 13px;
+    right: 11px;
+    opacity: 0;
+    width: 16px;
+    height: 16px;
+    transition: opacity .2s;
+  }
+
+  &.loading {
+    > .spinner {
+      animation: 1.25s linear infinite rotate;
+      opacity: 1;
+    }
+
+    &:hover {
+      opacity: 0.25;
     }
   }
 }

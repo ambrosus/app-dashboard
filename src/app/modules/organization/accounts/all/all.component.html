@@ -18,6 +18,7 @@
     <div class="table accounts">
       <!-- Active -->
       <div *ngIf="show === 'all' || show === 'active'">
+        <h3 *ngIf="!accounts.length && show !== 'all'">No active accounts</h3>
         <div class="item" *ngFor="let acc of accounts">
           <div class="image">
           </div>
@@ -52,6 +53,7 @@
       </div>
       <!-- Pending -->
       <div *ngIf="show === 'all' || show === 'pending'">
+        <h3 *ngIf="!invites.length && show !== 'all'">No pending accounts</h3>
         <div class="item" *ngFor="let invite of invites">
           <div class="image">
           </div>
@@ -100,6 +102,7 @@
       </div>
       <!-- Disabled -->
       <div *ngIf="show === 'all' || show === 'disabled'">
+        <h3 *ngIf="!accountsDisabled.length && show !== 'all'">No disabled accounts</h3>
         <div class="item" *ngFor="let acc of accountsDisabled">
           <div class="image">
           </div>

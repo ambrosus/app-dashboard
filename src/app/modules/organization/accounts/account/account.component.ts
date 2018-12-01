@@ -22,8 +22,7 @@ export class AccountComponent implements OnInit, OnDestroy {
   };
   address;
   timezones = [];
-  error;
-  success;
+  promise: any = {};
 
   constructor(
     private accountsService: AccountsService,
@@ -80,51 +79,59 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
   }
 
-  async saveAccount(): Promise<any> {
-    const form = this.forms.account;
-    const data = form.value;
-    const body = {};
+  saveAccount() {
+    this.promise['saveAccount'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.account;
+        const data = form.value;
+        const body = {};
 
-    if (form.invalid) {
-      this.error = 'Form is invalid';
-    }
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
 
-    Object.keys(data).map(p => {
-      if (data[p]) {
-        body[p] = data[p];
+        Object.keys(data).map(p => {
+          if (data[p]) {
+            body[p] = data[p];
+          }
+        });
+
+        const account = await this.accountsService.modifyAccount(this.account.address, body);
+        await this.getAccount();
+
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Account: ', error);
+        reject();
       }
     });
-
-    try {
-      const account = await this.accountsService.modifyAccount(this.account.address, body);
-      console.log('[MODIFY] Account ', account);
-      this.getAccount();
-    } catch (error) {
-      console.error('[MODIFY] Account: ', error);
-    }
   }
 
-  async savePermissions(): Promise<any> {
-    const form = this.forms.accountPermissions;
-    const data = form.getRawValue();
-    const body = { accessLevel: data.accessLevel, permissions: [] };
+  savePermissions() {
+    this.promise['savePermissions'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.accountPermissions;
+        const data = form.getRawValue();
+        const body = { accessLevel: data.accessLevel, permissions: [] };
 
-    if (form.invalid) {
-      this.error = 'Form is invalid';
-    }
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
 
-    Object.keys(data.permissions).map(permission => {
-      if (data.permissions[permission]) {
-        body.permissions.push(permission);
+        Object.keys(data.permissions).map(permission => {
+          if (data.permissions[permission]) {
+            body.permissions.push(permission);
+          }
+        });
+
+        const account = await this.accountsService.modifyAccount(this.account.address, body);
+        await this.getAccount();
+
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Account: ', error);
+        reject();
       }
     });
-
-    try {
-      const account = await this.accountsService.modifyAccount(this.account.address, body);
-      console.log('[MODIFY] Account ', account);
-      this.getAccount();
-    } catch (error) {
-      console.error('[MODIFY] Account: ', error);
-    }
   }
 }

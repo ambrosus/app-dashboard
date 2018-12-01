@@ -54,19 +54,21 @@
       </p>
     </div>
 
-    <form class="form" [formGroup]="forms.privateKeyForm" (ngSubmit)="verifyAccount()" style="max-width: 624px">
-      <label [ngClass]="{ error: errorPrivateKeyForm }">
+    <form class="form" [formGroup]="forms.privateKey" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+      <label>
         <span>Your private key</span>
         <span class="info">
           <app-svg-icon name="info" width="16" height="16"></app-svg-icon>
           <span class="message">For maximum security, your private key will <b>never</b> leave your
             browser.</span>
         </span>
-        <input formControlName="privateKey" type="text" [appError]="[forms.privateKeyForm, true]" />
+        <input formControlName="privateKey" type="text" [appError]="[forms.privateKey, true]" />
       </label>
-      <button type="submit" [disabled]="forms.privateKeyForm.invalid" [promiseBtn]="promiseActionPrivateKeyForm">
-        Continue
-      </button>
+      <div style="text-align: center; margin-top: 45px;">
+        <button type="submit" [disabled]="forms.privateKey.invalid" [promiseBtn]="promise.privateKey">
+          Continue
+        </button>
+      </div>
     </form>
   </div>
 
@@ -108,10 +110,10 @@
     <p class="meta">Find your public/private key pair below.</p>
     <div class="keys">
       <h6>Your public key</h6>
-      <p>{{ forms.privateKeyForm.getRawValue().address }}</p>
+      <p>{{ forms.privateKey.getRawValue().address }}</p>
 
       <h6>Your private key</h6>
-      <p>{{ forms.privateKeyForm.getRawValue().privateKey }}</p>
+      <p>{{ forms.privateKey.getRawValue().privateKey }}</p>
 
       <h6>
         <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
@@ -128,9 +130,11 @@
         I have saved my keys
       </label>
     </div>
-    <button type="button" [disabled]="!saved" (click)="savedKeys()">
-      Continue
-    </button>
+    <div style="text-align: center; margin-top: 45px;">
+      <button type="button" [disabled]="!saved" (click)="savedKeys()">
+        Continue
+      </button>
+    </div>
   </div>
 
   <!-- STEP 4: Request form -->
@@ -139,26 +143,28 @@
     <p class="meta">
       For better customer experience please share a few more details.
     </p>
-    <form class="form" [formGroup]="forms.requestForm" (ngSubmit)="requestOrganization()">
-      <label [ngClass]="{ error: errorRequestForm }">
+    <form class="form" [formGroup]="forms.request" (ngSubmit)="requestOrganization()" style="max-width: 410px">
+      <label>
         <span>Organization name</span>
-        <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.requestForm, true]" />
+        <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.request, true]" />
       </label>
-      <label [ngClass]="{ error: errorRequestForm }">
+      <label>
         <span>Your email *</span>
-        <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.requestForm]" />
+        <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.request]" />
       </label>
-      <label [ngClass]="{ error: errorRequestForm }">
+      <label>
         <span>What makes you interested in our solution? *</span>
-        <textarea formControlName="message" [appError]="[forms.requestForm]" rows="2"></textarea>
+        <textarea formControlName="message" [appError]="[forms.request]" rows="2"></textarea>
       </label>
       <label>
         <input type="checkbox" formControlName="terms" appCustomCheckbox /> I
         have read and accepted <a>Terms of Service</a>
       </label>
-      <button type="submit" [disabled]="forms.requestForm.invalid" [promiseBtn]="promiseActionRequestForm">
-        Register
-      </button>
+      <div style="text-align: center; margin-top: 45px;">
+        <button type="submit" [disabled]="forms.request.invalid" [promiseBtn]="promise.request">
+          Register
+        </button>
+      </div>
     </form>
   </div>
 

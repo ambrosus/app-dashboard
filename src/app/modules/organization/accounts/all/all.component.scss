@@ -17,12 +17,12 @@ app-all {
         display: inline-block;
         padding: 13px;
         font-weight: 500;
-        color: $blue;
+        color: $black;
         cursor: pointer;
         user-select: none;
 
         &.active {
-          color: $black;
+          color: $blue;
         }
       }
     }

@@ -23,7 +23,6 @@ import {
   DeviceDetectorModule,
   DeviceDetectorService,
 } from 'ngx-device-detector';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import * as Sentry from '@sentry/browser';
 
 if (!isDevMode) {
@@ -55,12 +54,6 @@ export class SentryErrorHandler implements ErrorHandler {
     DeviceDetectorModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
-    }),
-    Angular2PromiseButtonModule.forRoot({
-      spinnerTpl: '<span class="btn-spinner"></span>',
-      disableBtn: true,
-      btnLoadingClass: 'is-loading',
-      handleCurrentBtnOnly: false,
     }),
   ],
   providers: [

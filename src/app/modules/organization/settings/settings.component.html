@@ -14,7 +14,7 @@
   </header>
   <main>
     <div class="wrapper">
-      <form class="form" [formGroup]="settingsForm" (ngSubmit)="save()">
+      <form class="form" [formGroup]="forms.settings" (ngSubmit)="save()">
         <label>
           <span>Title</span>
           <input formControlName="title" type="text">
@@ -32,8 +32,10 @@
             </datalist>
           </label>
         </div>
-        <div class="right" style="margin-top: 30px;">
-          <button type="submit" class="outline">Save</button>
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.settings.invalid" [promiseBtn]="promise.save">
+            Save
+          </button>
         </div>
       </form>
     </div>

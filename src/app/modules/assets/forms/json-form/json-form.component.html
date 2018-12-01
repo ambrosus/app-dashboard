@@ -2,12 +2,12 @@
   <section>
     <label>
       <span>JSON *</span>
-      <textarea class="json" (keyup)="validateJSON(jsonInput)" (keydown)="insertTab($event, jsonInput)" [value]="textArea" spellcheck="false" autofocus #jsonInput></textarea>
+      <textarea class="json" (keyup)="validateJSON(input)" (keydown)="insertTab($event, input)" spellcheck="false" autofocus #input></textarea>
     </label>
   </section>
 
-  <section class="right">
-    <button type="button" class="transparent light" (click)="cancel()" style="margin-right: 10px;">Cancel</button>
-    <button type="button" (click)="save(jsonInput)">Create {{ for }}</button>
-  </section>
+  <div>
+    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+    <button type="button" (click)="create(input)" [promiseBtn]="promise.create">Create {{ for }}</button>
+  </div>
 </div>

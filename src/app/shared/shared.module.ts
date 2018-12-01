@@ -13,15 +13,12 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
-import { LoopIncludePipe } from './pipes/loop-include.pipe';
-import { LoopExcludePipe } from './pipes/loop-exclude.pipe';
 import { EventsTimelineComponent } from 'app/shared/components/events-timeline/events-timeline.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { HttpClientModule } from '@angular/common/http';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
-import { CheckIfPipe } from './pipes/checkIf.pipe';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 
 import { HeaderComponent } from './components/header/header.component';
@@ -37,6 +34,8 @@ import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive
 import { AgmCoreModule } from '@agm/core';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
+import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -48,6 +47,13 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCIf-xvKaHu8pgMCuOgw8Ft9gnMgmAOBVw',
     }),
+    Angular2PromiseButtonModule.forRoot({
+      spinnerTpl: '<span class="spinner"></span>',
+      disableBtn: true,
+      btnLoadingClass: 'loading',
+      handleCurrentBtnOnly: false,
+      minDuration: 1000,
+    }),
   ],
   exports: [
     CommonModule,
@@ -55,13 +61,10 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     AccordionDirective,
     AutofocusDirective,
     StickyDirective,
-    LoopIncludePipe,
-    LoopExcludePipe,
     EventsTimelineComponent,
     SvgIconComponent,
     QrCodeComponent,
     MatDialogModule,
-    CheckIfPipe,
     ImageCropperModule,
     CustomCheckboxDirective,
     FooterComponent,
@@ -74,18 +77,16 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
     AgmCoreModule,
     TabComponent,
     TabsComponent,
+    Angular2PromiseButtonModule,
   ],
   declarations: [
     AutocompleteinputDirective,
     AutofocusDirective,
     AccordionDirective,
     StickyDirective,
-    LoopIncludePipe,
-    LoopExcludePipe,
     EventsTimelineComponent,
     SvgIconComponent,
     QrCodeComponent,
-    CheckIfPipe,
     CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
