@@ -6,15 +6,15 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
 <header class="header">
-  <div>
+  <div class="flex between">
     <h2 class="title">New asset</h2>
-  </div>
-  <div>
-    <ul class="menu">
+    <ul class="menu flex-0">
       <li [ngClass]="{ 'active': !json }" (click)="json = false">Form</li>
       <li [ngClass]="{ 'active': json }" (click)="json = true">JSON</li>
     </ul>
   </div>
 </header>
-<app-asset-form [assetId]="assetIds[0]" *ngIf="!json"></app-asset-form>
-<app-json-form [assetIds]="assetIds" [for]="'assets'" *ngIf="json"></app-json-form>
+<main>
+  <app-asset-form [assetId]="assetIds[0]" *ngIf="!json"></app-asset-form>
+  <app-json-form [assetIds]="assetIds" [for]="'assets'" *ngIf="json"></app-json-form>
+</main>

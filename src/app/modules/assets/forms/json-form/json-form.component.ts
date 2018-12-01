@@ -3,6 +3,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Router } from '@angular/router';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-json-form',
@@ -11,6 +12,9 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class JsonFormComponent implements OnInit {
+  forms: {
+    json?: FormGroup,
+  } = {};
   sequenceNumber = 0;
   promise: any = {};
 
@@ -23,7 +27,11 @@ export class JsonFormComponent implements OnInit {
     private router: Router,
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.forms.json = new FormGroup({
+      data: new FormControl('', [Validators.required]),
+    });
+  }
 
   cancel() {
     this.router.navigate([`${location.pathname}`]);
@@ -134,10 +142,17 @@ export class JsonFormComponent implements OnInit {
     return allEvents;
   }
 
-  create(input) {
+  create() {
     this.promise['create'] = new Promise(async (resolve, reject) => {
       try {
-        const json = JSON.parse(input.value);
+        const form = this.forms.json;
+        const data = form.value;
+
+        if (form.invalid) {
+          throw new Error('Please insert some JSON data');
+        }
+
+        const json = JSON.parse(data.data);
 
         if (!confirm(`Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`)) { return; }
 

@@ -3,41 +3,11 @@
 app-assets {
   display: block;
   width: 100%;
-  padding: 36px 25px 55px;
 
   .selectAll {
     text-transform: uppercase;
     font-size: 11px;
     color: $blue;
     margin-left: 15px;
-  }
-
-  .wrapper {
-    width: 100%;
-    max-width: 840px;
-    margin: 0 auto;
-
-    > header {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 65px;
-      margin-top: 20px;
-
-      h1 {
-        margin-top: 0;
-        margin-bottom: 7px;
-      }
-
-      .meta {
-        text-transform: uppercase;
-        font-weight: 500;
-      }
-    }
-  }
-
-  form {
-    width: 100%;
   }
 }

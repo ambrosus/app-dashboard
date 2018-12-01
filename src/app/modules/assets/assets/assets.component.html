@@ -5,47 +5,55 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<div class="wrapper">
+<div class="page">
   <header class="header">
-    <div>
-      <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
-      <p class="meta">
-        {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
-        <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
-      </p>
-    </div>
-    <div style="flex: 0 0 auto;">
-      <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
-      <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">Bulk event</button>
-    </div>
-  </header>
-
-  <form [formGroup]="forms.table" (change)="isSelected()">
-    <div class="table" formArrayName="assets">
-      <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
-        <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
-          <input formControlName="selected" type="checkbox" />
-        </label>
-        <div class="body">
-          <a routerLink="/assets/{{ asset.value.assetId }}">
-            <div class="body__main">
-              <h5 class="title">
-                {{ assetsService.getName(asset.value.info) }}
-              </h5>
-              <p class="assetId">{{ asset.value.assetId }}</p>
-              <p class="createdBy">
-                by <span class="account-image"></span>
-                <span class="address">{{ asset.value.createdBy }}</span>
-              </p>
-            </div>
-            <div class="body__latest" *ngIf="asset.value.latestEvent"></div>
-          </a>
+    <div class="wrapper">
+      <div class="flex between">
+        <div>
+          <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
+          <p style="margin-top: 10px;">
+            {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
+            <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
+          </p>
+        </div>
+        <div class="flex-0">
+          <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
+          <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">Bulk event</button>
         </div>
       </div>
     </div>
-  </form>
+  </header>
+  <main>
+    <div class="wrapper">
 
-  <div class="center" *ngIf="pagination && pagination.hasNext">
-    <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
-  </div>
+      <form [formGroup]="forms.table" (change)="isSelected()">
+        <div class="table" formArrayName="assets">
+          <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
+            <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
+              <input formControlName="selected" type="checkbox" />
+            </label>
+            <div class="body">
+              <a routerLink="/assets/{{ asset.value.assetId }}">
+                <div class="body__main">
+                  <h5 class="title">
+                    {{ assetsService.getName(asset.value.info) }}
+                  </h5>
+                  <p class="assetId">{{ asset.value.assetId }}</p>
+                  <p class="createdBy">
+                    by <span class="account-image"></span>
+                    <span class="address">{{ asset.value.createdBy }}</span>
+                  </p>
+                </div>
+                <div class="body__latest" *ngIf="asset.value.latestEvent"></div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="center" *ngIf="pagination && pagination.hasNext">
+        <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
+      </div>
+    </div>
+  </main>
 </div>
