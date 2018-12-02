@@ -18,12 +18,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 }
 
 app-header {
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1500;
   width: 100%;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, .02);
 
   .overlay {
     width: 100%;
@@ -36,33 +36,20 @@ app-header {
     animation: fadeIn 0.2s forwards;
   }
 
-  > .header {
+  > header {
     position: relative;
+    width: 100%;
     height: 80px;
     background-color: #fff;
-    width: 100%;
-    transition: all 0.2s;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, .02);
+    padding: 20px;
 
-    &.advancedSearch {
-      height: auto;
-
-      .wrapper {
-        .menu {
-          justify-content: flex-end;
-
-          .search {
-            max-width: 100%;
-
-            input {
-              padding-right: 60px;
-            }
-          }
-        }
-      }
+    @include breakpoint-min(1024) {
+      padding: 20px 40px;
     }
 
-    .searchAdvanced {
-      padding: 40px 20px 60px;
+    > .search {
+      padding: 40px 35px 60px;
       width: 100%;
       position: fixed;
       left: 0;
@@ -71,74 +58,104 @@ app-header {
       background: #fff;
       animation: fadeIn 0.2s forwards;
       overflow-y: auto;
-
-      form {
-        max-width: 816px;
-      }
     }
 
-    .wrapper {
-      width: 100%;
-      max-width: 1440px;
+    > .wrapper {
+      max-width: 1280px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 84px;
 
-      > div {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+      > .dropDown {
+        position: relative;
+        margin-right: 20px;
       }
 
-      > .menu {
+      @include breakpoint-min(768) {
+        > .dropDown {
+          display: none;
+        }
+      }
+    }
+
+    .header {
+      &__menu {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
-        flex: 1 1 100%;
         width: 100%;
+        flex: 1 1 auto;
 
-        .search {
-          max-width: 408px;
-          margin: 0;
-          position: relative;
+        > .search {
+          display: none;
+        }
 
-          input {
-            border-color: #e5e5e5;
-            padding-right: 85px;
-          }
+        > nav {
+          display: none;
+        }
 
-          a.advanced {
-            position: absolute;
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 500;
-            color: $blue;
-            top: 15px;
-            right: 16px;
+        @include breakpoint-min(480) {
+          justify-content: center;
+
+          > .search {
+            display: inline-block;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            flex: 1 1 auto;
+            margin: 0;
+
+            &__icon {
+              display: none;
+            }
+
+            input {
+              border-color: #e5e5e5;
+              padding-right: 85px;
+            }
+
+            a.advanced {
+              position: absolute;
+              font-size: 11px;
+              text-transform: uppercase;
+              font-weight: 500;
+              color: $blue;
+              top: 15px;
+              right: 16px;
+            }
           }
         }
 
-        nav {
-          display: inline-block;
+        @include breakpoint-min(768) {
+          justify-content: space-between;
 
-          ul {
-            li {
-              display: inline-block;
-              margin-right: 24px;
+          > .search {
+            max-width: 408px;
+          }
 
-              &:last-child {
-                margin-right: 0;
-              }
+          > nav {
+            display: inline-block;
+            flex: 0 0 auto;
+            margin-right: 30px;
 
-              a {
-                font-weight: 500;
-                color: $black;
+            > ul {
+              > li {
+                display: inline-block;
+                margin-right: 24px;
 
-                &.active {
-                  color: $blue;
+                &:last-child {
+                  margin-right: 0;
+                }
+
+                a {
+                  font-weight: 500;
+                  color: $black;
+
+                  &.active {
+                    color: $blue;
+                  }
                 }
               }
             }
@@ -148,23 +165,39 @@ app-header {
     }
 
     .logo {
-      flex: 0 0 125px;
-      margin-right: 92px;
+      flex: 0 0 40px;
 
       > a {
         display: inline-block;
-        width: 125px;
+        width: 40px;
         height: 40px;
-        background-image: url('/assets/raster/logo-header-dark.png');
+        background-image: url('/assets/svg/logotip.svg');
         background-size: contain;
         background-repeat: no-repeat;
+      }
+
+      @include breakpoint-min(480) {
+        margin-right: 30px;
+      }
+
+      @include breakpoint-min(768) {
+        flex: 0 0 125px;
+
+        > a {
+          width: 125px;
+          background-image: url('/assets/svg/logo.svg');
+        }
+      }
+
+      @include breakpoint-min(1024) {
+        margin-right: 110px;
       }
     }
 
     .avatar {
       flex: 0 0 40px;
-      margin-left: 172px;
       position: relative;
+      margin-left: 20px;
 
       > div {
         flex: 0 0 40px;
@@ -177,6 +210,37 @@ app-header {
         background-color: $light-blue;
         font-size: 16px;
         text-transform: uppercase;
+      }
+
+      @include breakpoint-min(480) {
+        margin-left: 30px;
+      }
+
+      @include breakpoint-min(1024) {
+        margin-left: 110px;
+      }
+    }
+
+    &.advanced {
+      height: auto;
+
+      .logo {
+        flex: 0 0 40px;
+
+        > a {
+          width: 40px;
+          background-image: url('/assets/svg/logotip.svg');
+        }
+      }
+
+      .header {
+        &__menu {
+          justify-content: flex-end;
+
+          > .search {
+            max-width: 100%;
+          }
+        }
       }
     }
   }

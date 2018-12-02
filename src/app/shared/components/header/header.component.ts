@@ -27,9 +27,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   } = {};
   isLoggedin;
   account: any = {};
-  advancedSearch;
+  advanced = false;
   autocomplete: any[] = autocomplete;
-  dropDownItems: any = {};
+  dropDown: any = {};
 
   constructor(
     private authService: AuthService,
@@ -45,7 +45,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
         console.log('[GET] Account (header): ', this.account);
 
         this.logout = this.logout.bind(this);
-        this.dropDownItems = {
+        this.dropDown.menu = {
+          items: [
+            {
+              type: 'link',
+              title: 'Assets',
+              link: '/assets',
+            },
+          ],
+        };
+        if (this.checkPermissions(['manage_accounts'])) {
+          this.dropDown.menu.items.unshift({
+            type: 'link',
+            title: 'Organization',
+            link: '/organization',
+          });
+        }
+        if (this.checkPermissions(['super_account'])) {
+          this.dropDown.menu.items.unshift({
+            type: 'link',
+            title: 'Node',
+            link: '/node',
+          });
+        }
+
+        this.dropDown.profile = {
           title: 'Profile menu',
           items: [
             {
@@ -82,7 +106,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
-        this.advancedSearch = false;
+        this.advanced = false;
       }
     });
   }
@@ -99,6 +123,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   initSearchAdvanceForm() {
     this.forms.searchAdvance = new FormGroup({
+      input: new FormControl(),
       from: new FormControl(),
       to: new FormControl(),
       state: new FormArray([]),
@@ -150,7 +175,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  checkPermission(routePermissions: string[]): boolean {
+  checkPermissions(routePermissions: string[]): boolean {
     if (!this.account.permissions) {
       return false;
     } else {

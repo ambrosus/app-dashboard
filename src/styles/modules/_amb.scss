@@ -23,10 +23,11 @@
 
     > li {
       display: inline-block;
-      width: 100%;
-      min-width: 200px;
       padding-right: 25px;
       margin-bottom: 15px;
+      flex: 0 0 auto;
+      min-width: 200px;
+      max-width: 100%;
 
       > h6 {
         text-transform: uppercase;

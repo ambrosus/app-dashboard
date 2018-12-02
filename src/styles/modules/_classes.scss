@@ -93,3 +93,9 @@
 .flex-1 {
   flex: 1 1 auto;
 }
+
+.hide-480 {
+  @include breakpoint-min(480) {
+    display: none !important;
+  }
+}

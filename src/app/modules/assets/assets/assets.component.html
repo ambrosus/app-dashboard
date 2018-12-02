@@ -28,25 +28,27 @@
 
       <form [formGroup]="forms.table" (change)="isSelected()">
         <div class="table" formArrayName="assets">
-          <div [ngClass]="{ selected: asset.value.selected }" class="item" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
-            <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
-              <input formControlName="selected" type="checkbox" />
-            </label>
-            <div class="body">
+          <div class="item" [ngClass]="{ selected: asset.value.selected }" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
+            <header>
+              <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
+                <input formControlName="selected" type="checkbox" />
+              </label>
+            </header>
+            <main>
               <a routerLink="/assets/{{ asset.value.assetId }}">
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ assetsService.getName(asset.value.info) }}
                   </h5>
                   <p class="assetId">{{ asset.value.assetId }}</p>
                   <p class="createdBy">
-                    by <span class="account-image"></span>
+                    <span class=flex-0>by</span>
+                    <span class="image"></span>
                     <span class="address">{{ asset.value.createdBy }}</span>
                   </p>
                 </div>
-                <div class="body__latest" *ngIf="asset.value.latestEvent"></div>
               </a>
-            </div>
+            </main>
           </div>
         </div>
       </form>

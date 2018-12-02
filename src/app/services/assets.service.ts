@@ -493,7 +493,7 @@ export class AssetsService {
     asset.info['properties'] = [];
 
     Object.keys(asset.info).map((key: any) => {
-      if (key === 'location') {
+      if (key === 'location' || key === 'identifiers') {
         asset[key] = asset.info[key];
       } else {
         if (
@@ -505,7 +505,6 @@ export class AssetsService {
             'eventId',
             'createdBy',
             'timestamp',
-            'identifiers',
             'groups',
             'properties',
           ].indexOf(key) === -1
@@ -613,6 +612,14 @@ export class AssetsService {
         event.content.data.map(obj => {
           const type = obj.type.split('.');
           obj.type = type[type.length - 1].toLowerCase();
+
+          if (obj.type === 'location' || obj.type === 'identifiers') {
+            event.content.data.map(_obj => {
+              if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
+                _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+              }
+            });
+          }
 
           switch (eventType) {
             case 'latest':

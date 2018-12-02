@@ -10,6 +10,13 @@
   }
 }
 
+.left {
+  app-drop-down {
+    left: 0;
+    right: auto;
+  }
+}
+
 app-drop-down {
   display: none;
   position: absolute;
