@@ -19,23 +19,25 @@
         <div *ngIf="show === 'all' || show === 'active'">
           <h3 *ngIf="!organizations.length && show !== 'all'">No active organizations</h3>
           <div class="item" *ngFor="let organization of organizations">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a [routerLink]="organization.organizationId">
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ organization.title || 'No title' }}
                   </h5>
                   <p class="createdBy">
-                    owner <span class="account-image"></span>
+                    <span class="flex-0">owner</span>
+                    <span class="image"></span>
                     <span class="address">{{ organization.owner }}</span>
                   </p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div></div>
-                <div>
+                <div style="margin: 0">
                   <span class="status" style="color: #40D685;">Active</span>
                   <span class="verticalMenu" appToggleDropDown>
                     <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
@@ -50,28 +52,31 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
         <!-- Pending -->
         <div *ngIf="show === 'all' || show === 'pending'">
           <h3 *ngIf="!organizationRequests.length && show !== 'all'">No pending organizations</h3>
           <div class="item" *ngFor="let organization of organizationRequests">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a>
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ organization.title || 'No title' }}
                   </h5>
                   <p class="createdBy">
-                    owner <span class="account-image"></span>
+                    <span class="flex-0">owner</span>
+                    <span class="image"></span>
                     <span class="address">{{ organization.address }}</span>
                   </p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div>
                   <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
                   <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
@@ -99,30 +104,33 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
         <!-- Disabled -->
         <div *ngIf="show === 'all' || show === 'disabled'">
           <h3 *ngIf="!organizationsDisabled.length && show !== 'all'">No disabled organizations</h3>
           <div class="item" *ngFor="let organization of organizationsDisabled">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a [routerLink]="organization.organizationId">
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ organization.title || 'No title' }}
                   </h5>
                   <p class="createdBy">
-                    owner <span class="account-image"></span>
+                    <span class="flex-0">owner</span>
+                    <span class="image"></span>
                     <span class="address">{{ organization.owner }}</span>
                   </p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div></div>
-                <div>
+                <div style="margin: 0">
                   <span class="status" style="color: #D64040;">Disabled</span>
                   <span class="verticalMenu" appToggleDropDown>
                     <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
@@ -137,35 +145,39 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
         <!-- Declined -->
         <div *ngIf="show === 'all' || show === 'declined'">
           <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'">No declined organizations</h3>
           <div class="item" *ngFor="let organization of organizationRequestsDeclined">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a>
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ organization.title || 'No title' }}
                   </h5>
                   <p class="createdBy">
-                    owner <span class="account-image"></span>
+                    <span class="flex-0">owner</span>
+                    <span class="image"></span>
                     <span class="address">{{ organization.address }}</span>
                   </p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div>
                 </div>
-                <div>
+                <div style="margin: 0">
                   <span class="status" style="color: #D64040;">Declined</span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
       </div>
