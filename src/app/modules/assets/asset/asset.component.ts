@@ -71,6 +71,10 @@ export class AssetComponent implements OnInit, OnDestroy {
     }
   }
 
+  valueJSON(value) {
+    return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
+  }
+
   downloadJSON() {
     const url =
       'data:application/json;charset=utf-8,' +

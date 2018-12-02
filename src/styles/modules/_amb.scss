@@ -13,11 +13,17 @@
 
   .properties {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    margin-top: 20px;
+
+    @include breakpoint-min(768) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
 
     > li {
       display: inline-block;
+      width: 100%;
       min-width: 200px;
       padding-right: 25px;
       margin-bottom: 15px;
@@ -30,6 +36,7 @@
 
       > p {
         color: $black;
+        margin-top: 10px;
 
         &.json {
           white-space: pre-wrap;
@@ -39,7 +46,7 @@
     }
   }
 
-  &__main {
+  > main {
     padding: 40px 20px;
 
     &.json {
@@ -50,14 +57,6 @@
         font-size: 12px;
         color: $grey;
         margin-bottom: 15px;
-      }
-
-      .action {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 40px;
       }
 
       textarea {
@@ -92,17 +91,27 @@
 
       &.groups {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
 
         > .group {
+          display: inline-block;
+          width: 100%;
           padding-right: 25px;
           margin-bottom: 40px;
 
-          h5 {
+          > h5 {
             text-transform: uppercase;
             font-size: 12px;
             margin-bottom: 25px;
+          }
+        }
+
+        @include breakpoint-min(768) {
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          > .group {
+            width: 50%;
           }
         }
       }
@@ -113,16 +122,6 @@
 
       &:last-of-type {
         margin-bottom: 0;
-      }
-
-      &.qr {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        a {
-          color: $blue;
-        }
       }
     }
 
@@ -144,70 +143,69 @@
     }
   }
 
-  &__header {
+  > header {
     padding: 0 20px;
 
     .accordions {
       > .accordion {
         > .title {
           padding: 45px 0 25px;
-        }
-      }
-    }
 
-    .content {
-      .meta {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-
-        > div {
-          padding-right: 30px;
-
-          h5 {
-            margin-bottom: 20px;
+          > h2 {
+            color: $light-blue;
+            font-weight: 400;
           }
-        }
-      }
-    }
 
-    .info {
-      &.title {
-        h2 {
-          color: $light-blue;
-        }
+          > .address {
+            font-weight: 500;
+            margin: 12px 0 25px;
+          }
 
-        .assetId {
-          color: $black;
-          margin-bottom: 25px;
-        }
-
-        .createdBy {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          margin-top: 0;
-          font-size: 12px;
-
-          .address {
-            color: $grey;
+          > .createdBy {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
             font-size: 12px;
+
+            > .image {
+              display: inline-block;
+              width: 24px;
+              height: 24px;
+              flex: 0 0 24px;
+              background: $grey;
+              margin: 0 8px;
+              border-radius: 50%;
+              position: relative;
+              background-color: #fafafa;
+              background-image: url('/assets/raster/account-image-default.png');
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-position: 50%;
+            }
           }
         }
 
-        .account-image {
-          display: inline-block;
-          width: 24px;
-          height: 24px;
-          background: $grey;
-          margin: 0 8px;
-          border-radius: 50%;
-          position: relative;
-          background-color: #fafafa;
-          background-image: url('/assets/raster/account-image-default.png');
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: 50%;
+        > .content {
+          .metadata {
+            display: flex;
+            flex-direction: column;
+
+            > div + div {
+              margin: 25px 0 0 0;
+            }
+
+            @include breakpoint-min(768) {
+              flex-direction: row;
+
+              > div + div {
+                margin: 0 0 0 15px;
+              }
+
+              > * {
+                width: 50%;
+              }
+            }
+          }
         }
       }
     }
@@ -226,20 +224,15 @@
     }
   }
 
-  .timeline {
+  > .timeline {
     background: #fafafa;
     padding: 40px 20px 75px;
 
     header {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 40px;
 
       h2 {
         font-weight: 500;
-        margin-bottom: 0;
       }
     }
   }

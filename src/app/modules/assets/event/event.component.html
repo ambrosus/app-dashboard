@@ -1,19 +1,20 @@
 <div class="amb">
-  <div class="wrapper">
-    <header class="amb__header">
+  <header>
+    <div class="wrapper">
       <div class="accordions">
         <div class="accordion">
-          <div class="info title" appAccordion>
+          <div class="title" appAccordion>
             <h2>{{ event.info.name || 'No title' }}</h2>
-            <p class="assetId">{{ eventId }}</p>
+            <p class="address">{{ eventId }}</p>
             <p class="createdBy">
-              by <span class="account-image"></span>
-              <span class="address" *ngIf="event.content?.idData?.createdBy">{{ event.content.idData.createdBy }}</span>
+              <span class="flex-0">by</span>
+              <span class="image"></span>
+              <span *ngIf="event.content?.idData?.createdBy">{{ event.content.idData.createdBy }}</span>
             </p>
           </div>
           <div class="content">
-            <div class="meta">
-              <div class="w50">
+            <div class="metadata">
+              <div>
                 <h5>Event metadata</h5>
                 <ul class="properties">
                   <li *ngIf="eventId">
@@ -42,7 +43,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="w50">
+              <div>
                 <h5>Bundle metadata</h5>
                 <ul class="properties">
                   <li *ngIf="event.metadata?.bundleId">
@@ -67,8 +68,10 @@
           </div>
         </div>
       </div>
-    </header>
-    <main class="amb__main">
+    </div>
+  </header>
+  <main>
+    <div class="wrapper">
 
       <!-- Images -->
       <section class="images" *ngIf="event.info?.images" style="margin-bottom: 25px;">
@@ -118,7 +121,7 @@
       </section>
 
       <section class="groups" *ngIf="event.info?.groups && event.info.groups.length">
-        <div class="group w50" *ngFor="let group of event.info.groups">
+        <div class="group" *ngFor="let group of event.info.groups">
           <h5>{{ group.key }}</h5>
 
           <ul class="properties">
@@ -129,8 +132,9 @@
           </ul>
         </div>
       </section>
-    </main>
-  </div>
+
+    </div>
+  </main>
 
   <!-- Location -->
   <section class="location" *ngIf="location">

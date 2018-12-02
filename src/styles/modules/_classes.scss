@@ -61,14 +61,8 @@
     margin: 15px 0 0;
   }
 
-  @include breakpoint-min(768) {
-    flex-direction: row;
-    justify-content: start;
-    align-items: center;
-
-    > * + * {
-      margin: 0 0 0 30px;
-    }
+  &.wrap {
+    flex-wrap: wrap;
   }
 
   &.between {
@@ -76,8 +70,26 @@
       justify-content: space-between;
     }
   }
+
+  @include breakpoint-min(768) {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    > * + * {
+      margin: 0 0 0 30px;
+    }
+
+    &.start {
+      align-items: flex-start;
+    }
+  }
 }
 
 .flex-0 {
   flex: 0 0 auto;
+}
+
+.flex-1 {
+  flex: 1 1 auto;
 }

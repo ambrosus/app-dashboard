@@ -1,19 +1,20 @@
 <div class="amb">
-  <div class="wrapper">
-    <header class="amb__header">
+  <header>
+    <div class="wrapper">
       <div class="accordions">
         <div class="accordion">
-          <div class="info title" appAccordion>
+          <div class="title" appAccordion>
             <h2>{{ assetsService.getName(asset.info) }}</h2>
-            <p class="assetId">{{ asset.assetId }}</p>
+            <p class="address">{{ asset.assetId }}</p>
             <p class="createdBy">
-              by <span class="account-image"></span>
-              <span class="address" *ngIf="asset.content?.idData?.createdBy">{{ asset.content.idData.createdBy }}</span>
+              <span class="flex-0">by</span>
+              <span class="image"></span>
+              <span *ngIf="asset.content?.idData?.createdBy">{{ asset.content.idData.createdBy }}</span>
             </p>
           </div>
           <div class="content">
-            <div class="meta">
-              <div class="w50">
+            <div class="metadata">
+              <div>
                 <h5>Asset metadata</h5>
                 <ul class="properties">
                   <li *ngIf="asset.assetId">
@@ -34,7 +35,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="w50">
+              <div>
                 <h5>Bundle metadata</h5>
                 <ul class="properties">
                   <li *ngIf="asset.metadata?.bundleId">
@@ -60,22 +61,26 @@
           </div>
         </div>
       </div>
-    </header>
-    <main class="amb__main json" *ngIf="json">
-
+    </div>
+  </header>
+  <main class="json" *ngIf="json">
+    <div class="wrapper">
       <h5>JSON</h5>
       <p *ngIf="jsonEventsRaw?.pagination?.hasNext" style="margin: 5px 0; color: red;">
         This asset has more than 200 events, to download all of them please contact support.</p>
       <textarea>{{ jsonEvents }}</textarea>
 
-      <div class="action">
-        <button class="transparent" (click)="json = ''">View as Data</button>
-        <a [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()" class="button outline">
+      <div class="flex between" style="margin-top: 40px;">
+        <button class="transparent flex-0" (click)="json = ''">View as Data</button>
+        <a class="button outline flex-0" [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()">
           Download JSON
         </a>
       </div>
-    </main>
-    <main class="amb__main" *ngIf="!json">
+
+    </div>
+  </main>
+  <main *ngIf="!json">
+    <div class="wrapper">
 
       <!-- Images -->
       <section class="images" *ngIf="asset.info?.images" style="margin-bottom: 25px;">
@@ -89,9 +94,11 @@
       </section>
 
       <!-- QR code -->
-      <section class="qr">
-        <app-qr-code class="qr" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
-        <a [href]="'https://amb.to/' + asset.assetId" target="_blank">Check on amb.to</a>
+      <section class="flex">
+        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
+        <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba; margin-left: 0;">
+          Check on amb.to
+        </a>
       </section>
 
       <!-- Identifiers -->
@@ -131,7 +138,7 @@
       </section>
 
       <section class="groups" *ngIf="asset.info?.groups && asset.info.groups.length">
-        <div class="group w50" *ngFor="let group of asset.info.groups">
+        <div class="group" *ngFor="let group of asset.info.groups">
           <h5>{{ group.key }}</h5>
 
           <ul class="properties">
@@ -142,14 +149,19 @@
           </ul>
         </div>
       </section>
-    </main>
-  </div>
-  <section class="timeline">
+
+    </div>
+  </main>
+  <div class="timeline">
     <div class="wrapper">
       <header>
-        <h2>Events</h2>
-        <div style="flex: 0 0 auto;">
-          <button type="button" class="outline" (click)="openAddEventDialog()">Add event</button>
+        <div class="flex between">
+          <div>
+            <h2>Events</h2>
+          </div>
+          <div class="flex-0">
+            <button type="button" class="outline" (click)="openAddEventDialog()">Add event</button>
+          </div>
         </div>
       </header>
 
@@ -158,5 +170,5 @@
         <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.info)"></app-events-timeline>
       </ng-template>
     </div>
-  </section>
+  </div>
 </div>
