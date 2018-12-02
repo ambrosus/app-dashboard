@@ -7,6 +7,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 -->
 <ul *ngIf="(assetsService.events | async).data.length">
   <li class="event" *ngFor="let event of (assetsService.events | async).data" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+    <div class="pin">
+      <div class="icon"></div>
+      <span class="ago">{{ event.ago }}</span>
+    </div>
     <div class="flex between">
       <h5 class="title">{{ event.name }}</h5>
       <span class="timestamp">{{ event.timestamp * 1000 | date:'EEE, MMM d, yyyy' }}</span>

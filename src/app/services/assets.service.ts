@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import { map, catchError, tap } from 'rxjs/operators';
+import * as moment from 'moment-timezone';
 
 declare let Web3: any;
 
@@ -524,6 +525,8 @@ export class AssetsService {
   }
 
   parseTimelineEvents(e) {
+    const account: any = this.storageService.get('account') || {};
+
     const events = e.reduce((_events, { content, eventId }) => {
       const timestamp = content.idData.timestamp;
       const createdBy = content.idData.createdBy;
@@ -534,12 +537,14 @@ export class AssetsService {
           const type = parts[parts.length - 1];
           const category = parts[parts.length - 2] || 'asset';
           const namespace = parts[parts.length - 3] || 'ambrosus';
+          const ago = moment.tz(timestamp * 1000, account.timeZone || 'UTC').fromNow();
 
           obj.timestamp = timestamp;
           obj.createdBy = createdBy;
           obj.name = obj.name || type;
           obj.type = type;
           obj.eventId = eventId;
+          obj.ago = ago;
 
           if (obj.type === 'location' && category === 'event') {
             content.data.reduce((location, _event) => {

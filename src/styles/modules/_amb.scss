@@ -155,6 +155,7 @@
           > h2 {
             color: $light-blue;
             font-weight: 400;
+            padding-right: 25px;
           }
 
           > .address {
@@ -260,5 +261,22 @@
   > header,
   > main {
     padding: 35px 25px;
+  }
+}
+
+.decoration {
+  position: relative;
+
+  > app-svg-icon {
+    display: none;
+  }
+
+  @include breakpoint-min(1100) {
+    > app-svg-icon {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: -100px;
+    }
   }
 }

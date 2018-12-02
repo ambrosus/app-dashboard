@@ -7,6 +7,16 @@ app-events-timeline {
   > ul {
     position: relative;
 
+    &:before {
+      content: '';
+      width: 2px;
+      height: calc(100% - 150px);
+      background: #fff;
+      position: absolute;
+      left: -76px;
+      top: 25px;
+    }
+
     > .event {
       position: relative;
       padding: 25px;
@@ -16,6 +26,49 @@ app-events-timeline {
       box-shadow: 0px 4px 8px rgba($grey, 0.05);
       cursor: pointer;
       transition: transform .1s ease-out;
+
+      > .pin {
+        display: none;
+        position: absolute;
+        left: -115px;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        background: #fafafa;
+        width: 80px;
+
+        > .icon {
+          width: 40px;
+          height: 40px;
+          background-image: url('/assets/svg/event-color.svg');
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: 50%;
+        }
+
+        > .ago {
+          color: $grey;
+          font-size: 11px;
+          margin-top: 10px;
+        }
+      }
+
+      &:last-child {
+        > .pin {
+
+          > .icon {
+            background-image: url('/assets/svg/asset-darker.svg');
+          }
+        }
+      }
+
+      @include breakpoint-min(1100) {
+        > .pin {
+          display: flex;
+        }
+      }
 
       > .location {
         display: flex;

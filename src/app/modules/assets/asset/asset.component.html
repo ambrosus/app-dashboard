@@ -4,7 +4,10 @@
       <div class="accordions">
         <div class="accordion">
           <div class="title" appAccordion>
-            <h2>{{ assetsService.getName(asset.info) }}</h2>
+            <h2 class="decoration">
+              <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
+              {{ assetsService.getName(asset.info) }}
+            </h2>
             <p class="address">{{ asset.assetId }}</p>
             <p class="createdBy">
               <span class="flex-0">by</span>
@@ -80,7 +83,8 @@
     </div>
   </main>
   <main *ngIf="!json">
-    <div class="wrapper">
+    <div class="wrapper decoration">
+      <app-svg-icon name="content" height="40" width="40" fill="9198BB"></app-svg-icon>
 
       <!-- Images -->
       <section class="images" *ngIf="asset.info?.images" style="margin-bottom: 25px;">
@@ -94,9 +98,10 @@
       </section>
 
       <!-- QR code -->
-      <section class="flex">
-        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)"></app-qr-code>
-        <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba; margin-left: 0;">
+      <section class="flex decoration">
+        <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
+        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
+        <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba;">
           Check on amb.to
         </a>
       </section>
@@ -119,7 +124,7 @@
         <ul class="properties">
           <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
             <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>
-            <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url">
+            <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url" target="_blank">
               {{ assetsService.getUrlName(asset.info.documents[document].url) }}
             </a>
           </li>

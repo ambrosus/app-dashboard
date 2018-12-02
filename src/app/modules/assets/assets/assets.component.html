@@ -10,7 +10,10 @@
     <div class="wrapper">
       <div class="flex between">
         <div>
-          <h1>{{ selected ? selected + ' Selected' : 'My assets' }}</h1>
+          <h1 class="decoration">
+            <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
+            {{ selected ? selected + ' Selected' : 'My assets' }}
+          </h1>
           <p style="margin-top: 10px;">
             {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
             <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>

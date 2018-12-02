@@ -48,6 +48,8 @@ export class EventComponent implements OnInit, OnDestroy {
             lat: this.event.info.location.location.geometry.coordinates[0],
             lng: this.event.info.location.location.geometry.coordinates[1],
           };
+          delete this.event.info.location.type;
+          delete this.event.info.location.location;
         } catch (e) { }
       },
       err => console.error('Event: ', err),
