@@ -5,13 +5,14 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { autocomplete } from 'app/constant';
 import { Router, NavigationStart } from '@angular/router';
+import { MatDatepicker } from '@angular/material';
 
 @Component({
   selector: 'app-header',
@@ -31,11 +32,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
   autocomplete: any[] = autocomplete;
   dropDown: any = {};
 
+  @ViewChild('from') fromDate: MatDatepicker<Date>;
+
   constructor(
     private authService: AuthService,
     private accountsService: AccountsService,
     private router: Router,
   ) { }
+
+  asd() {
+    try {
+      console.log(this.fromDate);
+      this.fromDate.open();
+    } catch (error) {
+      console.warn(error);
+    }
+  }
 
   ngOnInit() {
     this.subs[this.subs.length] = this.accountsService._account.subscribe(

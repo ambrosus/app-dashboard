@@ -57,11 +57,13 @@
         <div class="group">
           <label class="w25">
             <span>Created from</span>
-            <input type="date" formControlName="from" />
+            <input [matDatepicker]="from" (click)="from.open()" placeholder="Choose from date" formControlName="from">
+            <mat-datepicker #from></mat-datepicker>
           </label>
           <label class="w25">
             <span>To</span>
-            <input type="date" formControlName="to" />
+            <input [matDatepicker]="to" (click)="to.open()" placeholder="Choose to date" formControlName="to">
+            <mat-datepicker #to></mat-datepicker>
           </label>
           <label class="w50">
             <span>Asset state</span>

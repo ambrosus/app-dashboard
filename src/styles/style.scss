@@ -1,6 +1,7 @@
 @import 'utils/index';
 @import 'modules/index';
 @import 'themes/index';
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
 app-root {
   display: flex;
@@ -106,6 +107,10 @@ body {
 
 .cdk-overlay-dark-backdrop {
   background: rgba(0, 0, 0, .15);
+}
+
+.cdk-overlay-container {
+  z-index: 1500;
 }
 
 .autocomplete {

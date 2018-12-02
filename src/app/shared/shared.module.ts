@@ -20,6 +20,8 @@ import { QrCodeComponent } from './components/qr-code/qr-code.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MatInputModule } from '@angular/material';
 
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -54,6 +56,8 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
       handleCurrentBtnOnly: false,
       minDuration: 1000,
     }),
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   exports: [
     CommonModule,
