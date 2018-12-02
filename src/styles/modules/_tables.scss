@@ -234,32 +234,37 @@
 
   &.accounts {
 
-    div {
-      &.image {
-        height: 48px;
-        width: 48px;
-        border-radius: 50%;
-        flex: 0 0 48px;
-        margin: 10px 40px 0 20px;
-        background-image: url('/assets/raster/account-image-default.png');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50%;
-        margin: 20px 0 25px 25px;
+    .item {
+      > header {
         margin-right: 0;
+
+        > div {
+          &.image {
+            display: block;
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            flex: 0 0 48px;
+            margin: 10px 40px 0 20px;
+            background-image: url('/assets/raster/account-image-default.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            margin: 20px 0 25px 25px;
+            margin-right: 0;
+          }
+        }
       }
-    }
 
-    .body {
-      &__main {
+      > main {
 
-        h5 {
+        .title {
           margin-bottom: 10px !important;
         }
 
         .assetId {
           color: $grey;
-          margin-bottom: 0;
+          margin: 0 !important;
         }
       }
     }

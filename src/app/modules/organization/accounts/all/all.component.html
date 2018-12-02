@@ -21,20 +21,21 @@
         <div *ngIf="show === 'all' || show === 'active'">
           <h3 *ngIf="!accounts.length && show !== 'all'">No active accounts</h3>
           <div class="item" *ngFor="let acc of accounts">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a [routerLink]="acc.address">
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ acc.fullName || acc.email || 'No name' }}
                   </h5>
                   <p class="assetId">{{ acc.address }}</p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div></div>
-                <div>
+                <div style="margin: 0">
                   <span class="status" style="color: #40D685;">Active</span>
                   <span class="verticalMenu" appToggleDropDown>
                     <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
@@ -49,29 +50,34 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
         <!-- Pending -->
         <div *ngIf="show === 'all' || show === 'pending'">
           <h3 *ngIf="!invites.length && show !== 'all'">No pending accounts</h3>
           <div class="item" *ngFor="let invite of invites">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a>
-                <div class="body__main">
-                  <h5 class="title">
-                    {{ invite.email }}
-                  </h5>
-                  <p class="address" style="margin-bottom: 10px;">Created {{ invite.createdOn }}</p>
+                <div>
+                  <div class="flex between">
+                    <h5 class="title">
+                      {{ invite.email }}
+                    </h5>
+                    <p class="meta flex-0" style="margin-bottom: 10px;">Created {{ invite.createdOn }}</p>
+                  </div>
                   <p class="createdBy">
-                    from <span class="account-image"></span>
+                    <span class="flex-0">From</span>
+                    <span class="image"></span>
                     <span class="address">{{ invite.createdBy }}</span>
                   </p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div>
                   <button type="button" class="transparent" (click)="actions('inviteResend', { email: [ invite.email ] })">Resend</button>
                 </div>
@@ -98,27 +104,29 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
         <!-- Disabled -->
         <div *ngIf="show === 'all' || show === 'disabled'">
           <h3 *ngIf="!accountsDisabled.length && show !== 'all'">No disabled accounts</h3>
           <div class="item" *ngFor="let acc of accountsDisabled">
-            <div class="image">
-            </div>
-            <div class="body">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
               <a [routerLink]="acc.address">
-                <div class="body__main">
+                <div>
                   <h5 class="title">
                     {{ acc.fullName || acc.email || 'No name' }}
                   </h5>
                   <p class="assetId">{{ acc.address }}</p>
                 </div>
               </a>
-              <div class="body__meta">
+              <div class="meta">
                 <div></div>
-                <div>
+                <div style="margin: 0;">
                   <span class="status" style="color: #D64040;">Disabled</span>
                   <span class="verticalMenu" appToggleDropDown>
                     <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
@@ -133,7 +141,8 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </main>
+
           </div>
         </div>
       </div>
