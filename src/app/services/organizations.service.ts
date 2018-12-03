@@ -2,126 +2,201 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { MessageService } from './message.service';
 
 interface Organization {
-  _id?: String;
-  owner?: String;
-  title?: String;
-  timeZone?: String;
-  active?: Boolean;
-  legalAddress?: String;
-  createdOn?: Number;
-  createdBy?: String;
-  organizationId?: Number;
-  modifiedBy?: String;
-  modifiedOn?: Number;
+  _id?: string;
+  owner?: string;
+  title?: string;
+  timeZone?: string;
+  active?: boolean;
+  legalAddress?: string;
+  createdOn?: number;
+  createdBy?: string;
+  organizationId?: number;
+  modifiedBy?: string;
+  modifiedOn?: number;
 }
 
 interface OrganizationRequest {
-  title: String;
-  address: String;
-  email: String;
-  message: String;
+  title: string;
+  address: string;
+  email: string;
+  message: string;
 }
 
 @Injectable()
 export class OrganizationsService {
   api;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService,
+  ) {
     this.api = environment.api;
   }
 
-  getOrganizations(next: String = ''): Observable<any> {
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => response)
+      .catch(error => ({ error }));
+  }
+
+  async getOrganizations(next: string = ''): Promise<any> {
     const url = `${this.api.extended}/organization?next=${next}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const organizations = await this.to(this.http.get(url));
+    if (organizations.error) {
+      throw organizations.error;
+    }
+
+    return organizations.data;
   }
 
-  getOrganization(organizationId: Number): Observable<any> {
+  async getOrganization(organizationId: number): Promise<any> {
     const url = `${this.api.extended}/organization/${organizationId}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const organization = await this.to(this.http.get(url));
+    if (organization.error) {
+      throw organization.error;
+    }
+
+    return organization.data;
   }
 
-  modifyOrganization(
-    organizationId: Number,
-    body: Organization,
-  ): Observable<any> {
+  async modifyOrganization(organizationId: number, body: Organization): Promise<any> {
     const url = `${this.api.extended}/organization/${organizationId}`;
 
-    return this.http.put(url, body).pipe(catchError(({ meta }: any) => meta));
+    const organization = await this.to(this.http.put(url, body));
+    if (organization.error) {
+      throw organization.error;
+    }
+
+    return organization.data;
   }
 
-  getOrganizationAccounts(organizationId: Number): Observable<any> {
+  async getOrganizationAccounts(organizationId: number): Promise<any> {
     const url = `${this.api.extended}/organization/${organizationId}/accounts`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const accounts = await this.to(this.http.get(url));
+    if (accounts.error) {
+      throw accounts.error;
+    }
+
+    return accounts.data;
   }
 
   // Organization requests
 
-  createOrganizationRequest(body: OrganizationRequest): Observable<any> {
+  async createOrganizationRequest(body: OrganizationRequest): Promise<any> {
     const url = `${this.api.extended}/organization/request`;
 
-    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
+    const organizationRequest = await this.to(this.http.post(url, body));
+    if (organizationRequest.error) {
+      throw organizationRequest.error;
+    }
+
+    return organizationRequest.data;
   }
 
-  getOrganizationRequests(next: String = ''): Observable<any> {
+  async getOrganizationRequests(next: string = ''): Promise<any> {
     const url = `${this.api.extended}/organization/request?next=${next}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const organizationRequests = await this.to(this.http.get(url));
+    if (organizationRequests.error) {
+      throw organizationRequests.error;
+    }
+
+    return organizationRequests.data;
   }
 
-  handleOrganizationRequest(
-    organizationRequestId: String,
-    approved: Boolean,
-  ): Observable<any> {
-    const url = `${
-      this.api.extended
-    }/organization/request/${organizationRequestId}/${
-      approved ? 'approve' : 'refuse'
-    }`;
+  async getOrganizationRequestsDeclined(next: string = ''): Promise<any> {
+    const url = `${this.api.extended}/organization/request/refused?next=${next}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const organizationRequests = await this.to(this.http.get(url));
+    if (organizationRequests.error) {
+      throw organizationRequests.error;
+    }
+
+    return organizationRequests.data;
+  }
+
+  async handleOrganizationRequest(organizationRequestId: string, approved: boolean): Promise<any> {
+    const url = `${this.api.extended}/organization/request/${organizationRequestId}/${approved ? 'approve' : 'refuse'}`;
+
+    const organizationRequest = await this.to(this.http.get(url));
+    if (organizationRequest.error) {
+      throw organizationRequest.error;
+    }
+
+    return organizationRequest.data;
   }
 
   // Organization invites
 
-  getInvites(next: String = ''): Observable<any> {
+  async getInvites(next: string = ''): Promise<any> {
     const url = `${this.api.extended}/organization/invite?next=${next}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const invites = await this.to(this.http.get(url));
+    if (invites.error) {
+      throw invites.error;
+    }
+
+    return invites.data;
   }
 
-  createInvites(body: { email: any[] }): Observable<any> {
+  async createInvites(body: { email: any[] }): Promise<any> {
     const url = `${this.api.extended}/organization/invite`;
 
-    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
+    const invites = await this.to(this.http.post(url, body));
+    if (invites.error) {
+      throw invites.error;
+    }
+
+    return invites.data;
   }
 
-  resendInvites(body: { email: any[] }): Observable<any> {
+  async resendInvites(body: { email: any[] }): Promise<any> {
     const url = `${this.api.extended}/organization/invite/resend`;
 
-    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
+    const invites = await this.to(this.http.post(url, body));
+    if (invites.error) {
+      throw invites.error;
+    }
+
+    return invites.data;
   }
 
-  verifyInvite(inviteId: String): Observable<any> {
+  async verifyInvite(inviteId: string): Promise<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}/exists`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const invite = await this.to(this.http.get(url));
+    if (invite.error) {
+      throw invite.error;
+    }
+
+    return invite.data;
   }
 
-  acceptInvite(inviteId: String, body: { address: String }): Observable<any> {
+  async acceptInvite(inviteId: string, body: { address: string }): Promise<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}/accept`;
 
-    return this.http.post(url, body).pipe(catchError(({ meta }: any) => meta));
+    const invite = await this.to(this.http.post(url, body));
+    if (invite.error) {
+      throw invite.error;
+    }
+
+    return invite.data;
   }
 
-  deleteInvite(inviteId: String): Observable<any> {
+  async deleteInvite(inviteId: string): Promise<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}`;
 
-    return this.http.delete(url).pipe(catchError(({ meta }: any) => meta));
+    const invite = await this.to(this.http.delete(url));
+    if (invite.error) {
+      throw invite.error;
+    }
+
+    return invite.data;
   }
 }

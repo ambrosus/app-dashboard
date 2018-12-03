@@ -1,15 +1,15 @@
-:host {
+app-qr-code {
+  display: block;
   cursor: pointer;
-  flex: 0 0 120px;
   transition: opacity .3s;
-  margin-right: 20px;
+  margin-right: 25px;
 
   &:hover {
     opacity: 0.75;
   }
 
   img {
-    height: 120px;
-    width: 120px;
+    height: 100px;
+    width: 100px;
   }
 }

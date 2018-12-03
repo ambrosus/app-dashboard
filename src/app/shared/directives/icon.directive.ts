@@ -26,7 +26,7 @@ export class IconLeftDirective implements OnInit {
       },
       err => {
         console.error(err);
-      }
+      },
     );
   }
 }
@@ -56,7 +56,7 @@ export class IconRightDirective implements OnInit {
       },
       err => {
         console.error(err);
-      }
+      },
     );
   }
 }

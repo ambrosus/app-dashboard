@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
+import { MessageService } from 'app/services/message.service';
 
 declare let Web3: any;
 
@@ -12,17 +13,18 @@ declare let Web3: any;
   styleUrls: ['./general.component.scss'],
 })
 export class GeneralComponent implements OnInit {
-  editAccountForm: FormGroup;
-  error;
-  success;
-  spinner = false;
+  forms: {
+    edit?: FormGroup,
+  } = {};
   account;
   timezones = [];
+  promise: any = {};
   web3;
 
   constructor(
     private storageService: StorageService,
     private accountsService: AccountsService,
+    private messageService: MessageService,
   ) {
     this.web3 = new Web3();
   }
@@ -30,7 +32,7 @@ export class GeneralComponent implements OnInit {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
-    this.editAccountForm = new FormGroup({
+    this.forms.edit = new FormGroup({
       address: new FormControl(
         { value: this.account.address, disabled: true },
         [Validators.required],
@@ -47,53 +49,42 @@ export class GeneralComponent implements OnInit {
 
   comparePasswords(control: FormControl) {
     try {
-      const data = this.editAccountForm.value;
+      const data = this.forms.edit.value;
       if (!data.password) {
         return null;
       }
-
-      return control.value === data.password
-        ? null
-        : { 'Passwords do not match': true };
+      return control.value === data.password ? null : { 'Passwords do not match': true };
     } catch (e) {
       return null;
     }
   }
 
-  editAccount() {
-    this.error = false;
-    this.success = false;
-    const form = this.editAccountForm;
-    const _data = form.value;
-    const secret = this.storageService.get('secret');
-    const body = {};
+  save() {
+    this.promise['save'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.edit;
+        const data = form.value;
+        const secret = this.storageService.get('secret');
 
-    if (form.invalid) {
-      return (this.error = 'Form is invalid');
-    }
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
 
-    Object.keys(_data).map(property => {
-      if (_data[property]) {
-        body[property] = _data[property];
+        if (data.password) {
+          data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
+        }
+
+        this.account = await this.accountsService.modifyAccount(this.account.address, data);
+        this.storageService.set('account', this.account);
+        this.accountsService._account.next(this.account);
+
+        this.messageService.success('Account updated');
+        resolve();
+      } catch (error) {
+        console.error('[MODIFY] Account: ', error);
+        this.messageService.error(error);
+        reject();
       }
     });
-
-    if (_data.password) {
-      body['token'] = btoa(
-        JSON.stringify(this.web3.eth.accounts.encrypt(secret, _data.password)),
-      );
-    }
-
-    this.accountsService.modifyAccount(this.account.address, body).subscribe(
-      ({ data }: any) => {
-        this.success = 'Updated';
-        this.storageService.set('account', data);
-        this.accountsService._account.next(data);
-      },
-      error => {
-        console.error('[MODIFY] Account: ', error);
-        this.error = error ? error.message : 'Edit account error';
-      },
-    );
   }
 }

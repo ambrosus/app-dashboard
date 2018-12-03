@@ -1,36 +1,35 @@
-<h4 class="m-v-10">Invite Members</h4>
-<p class="m-b-30">
-  Here you can invite other members of your organization, to access dashboard.
-</p>
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<header>
+  <div class="flex between">
+    <h2 class="title">Invite Members</h2>
+    <ul class="menu flex-0">
+      <li [ngClass]="{ 'active': form }" (click)="form = true">Form</li>
+    </ul>
+  </div>
+</header>
+<main>
+  <form class="form" [formGroup]="forms.invite" (ngSubmit)="send()">
+    <section>
+      <div formArrayName="members" class="right">
+        <div *ngFor="let member of forms.invite.get('members')['controls']; let i = index" [formGroupName]="i">
+          <label>
+            <span>Email</span>
+            <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
+          </label>
+        </div>
+        <a class="addMore" (click)="addMember()">+ Add invite</a>
+      </div>
+    </section>
 
-<h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-<h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>
-
-<form [formGroup]="inviteForm" (ngSubmit)="sendInvites()">
-  <div formArrayName="members">
-    <div
-      *ngFor="
-        let member of inviteForm.get('members')['controls'];
-        let i = index
-      "
-      [formGroupName]="i"
-    >
-      <button
-        type="button"
-        class="remove"
-        (click)="remove('members', i)"
-        *ngIf="i > 0"
-      >
-        &times;
-      </button>
-      <label>Email <input formControlName="email" type="email" /> </label>
+    <div>
+      <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
     </div>
-    <button type="button" class="addMore" (click)="addMember()">
-      + Add more
-    </button>
-  </div>
-
-  <div class="flex flex-direction-r justify-content-fe align-items-c">
-    <button [disabled]="inviteForm.invalid" type="submit">Send invites</button>
-  </div>
-</form>
+  </form>
+</main>

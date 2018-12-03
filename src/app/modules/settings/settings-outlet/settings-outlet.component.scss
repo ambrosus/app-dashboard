@@ -1,5 +1,6 @@
-@import 'var';
+@import 'utils';
 
-.active {
-  color: $ablue;
+app-settings-outlet {
+  display: block;
+  background: #fff;
 }

@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { StorageService } from 'app/services/storage.service';
+import { MessageService } from 'app/services/message.service';
 import * as Sentry from '@sentry/browser';
 
 declare let Web3: any;
@@ -23,14 +24,11 @@ declare let Web3: any;
 })
 export class LoginComponent implements OnInit {
   forms: {
-    loginForm?: FormGroup;
-    privateKeyForm?: FormGroup;
+    email?: FormGroup;
+    privateKey?: FormGroup;
   } = {};
-  promiseActionPrivateKeyForm;
-  promiseActionLoginForm;
+  promise: any = {};
   showPassword;
-  errorPrivateKeyForm;
-  errorLoginForm;
 
   constructor(
     private authService: AuthService,
@@ -38,12 +36,13 @@ export class LoginComponent implements OnInit {
     public dialog: MatDialog,
     private accountsService: AccountsService,
     private storageService: StorageService,
+    private messageService: MessageService,
   ) {
-    this.forms.loginForm = new FormGroup({
+    this.forms.email = new FormGroup({
       email: new FormControl(null, [Validators.required, this.validateEmail]),
       password: new FormControl(null, [Validators.required]),
     });
-    this.forms.privateKeyForm = new FormGroup({
+    this.forms.privateKey = new FormGroup({
       privateKey: new FormControl(null, [
         Validators.required,
         this.validatePrivateKey,
@@ -51,7 +50,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   validatePrivateKey(control: AbstractControl) {
     try {
@@ -75,69 +74,65 @@ export class LoginComponent implements OnInit {
   // Private key form
 
   getAccount() {
-    this.errorPrivateKeyForm = false;
-    const form = this.forms.privateKeyForm;
+    this.promise['privateKey'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.privateKey;
 
-    if (form.invalid) {
-      return (this.errorPrivateKeyForm = 'Fill all required fileds');
-    }
+        if (form.invalid) {
+          throw new Error('Fill all required fileds');
+        }
 
-    const { privateKey } = form.value;
-    const address = this.authService.privateKeyToAccount(privateKey);
-    this.storageService.set('secret', privateKey);
-    this.storageService.set('token', this.authService.getToken());
+        const { privateKey } = form.value;
+        const address = this.authService.privateKeyToAccount(privateKey);
+        this.storageService.set('secret', privateKey);
+        this.storageService.set('token', this.authService.getToken());
 
-    this.promiseActionPrivateKeyForm = new Promise((resolve, reject) => {
-      this.accountsService.getAccount(address).subscribe(
-        account => {
-          console.log('[GET] Account: ', account);
-          this.storageService.set('secret', privateKey);
-          this.storageService.set('account', account);
-          Sentry.configureScope(scope => {
-            scope.setUser({ account });
-          });
-          this.accountsService._account.next(account);
-          this.router.navigate(['/assets']);
-          resolve();
-        },
-        error => {
-          console.error('[GET] Account: ', error);
-          this.errorPrivateKeyForm = error ? error.message : 'Login error';
-          this.storageService.clear();
-          reject();
-        },
-      );
+        const account = await this.accountsService.getAccount(address);
+
+        this.storageService.set('secret', privateKey);
+        this.storageService.set('account', account);
+        Sentry.configureScope(scope => {
+          scope.setUser({ account });
+        });
+        this.accountsService._account.next(account);
+        this.router.navigate(['/assets']);
+
+        this.messageService.dismissAll();
+        resolve();
+      } catch (error) {
+        console.error('[GET] Account: ', error);
+        this.storageService.clear();
+        this.messageService.error(error, 'Private key is incorrect');
+        reject();
+      }
     });
   }
 
   // Login form
 
   login() {
-    this.errorLoginForm = false;
-    const form = this.forms.loginForm;
+    this.promise['login'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.email;
 
-    if (form.invalid) {
-      return (this.errorLoginForm = 'All fields are required');
-    }
+        if (form.invalid) {
+          throw new Error('All fields are required');
+        }
 
-    const { email, password } = form.value;
+        const { email, password } = form.value;
 
-    this.promiseActionLoginForm = new Promise((resolve, reject) => {
-      this.authService.login(email, password).subscribe(
-        resp => {
-          Sentry.configureScope(scope => {
-            scope.setUser({ account: resp });
-          });
-          resolve();
-        },
-        error => {
-          console.error('[LOGIN] Error: ', error);
-          this.errorLoginForm = error
-            ? error.message
-            : 'Email or password are incorrect';
-          reject();
-        },
-      );
+        const account = await this.authService.login(email, password);
+        Sentry.configureScope(scope => {
+          scope.setUser({ account });
+        });
+
+        this.messageService.dismissAll();
+        resolve();
+      } catch (error) {
+        console.error('[LOGIN] Error: ', error);
+        this.messageService.error(error, 'Email or password are incorrect', true);
+        reject();
+      }
     });
   }
 }

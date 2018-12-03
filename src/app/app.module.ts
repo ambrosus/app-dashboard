@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CoreModule } from './core/core.module';
-import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AssetsModule } from './modules/assets/assets.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
@@ -23,8 +23,8 @@ import {
   DeviceDetectorModule,
   DeviceDetectorService,
 } from 'ngx-device-detector';
-import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import * as Sentry from '@sentry/browser';
+import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 if (!isDevMode) {
   Sentry.init({
@@ -35,7 +35,7 @@ if (!isDevMode) {
 
 @Injectable()
 export class SentryErrorHandler implements ErrorHandler {
-  constructor() {}
+  constructor() { }
   handleError(error) {
     Sentry.captureException(error.originalError || error);
     throw error;
@@ -50,18 +50,13 @@ export class SentryErrorHandler implements ErrorHandler {
     HttpClientModule,
     ReactiveFormsModule,
     CoreModule,
-    DashboardModule,
+    AssetsModule,
     SharedModule,
     DeviceDetectorModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
     }),
-    Angular2PromiseButtonModule.forRoot({
-      spinnerTpl: '<span class="btn-spinner"></span>',
-      disableBtn: true,
-      btnLoadingClass: 'is-loading',
-      handleCurrentBtnOnly: false,
-    }),
+    MatSnackBarModule,
   ],
   providers: [
     DeviceDetectorService,
@@ -74,7 +69,13 @@ export class SentryErrorHandler implements ErrorHandler {
       useClass: InterceptorService,
       multi: true,
     },
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: {
+        duration: 3000,
+      },
+    },
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,0 +1,288 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.amb {
+  animation: fadeIn 0.2s forwards;
+
+  .properties {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+
+    @include breakpoint-min(768) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    > li {
+      display: inline-block;
+      padding-right: 25px;
+      margin-bottom: 15px;
+      flex: 0 0 auto;
+      min-width: 200px;
+      max-width: 100%;
+
+      > h6 {
+        text-transform: uppercase;
+        font-size: 11px;
+        color: $grey;
+      }
+
+      > p {
+        color: $black;
+        margin-top: 10px;
+        word-wrap: break-word;
+
+        &.json {
+          white-space: pre-wrap;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  > main {
+    padding: 40px 20px;
+
+    &.json {
+
+      h5 {
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 12px;
+        color: $grey;
+        margin-bottom: 15px;
+      }
+
+      textarea {
+        font-size: 12px;
+        font-family: monospace;
+        white-space: pre;
+        height: 400px;
+        min-height: 300px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        line-height: 1.4;
+        color: $black;
+        text-align: left;
+        text-overflow: ellipsis;
+        transition: all 0.2s;
+        padding: 12px 16px;
+        padding-right: 25px;
+        background-color: #fff;
+        font-weight: 400;
+        border: 1px solid $grey;
+
+        &:focus {
+          border-color: $black;
+        }
+      }
+    }
+
+    section {
+      margin-bottom: 40px;
+      cursor: initial;
+
+      &.groups {
+        display: flex;
+        flex-direction: column;
+
+        > .group {
+          display: inline-block;
+          width: 100%;
+          padding-right: 25px;
+          margin-bottom: 40px;
+
+          > h5 {
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-bottom: 25px;
+          }
+        }
+
+        @include breakpoint-min(768) {
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          > .group {
+            width: 50%;
+          }
+        }
+      }
+
+      > h5 {
+        margin-bottom: 25px;
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+
+    .images {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      > div {
+        position: relative;
+        width: 84px;
+        height: 84px;
+        background-color: #fafafa;
+        margin: 0 25px 25px 0;
+        background-size: contain;
+        background-position: 50%;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+
+  > header {
+    padding: 0 20px;
+
+    .accordions {
+      > .accordion {
+        > .title {
+          padding: 45px 0 25px;
+
+          > h2 {
+            color: $light-blue;
+            font-weight: 400;
+            padding-right: 25px;
+          }
+
+          > .address {
+            font-weight: 500;
+            margin: 12px 0 25px;
+            word-break: break-all;
+          }
+
+          > .createdBy {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            font-size: 12px;
+
+            > span {
+              word-break: break-all;
+            }
+
+            > .image {
+              display: inline-block;
+              width: 24px;
+              height: 24px;
+              flex: 0 0 24px;
+              background: $grey;
+              margin: 0 8px;
+              border-radius: 50%;
+              position: relative;
+              background-color: #fafafa;
+              background-image: url('/assets/raster/account-image-default.png');
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-position: 50%;
+            }
+          }
+        }
+
+        > .content {
+          .metadata {
+            display: flex;
+            flex-direction: column;
+
+            > div + div {
+              margin: 25px 0 0 0;
+            }
+
+            @include breakpoint-min(768) {
+              flex-direction: row;
+
+              > div + div {
+                margin: 0 0 0 15px;
+              }
+
+              > * {
+                width: 50%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  section {
+    &.location {
+      width: 100%;
+      height: 300px;
+      background: #fafafa;
+
+      agm-map {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  > .timeline {
+    background: #fafafa;
+    padding: 40px 20px 75px;
+
+    header {
+      margin-bottom: 40px;
+
+      h2 {
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.page {
+  animation: fadeIn 0.2s forwards;
+  padding-top: 25px;
+
+  .image {
+    flex: 0 0 85px;
+    width: 85px;
+    height: 85px;
+    display: inline-block;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+    background-color: #eee;
+    background-image: url('/assets/raster/account-image-default.png');
+    margin-right: 15px;
+  }
+
+  > header,
+  > main {
+    padding: 35px 25px;
+  }
+}
+
+.decoration {
+  position: relative;
+
+  > app-svg-icon {
+    display: none;
+  }
+
+  @include breakpoint-min(1100) {
+    > app-svg-icon {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: -100px;
+    }
+  }
+}

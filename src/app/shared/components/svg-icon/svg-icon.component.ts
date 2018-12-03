@@ -32,17 +32,14 @@ export class SvgIconComponent implements OnInit {
         const parser = new DOMParser();
         const svg = parser.parseFromString(res, 'image/svg+xml');
         // insert the svg result
-        this.renderer.appendChild(element, svg.documentElement);
+        const svgElement = svg.documentElement;
         // set width, height and fill
-        if (this.width) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'width', this.width);
-        }
-        if (this.height) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'height', this.height);
-        }
-        if (this.fill) {
-          this.renderer.setStyle(this.el.nativeElement.children[0], 'fill', this.fill);
-        }
+        svgElement.setAttribute('style', `
+          ${this.width ? 'width:' + this.width + 'px;' : ''}
+          ${this.height ? 'height:' + this.height + 'px;' : ''}
+          ${this.fill ? 'fill: #' + this.fill + ';' : ''}
+        `);
+        this.renderer.appendChild(element, svgElement);
       },
       err => {
         console.error(err);

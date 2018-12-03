@@ -20,23 +20,16 @@
 
     &.outline {
       border: 1px solid $white;
-      background-color: transparent;
       color: $white;
-
-      &:hover {
-        background: $white;
-        color: $purple-blue;
-      }
+      background: transparent;
     }
   }
 
   &.page-loaded {
-    @include gradient-vertical-three-colors(
-      $dark-purple,
-      $purple-blue,
-      50%,
-      darken($purple-blue, 10)
-    );
+    @include gradient-vertical-three-colors($dark-purple,
+    $purple-blue,
+    50%,
+    darken($purple-blue, 10));
     @include animation('animateGradient .9s 1');
     animation-delay: 1s;
     background-position: 0 100%;
@@ -68,6 +61,7 @@
   .input,
   textarea {
     color: #fff;
+    background: transparent;
 
     &:focus {
       color: #fff;
@@ -121,23 +115,9 @@
       }
     }
 
-    .socials {
-      li {
-        a {
-          svg {
-            path {
-              fill: $grey;
-            }
-          }
-
-          &:hover {
-            svg {
-              path {
-                fill: #fff;
-              }
-            }
-          }
-        }
+    .logo {
+      path {
+        fill: #fff;
       }
     }
   }

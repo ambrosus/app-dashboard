@@ -11,13 +11,9 @@
     "e2e": "ng e2e",
     "postinstall": "ng build --prod --output-path=dist --aot"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged --verbose"
-    }
-  },
   "private": true,
   "dependencies": {
+    "@agm/core": "^1.0.0-beta.5",
     "@amcharts/amcharts3-angular": "^2.1.1",
     "@angular/animations": "^6.1.0",
     "@angular/cdk": "^6.4.2",

@@ -3,24 +3,23 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from './storage.service';
 import { environment } from 'environments/environment';
-import { catchError } from 'rxjs/operators';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
 
 interface Account {
-  _id?: String;
-  accessLevel?: Number;
-  address?: String;
-  createdBy?: String;
-  createdOn?: Number;
-  email?: String;
-  fullName?: String;
-  organization?: Number;
-  permissions?: String[];
-  registeredBy?: String;
-  registeredOn?: Number;
-  timeZone?: String;
+  _id?: string;
+  accessLevel?: number;
+  address?: string;
+  createdBy?: string;
+  createdOn?: number;
+  email?: string;
+  fullName?: string;
+  organization?: number;
+  permissions?: string[];
+  registeredBy?: string;
+  registeredOn?: number;
+  timeZone?: string;
 }
 
 @Injectable({
@@ -41,24 +40,46 @@ export class AccountsService {
     this.api = environment.api;
   }
 
-  getAccounts(next: String = ''): Observable<any> {
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => response)
+      .catch(error => ({ error }));
+  }
+
+  async getAccounts(next: string = ''): Promise<any> {
     const url = `${this.api.extended}/account&next=${next}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const accounts = await this.to(this.http.get(url));
+    if (accounts.error) {
+      throw accounts.error;
+    }
+
+    return accounts.data;
   }
 
-  getAccount(address: String): Observable<any> {
+  async getAccount(address: string): Promise<any> {
     const url = `${this.api.extended}/account/${address}`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const account = await this.to(this.http.get(url));
+    if (account.error) {
+      console.log(account.error);
+      throw account.error;
+    }
+
+    return account.data;
   }
 
-  modifyAccount(address: String, body: Account): Observable<any> {
+  async modifyAccount(address: string, body: Account): Promise<any> {
     let url = `${this.api.extended}/account/${address}`;
     if (body.accessLevel || body.permissions) {
       url = `${this.api.core}/accounts/${address}`;
     }
 
-    return this.http.put(url, body).pipe(catchError(({ meta }: any) => meta));
+    const account = await this.to(this.http.put(url, body));
+    if (account.error) {
+      throw account.error;
+    }
+
+    return account.data;
   }
 }

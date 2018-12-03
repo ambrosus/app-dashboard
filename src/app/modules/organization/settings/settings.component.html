@@ -1,25 +1,60 @@
-<h4 class="m-b-30">Settings</h4>
-
-<h5 class="m-v-20" *ngIf="error" style="color: #ea7070">{{ error }}</h5>
-<h5 class="m-v-20" *ngIf="success" style="color: #57b846">{{ success }}</h5>
-
-<div *ngIf="organization">
-  <form [formGroup]="settingsForm" (ngSubmit)="editOrganization()" class="m-w-4">
-    <div class="form-text m-b-20">
-      <label for="title">Organization name</label>
-      <input formControlName="title" type="text">
+<div class="page" *ngIf="organization.organizationId">
+  <header>
+    <div class="wrapper">
+      <div class="flex">
+        <div class="image"></div>
+        <div>
+          <div class="flex between">
+            <h1>{{ organization.title || 'Organization details' }}</h1>
+            <div class="flex-0">
+              <h5 [ngClass]="organization.active ? 'active' : 'disabled'" style="margin-bottom: 5px;">
+                {{ organization.active ? 'Active' : 'Disabled' }}
+              </h5>
+              <span class="meta" *ngIf="organization.createdOn">
+                {{ organization.createdOn * 1000 | date:'EEE, MMM d, yyyy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-text m-b-20">
-      <label for="title">Legal address</label>
-      <input formControlName="legalAddress" type="text">
+  </header>
+  <main>
+    <div class="wrapper">
+      <form class="form" [formGroup]="forms.settings" (ngSubmit)="save()">
+        <div class="group">
+          <label class="w50">
+            <span>Owner</span>
+            <input type="text" formControlName="owner">
+          </label>
+          <label class="w50">
+            <span>Title</span>
+            <input formControlName="title" type="text">
+          </label>
+        </div>
+        <div class="group">
+          <label class="w50">
+            <span>Legal address</span>
+            <input formControlName="legalAddress" type="text">
+          </label>
+          <label class="w50" for="timeZone">
+            <span>Time zone</span>
+            <input formControlName="timeZone" list="timezones" id="timeZone">
+            <datalist id="timezones">
+              <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+            </datalist>
+          </label>
+        </div>
+        <label>
+          <input type="checkbox" formControlName="active" appCustomCheckbox />
+          Active
+        </label>
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.settings.invalid" [promiseBtn]="promise.save">
+            Save
+          </button>
+        </div>
+      </form>
     </div>
-    <div class="flex flex-direction-r justify-content-fe align-items-c">
-      <button type="submit" class="button button--blue m-l-20">Save</button>
-    </div>
-  </form>
-  <hr>
-  <p>Created on</p>
-  <p>{{ organization.createdOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
-  <p>Modified on</p>
-  <p>{{ organization.modifiedOn * 1000 | date: 'MMM d, yyyy HH:mm' }}</p>
+  </main>
 </div>

@@ -18,7 +18,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 }
 
 app-header {
-  position: relative;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 1500;
   width: 100%;
 
@@ -33,91 +36,171 @@ app-header {
     animation: fadeIn 0.2s forwards;
   }
 
-  .header {
+  > header {
     position: relative;
+    width: 100%;
     height: 80px;
     background-color: #fff;
-    width: 100%;
-    transition: all 0.2s;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, .02);
+    padding: 20px;
 
-    &.advancedSearch {
-      height: auto;
+    @include breakpoint-min(1024) {
+      padding: 20px 40px;
+    }
 
-      .wrapper {
-        .menu {
-          justify-content: flex-end;
+    > .search {
+      padding: 40px 35px 60px;
+      width: 100%;
+      position: fixed;
+      left: 0;
+      top: 80px;
+      height: calc(100% - 80px);
+      background: #fff;
+      animation: fadeIn 0.2s forwards;
+      overflow-y: auto;
+    }
 
-          .search {
+    > .wrapper {
+      max-width: 1280px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+
+      > .dropDown {
+        position: relative;
+        margin-right: 20px;
+      }
+
+      @include breakpoint-min(768) {
+        > .dropDown {
+          display: none;
+        }
+      }
+    }
+
+    .header {
+      &__menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        flex: 1 1 auto;
+
+        > .search {
+          display: none;
+        }
+
+        > nav {
+          display: none;
+        }
+
+        @include breakpoint-min(480) {
+          justify-content: center;
+
+          > .search {
+            display: inline-block;
+            position: relative;
+            width: 100%;
             max-width: 100%;
+            flex: 1 1 auto;
+            margin: 0;
+
+            &__icon {
+              display: none;
+            }
 
             input {
-              padding-right: 60px;
+              border-color: #e5e5e5;
+              padding-right: 85px;
+            }
+
+            a.advanced {
+              position: absolute;
+              font-size: 11px;
+              text-transform: uppercase;
+              font-weight: 500;
+              color: $blue;
+              top: 15px;
+              right: 16px;
+            }
+          }
+        }
+
+        @include breakpoint-min(768) {
+          justify-content: space-between;
+
+          > .search {
+            max-width: 408px;
+          }
+
+          > nav {
+            display: inline-block;
+            flex: 0 0 auto;
+            margin-right: 30px;
+
+            > ul {
+              > li {
+                display: inline-block;
+                margin-right: 24px;
+
+                &:last-child {
+                  margin-right: 0;
+                }
+
+                a {
+                  font-weight: 500;
+                  color: $black;
+
+                  &.active {
+                    color: $blue;
+                  }
+                }
+              }
             }
           }
         }
       }
     }
 
-    &__advancedSearch {
-      padding: 40px 20px 60px;
-      width: 100%;
-      position: absolute;
-      left: 0;
-      top: 100%;
-      background: #fff;
-      animation: fadeIn 0.2s forwards;
-
-      form {
-        max-width: 816px;
-      }
-
-      label {
-        text-transform: uppercase;
-        font-weight: 500;
-        font-size: 11px;
-        margin-bottom: 30px;
-
-        &:last-of-type {
-          margin-bottom: 0;
-        }
-      }
-    }
-
-    .wrapper {
-      width: 100%;
-      max-width: 1440px;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 84px;
-
-      > div {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
-    }
-
     .logo {
-      flex: 0 0 125px;
-      margin-right: 92px;
+      flex: 0 0 40px;
 
       > a {
         display: inline-block;
-        width: 125px;
+        width: 40px;
         height: 40px;
-        background-image: url('/assets/raster/logo-header-dark.png');
+        background-image: url('/assets/svg/logotip.svg');
         background-size: contain;
         background-repeat: no-repeat;
+      }
+
+      @include breakpoint-min(480) {
+        margin-right: 30px;
+      }
+
+      @include breakpoint-min(768) {
+        flex: 0 0 125px;
+
+        > a {
+          width: 125px;
+          background-image: url('/assets/svg/logo.svg');
+        }
+      }
+
+      @include breakpoint-min(1024) {
+        margin-right: 110px;
       }
     }
 
     .avatar {
       flex: 0 0 40px;
-      margin-left: 172px;
+      position: relative;
+      margin-left: 20px;
 
       > div {
+        flex: 0 0 40px;
         width: 40px;
         height: 40px;
         border-radius: 50%;
@@ -128,102 +211,34 @@ app-header {
         font-size: 16px;
         text-transform: uppercase;
       }
-    }
 
-    .menu {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      flex: 1 1 100%;
-      width: 100%;
-
-      .search {
-        max-width: 408px;
-        margin: 0;
-        position: relative;
-
-        input {
-          border-color: #e5e5e5;
-          padding-right: 85px;
-        }
-
-        a.advanced {
-          position: absolute;
-          font-size: 11px;
-          text-transform: uppercase;
-          font-weight: 500;
-          color: $blue;
-          top: 15px;
-          right: 16px;
-        }
+      @include breakpoint-min(480) {
+        margin-left: 30px;
       }
 
-      nav {
-        display: inline-block;
-
-        ul {
-          li {
-            display: inline-block;
-            margin-right: 24px;
-
-            &:last-child {
-              margin-right: 0;
-            }
-
-            a {
-              font-weight: 500;
-              color: $black;
-
-              &.active {
-                color: $blue;
-              }
-            }
-          }
-        }
+      @include breakpoint-min(1024) {
+        margin-left: 110px;
       }
     }
-  }
-}
 
-.organization,
-.settings,
-.node {
-  app-header {
-    .header {
-      .wrapper {
-        background: $purple-blue;
-      }
+    &.advanced {
+      height: auto;
 
       .logo {
+        flex: 0 0 40px;
+
         > a {
-          background-image: url('/assets/raster/logo-header-light.png');
+          width: 40px;
+          background-image: url('/assets/svg/logotip.svg');
         }
       }
 
-      .menu {
-        .search {
-          input {
-            border-color: $grey;
-            color: #fff;
-          }
+      .header {
+        &__menu {
+          justify-content: flex-end;
 
-          a.advanced {
-            color: $light-blue;
-          }
-        }
-
-        nav {
-          ul {
-            li {
-              a {
-                color: $grey;
-
-                &.active {
-                  color: #fff;
-                }
-              }
-            }
+          > .search {
+            max-width: 100%;
           }
         }
       }

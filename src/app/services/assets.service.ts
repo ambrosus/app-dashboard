@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import { map, catchError, tap } from 'rxjs/operators';
+import * as moment from 'moment-timezone';
+import { MessageService } from 'app/services/message.service';
 
 declare let Web3: any;
 
@@ -30,6 +32,7 @@ export class AssetsService {
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
+    private messageService: MessageService,
   ) {
     this.initSDK();
     this.web3 = new Web3();
@@ -128,9 +131,9 @@ export class AssetsService {
   }
 
   async getAssets(options: {
-    address?: String;
-    limit?: Number;
-    next?: String;
+    address?: string;
+    limit?: number;
+    next?: string;
   }): Promise<void> {
     const { address, limit, next } = options;
 
@@ -149,7 +152,8 @@ export class AssetsService {
 
     const assets = await this.to(this.http.post(url, body));
     if (assets.error) {
-      return console.error('[GET] Assets: ', assets.error);
+      this.messageService.error(assets.error);
+      return;
     }
     console.log('[GET] Assets: ', assets.data);
 
@@ -167,18 +171,19 @@ export class AssetsService {
 
     const infoEvents = await this.to(this.http.post(url, body));
     if (infoEvents.error) {
-      return console.error('[GET] Events: ', infoEvents.error);
+      this.messageService.error(infoEvents.error);
+      return;
     }
     console.log('[GET] Info events: ', infoEvents.data);
 
     // Connect assets with info events
     assets.data = assets.data.map(asset => {
-      asset.infoEvent = infoEvents.data.find(
+      asset.info = infoEvents.data.find(
         event => asset.assetId === event.content.idData.assetId,
       );
 
-      if (asset.infoEvent) {
-        asset.infoEvent = this.findEvent('info', [asset.infoEvent]);
+      if (asset.info) {
+        asset.info = this.findEvent('info', [asset.info]);
       }
 
       return asset;
@@ -187,7 +192,7 @@ export class AssetsService {
     this.assets = assets;
   }
 
-  getAsset(assetId: String): Observable<any> {
+  getAsset(assetId: string): Observable<any> {
     let url = `${this.api.extended}/asset/query`;
     let body: any = {
       query: [
@@ -216,7 +221,7 @@ export class AssetsService {
 
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
-              assets.data[0]['infoEvent'] = this.findEvent(
+              assets.data[0]['info'] = this.findEvent(
                 'info',
                 infoEvents.data,
               );
@@ -225,18 +230,24 @@ export class AssetsService {
               observer.next(assets.data[0]);
               observer.complete();
             },
-            error => observer.error(error),
+            error => {
+              this.messageService.error(error);
+              observer.error(error);
+            },
           );
         },
-        ({ meta }: any) => observer.error(meta),
+        error => {
+          this.messageService.error(error);
+          observer.error(error);
+        },
       );
     });
   }
 
   async getEvents(options: {
-    assetId: String;
-    limit?: Number;
-    next?: String;
+    assetId: string;
+    limit?: number;
+    next?: string;
   }): Promise<void> {
     const { assetId, limit, next } = options;
 
@@ -255,13 +266,42 @@ export class AssetsService {
 
     const events = await this.to(this.http.post(url, body));
     if (events.error) {
-      return console.error('[GET] Events: ', events.error);
+      this.messageService.error(events.error);
+      return;
     }
 
     this.events = events;
   }
 
-  getEvent(eventId: String): Observable<any> {
+  async getMaxEvents(options: {
+    assetId: string;
+    limit?: number;
+  }): Promise<any> {
+    const { assetId, limit } = options;
+
+    const url = `${this.api.extended}/event/query`;
+    const body: any = {
+      query: [
+        {
+          field: 'content.idData.assetId',
+          value: assetId,
+          operator: 'equal',
+        },
+      ],
+      limit,
+    };
+
+    const events = await this.to(this.http.post(url, body));
+    if (events.error) {
+      this.messageService.error(events.error);
+      throw events.error;
+    }
+    console.log('[GET] Max events: ', events);
+
+    return events;
+  }
+
+  getEvent(eventId: string): Observable<any> {
     const url = `${this.api.extended}/event/query`;
     const body: any = {
       query: [
@@ -274,8 +314,11 @@ export class AssetsService {
     };
 
     return this.http.post(url, body).pipe(
-      map((events: any) => events.data[0]),
-      catchError(({ meta }: any) => meta),
+      map((events: any) => this.parseEvent(events.data[0])),
+      catchError(error => {
+        this.messageService.error(error);
+        return error;
+      }),
     );
   }
 
@@ -287,6 +330,7 @@ export class AssetsService {
 
     return this.http.post(url, asset).pipe(
       tap(response => {
+        this.messageService.success('Asset created');
         this.creatingAsset.next(response);
 
         data['change'] = 'data';
@@ -298,6 +342,7 @@ export class AssetsService {
       }),
       catchError(error => {
         this.creatingAsset.error({ asset, error });
+        this.messageService.error(error);
         return error;
       }),
     );
@@ -310,12 +355,14 @@ export class AssetsService {
       await events.map(async (event: any, index, array) => {
         const url = `${this.api.core}/assets/${
           event.content.idData.assetId
-        }/events`;
+          }/events`;
         const eventCreated = await this.to(this.http.post(url, event));
         if (eventCreated.error) {
           data.errors.push({ event, error: eventCreated.error });
           this.creatingEvent.error({ event, error: eventCreated.error });
+          this.messageService.error(eventCreated.error);
         } else {
+          this.messageService.success(`Event created for asset: ${event.content.idData.assetId}`);
           data.created.push(eventCreated);
           this.creatingEvent.next(eventCreated);
         }
@@ -336,9 +383,9 @@ export class AssetsService {
             const assetEvents = data.created.filter(
               _event => asset.assetId === _event.content.idData.assetId,
             );
-            const infoEvent = this.findEvent('info', assetEvents);
-            if (infoEvent) {
-              asset['infoEvent'] = infoEvent;
+            const info = this.findEvent('info', assetEvents);
+            if (info) {
+              asset['info'] = info;
             }
             return asset;
           });
@@ -348,9 +395,9 @@ export class AssetsService {
         }
       });
 
-      return Promise.resolve(data);
+      return data;
     } catch (e) {
-      return Promise.reject(data);
+      throw e;
     }
   }
 
@@ -367,11 +414,17 @@ export class AssetsService {
     }
   }
 
+  getUrlName(url) {
+    let name = url.split('/');
+    name = name[name.length - 1];
+    return name;
+  }
+
   getImage(obj) {
     try {
       return obj.images.default.url;
     } catch (e) {
-      return '/assets/raster/logotip.jpg';
+      return '/assets/raster/assets-image-default.png';
     }
   }
 
@@ -379,7 +432,7 @@ export class AssetsService {
     const location = event.location || event;
     const { city, country, name } = location;
     return (
-      [city, country, name].filter(Boolean).join(', ') || 'No place attached'
+      [city, country, name].filter(item => !!item).join(', ') || 'No place attached'
     );
   }
 
@@ -394,123 +447,123 @@ export class AssetsService {
   }
 
   parseEvent(event) {
-    let eventObjects = [];
+    event.info = {};
+    event.info['groups'] = [];
+    event.info['properties'] = [];
 
     // Extract event objects
-    if (event.content.data) {
-      eventObjects = event.content.data.reduce((total, obj, index, array) => {
+    if (event.content.data && Array.isArray(event.content.data)) {
+      event.content.data.map((obj, index, array) => {
         const type = obj.type.split('.');
         obj.type = type[type.length - 1].toLowerCase();
-        obj.eventId = event.eventId;
-        obj.createdBy = event.content.idData.createdBy;
-        obj.timestamp = event.content.idData.timestamp;
 
         if (obj.type === 'location' || obj.type === 'identifiers') {
-          event.content.data.map(_obj => {
-            if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
-              _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
+          event.info[obj.type] = obj;
+        } else {
+          event.info.name = obj.name || obj.type;
+
+          Object.keys(obj).map((key: any) => {
+            if (['images', 'documents', 'description'].indexOf(key) > -1) {
+              event.info[key] = obj[key];
+            }
+
+            if (
+              [
+                'type',
+                'name',
+                'assetType',
+                'eventId',
+                'createdBy',
+                'timestamp',
+                'location',
+                'images',
+                'documents',
+                'description',
+                'identifiers',
+                'groups',
+                'properties',
+              ].indexOf(key) === -1
+            ) {
+              const property = {
+                key,
+                value: obj[key],
+              };
+              event.info[
+                typeof property.value === 'string' ||
+                  Array.isArray(property.value)
+                  ? 'properties'
+                  : 'groups'
+              ].push(property);
             }
           });
-        } else {
-          total.push(obj);
         }
 
-        return total;
-      }, []);
-
-      // Groups and properties
-      eventObjects.map(eventObject => {
-        eventObject['groups'] = [];
-        eventObject['properties'] = [];
-        Object.keys(eventObject).map((key: any) => {
-          if (
-            [
-              'type',
-              'name',
-              'assetType',
-              'documents',
-              'images',
-              'eventId',
-              'createdBy',
-              'timestamp',
-              'location',
-              'identifiers',
-              'groups',
-              'properties',
-            ].indexOf(key) === -1
-          ) {
-            const property = {
-              key,
-              value: eventObject[key],
-            };
-            eventObject[
-              typeof property.value === 'string' ||
-              Array.isArray(property.value)
-                ? 'properties'
-                : 'groups'
-            ].push(property);
-          }
-        });
+        return obj;
       });
     }
 
-    return eventObjects;
+    return event;
   }
 
   parseAsset(asset) {
-    if (!asset.infoEvent) {
-      asset.infoEvent = {};
+    if (!asset.info) {
+      asset.info = {};
     }
-    // Groups and properties
-    asset.infoEvent['groups'] = [];
-    asset.infoEvent['properties'] = [];
-    Object.keys(asset.infoEvent).map((key: any) => {
-      if (
-        [
-          'type',
-          'name',
-          'assetType',
-          'images',
-          'eventId',
-          'createdBy',
-          'timestamp',
-          'location',
-          'identifiers',
-          'groups',
-          'properties',
-        ].indexOf(key) === -1
-      ) {
-        const property = {
-          key,
-          value: asset.infoEvent[key],
-        };
-        asset.infoEvent[
-          typeof property.value === 'string' || Array.isArray(property.value)
-            ? 'properties'
-            : 'groups'
-        ].push(property);
+    asset.info['groups'] = [];
+    asset.info['properties'] = [];
+
+    Object.keys(asset.info).map((key: any) => {
+      if (key === 'location' || key === 'identifiers') {
+        asset[key] = asset.info[key];
+      } else {
+        if (
+          [
+            'type',
+            'name',
+            'assetType',
+            'images',
+            'eventId',
+            'createdBy',
+            'timestamp',
+            'groups',
+            'properties',
+          ].indexOf(key) === -1
+        ) {
+          const property = {
+            key,
+            value: asset.info[key],
+          };
+          asset.info[
+            typeof property.value === 'string' || Array.isArray(property.value)
+              ? 'properties'
+              : 'groups'
+          ].push(property);
+        }
       }
     });
   }
 
   parseTimelineEvents(e) {
+    const account: any = this.storageService.get('account') || {};
+
     const events = e.reduce((_events, { content, eventId }) => {
       const timestamp = content.idData.timestamp;
-      const author = content.idData.createdBy;
+      const createdBy = content.idData.createdBy;
 
       if (content && content.data) {
-        content.data.filter(obj => {
+        content.data.map(obj => {
           const parts = obj.type.split('.');
           const type = parts[parts.length - 1];
           const category = parts[parts.length - 2] || 'asset';
           const namespace = parts[parts.length - 3] || 'ambrosus';
+          const ago = moment.tz(timestamp * 1000, account.timeZone || 'UTC').fromNow();
 
           obj.timestamp = timestamp;
-          obj.author = author;
+          obj.createdBy = createdBy;
           obj.name = obj.name || type;
-          obj.action = type;
           obj.type = type;
           obj.eventId = eventId;
+          obj.ago = ago;
 
           if (obj.type === 'location' && category === 'event') {
             content.data.reduce((location, _event) => {
@@ -537,8 +590,7 @@ export class AssetsService {
   }
 
   sign(data, secret) {
-    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret)
-      .signature;
+    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature;
   }
 
   calculateHash(data) {
@@ -548,7 +600,7 @@ export class AssetsService {
   serializeForHashing(object) {
     const isDict = subject =>
       typeof subject === 'object' && !Array.isArray(subject);
-    const isString = subject => typeof subject === 'string';
+    const isstring = subject => typeof subject === 'string';
     const isArray = subject => Array.isArray(subject);
 
     if (isDict(object)) {
@@ -562,7 +614,7 @@ export class AssetsService {
         .map(item => this.serializeForHashing(item))
         .join(',');
       return `[${content}]`;
-    } else if (isString(object)) {
+    } else if (isstring(object)) {
       return `"${object}"`;
     }
 
@@ -574,11 +626,7 @@ export class AssetsService {
   }
 
   isLatest(type) {
-    return (
-      ['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(
-        type,
-      ) === -1
-    );
+    return (['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1);
   }
 
   findEvent(eventType, events) {
@@ -587,17 +635,13 @@ export class AssetsService {
       if (event.content.data) {
         event.content.data.map(obj => {
           const type = obj.type.split('.');
-          obj.type = type[type.length - 1].toLowerCase();
-          obj.eventId = event.eventId;
-          obj.createdBy = event.content.idData.createdBy;
-          obj.timestamp = event.content.idData.timestamp;
+          obj.type = type[type.length - 1];
+          obj.type = obj.type.toLowerCase();
 
           if (obj.type === 'location' || obj.type === 'identifiers') {
             event.content.data.map(_obj => {
               if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
-                _obj[
-                  obj.type === 'location' ? 'location' : 'identifiers'
-                ] = obj;
+                _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
               }
             });
           }
@@ -613,9 +657,14 @@ export class AssetsService {
                 e = obj;
               }
           }
+
+          return obj;
         });
       }
+
+      return event;
     });
+
     return e;
   }
 }

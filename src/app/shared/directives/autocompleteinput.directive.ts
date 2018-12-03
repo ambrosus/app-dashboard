@@ -1,6 +1,5 @@
 import { Directive, ElementRef, HostListener, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { AssetsService } from 'app/services/assets.service';
 
 @Directive({
   selector: '[appAutocompleteinput]',
@@ -10,11 +9,13 @@ export class AutocompleteinputDirective implements OnInit {
   lastValue: string;
   div = document.createElement('div');
 
-  constructor(private el: ElementRef, private assetsService: AssetsService) { }
+  constructor(
+    private el: ElementRef,
+  ) { }
 
   ngOnInit() {
     // Create div to hold autocomplete items
-    this.div.setAttribute('class', 'autocomplete-items');
+    this.div.setAttribute('class', 'autocomplete');
     // Append div below the input
     this.el.nativeElement.parentNode.appendChild(this.div);
   }

@@ -1,12 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from './accounts.service';
 import { environment } from 'environments/environment';
-import { catchError, map } from 'rxjs/operators';
-import { throwError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 declare let AmbrosusSDK: any;
 declare let Web3: any;
@@ -14,7 +13,7 @@ declare let Web3: any;
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService implements OnDestroy {
+export class AuthService {
   sdk;
   web3;
   api;
@@ -30,16 +29,20 @@ export class AuthService implements OnDestroy {
     this.api = environment.api;
   }
 
-  ngOnDestroy() {}
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => response)
+      .catch(error => ({ error }));
+  }
 
-  isLoggedIn(): Boolean {
+  isLoggedIn(): boolean {
     const account = <any>this.storageService.get('account') || {};
     const secret = this.storageService.get('secret');
 
     return !!(account.address && secret);
   }
 
-  getToken(): String | null {
+  getToken(): string | null {
     const secret = this.storageService.get('secret');
     const validUntil = moment()
       .add(5, 'days')
@@ -47,59 +50,61 @@ export class AuthService implements OnDestroy {
     return secret ? this.sdk.getToken(secret, validUntil) : null;
   }
 
-  verifyAccount(privateKey: String): Observable<any> {
+  async verifyAccount(privateKey: string): Promise<any> {
     let address;
     try {
       address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
     } catch (e) {
-      return throwError({ message: 'Private key is invalid' });
+      throw new Error('Private key is invalid');
     }
     const url = `${this.api.extended}/account/${address}/exists`;
 
-    return this.http.get(url).pipe(catchError(({ meta }: any) => meta));
+    const account = await this.to(this.http.get(url));
+    if (account.error) {
+      throw account.error;
+    }
+    if (account.data !== true) {
+      throw new Error('Account not found');
+    }
+
+    return account.data;
   }
 
-  login(email: String, password: String): Observable<any> {
+  async login(email: string, password: string): Promise<any> {
     const url = `${this.api.extended}/account/secret`;
 
-    return new Observable(observer => {
-      this.http.post(url, { email }).subscribe(
-        ({ data }: any) => {
-          try {
-            console.log('[GET] PrivateKey token: ', data);
-            let token = data.token;
-            token = JSON.parse(atob(data.token));
-            const [address, privateKey] = this.decryptPrivateKey(
-              token,
-              password,
-            );
-            if (!address) {
-              return observer.error({ message: 'Password is incorrect' });
-            }
+    const secretToken = await this.to(this.http.post(url, { email }));
+    if (secretToken.error) {
+      throw secretToken.error;
+    }
 
-            this.storageService.set('secret', privateKey);
-            this.storageService.set('token', this.getToken());
+    try {
+      console.log('[GET] PrivateKey token: ', secretToken.data);
 
-            this.accountsService.getAccount(address).subscribe(
-              ({ data: _data }: any) => {
-                console.log('[GET] Account: ', _data);
-                this.storageService.set('account', _data);
-                this.accountsService._account.next(_data);
-                this.router.navigate(['/assets']);
-                return observer.next(_data);
-              },
-              err => {
-                console.error('[GET] Account: ', err);
-                return observer.error(err);
-              },
-            );
-          } catch (e) {
-            observer.error({ message: 'Password is incorrect' });
-          }
-        },
-        ({ meta }: any) => observer.error(meta),
+      let token = secretToken.data.token;
+      token = JSON.parse(atob(token));
+      const [address, privateKey] = this.decryptPrivateKey(
+        token,
+        password,
       );
-    });
+      if (!address) {
+        throw new Error('Password is incorrect');
+      }
+
+      this.storageService.set('secret', privateKey);
+      this.storageService.set('token', this.getToken());
+
+      const account = await this.accountsService.getAccount(address);
+
+      console.log('[GET] Account: ', account);
+      this.storageService.set('account', account);
+      this.accountsService._account.next(account);
+      this.router.navigate(['/assets']);
+
+      return account;
+    } catch (error) {
+      throw error;
+    }
   }
 
   logout(): void {
@@ -109,7 +114,7 @@ export class AuthService implements OnDestroy {
 
   // UTILS
 
-  decryptPrivateKey(token: Object, password: String) {
+  decryptPrivateKey(token: Object, password: string) {
     try {
       const { address, privateKey } = this.web3.eth.accounts.decrypt(
         token,
@@ -121,7 +126,7 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  privateKeyToAccount(privateKey: String): String | null {
+  privateKeyToAccount(privateKey: string): string | null {
     try {
       const address = this.web3.eth.accounts.privateKeyToAccount(privateKey)
         .address;

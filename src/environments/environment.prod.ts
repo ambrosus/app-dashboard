@@ -1,7 +1,19 @@
+let core: any = '';
+try {
+  core = location.hostname.split('.');
+  core.shift();
+  core = core.join('.');
+  core = `https://${core}`;
+} catch (e) { }
+
+if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
+  core = 'https://hermes.ambrosus-dev.com';
+}
+
 export const environment = {
   production: true,
   api: {
-    core: 'https://hermes.ambrosus-dev.com',
-    extended: 'https://hermes.ambrosus-dev.com/extended',
+    core,
+    extended: `${core}/extended`,
   },
 };

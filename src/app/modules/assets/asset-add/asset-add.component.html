@@ -1,0 +1,20 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<header class="header">
+  <div class="flex between">
+    <h2 class="title">New asset</h2>
+    <ul class="menu flex-0">
+      <li [ngClass]="{ 'active': !json }" (click)="json = false">Form</li>
+      <li [ngClass]="{ 'active': json }" (click)="json = true">JSON</li>
+    </ul>
+  </div>
+</header>
+<main>
+  <app-asset-form [assetId]="assetIds[0]" *ngIf="!json"></app-asset-form>
+  <app-json-form [assetIds]="assetIds" [for]="'assets'" *ngIf="json"></app-json-form>
+</main>
