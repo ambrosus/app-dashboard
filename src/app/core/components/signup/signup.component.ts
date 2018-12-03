@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MessageService } from 'app/services/message.service';
 
 declare let Web3: any;
 
@@ -39,6 +40,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private sanitizer: DomSanitizer,
+    private messageService: MessageService,
   ) {
     this.web3 = new Web3();
   }
@@ -71,6 +73,12 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+  }
+
+  to(P: Promise<any>) {
+    return P
+      .then(response => response)
+      .catch(error => ({ error }));
   }
 
   validatePrivateKey(control: AbstractControl) {
@@ -118,18 +126,18 @@ export class SignupComponent implements OnInit, OnDestroy {
           throw new Error('Public key is required');
         }
 
-        this.authService.verifyAccount(privateKey)
-          .then(resp => {
-            console.log('[VERIFY] Account: ', resp);
-            throw new Error('This account is already registered, please use another private key');
-          })
-          .catch(error => {
-            this.generateAddress(privateKey);
-            resolve();
-            return this.step = 'saveKeys';
-          });
+        const verified = await this.to(this.authService.verifyAccount(privateKey));
+        if (verified.error) {
+          this.generateAddress(privateKey);
+          resolve();
+          this.step = 'saveKeys';
+        } else {
+          console.log('[VERIFY] Account: ', verified);
+          throw new Error('This account is already registered, please use another private key');
+        }
       } catch (error) {
         console.error('[VERIFY] Account: ', error);
+        this.messageService.error(error);
         reject();
       }
     });
@@ -145,6 +153,7 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.router.navigate(['/login']);
       } catch (error) {
         console.error('[ACCEPT] Invite: ', error);
+        this.messageService.error(error);
         throw error;
       }
     } else {
@@ -157,8 +166,9 @@ export class SignupComponent implements OnInit, OnDestroy {
       const address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
       this.forms.privateKey.get('privateKey').setValue(privateKey);
       this.forms.privateKey.get('address').setValue(address);
-    } catch (e) {
+    } catch (error) {
       this.forms.privateKey.get('address').setValue(null);
+      this.messageService.error(error);
     }
   }
 
@@ -185,10 +195,11 @@ export class SignupComponent implements OnInit, OnDestroy {
 
         const organizationRequest = await this.organizationsService.createOrganizationRequest(data);
         console.log('[REQUEST] Organization: ', organizationRequest);
+        this.step = 'success';
         resolve();
-        return this.step = 'success';
       } catch (error) {
         console.error('[REQUEST] Organization: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

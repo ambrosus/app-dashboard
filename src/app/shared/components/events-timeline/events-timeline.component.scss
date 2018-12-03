@@ -8,6 +8,7 @@ app-events-timeline {
     position: relative;
 
     &:before {
+      display: none;
       content: '';
       width: 2px;
       height: calc(100% - 150px);
@@ -32,7 +33,6 @@ app-events-timeline {
         position: absolute;
         left: -115px;
         top: 0;
-        display: flex;
         flex-direction: column;
         align-items: center;
         padding: 20px 0;
@@ -52,6 +52,7 @@ app-events-timeline {
           color: $grey;
           font-size: 11px;
           margin-top: 10px;
+          text-align: center;
         }
       }
 
@@ -61,12 +62,6 @@ app-events-timeline {
           > .icon {
             background-image: url('/assets/svg/asset-darker.svg');
           }
-        }
-      }
-
-      @include breakpoint-min(1100) {
-        > .pin {
-          display: flex;
         }
       }
 
@@ -142,6 +137,18 @@ app-events-timeline {
           background-size: cover;
           background-repeat: no-repeat;
           background-position: 50%;
+        }
+      }
+    }
+
+    @include breakpoint-min(1100) {
+      &:before {
+        display: block;
+      }
+
+      > .event {
+        > .pin {
+          display: flex;
         }
       }
     }

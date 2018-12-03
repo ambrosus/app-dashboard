@@ -3,6 +3,7 @@ import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { Router } from '@angular/router';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-invite',
@@ -20,6 +21,7 @@ export class InviteComponent {
   constructor(
     private organizationsService: OrganizationsService,
     private router: Router,
+    private messageService: MessageService,
   ) {
     this.forms.invite = new FormGroup({
       members: new FormArray([
@@ -68,9 +70,12 @@ export class InviteComponent {
         const invitesSent = await this.organizationsService.createInvites({ email });
         console.log('[CREATE] Invites: ', invitesSent);
 
+        this.messageService.success('Invites sent');
+
         resolve();
       } catch (error) {
         console.error('[CREATE] Invites: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

@@ -6,6 +6,7 @@ import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import { map, catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment-timezone';
+import { MessageService } from 'app/services/message.service';
 
 declare let Web3: any;
 
@@ -31,6 +32,7 @@ export class AssetsService {
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
+    private messageService: MessageService,
   ) {
     this.initSDK();
     this.web3 = new Web3();
@@ -150,7 +152,8 @@ export class AssetsService {
 
     const assets = await this.to(this.http.post(url, body));
     if (assets.error) {
-      return console.error('[GET] Assets: ', assets.error);
+      this.messageService.error(assets.error);
+      return;
     }
     console.log('[GET] Assets: ', assets.data);
 
@@ -168,7 +171,8 @@ export class AssetsService {
 
     const infoEvents = await this.to(this.http.post(url, body));
     if (infoEvents.error) {
-      return console.error('[GET] Events: ', infoEvents.error);
+      this.messageService.error(infoEvents.error);
+      return;
     }
     console.log('[GET] Info events: ', infoEvents.data);
 
@@ -226,10 +230,16 @@ export class AssetsService {
               observer.next(assets.data[0]);
               observer.complete();
             },
-            error => observer.error(error),
+            error => {
+              this.messageService.error(error);
+              observer.error(error);
+            },
           );
         },
-        ({ meta }: any) => observer.error(meta),
+        error => {
+          this.messageService.error(error);
+          observer.error(error);
+        },
       );
     });
   }
@@ -256,7 +266,8 @@ export class AssetsService {
 
     const events = await this.to(this.http.post(url, body));
     if (events.error) {
-      return console.error('[GET] Events: ', events.error);
+      this.messageService.error(events.error);
+      return;
     }
 
     this.events = events;
@@ -282,7 +293,8 @@ export class AssetsService {
 
     const events = await this.to(this.http.post(url, body));
     if (events.error) {
-      throw new Error(events.error);
+      this.messageService.error(events.error);
+      throw events.error;
     }
     console.log('[GET] Max events: ', events);
 
@@ -303,7 +315,10 @@ export class AssetsService {
 
     return this.http.post(url, body).pipe(
       map((events: any) => this.parseEvent(events.data[0])),
-      catchError(({ meta }: any) => meta),
+      catchError(error => {
+        this.messageService.error(error);
+        return error;
+      }),
     );
   }
 
@@ -315,6 +330,7 @@ export class AssetsService {
 
     return this.http.post(url, asset).pipe(
       tap(response => {
+        this.messageService.success('Asset created');
         this.creatingAsset.next(response);
 
         data['change'] = 'data';
@@ -326,6 +342,7 @@ export class AssetsService {
       }),
       catchError(error => {
         this.creatingAsset.error({ asset, error });
+        this.messageService.error(error);
         return error;
       }),
     );
@@ -343,7 +360,9 @@ export class AssetsService {
         if (eventCreated.error) {
           data.errors.push({ event, error: eventCreated.error });
           this.creatingEvent.error({ event, error: eventCreated.error });
+          this.messageService.error(eventCreated.error);
         } else {
+          this.messageService.success(`Event created for asset: ${event.content.idData.assetId}`);
           data.created.push(eventCreated);
           this.creatingEvent.next(eventCreated);
         }
@@ -599,7 +618,7 @@ export class AssetsService {
       return `"${object}"`;
     }
 
-    return object.tostring();
+    return object.toString();
   }
 
   validTimestamp(timestamp) {
@@ -616,7 +635,8 @@ export class AssetsService {
       if (event.content.data) {
         event.content.data.map(obj => {
           const type = obj.type.split('.');
-          obj.type = type[type.length - 1].toLowerCase();
+          obj.type = type[type.length - 1];
+          obj.type = obj.type.toLowerCase();
 
           if (obj.type === 'location' || obj.type === 'identifiers') {
             event.content.data.map(_obj => {
@@ -637,9 +657,14 @@ export class AssetsService {
                 e = obj;
               }
           }
+
+          return obj;
         });
       }
+
+      return event;
     });
+
     return e;
   }
 }

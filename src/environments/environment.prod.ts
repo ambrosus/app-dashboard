@@ -6,7 +6,9 @@ try {
   core = `https://${core}`;
 } catch (e) { }
 
-if (location.hostname === 'localhost') { core = 'https://hermes.ambrosus-dev.com'; }
+if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
+  core = 'https://hermes.ambrosus-dev.com';
+}
 
 export const environment = {
   production: true,

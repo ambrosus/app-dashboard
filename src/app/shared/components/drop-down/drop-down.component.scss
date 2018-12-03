@@ -57,21 +57,25 @@ app-drop-down {
             margin-right: 15px;
           }
 
-          .title,
-          .meta {
-            display: inline-block;
-            width: 100%;
-          }
+          .item {
 
-          .title {
-            font-size: 13px;
-            font-weight: 500;
-            color: $black;
-            margin-bottom: 0 !important;
-          }
+            &__title,
+            &__meta {
+              display: inline-block;
+              width: 100%;
+            }
 
-          .meta {
-            margin-top: 5px;
+            &__title {
+              font-size: 13px;
+              font-weight: 500;
+              color: $black;
+            }
+
+            &__meta {
+              margin-top: 5px;
+              color: $grey;
+              font-size: 12px;
+            }
           }
         }
 

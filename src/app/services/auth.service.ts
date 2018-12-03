@@ -61,7 +61,10 @@ export class AuthService {
 
     const account = await this.to(this.http.get(url));
     if (account.error) {
-      throw new Error(account.error);
+      throw account.error;
+    }
+    if (account.data !== true) {
+      throw new Error('Account not found');
     }
 
     return account.data;
@@ -72,7 +75,7 @@ export class AuthService {
 
     const secretToken = await this.to(this.http.post(url, { email }));
     if (secretToken.error) {
-      throw new Error(secretToken.error);
+      throw secretToken.error;
     }
 
     try {

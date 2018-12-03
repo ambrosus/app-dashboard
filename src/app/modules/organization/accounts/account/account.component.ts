@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment-timezone';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-account',
@@ -28,6 +29,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     private accountsService: AccountsService,
     private route: ActivatedRoute,
     private router: Router,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -99,9 +101,12 @@ export class AccountComponent implements OnInit, OnDestroy {
         const account = await this.accountsService.modifyAccount(this.account.address, body);
         await this.getAccount();
 
+        this.messageService.success('Account details updated');
+
         resolve();
       } catch (error) {
         console.error('[MODIFY] Account: ', error);
+        this.messageService.error(error);
         reject();
       }
     });
@@ -127,9 +132,12 @@ export class AccountComponent implements OnInit, OnDestroy {
         const account = await this.accountsService.modifyAccount(this.account.address, body);
         await this.getAccount();
 
+        this.messageService.success('Account permissions updated');
+
         resolve();
       } catch (error) {
         console.error('[MODIFY] Account: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
+import { MessageService } from './message.service';
 
 interface Organization {
   _id?: string;
@@ -28,7 +29,10 @@ interface OrganizationRequest {
 export class OrganizationsService {
   api;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService,
+  ) {
     this.api = environment.api;
   }
 
@@ -43,7 +47,7 @@ export class OrganizationsService {
 
     const organizations = await this.to(this.http.get(url));
     if (organizations.error) {
-      throw new Error(organizations.error);
+      throw organizations.error;
     }
 
     return organizations.data;
@@ -54,7 +58,7 @@ export class OrganizationsService {
 
     const organization = await this.to(this.http.get(url));
     if (organization.error) {
-      throw new Error(organization.error);
+      throw organization.error;
     }
 
     return organization.data;
@@ -65,7 +69,7 @@ export class OrganizationsService {
 
     const organization = await this.to(this.http.put(url, body));
     if (organization.error) {
-      throw new Error(organization.error);
+      throw organization.error;
     }
 
     return organization.data;
@@ -76,7 +80,7 @@ export class OrganizationsService {
 
     const accounts = await this.to(this.http.get(url));
     if (accounts.error) {
-      throw new Error(accounts.error);
+      throw accounts.error;
     }
 
     return accounts.data;
@@ -89,7 +93,7 @@ export class OrganizationsService {
 
     const organizationRequest = await this.to(this.http.post(url, body));
     if (organizationRequest.error) {
-      throw new Error(organizationRequest.error);
+      throw organizationRequest.error;
     }
 
     return organizationRequest.data;
@@ -100,7 +104,7 @@ export class OrganizationsService {
 
     const organizationRequests = await this.to(this.http.get(url));
     if (organizationRequests.error) {
-      throw new Error(organizationRequests.error);
+      throw organizationRequests.error;
     }
 
     return organizationRequests.data;
@@ -111,7 +115,7 @@ export class OrganizationsService {
 
     const organizationRequests = await this.to(this.http.get(url));
     if (organizationRequests.error) {
-      throw new Error(organizationRequests.error);
+      throw organizationRequests.error;
     }
 
     return organizationRequests.data;
@@ -122,7 +126,7 @@ export class OrganizationsService {
 
     const organizationRequest = await this.to(this.http.get(url));
     if (organizationRequest.error) {
-      throw new Error(organizationRequest.error);
+      throw organizationRequest.error;
     }
 
     return organizationRequest.data;
@@ -135,7 +139,7 @@ export class OrganizationsService {
 
     const invites = await this.to(this.http.get(url));
     if (invites.error) {
-      throw new Error(invites.error);
+      throw invites.error;
     }
 
     return invites.data;
@@ -146,7 +150,7 @@ export class OrganizationsService {
 
     const invites = await this.to(this.http.post(url, body));
     if (invites.error) {
-      throw new Error(invites.error);
+      throw invites.error;
     }
 
     return invites.data;
@@ -157,7 +161,7 @@ export class OrganizationsService {
 
     const invites = await this.to(this.http.post(url, body));
     if (invites.error) {
-      throw new Error(invites.error);
+      throw invites.error;
     }
 
     return invites.data;
@@ -168,7 +172,7 @@ export class OrganizationsService {
 
     const invite = await this.to(this.http.get(url));
     if (invite.error) {
-      throw new Error(invite.error);
+      throw invite.error;
     }
 
     return invite.data;
@@ -179,7 +183,7 @@ export class OrganizationsService {
 
     const invite = await this.to(this.http.post(url, body));
     if (invite.error) {
-      throw new Error(invite.error);
+      throw invite.error;
     }
 
     return invite.data;
@@ -190,7 +194,7 @@ export class OrganizationsService {
 
     const invite = await this.to(this.http.delete(url));
     if (invite.error) {
-      throw new Error(invite.error);
+      throw invite.error;
     }
 
     return invite.data;

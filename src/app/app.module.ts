@@ -24,6 +24,7 @@ import {
   DeviceDetectorService,
 } from 'ngx-device-detector';
 import * as Sentry from '@sentry/browser';
+import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
 if (!isDevMode) {
   Sentry.init({
@@ -55,6 +56,7 @@ export class SentryErrorHandler implements ErrorHandler {
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
     }),
+    MatSnackBarModule,
   ],
   providers: [
     DeviceDetectorService,
@@ -66,6 +68,12 @@ export class SentryErrorHandler implements ErrorHandler {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
       multi: true,
+    },
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: {
+        duration: 3000,
+      },
     },
   ],
   bootstrap: [AppComponent],

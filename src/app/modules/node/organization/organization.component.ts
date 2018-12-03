@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-organization',
@@ -25,6 +26,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     private organizationsService: OrganizationsService,
     private route: ActivatedRoute,
     private router: Router,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -80,9 +82,13 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
         const organization = await this.organizationsService.modifyOrganization(this.organizationId, body);
         await this.getOrganization();
+
+        this.messageService.success('Organization updated');
+
         resolve();
       } catch (error) {
         console.error('[MODIFY] Organization: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

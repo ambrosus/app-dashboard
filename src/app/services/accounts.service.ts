@@ -51,7 +51,7 @@ export class AccountsService {
 
     const accounts = await this.to(this.http.get(url));
     if (accounts.error) {
-      throw new Error(accounts.error);
+      throw accounts.error;
     }
 
     return accounts.data;
@@ -62,7 +62,8 @@ export class AccountsService {
 
     const account = await this.to(this.http.get(url));
     if (account.error) {
-      throw new Error(account.error);
+      console.log(account.error);
+      throw account.error;
     }
 
     return account.data;
@@ -76,7 +77,7 @@ export class AccountsService {
 
     const account = await this.to(this.http.put(url, body));
     if (account.error) {
-      throw new Error(account.error);
+      throw account.error;
     }
 
     return account.data;

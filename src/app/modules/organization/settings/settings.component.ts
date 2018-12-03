@@ -5,6 +5,7 @@ import { OrganizationsService } from 'app/services/organizations.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-settings',
@@ -27,6 +28,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private organizationsService: OrganizationsService,
     private accountsService: AccountsService,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -62,6 +64,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       form.get('active').setValue(this.organization.active);
     } catch (error) {
       console.error('[GET] Organization: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -87,9 +90,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
         this.organization = await this.organizationsService.modifyOrganization(this.account.organization, body);
         await this.getOrganization();
 
+        this.messageService.success('Organization settings updated');
+
         resolve();
       } catch (error) {
         console.error('[MODIFY] Organization: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

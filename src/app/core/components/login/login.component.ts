@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
 import { StorageService } from 'app/services/storage.service';
+import { MessageService } from 'app/services/message.service';
 import * as Sentry from '@sentry/browser';
 
 declare let Web3: any;
@@ -35,6 +36,7 @@ export class LoginComponent implements OnInit {
     public dialog: MatDialog,
     private accountsService: AccountsService,
     private storageService: StorageService,
+    private messageService: MessageService,
   ) {
     this.forms.email = new FormGroup({
       email: new FormControl(null, [Validators.required, this.validateEmail]),
@@ -71,7 +73,7 @@ export class LoginComponent implements OnInit {
 
   // Private key form
 
-  public async getAccount(): Promise<any> {
+  getAccount() {
     this.promise['privateKey'] = new Promise(async (resolve, reject) => {
       try {
         const form = this.forms.privateKey;
@@ -95,10 +97,12 @@ export class LoginComponent implements OnInit {
         this.accountsService._account.next(account);
         this.router.navigate(['/assets']);
 
+        this.messageService.dismissAll();
         resolve();
       } catch (error) {
         console.error('[GET] Account: ', error);
         this.storageService.clear();
+        this.messageService.error(error, 'Private key is incorrect');
         reject();
       }
     });
@@ -122,9 +126,11 @@ export class LoginComponent implements OnInit {
           scope.setUser({ account });
         });
 
+        this.messageService.dismissAll();
         resolve();
       } catch (error) {
         console.error('[LOGIN] Error: ', error);
+        this.messageService.error(error, 'Email or password are incorrect', true);
         reject();
       }
     });

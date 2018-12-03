@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material';
 import { Subscription } from 'rxjs';
 import { Router, NavigationStart } from '@angular/router';
 import { InviteComponent } from '../invite/invite.component';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-all',
@@ -31,6 +32,7 @@ export class AllComponent implements OnInit, OnDestroy {
     private organizationsService: OrganizationsService,
     public dialog: MatDialog,
     private router: Router,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -56,6 +58,7 @@ export class AllComponent implements OnInit, OnDestroy {
       console.log('[GET] Organization: ', this.organization);
     } catch (error) {
       console.error('[GET] Organization: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -68,6 +71,7 @@ export class AllComponent implements OnInit, OnDestroy {
       console.log('[GET] Organization accounts disabled: ', this.accountsDisabled);
     } catch (error) {
       console.error('[GET] Accounts: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -81,6 +85,7 @@ export class AllComponent implements OnInit, OnDestroy {
       console.log('[GET] Invites: ', this.invites);
     } catch (error) {
       console.error('[GET] Invites: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -90,8 +95,11 @@ export class AllComponent implements OnInit, OnDestroy {
         try {
           await this.organizationsService.deleteInvite(args[1].inviteId);
           await this.getInvites();
+
+          this.messageService.success('Invite deleted');
         } catch (error) {
           console.error('[DELETE] Invite: ', error);
+          this.messageService.error(error);
         }
         break;
 
@@ -99,8 +107,11 @@ export class AllComponent implements OnInit, OnDestroy {
         try {
           await this.organizationsService.resendInvites(args[1]);
           await this.getInvites();
+
+          this.messageService.success('Invite resent');
         } catch (error) {
           console.error('[RESEND] Invite: ', error);
+          this.messageService.error(error);
         }
         break;
 
@@ -108,8 +119,11 @@ export class AllComponent implements OnInit, OnDestroy {
         try {
           await this.accountsService.modifyAccount(args[1]['address'], args[1]['data']);
           await this.getAccounts();
+
+          this.messageService.success('Account modified');
         } catch (error) {
           console.error('[MODIFY] Account: ', error);
+          this.messageService.error(error);
         }
         break;
     }

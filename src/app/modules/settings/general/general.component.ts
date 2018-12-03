@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
+import { MessageService } from 'app/services/message.service';
 
 declare let Web3: any;
 
@@ -23,6 +24,7 @@ export class GeneralComponent implements OnInit {
   constructor(
     private storageService: StorageService,
     private accountsService: AccountsService,
+    private messageService: MessageService,
   ) {
     this.web3 = new Web3();
   }
@@ -76,9 +78,11 @@ export class GeneralComponent implements OnInit {
         this.storageService.set('account', this.account);
         this.accountsService._account.next(this.account);
 
+        this.messageService.success('Account updated');
         resolve();
       } catch (error) {
         console.error('[MODIFY] Account: ', error);
+        this.messageService.error(error);
         reject();
       }
     });

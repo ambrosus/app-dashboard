@@ -1,7 +1,6 @@
 @import 'utils/index';
 @import 'modules/index';
 @import 'themes/index';
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
 app-root {
   display: flex;
@@ -110,6 +109,17 @@ body {
 
 .cdk-overlay-container {
   z-index: 2000;
+}
+
+.snack {
+  .mat-simple-snackbar-action {
+    margin: -8px 0px -8px 25px;
+
+    button {
+      color: $blue;
+      background: #fff;
+    }
+  }
 }
 
 .autocomplete {

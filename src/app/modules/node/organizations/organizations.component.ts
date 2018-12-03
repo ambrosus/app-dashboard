@@ -4,6 +4,7 @@ import { StorageService } from 'app/services/storage.service';
 import { OrganizationsService } from 'app/services/organizations.service';
 import * as moment from 'moment-timezone';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-organizations',
@@ -24,6 +25,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private organizationsService: OrganizationsService,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -51,6 +53,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
     } catch (error) {
       console.error('[GET] Organizations: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -65,6 +68,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       console.log('[GET] Organization requests: ', this.organizationRequests);
     } catch (error) {
       console.error('[GET] Organization requests: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -79,6 +83,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       console.log('[GET] Organization requests declined: ', this.organizationRequestsDeclined);
     } catch (error) {
       console.error('[GET] Organization requests declined: ', error);
+      this.messageService.error(error);
     }
   }
 
@@ -89,8 +94,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           console.log('modify');
           await this.organizationsService.modifyOrganization(args[1].id, args[1].data);
           await this.getOrganizations();
+
+          this.messageService.success('Organization modified');
         } catch (error) {
           console.error('[MODIFY] Organization: ', error);
+          this.messageService.error(error);
         }
         break;
       case 'organizationRequest':
@@ -99,8 +107,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           await this.getOrganizations();
           await this.getOrganizationRequests();
           await this.getOrganizationRequestsDeclined();
+
+          this.messageService.success(`Organization request ${args[1].approved ? 'approved' : 'declined'}`);
         } catch (error) {
           console.error('[HANDLE] Organization request: ', error);
+          this.messageService.error(error);
         }
         break;
     }
