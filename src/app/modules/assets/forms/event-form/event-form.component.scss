@@ -1,6 +1,11 @@
 @import 'utils';
 
 app-event-form {
+  display: block;
+
+  .form {
+    padding-bottom: 70px;
+  }
 
   .document-preview {
     display: flex;

@@ -1,8 +1,9 @@
 @import 'utils';
 
 app-json-form {
-  .form {
+  display: block;
 
+  .form {
     textarea {
       font-size: 12px;
       font-family: monospace;
@@ -16,5 +17,7 @@ app-json-form {
       color: $black;
       background: #fff;
     }
+
+    padding-bottom: 70px;
   }
 }

@@ -29,6 +29,7 @@
       .assetId {
         color: $grey;
         margin: 10px 0 15px;
+        word-break: break-all;
       }
 
       .createdBy {
@@ -37,8 +38,13 @@
         align-items: center;
         margin-top: 0;
 
+        > span {
+          word-break: break-all;
+        }
+
         .address {
           color: $blue;
+          word-break: break-all;
         }
 
         > .image {
@@ -240,7 +246,7 @@
 
         > div {
           &.image {
-            display: block;
+            display: none;
             height: 48px;
             width: 48px;
             border-radius: 50%;
@@ -252,6 +258,10 @@
             background-position: 50%;
             margin: 20px 0 25px 25px;
             margin-right: 0;
+
+            @include breakpoint-min(768) {
+              display: inline-block;
+            }
           }
         }
       }
@@ -265,6 +275,7 @@
         .assetId {
           color: $grey;
           margin: 0 !important;
+          word-break: break-all;
         }
       }
     }

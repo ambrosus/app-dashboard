@@ -53,6 +53,7 @@ p {
   color: $grey;
   font-weight: 400;
   margin: 0;
+  word-wrap: break-word;
 }
 
 p + p {
@@ -71,6 +72,7 @@ h6 {
   color: $black;
   font-weight: 300;
   margin: 0;
+  word-wrap: break-word;
 }
 
 h4,
@@ -111,6 +113,10 @@ a {
   text-decoration: none;
   cursor: pointer;
   user-select: none;
+}
+
+span {
+  word-wrap: break-word;
 }
 
 .subtitle {

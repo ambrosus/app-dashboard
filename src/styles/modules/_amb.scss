@@ -38,6 +38,7 @@
       > p {
         color: $black;
         margin-top: 10px;
+        word-wrap: break-word;
 
         &.json {
           white-space: pre-wrap;
@@ -161,6 +162,7 @@
           > .address {
             font-weight: 500;
             margin: 12px 0 25px;
+            word-break: break-all;
           }
 
           > .createdBy {
@@ -168,6 +170,10 @@
             flex-direction: row;
             align-items: center;
             font-size: 12px;
+
+            > span {
+              word-break: break-all;
+            }
 
             > .image {
               display: inline-block;

@@ -118,6 +118,10 @@ app-events-timeline {
         margin-top: 25px;
         font-size: 12px;
 
+        > span {
+          word-break: break-all;
+        }
+
         .address {
           color: $grey;
           font-size: 12px;

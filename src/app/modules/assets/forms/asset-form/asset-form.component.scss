@@ -1,6 +1,11 @@
 @import 'utils';
 
 app-asset-form {
+  display: block;
+
+  .form {
+    padding-bottom: 70px;
+  }
 
   .image-preview {
     display: flex;

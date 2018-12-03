@@ -22,10 +22,16 @@
   <main>
     <div class="wrapper">
       <form class="form" [formGroup]="forms.organization" (ngSubmit)="save()">
-        <label>
-          <span>Title</span>
-          <input formControlName="title" type="text">
-        </label>
+        <div class="group">
+          <label class="w50">
+            <span>Owner</span>
+            <input type="text" formControlName="owner">
+          </label>
+          <label class="w50">
+            <span>Title</span>
+            <input formControlName="title" type="text">
+          </label>
+        </div>
         <div class="group">
           <label class="w50">
             <span>Legal address</span>

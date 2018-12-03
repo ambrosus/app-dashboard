@@ -1,8 +1,17 @@
 <form class="form" [formGroup]="forms.edit" (ngSubmit)="save()">
-  <label>
-    <span>Public key</span>
-    <input formControlName="address" type="text">
-  </label>
+  <div class="group">
+    <label class="w50">
+      <span>Public key</span>
+      <input formControlName="address" type="text">
+    </label>
+    <label class="w50" for="timeZone">
+      <span>Time zone</span>
+      <input formControlName="timeZone" list="timezones" id="timeZone">
+      <datalist id="timezones">
+        <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+      </datalist>
+    </label>
+  </div>
   <div class="group">
     <label class="w50">
       <span>Full name</span>
@@ -13,13 +22,6 @@
       <input formControlName="email" type="email">
     </label>
   </div>
-  <label for="timeZone">
-    <span>Time zone</span>
-    <input formControlName="timeZone" list="timezones" id="timeZone">
-    <datalist id="timezones">
-      <option *ngFor="let timezone of timezones" value="{{ timezone }}">
-    </datalist>
-  </label>
   <div class="group">
     <label class="w50">
       <span>Password</span>

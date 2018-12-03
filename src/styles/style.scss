@@ -61,7 +61,6 @@ body {
     box-shadow: none;
     border-radius: 0;
     padding: 0;
-    padding-bottom: 40px;
 
     header {
       padding: 40px;
@@ -112,12 +111,17 @@ body {
 }
 
 .snack {
+  .mat-simple-snackbar {
+    word-break: break-all;
+  }
+
   .mat-simple-snackbar-action {
     margin: -8px 0px -8px 25px;
 
     button {
       color: $blue;
       background: #fff;
+      width: auto;
     }
   }
 }
