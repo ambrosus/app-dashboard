@@ -19,10 +19,6 @@ import { AssetsModule } from './modules/assets/assets.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
-import {
-  DeviceDetectorModule,
-  DeviceDetectorService,
-} from 'ngx-device-detector';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
@@ -52,14 +48,12 @@ export class SentryErrorHandler implements ErrorHandler {
     CoreModule,
     AssetsModule,
     SharedModule,
-    DeviceDetectorModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
     }),
     MatSnackBarModule,
   ],
   providers: [
-    DeviceDetectorService,
     {
       provide: ErrorHandler,
       useClass: SentryErrorHandler,

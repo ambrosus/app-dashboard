@@ -9,7 +9,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ImageCropperModule } from 'ngx-image-cropper';
 import { AutocompleteinputDirective } from './directives/autocompleteinput.directive';
 import { AccordionDirective } from './directives/accordion.directive';
 import { StickyDirective } from './directives/sticky.directive';
@@ -21,7 +20,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatInputModule } from '@angular/material';
+import { MatNativeDateModule } from '@angular/material';
 
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -45,7 +44,6 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     HttpClientModule,
     MatDialogModule,
     ReactiveFormsModule,
-    ImageCropperModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCIf-xvKaHu8pgMCuOgw8Ft9gnMgmAOBVw',
     }),
@@ -69,7 +67,6 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     SvgIconComponent,
     QrCodeComponent,
     MatDialogModule,
-    ImageCropperModule,
     CustomCheckboxDirective,
     FooterComponent,
     HeaderComponent,
