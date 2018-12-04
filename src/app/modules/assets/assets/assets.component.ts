@@ -11,10 +11,8 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
-import { AuthService } from 'app/services/auth.service';
-import { StorageService } from 'app/services/storage.service';
-import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
-import { Router, NavigationStart } from '@angular/router';
+import { FormGroup, FormControl, FormArray } from '@angular/forms';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -37,9 +35,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   constructor(
     public assetsService: AssetsService,
-    private authService: AuthService,
     public dialog: MatDialog,
-    private storageService: StorageService,
     private router: Router,
   ) { }
 
@@ -48,7 +44,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
         this.pagination = pagination;
-        this.loader = false;
+        console.log(pagination);
 
         // Table form
         this.initTableForm();
@@ -66,38 +62,28 @@ export class AssetsComponent implements OnInit, OnDestroy {
       },
     );
 
-    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
+    this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.dialog.closeAll();
+        this.selected = false;
       }
     });
   }
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+    if (this.assetsService.search) {
+      this.assetsService.assets = { clean: true };
+      this.assetsService.searchQuery = {};
+      this.assetsService.search = false;
+      this.assetsService.assetsReset = true;
+    }
   }
 
   initTableForm() {
     this.forms.table = new FormGroup({
       assets: new FormArray([]),
     });
-  }
-
-  loadAssets(next = '', limit = 15) {
-    this.selected = 0;
-    this.dialog.closeAll();
-    this.loader = true;
-    const token = this.authService.getToken();
-    const account = <any>this.storageService.get('account') || {};
-    const { address } = account;
-    const options = {
-      limit,
-      token,
-      address,
-      next,
-    };
-
-    this.assetsService.getAssets(options).then();
   }
 
   JSONparse(value) {
