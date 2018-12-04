@@ -1,0 +1,23 @@
+@import 'utils';
+
+app-json-form {
+  display: block;
+
+  .form {
+    textarea {
+      font-size: 12px;
+      font-family: monospace;
+      white-space: pre;
+      height: 400px;
+      min-height: 300px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+      line-height: 1.4;
+      color: $black;
+      background: #fff;
+    }
+
+    padding-bottom: 70px;
+  }
+}

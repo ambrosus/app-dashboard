@@ -1,0 +1,40 @@
+<form class="form" [formGroup]="forms.edit" (ngSubmit)="save()">
+  <div class="group">
+    <label class="w50">
+      <span>Public key</span>
+      <input formControlName="address" type="text">
+    </label>
+    <label class="w50" for="timeZone">
+      <span>Time zone</span>
+      <input formControlName="timeZone" list="timezones" id="timeZone">
+      <datalist id="timezones">
+        <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+      </datalist>
+    </label>
+  </div>
+  <div class="group">
+    <label class="w50">
+      <span>Full name</span>
+      <input formControlName="fullName" type="text">
+    </label>
+    <label class="w50">
+      <span>Email</span>
+      <input formControlName="email" type="email">
+    </label>
+  </div>
+  <div class="group">
+    <label class="w50">
+      <span>Password</span>
+      <input formControlName="password" type="password" placeholder="*******">
+    </label>
+    <label class="w50">
+      <span>Password Confirm</span>
+      <input formControlName="passwordConfirm" type="password" placeholder="*******">
+    </label>
+  </div>
+  <div>
+    <button type="submit" class="outline" [disabled]="forms.edit.invalid" [promiseBtn]="promise.save">
+      Save
+    </button>
+  </div>
+</form>

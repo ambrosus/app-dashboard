@@ -1,0 +1,15 @@
+@import 'utils';
+
+app-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  width: 100%;
+
+  .form {
+    label {
+      margin-bottom: 25px;
+    }
+  }
+}

@@ -1,1 +1,5 @@
+<app-header *ngIf="initialLoad && !hideHeader()"></app-header>
+
 <router-outlet></router-outlet>
+
+<app-footer *ngIf="initialLoad"></app-footer>

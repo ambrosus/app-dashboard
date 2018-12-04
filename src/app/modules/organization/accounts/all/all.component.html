@@ -1,0 +1,151 @@
+<div class="page">
+  <header class="header">
+    <div class="wrapper">
+      <div class="flex between">
+        <h1>Accounts</h1>
+        <button class="flex-0 outline" type="button" (click)="openInviteDialog()">Invite</button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="wrapper">
+      <ul class="showMenu">
+        <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
+        <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
+        <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
+        <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
+      </ul>
+
+      <div class="table accounts">
+        <!-- Active -->
+        <div *ngIf="show === 'all' || show === 'active'">
+          <h3 *ngIf="!accounts.length && show !== 'all'">No active accounts</h3>
+          <div class="item" *ngFor="let acc of accounts">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
+              <a [routerLink]="acc.address">
+                <div>
+                  <h5 class="title">
+                    {{ acc.fullName || acc.email || 'No name' }}
+                  </h5>
+                  <p class="assetId">{{ acc.address }}</p>
+                </div>
+              </a>
+              <div class="meta">
+                <div></div>
+                <div style="margin: 0">
+                  <span class="status" style="color: #40D685;">Active</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Deactivate',
+                      click: actions,
+                      args: [self, 'accountModify', { address: acc.address, data: { permissions: [] } }]
+                    }]
+                  }"></app-drop-down>
+                  </span>
+                </div>
+              </div>
+            </main>
+
+          </div>
+        </div>
+        <!-- Pending -->
+        <div *ngIf="show === 'all' || show === 'pending'">
+          <h3 *ngIf="!invites.length && show !== 'all'">No pending accounts</h3>
+          <div class="item" *ngFor="let invite of invites">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
+              <a>
+                <div>
+                  <div class="flex between">
+                    <h5 class="title">
+                      {{ invite.email }}
+                    </h5>
+                    <p class="meta flex-0" style="margin-bottom: 10px;">Created {{ invite.createdOn }}</p>
+                  </div>
+                  <p class="createdBy">
+                    <span class="flex-0">From</span>
+                    <span class="image"></span>
+                    <span class="address">{{ invite.createdBy }}</span>
+                  </p>
+                </div>
+              </a>
+              <div class="meta">
+                <div>
+                  <button type="button" class="transparent" (click)="actions('inviteResend', { email: [ invite.email ] })">Resend</button>
+                </div>
+                <div>
+                  <span class="status" style="color: #F7A120;">Pending</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
+                    items: [
+                      {
+                        type: 'action',
+                        title: 'Revoke',
+                        click: actions,
+                        args: [self, 'inviteDelete', { inviteId: invite.inviteId }]
+                      },
+                      {
+                        type: 'action',
+                        title: 'Resend',
+                        click: actions,
+                        args: [self, 'inviteResend', { email: [ invite.email ] }]
+                      }
+                    ]
+                  }"></app-drop-down>
+                  </span>
+                </div>
+              </div>
+            </main>
+
+          </div>
+        </div>
+        <!-- Disabled -->
+        <div *ngIf="show === 'all' || show === 'disabled'">
+          <h3 *ngIf="!accountsDisabled.length && show !== 'all'">No disabled accounts</h3>
+          <div class="item" *ngFor="let acc of accountsDisabled">
+            <header>
+              <div class="image"></div>
+            </header>
+            <main>
+              <a [routerLink]="acc.address">
+                <div>
+                  <h5 class="title">
+                    {{ acc.fullName || acc.email || 'No name' }}
+                  </h5>
+                  <p class="assetId">{{ acc.address }}</p>
+                </div>
+              </a>
+              <div class="meta">
+                <div></div>
+                <div style="margin: 0;">
+                  <span class="status" style="color: #D64040;">Disabled</span>
+                  <span class="verticalMenu" appToggleDropDown>
+                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                    <app-drop-down [items]="{
+                    items: [{
+                      type: 'action',
+                      title: 'Activate',
+                      click: actions,
+                      args: [self, 'accountModify', { address: acc.address, data: { permissions: ['create_asset', 'create_event'] } }]
+                    }]
+                  }"></app-drop-down>
+                  </span>
+                </div>
+              </div>
+            </main>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

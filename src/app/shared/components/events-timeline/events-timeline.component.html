@@ -1,0 +1,32 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<ul *ngIf="(assetsService.events | async).data.length">
+  <li class="event" *ngFor="let event of (assetsService.events | async).data" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+    <div class="pin">
+      <div class="icon"></div>
+      <span class="ago">{{ event.ago }}</span>
+    </div>
+    <div class="flex between">
+      <h5 class="title">{{ event.name }}</h5>
+      <span class="timestamp">{{ event.timestamp * 1000 | date:'EEE, MMM d, yyyy' }}</span>
+    </div>
+    <p class="createdBy">
+      <span class="flex-0">by</span>
+      <span class="image"></span>
+      <span class="address">{{ event.createdBy }}</span>
+    </p>
+    <div class="location" *ngIf="event.location">
+      <app-svg-icon name="location-pin" height="24" width="20"></app-svg-icon>
+      <p>{{ assetsService.getLocation(event) }}</p>
+    </div>
+  </li>
+
+  <li class="center" *ngIf="pagination && pagination.hasNext" style="margin-top: 40px;">
+    <button type="button" class="transparent" (click)="loadEvents(pagination.next)">Show more</button>
+  </li>
+</ul>

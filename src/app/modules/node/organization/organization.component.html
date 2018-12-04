@@ -1,0 +1,60 @@
+<div class="page" *ngIf="organization.organizationId">
+  <header>
+    <div class="wrapper">
+      <div class="flex">
+        <div class="image"></div>
+        <div>
+          <div class="flex between">
+            <h1>{{ organization.title || 'Organization details' }}</h1>
+            <div class="flex-0">
+              <h5 [ngClass]="organization.active ? 'active' : 'disabled'" style="margin-bottom: 5px;">
+                {{ organization.active ? 'Active' : 'Disabled' }}
+              </h5>
+              <span class="meta" *ngIf="organization.createdOn">
+                {{ organization.createdOn * 1000 | date:'EEE, MMM d, yyyy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="wrapper">
+      <form class="form" [formGroup]="forms.organization" (ngSubmit)="save()">
+        <div class="group">
+          <label class="w50">
+            <span>Owner</span>
+            <input type="text" formControlName="owner">
+          </label>
+          <label class="w50">
+            <span>Title</span>
+            <input formControlName="title" type="text">
+          </label>
+        </div>
+        <div class="group">
+          <label class="w50">
+            <span>Legal address</span>
+            <input formControlName="legalAddress" type="text">
+          </label>
+          <label class="w50" for="timeZone">
+            <span>Time zone</span>
+            <input formControlName="timeZone" list="timezones" id="timeZone">
+            <datalist id="timezones">
+              <option *ngFor="let timezone of timezones" value="{{ timezone }}">
+            </datalist>
+          </label>
+        </div>
+        <label>
+          <input type="checkbox" formControlName="active" appCustomCheckbox />
+          Active
+        </label>
+        <div>
+          <button type="submit" class="outline" [disabled]="forms.organization.invalid" [promiseBtn]="promise.save">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

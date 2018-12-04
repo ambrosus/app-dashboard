@@ -17,29 +17,36 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/dashboard",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/assets"],
+            "assets": [
+              "src/assets",
+              "src/manifest.json"
+            ],
             "styles": [
-              "node_modules/normalize.css/normalize.css",
+              "node_modules/sanitize.css/sanitize.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/styles"]
+              "includePaths": [
+                "./src/styles"
+              ]
             },
-            "scripts": []
+            "scripts": [
+              "node_modules/qrcode/build/qrcode.min.js",
+              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.umd.min.js"
+            ]
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -49,12 +56,11 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "bundle",
-                  "maximumError": "300kb"
-                }
-              ]
+              "budgets": [{
+                "type": "bundle",
+                "maximumError": "300kb"
+              }],
+              "serviceWorker": true
             }
           }
         },
@@ -82,22 +88,36 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "assets": ["src/assets"],
+            "assets": [
+              "src/assets",
+              "src/manifest.json"
+            ],
             "styles": [
-              "node_modules/normalize.css/normalize.css",
+              "node_modules/sanitize.css/sanitize.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles/style.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/styles"]
+              "includePaths": [
+                "./src/styles"
+              ]
             },
-            "scripts": []
+            "scripts": [
+              "node_modules/qrcode/build/qrcode.min.js",
+              "node_modules/ambrosus-javascript-sdk/lib/ambrosus.umd.min.js"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -117,7 +137,9 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }

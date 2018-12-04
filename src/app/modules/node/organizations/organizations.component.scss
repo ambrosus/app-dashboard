@@ -1,0 +1,22 @@
+@import 'utils';
+
+app-organizations {
+  display: block;
+
+  .showMenu {
+    margin-bottom: 20px;
+
+    > li {
+      display: inline-block;
+      padding: 13px;
+      font-weight: 500;
+      color: $black;
+      cursor: pointer;
+      user-select: none;
+
+      &.active {
+        color: $blue;
+      }
+    }
+  }
+}

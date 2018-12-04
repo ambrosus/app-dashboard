@@ -1,40 +1,72 @@
-import { AuthGuardChild } from './modules/auth/auth-guard-child.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
-import { NotfoundComponent } from 'app/core/components/notfound/notfound.component';
-import { AuthGuard } from './modules/auth/auth-guard.service';
-import { AuthGuardLogin } from 'app/modules/auth/auth-guard-login.service';
-import { HelpComponent } from './core/components/help/help.component';
+
 import { TermsComponent } from './core/components/terms/terms.component';
-import { AboutComponent } from './core/components/about/about.component';
-import { SettingsComponent } from './core/components/settings/settings.component';
+import { LoginComponent } from './core/components/login/login.component';
+
+// Guards
+import { AuthGuard } from './guards/auth.guard';
+import { AuthLoginGuard } from './guards/auth-login.guard';
+import { PermissionsGuard } from './guards/permissions.guard';
+import { SignupComponent } from './core/components/signup/signup.component';
 
 const routes: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: '/login',
+  },
+  {
     path: 'login',
-    canActivate: [AuthGuardLogin],
-    loadChildren: 'app/modules/auth/auth.module#AuthModule',
-    runGuardsAndResolvers: 'always'
+    canActivate: [AuthGuard],
+    component: LoginComponent,
+    runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'signup',
+    canActivate: [AuthGuard],
+    component: SignupComponent,
+    runGuardsAndResolvers: 'always',
   },
   {
     path: 'assets',
-    canActivateChild: [AuthGuardChild],
-    loadChildren: 'app/modules/dashboard/dashboard.module#DashboardModule',
-    runGuardsAndResolvers: 'always'
+    canActivate: [AuthGuard],
+    loadChildren: 'app/modules/assets/assets.module#AssetsModule',
+    runGuardsAndResolvers: 'always',
   },
-  { path: '', pathMatch: 'full', redirectTo: '/login' },
-  { path: 'help', component: HelpComponent },
-  { path: 'terms', component: TermsComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
-  { path: '**', component: NotfoundComponent }
+  {
+    path: 'node',
+    canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    loadChildren: 'app/modules/node/node.module#NodeModule',
+    runGuardsAndResolvers: 'always',
+    data: { permissions: ['super_account'] },
+  },
+  {
+    path: 'organization',
+    canActivate: [AuthLoginGuard, PermissionsGuard],
+    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    loadChildren: 'app/modules/organization/organization.module#OrganizationModule',
+    runGuardsAndResolvers: 'always',
+    data: { permissions: ['manage_accounts'] },
+  },
+  {
+    path: 'settings',
+    canActivate: [AuthGuard],
+    loadChildren: 'app/modules/settings/settings.module#SettingsModule',
+    runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'terms',
+    component: TermsComponent,
+  },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' }),
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthGuardChild, AuthGuardLogin]
+  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

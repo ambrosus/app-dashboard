@@ -19,6 +19,12 @@
     },
     "TOKEN": {
       "required": true
+    },
+    "API_CORE": {
+      "required": true
+    },
+    "API_EXTENDED": {
+      "required": true
     }
   },
   "formation": {
@@ -29,9 +35,7 @@
   "addons": [
 
   ],
-  "buildpacks": [
-    {
-      "url": "heroku\/nodejs"
-    }
-  ]
+  "buildpacks": [{
+    "url": "heroku\/nodejs"
+  }]
 }

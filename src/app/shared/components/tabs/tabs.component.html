@@ -1,0 +1,10 @@
+<div class="tabs">
+  <div class="tabs__menu">
+    <ul class="tabs__menu__list">
+      <li class="tabs__menu__list__link" *ngFor="let tab of tabList" [class.active]="tab.active" (click)="selectTab(tab)">{{tab.label}}</li>
+    </ul>
+  </div>
+  <div class="tabs__content">
+    <ng-content></ng-content>
+  </div>
+</div>

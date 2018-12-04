@@ -1,46 +1,136 @@
-<header class="header">
-  <div class="header-container">
-    <a class="header-logo" routerLink="/">
-      <img src="/assets/svg/logo.svg" alt="Ambrosus">
-    </a>
+<!--
+  Copyright: Ambrosus Technologies GmbH
+  Email: tech@ambrosus.com
+  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<header [ngClass]="{ 'advanced': advanced }">
+  <div class="wrapper">
+    <div class="dropDown left" appToggleDropDown>
+      <app-svg-icon name="hamburger_menu" width="25" height="25" fill="333"></app-svg-icon>
+      <app-drop-down [items]="dropDown.menu"></app-drop-down>
+    </div>
 
-    <ul class="header-menu" *ngIf="isLoggedin">
-      <!-- Mobile menu -->
-      <li class="hide-640">
-        <div class="hamburger-icon dropdown dropdown__no-arrow" appClickThisActive (click)="overlay = !overlay" style="position: static;">
-          <div></div>
-          <div></div>
-          <div></div>
-          <!-- Menu -->
-          <nav class="menu-mobile">
-            <p class="menu-mobile__item" style="color: #9b9b9b;">
-              {{ greeting }}
-            </p>
-            <p class="menu-mobile__item" routerLink="/settings">
-              Settings
-            </p>
-            <p class="menu-mobile__item" (click)="logout()">
-              Logout
-            </p>
-          </nav>
-        </div>
-      </li>
-      <!-- end Mobile menu -->
+    <div class="logo"><a routerLink="/"></a></div>
 
+    <div class="header__menu">
       <!-- Desktop menu -->
-      <li id="header-dropdown" class="header-menu__item dropdown hide-all display-640-inline-block p-v-10" appClickThisActive>
-        {{ greeting }}
-        <ul class="dropdown-menu">
-          <li routerLink="/settings">
-            Settings
+      <nav *ngIf="!advanced">
+        <ul>
+          <li *ngIf="checkPermissions(['super_account'])">
+            <a routerLink="/node" routerLinkActive="active">Node</a>
           </li>
-          <li (click)="logout()">
-            Logout
+          <li *ngIf="checkPermissions(['manage_accounts'])">
+            <a routerLink="/organization" routerLinkActive="active">Organizations</a>
           </li>
+          <li><a routerLink="/assets" routerLinkActive="active">Assets</a></li>
         </ul>
-      </li>
-      <!-- end Desktop menu -->
-    </ul>
+      </nav>
+      <!-- Search (simple) -->
+      <form class="form search" [formGroup]="forms.search" (ngSubmit)="search()">
+        <a class="advanced" (click)="advanced = !advanced">{{
+          advanced ? 'close' : 'advanced'
+        }}</a>
+        <input formControlName="input" type="search" placeholder="Search Assets (by ID or Text)" />
+      </form>
+      <!-- Search icon -->
+      <app-svg-icon class="search__icon" name="search" width="30" height="30" fill="333" (click)="advanced = !advanced"></app-svg-icon>
+    </div>
+
+    <div class="avatar" appToggleDropDown>
+      <div>{{ account.email ? account.email.charAt(0) : account.address.charAt(2) }}</div>
+      <app-drop-down [items]="dropDown.profile"></app-drop-down>
+    </div>
+
   </div>
+
+  <!-- Search (advanced) -->
+  <div class="search" *ngIf="advanced">
+    <div class="wrapper">
+
+      <form class="form center" [formGroup]="forms.searchAdvance" (ngSubmit)="search()" (keydown.enter)="$event.preventDefault()">
+        <label class="hide-480">
+          <span>Search</span>
+          <input type="text" formControlName="input" placeholder="Search..." />
+        </label>
+        <div class="group">
+          <label class="w25">
+            <span>Created from</span>
+            <input [matDatepicker]="from" (click)="from.open()" placeholder="Choose from date" formControlName="from">
+            <mat-datepicker #from></mat-datepicker>
+          </label>
+          <label class="w25">
+            <span>To</span>
+            <input [matDatepicker]="to" (click)="to.open()" placeholder="Choose to date" formControlName="to">
+            <mat-datepicker #to></mat-datepicker>
+          </label>
+          <label class="w50">
+            <span>Asset state</span>
+            <div class="tags" formArrayName="state">
+              <div class="tag" *ngFor="let tag of forms.searchAdvance.get('state')['controls']; let i = index">
+                {{ tag.value }}
+                <a class="remove" (click)="remove('state', i)">&times;</a>
+              </div>
+              <input type="text" (keyup)="addTag($event, tagInput)" placeholder="ie. sold" #tagInput />
+            </div>
+          </label>
+        </div>
+        <h5 class="left" style="margin-bottom: 25px;">Identifiers</h5>
+        <div formArrayName="identifiers" class="right">
+          <div class="group" *ngFor="let identifier of forms.searchAdvance.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+            <label class="w50">
+              <span>Name</span>
+              <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
+            </label>
+            <label class="w50">
+              <span>Value</span>
+              <input formControlName="value" type="text" />
+              <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0">&times;</a>
+            </label>
+          </div>
+          <a class="addMore" (click)="addIdentifier()">+ Add more</a>
+        </div>
+
+        <h5 class="left" style="margin: 30px 0;">Location</h5>
+        <div formGroupName="location" style="margin-bottom: 40px">
+          <div class="group">
+            <label class="w50">
+              <span>City</span>
+              <input formControlName="city" type="text" />
+            </label>
+            <label class="w50">
+              <span>Country</span>
+              <input formControlName="country" type="text" />
+            </label>
+          </div>
+          <div class="group">
+            <label class="w50">
+              <span>GLN</span>
+              <input formControlName="gln" type="text" />
+            </label>
+            <label class="w50">
+              <span>Location ID</span>
+              <input formControlName="locationId" type="text" />
+            </label>
+          </div>
+          <div class="group">
+            <label class="w50">
+              <span>Latitude</span>
+              <input formControlName="lat" type="number" />
+            </label>
+            <label class="w50">
+              <span>Longitude</span>
+              <input formControlName="lng" type="number" />
+            </label>
+          </div>
+        </div>
+        <button type="submit">Search</button>
+      </form>
+
+    </div>
+  </div>
+
 </header>
-<div class="overlay" *ngIf="overlay" (click)="overlay = !overlay"></div>
+
+<div class="overlay" *ngIf="advanced" (click)="advanced = false"></div>

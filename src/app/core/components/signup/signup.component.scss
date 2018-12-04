@@ -1,0 +1,150 @@
+@import 'utils';
+
+app-signup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  width: 100%;
+  text-align: center;
+
+  > div {
+    width: 100%;
+  }
+
+  .options,
+  .option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .option {
+    img {
+      margin-bottom: 44px;
+      height: 80px;
+    }
+  }
+
+  .options {
+    &__separator {
+      color: #686BC2;
+      margin: 60px 0;
+      position: relative;
+      flex-shrink: 0;
+
+      &:before,
+      &:after {
+        content: '';
+        height: 1px;
+        width: 60px;
+        background: #686BC2;
+        position: absolute;
+        right: 32px;
+        top: 6px;
+      }
+
+      &:after {
+        left: 32px;
+      }
+    }
+  }
+
+  @include breakpoint-min(768) {
+    .options {
+      flex-direction: row;
+      justify-content: center;
+
+      &__separator {
+        margin: 0 60px;
+
+        &:before,
+        &:after {
+          height: 60px;
+          width: 1px;
+          top: -75px;
+          left: 8px;
+          right: unset;
+        }
+
+        &:after {
+          top: 30px;
+        }
+      }
+    }
+  }
+
+  .back {
+    position: absolute;
+    left: 0;
+    color: $grey;
+  }
+
+  .warning {
+    width: 100%;
+    max-width: 624px;
+    background: rgba(4, 4, 4, 0.15);
+    border-radius: 8px;
+    margin: 50px 0 40px;
+    padding: 50px 25px;
+
+    > h5 {
+      color: #40D685;
+      margin-bottom: 40px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    p {
+      color: #fff;
+    }
+  }
+
+  .keys {
+    width: 100%;
+    max-width: 624px;
+    background: #fff;
+    border-radius: 8px;
+    margin: 50px 0 20px;
+    padding: 35px 25px 25px 25px;
+    text-align: left;
+
+    h6 {
+      color: #00B7F9;
+      margin-bottom: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      + p {
+        color: #333;
+        margin-bottom: 40px;
+        font-weight: 500;
+        font-size: 14px;
+        width: 100%;
+        max-width: 100%;
+        word-break: break-all;
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+        text-align: right;
+      }
+    }
+  }
+
+  .block-center {
+    max-width: 625px;
+    margin: 0 auto;
+
+    > h2 {
+      margin: 55px 0 25px;
+      padding: 0 50px;
+      position: relative;
+    }
+  }
+
+  .meta {
+    margin-bottom: 50px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,64 @@
+<!--
+  Copyright: Ambrosus Technologies GmbH
+  Email: tech@ambrosus.com
+  This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<div class="page">
+  <header>
+    <div class="wrapper">
+      <div class="flex between">
+        <div>
+          <h1 class="decoration">
+            <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
+            {{ selected ? selected + ' Selected' : 'My assets' }}
+          </h1>
+          <p style="margin-top: 10px;">
+            {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
+            <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
+          </p>
+        </div>
+        <div class="flex-0">
+          <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
+          <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">Bulk event</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="wrapper">
+
+      <form [formGroup]="forms.table" (change)="isSelected()">
+        <div class="table" formArrayName="assets">
+          <div class="item" [ngClass]="{ selected: asset.value.selected }" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
+            <header>
+              <label class="image" [style.backgroundImage]="'url(' + assetsService.getImage(asset.value.info) + ')'">
+                <input formControlName="selected" type="checkbox" />
+              </label>
+            </header>
+            <main>
+              <a routerLink="/assets/{{ asset.value.assetId }}">
+                <div>
+                  <h5 class="title">
+                    {{ assetsService.getName(asset.value.info) }}
+                  </h5>
+                  <p class="assetId">{{ asset.value.assetId }}</p>
+                  <p class="createdBy">
+                    <span class=flex-0>by</span>
+                    <span class="image"></span>
+                    <span class="address">{{ asset.value.createdBy }}</span>
+                  </p>
+                </div>
+              </a>
+            </main>
+          </div>
+        </div>
+      </form>
+
+      <div class="center" *ngIf="pagination && pagination.hasNext">
+        <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
+      </div>
+    </div>
+  </main>
+</div>

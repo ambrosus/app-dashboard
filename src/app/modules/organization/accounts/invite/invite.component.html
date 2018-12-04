@@ -1,0 +1,35 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<header>
+  <div class="flex between">
+    <h2 class="title">Invite Members</h2>
+    <ul class="menu flex-0">
+      <li [ngClass]="{ 'active': form }" (click)="form = true">Form</li>
+    </ul>
+  </div>
+</header>
+<main>
+  <form class="form" [formGroup]="forms.invite" (ngSubmit)="send()">
+    <section>
+      <div formArrayName="members" class="right">
+        <div *ngFor="let member of forms.invite.get('members')['controls']; let i = index" [formGroupName]="i">
+          <label>
+            <span>Email</span>
+            <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
+          </label>
+        </div>
+        <a class="addMore" (click)="addMember()">+ Add invite</a>
+      </div>
+    </section>
+
+    <div>
+      <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
+    </div>
+  </form>
+</main>

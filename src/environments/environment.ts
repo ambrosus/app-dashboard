@@ -4,14 +4,10 @@
 
 export const environment = {
   production: false,
-  host: 'https://gateway-test.ambrosus.com',
-  apiUrls: {
-    token: '/token',
-    address: '/accounts/',
-    assets: '/assets',
-    createEvent: '/assets/',
-    getEvents: '/events'
-  }
+  api: {
+    core: 'https://hermes.ambrosus-dev.com',
+    extended: 'https://hermes.ambrosus-dev.com/extended',
+  },
 };
 
 /*

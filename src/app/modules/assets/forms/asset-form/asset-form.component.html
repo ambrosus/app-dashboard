@@ -1,0 +1,109 @@
+<!--
+Copyright: Ambrosus Technologies GmbH
+Email: tech@ambrosus.com
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
+-->
+<form class="form" [formGroup]="forms.asset" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
+
+  <section>
+    <h5 style=" margin-bottom: 25px;">Information</h5>
+    <label>
+      <span>Name *</span>
+      <input formControlName="name" type="text">
+    </label>
+    <label>
+      <span>Asset type</span>
+      <input formControlName="assetType" type="text">
+    </label>
+    <label>
+      <span>Access level</span>
+      <input formControlName="accessLevel" type="number" min="0">
+    </label>
+    <label>
+      <span>Description</span>
+      <textarea formControlName="description" rows="1"></textarea>
+    </label>
+
+    <div formArrayName="images">
+      <h5 style="margin: 50px 0 25px">Images</h5>
+      <input type="url" placeholder="Enter an image url" (keydown)="addImage($event, imageInput)" #imageInput>
+      <div class="image-preview">
+        <div *ngFor="let image of forms.asset.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrl(image.url)" (click)="remove('images', i)"></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: #fafafa;">
+    <h2 style="margin-bottom: 24px;">Properties</h2>
+    <!-- Properties -->
+    <div formArrayName="properties" class="right">
+      <div class="group" *ngFor="let property of forms.asset.get('properties')['controls']; let i = index" [formGroupName]="i">
+        <label class="w50">
+          <span>Name</span>
+          <input formControlName="name" type="text" />
+        </label>
+        <label class="w50">
+          <span>Value</span>
+          <input formControlName="value" type="text" />
+          <a class="remove" (click)="remove('properties', i)" *ngIf="i !== 0">&times;</a>
+        </label>
+      </div>
+      <a class="addMore" (click)="addProperty()">+ Add property</a>
+      <hr />
+      <div class="left">
+        <a class="addMore" (click)="addGroup()" style="font-size: 14px;">+ Add group</a>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div formArrayName="groups" class="right" style="margin-top: 25px;">
+      <div *ngFor="let group of forms.asset.get('groups')['controls']; let i = index" [formGroupName]="i">
+        <label>
+          <span>Group name</span>
+          <input formControlName="title" type="text" />
+          <a class="remove" (click)="remove('groups', i)">&times;</a>
+        </label>
+        <div formArrayName="content">
+          <div class="group" *ngFor="let property of group.get('content')['controls']; let j = index" [formGroupName]="j">
+            <label class="w50">
+              <span>Name</span>
+              <input formControlName="name" type="text" />
+            </label>
+            <label class="w50">
+              <span>Value</span>
+              <input formControlName="value" type="text" />
+              <a class="remove" (click)="removeGroupProperty(i, j)" *ngIf="j !== 0">&times;</a>
+            </label>
+          </div>
+        </div>
+        <a class="addMore" (click)="addGroupProperty(i)">+ Add property</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Identifiers -->
+  <section>
+    <h5 style="margin-bottom: 25px;">Identifiers</h5>
+    <div formArrayName="identifiers" class="right">
+      <div class="group" *ngFor="let identifier of forms.asset.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+        <label class="w50">
+          <span>Name</span>
+          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
+        </label>
+        <label class="w50">
+          <span>Value</span>
+          <input formControlName="value" type="text" />
+          <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0">&times;</a>
+        </label>
+      </div>
+      <a class="addMore" (click)="addIdentifier()">+ Add identifier</a>
+    </div>
+  </section>
+
+  <div style="padding: 0 40px;">
+    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+    <button type="submit" [disabled]="forms.asset.invalid" [promiseBtn]="promise.create">Create</button>
+  </div>
+</form>

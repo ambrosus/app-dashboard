@@ -1,33 +1,55 @@
-@import 'var';
+@import 'utils';
 
-.footer {
-  position: relative;
+app-footer {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
-  padding: 30px 20px;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.copyright {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  & img {
-    height: 18px;
-  }
-}
-
-.footer-menu {
-  display: flex;
-  flex-direction: row;
   justify-content: center;
-  align-items: center;
+  padding: 50px 15px;
+  text-align: center;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 500;
 
-  & li {
-    padding: 5px;
-    cursor: pointer;
+  .logo {
+    margin: 20px 0px;
+  }
+
+  .copyright,
+  .contact {
+    width: 300px;
+  }
+
+  .copyright {
+    > p {
+      font-size: 11px;
+    }
+  }
+
+  .contact {
+    a {
+      color: $grey;
+      font-size: 11px;
+    }
+  }
+
+  @include breakpoint-min(1024) {
+    padding: 50px 85px;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .logo {
+      margin: 0;
+    }
+
+    .copyright {
+      text-align: left;
+    }
+
+    .contact {
+      text-align: right;
+      user-select: auto;
+    }
   }
 }

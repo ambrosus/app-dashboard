@@ -1,0 +1,18 @@
+<div class="page" *ngIf="account.address">
+  <header>
+    <div class="wrapper">
+      <div class="flex">
+        <div class="image"></div>
+        <div>
+          <h1>{{ account.fullName || account.email || 'Account details' }}</h1>
+          <p style="margin-top: 10px;">{{ account.address }}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

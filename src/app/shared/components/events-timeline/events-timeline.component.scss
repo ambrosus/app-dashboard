@@ -1,0 +1,160 @@
+@import 'utils';
+
+app-events-timeline {
+  display: block;
+  width: 100%;
+
+  > ul {
+    position: relative;
+
+    &:before {
+      display: none;
+      content: '';
+      width: 2px;
+      height: calc(100% - 150px);
+      background: #fff;
+      position: absolute;
+      left: -76px;
+      top: 25px;
+    }
+
+    > .event {
+      position: relative;
+      padding: 25px;
+      background: #fff;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      box-shadow: 0px 4px 8px rgba($grey, 0.05);
+      cursor: pointer;
+      transition: transform .1s ease-out;
+
+      > .pin {
+        display: none;
+        position: absolute;
+        left: -115px;
+        top: 0;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        background: #fafafa;
+        width: 80px;
+
+        > .icon {
+          width: 40px;
+          height: 40px;
+          background-image: url('/assets/svg/event-color.svg');
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: 50%;
+        }
+
+        > .ago {
+          color: $grey;
+          font-size: 11px;
+          margin-top: 10px;
+          text-align: center;
+        }
+      }
+
+      &:last-child {
+        > .pin {
+
+          > .icon {
+            background-image: url('/assets/svg/asset-darker.svg');
+          }
+        }
+      }
+
+      > .location {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 15px;
+
+        app-svg-icon {
+          margin-right: 12px;
+        }
+
+        p {
+          font-size: 11px;
+          color: $black;
+        }
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &:before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 25px;
+        top: 0;
+        height: 2px;
+        background: $green;
+        width: 40px;
+      }
+
+      .timestamp {
+        font-size: 12px;
+        font-weight: 500;
+        color: $grey;
+        flex: 0 0 auto;
+      }
+
+      .title {
+        color: $light-blue;
+      }
+
+      .createdBy {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 25px;
+        font-size: 12px;
+
+        > span {
+          word-break: break-all;
+        }
+
+        .address {
+          color: $grey;
+          font-size: 12px;
+        }
+
+        > .image {
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          flex: 0 0 24px;
+          background: $grey;
+          margin: 0 8px;
+          border-radius: 50%;
+          position: relative;
+          background-color: #fafafa;
+          background-image: url('/assets/raster/account-image-default.png');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: 50%;
+        }
+      }
+    }
+
+    @include breakpoint-min(1100) {
+      &:before {
+        display: block;
+      }
+
+      > .event {
+        > .pin {
+          display: flex;
+        }
+      }
+    }
+  }
+}

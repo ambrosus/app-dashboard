@@ -1,0 +1,15 @@
+app-qr-code {
+  display: block;
+  cursor: pointer;
+  transition: opacity .3s;
+  margin-right: 25px;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  img {
+    height: 100px;
+    width: 100px;
+  }
+}

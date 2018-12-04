@@ -1,25 +1,24 @@
 import { AssetsService } from './assets.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 import {
   Resolve,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  Router
 } from '@angular/router';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class EventResolver implements Resolve<any> {
-  constructor(private asset: AssetsService) {}
+  constructor(private assetsService: AssetsService) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): Observable<any> | Promise<any> | any {
-    return this.asset.getEventById(route.params.eventid).pipe(
-      map(asset => asset),
-      first()
+    return this.assetsService.getEvent(route.params.eventid).pipe(
+      map(event => event),
+      first(),
     );
   }
 }

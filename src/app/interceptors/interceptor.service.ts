@@ -1,37 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpInterceptor,
+  HttpHandler,
+  HttpRequest,
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { StorageService } from 'app/services/storage.service';
-import { environment } from 'environments/environment';
+import { AuthService } from 'app/services/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class InterceptorService implements HttpInterceptor {
-  constructor(private storage: StorageService) {}
+  constructor(private authService: AuthService) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.storage.get('token');
-    const secret = this.storage.get('secret');
-    const address = this.storage.get('address');
-
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     let request: HttpRequest<any> = req.clone();
 
-    if (req.url === `${environment.host}${environment.apiUrls.address}${address}`) {
+    const token = this.authService.getToken();
+    const tokenNotNeeded = ['/assets'];
+    const useToken = !tokenNotNeeded.filter(
+      route => req.url.indexOf(route) > -1,
+    ).length;
+
+    if (useToken) {
       request = req.clone({
-        headers: new HttpHeaders({
+        setHeaders: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `AMB_TOKEN ${token}`
-        })
-      });
-    } else {
-      request = req.clone({
-        headers: new HttpHeaders({
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `AMB ${secret}`
-        })
+          Authorization: useToken ? `AMB_TOKEN ${token}` : '',
+        },
       });
     }
 
