@@ -45,7 +45,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     MatDialogModule,
     ReactiveFormsModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCIf-xvKaHu8pgMCuOgw8Ft9gnMgmAOBVw',
+      apiKey: 'AIzaSyBSOr58Z_uGBdXIwVi96pkgN5a_ivEkLTg',
     }),
     Angular2PromiseButtonModule.forRoot({
       spinnerTpl: '<span class="spinner"></span>',
