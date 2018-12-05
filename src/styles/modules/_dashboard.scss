@@ -97,6 +97,33 @@
   &__main {
     padding: 0 25px 45px;
 
+    .chart {
+      width: 100%;
+      max-height: 375px;
+      margin-bottom: 50px;
+    }
+
+    .displayed {
+      margin: 25px 0 40px;
+
+      > p {
+        margin-bottom: 7px;
+
+        &::first-letter {
+          text-transform: capitalize;
+        }
+      }
+
+      > h6 {
+        color: $black;
+        font-weight: 400;
+
+        > span {
+          color: $grey;
+        }
+      }
+    }
+
     .showMenu {
 
       > li {
@@ -106,6 +133,11 @@
         color: $black;
         cursor: pointer;
         user-select: none;
+        transition: color .2s;
+
+        &:first-child {
+          padding-left: 0;
+        }
 
         &.active {
           color: $blue;
@@ -121,6 +153,10 @@
         color: $grey;
         font-size: 11px;
         text-transform: uppercase;
+
+        &:last-child {
+          padding-right: 0;
+        }
 
         &.active {
           color: $black;

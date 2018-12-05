@@ -30,18 +30,21 @@
 
     <div class="flex between">
       <ul class="showMenu">
-        <li>Assets</li>
-        <li>Events</li>
+        <li [ngClass]="{ 'active': display === 'assets' }" (click)="display = 'assets'">Assets</li>
+        <li [ngClass]="{ 'active': display === 'events' }" (click)="display = 'events'">Events</li>
       </ul>
 
       <ul class="groupByMenu">
-        <li>24h</li>
-        <li>7d</li>
-        <li>mtd</li>
-        <li>28d</li>
-        <li>12m</li>
+        <li [ngClass]="{ 'active': groupBy === '24h' }" (click)="groupBy = '24h'">24h</li>
+        <li [ngClass]="{ 'active': groupBy === '7d' }" (click)="groupBy = '7d'">7d</li>
+        <li [ngClass]="{ 'active': groupBy === 'mtd' }" (click)="groupBy = 'mtd'">mtd</li>
+        <li [ngClass]="{ 'active': groupBy === '28d' }" (click)="groupBy = '28d'">28d</li>
+        <li [ngClass]="{ 'active': groupBy === '12m' }" (click)="groupBy = '12m'">12m</li>
       </ul>
     </div>
 
+    <h6 class="total">Total: <span>245</span></h6>
+
+    <!-- Diagram -->
   </div>
 </main>
