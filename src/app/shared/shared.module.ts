@@ -41,7 +41,8 @@ import { environment } from 'environments/environment';
 let apiKey = '';
 if (environment.ambrosus) {
   apiKey = 'AIzaSyBSOr58Z_uGBdXIwVi96pkgN5a_ivEkLTg';
-} else if (environment.prod) {
+}
+if (environment.prod) {
   apiKey = 'AIzaSyD8GeDfBs4X8ERrPuGTUsrpTN-y3CgpHks';
 }
 

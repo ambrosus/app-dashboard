@@ -6,7 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 import { Router, NavigationEnd } from '@angular/router';
-import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import { Component, ElementRef, HostListener, Renderer2, isDevMode } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +22,11 @@ export class AppComponent {
     private renderer: Renderer2,
     private router: Router,
   ) {
+    if (!isDevMode) {
+      console.log = function () { };
+      console.error = function () { };
+    }
+
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         window.scrollTo(0, 0);
@@ -34,10 +39,7 @@ export class AppComponent {
 
         const currentLocation = location.pathname.split('/');
         let currentUrlSlug = currentLocation[1];
-        currentUrlSlug =
-          currentUrlSlug === 'dashboard'
-            ? currentLocation[2]
-            : currentLocation[1];
+        currentUrlSlug = currentUrlSlug === 'dashboard' ? currentLocation[2] : currentLocation[1];
         if (currentUrlSlug) {
           this.renderer.addClass(document.body, currentUrlSlug);
         }
