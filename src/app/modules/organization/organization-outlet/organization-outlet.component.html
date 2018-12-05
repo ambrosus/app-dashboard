@@ -1,1 +1,22 @@
-<router-outlet></router-outlet>
+<div class="dashboard">
+  <header>
+    <ul class="menu">
+      <li>
+        <a routerLink="/organization" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a routerLink="/organization/accounts" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Accounts
+        </a>
+      </li>
+      <li>
+        <a routerLink="/organization/settings" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Settings
+        </a>
+      </li>
+    </ul>
+  </header>
+  <router-outlet></router-outlet>
+</div>

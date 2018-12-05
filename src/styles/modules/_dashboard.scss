@@ -1,0 +1,91 @@
+.dashboard {
+
+  > header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #fafafa;
+
+    .menu {
+      display: flex;
+      flex-direction: row;
+      max-width: 100%;
+      padding: 18px 20px;
+      overflow-x: auto;
+
+      > li {
+        padding: 0 12px;
+        flex: 0 0 auto;
+
+        > a {
+          font-size: 13px;
+          font-weight: 400;
+          color: $black;
+
+          &.active {
+            color: $blue;
+          }
+        }
+      }
+    }
+  }
+
+  &__header {
+    padding: 45px 25px;
+
+    .top-stat {
+      h1 {
+        color: $light-blue;
+      }
+
+      p {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-top: 5px;
+      }
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+
+      h2 {
+        font-weight: 400;
+      }
+
+      > li {
+        position: relative;
+        padding: 20px 0 0 15px;
+        text-align: right;
+        min-width: 192px;
+        margin-bottom: 10px;
+
+        > p {
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          margin-top: 5px;
+        }
+
+        &:before {
+          content: '';
+          width: 16px;
+          height: 4px;
+          display: inline-block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: $green;
+        }
+      }
+    }
+  }
+
+  &__main {
+    padding: 0 25px 45px;
+  }
+}
