@@ -130,7 +130,21 @@ export class SignupComponent implements OnInit, OnDestroy {
         if (verified.error) {
           this.generateAddress(privateKey);
           resolve();
-          this.step = 'requestForm';
+          if (this.invite) {
+            try {
+              const { address } = this.forms.privateKey.getRawValue();
+              const body = { address };
+
+              await this.organizationsService.acceptInvite(this.inviteId, body);
+              this.router.navigate(['/login']);
+            } catch (error) {
+              console.error('[ACCEPT] Invite: ', error);
+              this.messageService.error(error);
+              throw error;
+            }
+          } else {
+            this.step = 'requestForm';
+          }
         } else {
           console.log('[VERIFY] Account: ', verified);
           throw new Error('This account already exists, please use another private key');
@@ -144,21 +158,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   async savedKeys(): Promise<any> {
-    if (this.invite) {
-      try {
-        const { address } = this.forms.privateKey.getRawValue();
-        const body = { address };
-
-        await this.organizationsService.acceptInvite(this.inviteId, body);
-        this.router.navigate(['/login']);
-      } catch (error) {
-        console.error('[ACCEPT] Invite: ', error);
-        this.messageService.error(error);
-        throw error;
-      }
-    } else {
-      this.step = 'requestForm';
-    }
+    this.step = 'requestForm';
   }
 
   generateAddress(privateKey) {
