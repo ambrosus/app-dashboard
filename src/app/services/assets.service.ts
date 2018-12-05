@@ -163,13 +163,9 @@ export class AssetsService {
           operator: 'equal',
         },
       ],
+      limit,
+      next,
     };
-    if (limit) {
-      body.limit = limit;
-    }
-    if (next) {
-      body.next = next;
-    }
 
     if (from && to) {
       body.query.push({
