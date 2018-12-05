@@ -1,4 +1,7 @@
 .dashboard {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 
   > header {
     display: flex;
@@ -81,11 +84,48 @@
           right: 0;
           background: $green;
         }
+
+        &.secondary {
+          &:before {
+            background: $grey;
+          }
+        }
       }
     }
   }
 
   &__main {
     padding: 0 25px 45px;
+
+    .showMenu {
+
+      > li {
+        display: inline-block;
+        padding: 13px;
+        font-weight: 500;
+        color: $black;
+        cursor: pointer;
+        user-select: none;
+
+        &.active {
+          color: $blue;
+        }
+      }
+    }
+
+    .groupByMenu {
+      @extend .showMenu;
+      flex: 0 0 auto;
+
+      > li {
+        color: $grey;
+        font-size: 11px;
+        text-transform: uppercase;
+
+        &.active {
+          color: $black;
+        }
+      }
+    }
   }
 }

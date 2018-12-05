@@ -1,24 +1,28 @@
 <header class="dashboard__header">
   <div class="wrapper">
-    <div class="flex between">
-      <div>
+    <div class="flex start between">
+      <div class="flex-0">
         <div class="top-stat">
           <h1 class="decoration">
             <app-svg-icon name="network" height="40" width="40" fill="0042ba"></app-svg-icon>
-            7,250 Credits
+            477,725<small>.00956 AMB</small>
           </h1>
-          <p>5,000 assets or 5,000 events</p>
+          <p>usd 5,663.01</p>
         </div>
       </div>
-      <div class="flex-0">
+      <div>
         <ul class="stats">
           <li>
-            <h2>98,8%</h2>
-            <p>Server up time</p>
+            <h2>0,61523 <small style="color: #999">USD</small></h2>
+            <p>amb price in 24h</p>
           </li>
-          <li>
-            <h2>14,2 ms</h2>
-            <p>Server response time</p>
+          <li class="secondary">
+            <h2>72,674 <small style="color: #00b7f9">AMB</small></h2>
+            <p>price per bundle</p>
+          </li>
+          <li class="secondary">
+            <h2>6,754</h2>
+            <p>bundles left on balance</p>
           </li>
         </ul>
       </div>
@@ -26,5 +30,23 @@
   </div>
 </header>
 <main class="dashboard__main">
-  Dash
+  <div class="wrapper">
+
+    <div class="flex between">
+      <ul class="showMenu">
+        <li>Bundles</li>
+        <li>Assets</li>
+        <li>Events</li>
+      </ul>
+
+      <ul class="groupByMenu">
+        <li>24h</li>
+        <li>7d</li>
+        <li>mtd</li>
+        <li>28d</li>
+        <li>12m</li>
+      </ul>
+    </div>
+
+  </div>
 </main>
