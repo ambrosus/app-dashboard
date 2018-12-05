@@ -74,6 +74,8 @@ export class GeneralComponent implements OnInit {
           data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
         }
 
+        delete data.passwordConfirm;
+
         this.account = await this.accountsService.modifyAccount(this.account.address, data);
         this.storageService.set('account', this.account);
         this.accountsService._account.next(this.account);

@@ -12,7 +12,7 @@
       <app-drop-down [items]="dropDown.menu"></app-drop-down>
     </div>
 
-    <div class="logo"><a routerLink="/"></a></div>
+    <div class="logo" (click)="home()"><a routerLink="/"></a></div>
 
     <div class="header__menu">
       <!-- Desktop menu -->
@@ -22,7 +22,7 @@
             <a routerLink="/node" routerLinkActive="active">Node</a>
           </li>
           <li *ngIf="checkPermissions(['manage_accounts'])">
-            <a routerLink="/organization" routerLinkActive="active">Organizations</a>
+            <a routerLink="/organization" routerLinkActive="active">Organization</a>
           </li>
           <li><a routerLink="/assets" routerLinkActive="active">Assets</a></li>
         </ul>
@@ -32,7 +32,7 @@
         <a class="advanced" (click)="advanced = !advanced">{{
           advanced ? 'close' : 'advanced'
         }}</a>
-        <input formControlName="input" type="search" placeholder="Search Assets (by ID or Text)" />
+        <input formControlName="name" type="search" placeholder="Search Assets (by name)" />
       </form>
       <!-- Search icon -->
       <app-svg-icon class="search__icon" name="search" width="30" height="30" fill="333" (click)="advanced = !advanced"></app-svg-icon>
@@ -49,10 +49,10 @@
   <div class="search" *ngIf="advanced">
     <div class="wrapper">
 
-      <form class="form center" [formGroup]="forms.searchAdvance" (ngSubmit)="search()" (keydown.enter)="$event.preventDefault()">
+      <form class="form center" [formGroup]="forms.search" (ngSubmit)="search()" (keydown.enter)="$event.preventDefault()">
         <label class="hide-480">
           <span>Search</span>
-          <input type="text" formControlName="input" placeholder="Search..." />
+          <input type="text" formControlName="name" placeholder="Search..." />
         </label>
         <div class="group">
           <label class="w25">
@@ -68,7 +68,7 @@
           <label class="w50">
             <span>Asset state</span>
             <div class="tags" formArrayName="state">
-              <div class="tag" *ngFor="let tag of forms.searchAdvance.get('state')['controls']; let i = index">
+              <div class="tag" *ngFor="let tag of forms.search.get('state')['controls']; let i = index">
                 {{ tag.value }}
                 <a class="remove" (click)="remove('state', i)">&times;</a>
               </div>
@@ -78,7 +78,7 @@
         </div>
         <h5 class="left" style="margin-bottom: 25px;">Identifiers</h5>
         <div formArrayName="identifiers" class="right">
-          <div class="group" *ngFor="let identifier of forms.searchAdvance.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+          <div class="group" *ngFor="let identifier of forms.search.get('identifiers')['controls']; let i = index" [formGroupName]="i">
             <label class="w50">
               <span>Name</span>
               <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
@@ -107,25 +107,17 @@
           <div class="group">
             <label class="w50">
               <span>GLN</span>
-              <input formControlName="gln" type="text" />
+              <input formControlName="GLN" type="text" />
             </label>
             <label class="w50">
-              <span>Location ID</span>
+              <span>Location Id</span>
               <input formControlName="locationId" type="text" />
             </label>
           </div>
-          <div class="group">
-            <label class="w50">
-              <span>Latitude</span>
-              <input formControlName="lat" type="number" />
-            </label>
-            <label class="w50">
-              <span>Longitude</span>
-              <input formControlName="lng" type="number" />
-            </label>
-          </div>
         </div>
-        <button type="submit">Search</button>
+        <button type="submit" [disabled]="forms.search.invalid" [promiseBtn]="promise.search">
+          Search
+        </button>
       </form>
 
     </div>

@@ -7,10 +7,13 @@ import { environment } from 'environments/environment.prod';
 import { map, catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
+import { AuthService } from './auth.service';
 
 declare let Web3: any;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AssetsService {
   inputChanged = new Subject();
   creatingAsset = new Subject();
@@ -25,19 +28,31 @@ export class AssetsService {
     data: [],
     pagination: {},
   });
+  searchQuery: {
+    from?: number,
+    to?: number,
+    name?: string,
+    state?: any[],
+    identifiers?: any[],
+    location?: any,
+    address?: string,
+  } = {};
   ambrosus;
   web3;
   api;
+  search = false;
+  assetsReset = false;
 
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
     private messageService: MessageService,
+    private authService: AuthService,
   ) {
     this.initSDK();
     this.web3 = new Web3();
     this.api = environment.api;
-    this.loadAssets();
+    this.getAssets().then();
   }
 
   to(O: Observable<any>) {
@@ -46,19 +61,10 @@ export class AssetsService {
       .catch(error => ({ error }));
   }
 
-  loadAssets() {
-    const account = <any>this.storageService.get('account') || {};
-    const { address } = account;
-    const options = {
-      limit: 15,
-      address,
-    };
-    this.getAssets(options).then();
-  }
-
   get assets(): any {
     return this._assets.asObservable();
   }
+
   get events(): any {
     return this._events.asObservable();
   }
@@ -93,10 +99,18 @@ export class AssetsService {
   }
 
   set assets(options) {
-    if (options && options.data) {
+    if (options) {
       options = JSON.parse(JSON.stringify(options));
       const assets = this._assets.getValue();
-      if (options.change === 'data' && Array.isArray(options.data)) {
+
+      if (options.clean) {
+        console.log('clean');
+        this._assets.next({
+          meta: {},
+          data: [],
+          pagination: {},
+        });
+      } else if (options.change === 'data' && Array.isArray(options.data)) {
         switch (options.type) {
           case 'all':
             assets['data'] = options.data;
@@ -110,8 +124,7 @@ export class AssetsService {
         }
         this._assets.next(assets);
       } else {
-        const data = assets.data.concat(options.data);
-        options.data = data;
+        options.data = assets.data.concat(options.data);
         this._assets.next(options);
       }
     }
@@ -130,12 +143,188 @@ export class AssetsService {
     });
   }
 
-  async getAssets(options: {
-    address?: string;
+  async searchAssets(options: {
     limit?: number;
     next?: string;
-  }): Promise<void> {
-    const { address, limit, next } = options;
+  } = {}): Promise<any> {
+    let { limit, next } = options;
+    const { from, to, name, state, identifiers, location, address } = this.searchQuery;
+    limit = limit || 15;
+    next = next || '';
+
+    // 1. Get events based on search query
+
+    let url = `${this.api.extended}/event/query`;
+    let body: any = {
+      query: [
+        {
+          field: 'content.idData.createdBy',
+          value: address,
+          operator: 'equal',
+        },
+      ],
+      limit,
+      next,
+    };
+
+    if (from && to) {
+      body.query.push({
+        field: 'content.idData.timestamp',
+        value: { 'greater-than-equal': from, 'less-than-equal': to },
+        operator: 'inrange',
+      });
+    }
+    if (from && !to) {
+      body.query.push({
+        field: 'content.idData.timestamp',
+        value: from,
+        operator: 'greater-than-equal',
+      });
+    }
+    if (to && !from) {
+      body.query.push({
+        field: 'content.idData.timestamp',
+        value: to,
+        operator: 'less-than-equal',
+      });
+    }
+    if (name) {
+      body.query.push({
+        field: 'content.data.name',
+        value: name,
+        operator: 'contains',
+      });
+    }
+    if (Array.isArray(state) && state.length) {
+      body.query.push({
+        field: 'content.data.type',
+        value: state,
+        operator: 'equal',
+      });
+    }
+    if (Array.isArray(identifiers) && identifiers.length) {
+      identifiers.map(identifier => {
+        if (identifier.name && identifier.value) {
+          body.query.push({
+            field: `content.data.identifiers.${identifier.name}`,
+            value: identifier.value,
+            operator: 'equal',
+          });
+        }
+      });
+    }
+    if (location) {
+      const { city, country, GLN, locationId } = location;
+      if (city) {
+        body.query.push({
+          field: 'content.data.city',
+          value: city,
+          operator: 'contains',
+        });
+      }
+      if (country) {
+        body.query.push({
+          field: 'content.data.country',
+          value: country,
+          operator: 'contains',
+        });
+      }
+      if (GLN) {
+        body.query.push({
+          field: 'content.data.GLN',
+          value: GLN,
+          operator: 'contains',
+        });
+      }
+      if (locationId) {
+        body.query.push({
+          field: 'content.data.locationId',
+          value: locationId,
+          operator: 'contains',
+        });
+      }
+    }
+
+    const events = await this.to(this.http.post(url, body));
+    if (events.error) {
+      this.messageService.error(events.error);
+      Promise.reject(events.error);
+      return;
+    }
+    console.log('[GET] Events (search): ', events.data);
+
+    // 2. Create fake assets
+
+    const assets = events.data.reduce((_assets, event, index, array) => {
+      if (!_assets.data.some(asset => asset.assetId === event.content.idData.assetId)) {
+        _assets.data.push({
+          assetId: event.content.idData.assetId,
+          content: {
+            idData: {
+              createdBy: event.content.idData.createdBy,
+            },
+          },
+        });
+      }
+
+      return _assets;
+    }, {
+        data: [],
+        pagination: events.pagination,
+      });
+
+    const ids = assets.data.reduce((_ids, asset, index, array) => {
+      if (_ids.indexOf(asset.assetId) === -1) {
+        _ids.push(asset.assetId);
+      }
+      return _ids;
+    }, []);
+
+    // 3. Get latest info events for final assets
+
+    url = `${this.api.extended}/event/latest/type`;
+    body = {
+      type: 'ambrosus.asset.info',
+      assets: ids,
+    };
+
+    const infoEvents = await this.to(this.http.post(url, body));
+    if (infoEvents.error) {
+      this.messageService.error(infoEvents.error);
+      Promise.reject(infoEvents.error);
+      return;
+    }
+    console.log('[GET] Info events: ', infoEvents.data);
+
+    // Connect assets with info events
+    assets.data = assets.data.map(asset => {
+      asset.info = infoEvents.data.find(
+        event => asset.assetId === event.content.idData.assetId,
+      );
+
+      if (asset.info) {
+        asset.info = this.findEvent('info', [asset.info]);
+      }
+
+      return asset;
+    });
+
+    this.search = true;
+    this.assets = assets;
+
+    Promise.resolve();
+  }
+
+  async getAssets(options: {
+    limit?: number;
+    next?: string;
+  } = {}): Promise<any> {
+    let { limit, next } = options;
+    const account = <any>this.storageService.get('account') || {};
+    const { address } = account;
+    this.assetsReset = false;
+    limit = limit || 15;
+    next = next || '';
 
     let url = `${this.api.extended}/asset/query`;
     let body: any = {
