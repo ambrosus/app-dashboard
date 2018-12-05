@@ -178,14 +178,14 @@ export class AssetsService {
       body.query.push({
         field: 'content.idData.timestamp',
         value: from,
-        operator: 'greater-than',
+        operator: 'greater-than-equal',
       });
     }
     if (to && !from) {
       body.query.push({
         field: 'content.idData.timestamp',
         value: to,
-        operator: 'less-than',
+        operator: 'less-than-equal',
       });
     }
     if (name) {
