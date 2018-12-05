@@ -10,7 +10,7 @@ import { AuthService } from 'app/services/auth.service';
 
 @Injectable()
 export class InterceptorService implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   intercept(
     req: HttpRequest<any>,
@@ -24,7 +24,7 @@ export class InterceptorService implements HttpInterceptor {
       route => req.url.indexOf(route) > -1,
     ).length;
 
-    if (useToken) {
+    if (useToken && token) {
       request = req.clone({
         setHeaders: {
           Accept: 'application/json',
@@ -33,6 +33,8 @@ export class InterceptorService implements HttpInterceptor {
         },
       });
     }
+
+    console.log('REQUEST: ', request);
 
     return next.handle(request);
   }
