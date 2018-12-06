@@ -44,7 +44,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     AssetResolver,
     EventResolver,
     AssetsResolver,
-    AssetsService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,

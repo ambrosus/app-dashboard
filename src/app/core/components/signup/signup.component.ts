@@ -130,10 +130,24 @@ export class SignupComponent implements OnInit, OnDestroy {
         if (verified.error) {
           this.generateAddress(privateKey);
           resolve();
-          this.step = 'saveKeys';
+          if (this.invite) {
+            try {
+              const { address } = this.forms.privateKey.getRawValue();
+              const body = { address };
+
+              await this.organizationsService.acceptInvite(this.inviteId, body);
+              this.router.navigate(['/login']);
+            } catch (error) {
+              console.error('[ACCEPT] Invite: ', error);
+              this.messageService.error(error);
+              throw error;
+            }
+          } else {
+            this.step = 'requestForm';
+          }
         } else {
           console.log('[VERIFY] Account: ', verified);
-          throw new Error('This account is already registered, please use another private key');
+          throw new Error('This account already exists, please use another private key');
         }
       } catch (error) {
         console.error('[VERIFY] Account: ', error);
@@ -144,21 +158,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   }
 
   async savedKeys(): Promise<any> {
-    if (this.invite) {
-      try {
-        const { address } = this.forms.privateKey.getRawValue();
-        const body = { address };
-
-        await this.organizationsService.acceptInvite(this.inviteId, body);
-        this.router.navigate(['/login']);
-      } catch (error) {
-        console.error('[ACCEPT] Invite: ', error);
-        this.messageService.error(error);
-        throw error;
-      }
-    } else {
-      this.step = 'requestForm';
-    }
+    this.step = 'requestForm';
   }
 
   generateAddress(privateKey) {
@@ -186,14 +186,19 @@ export class SignupComponent implements OnInit, OnDestroy {
       try {
         const { address } = this.forms.privateKey.getRawValue();
         const form = this.forms.request;
-        const data = form.getRawValue();
-        data.address = address;
+        const { title, email, message } = form.getRawValue();
+        const body = {
+          address,
+          title,
+          email,
+          message,
+        };
 
         if (form.invalid) {
           throw new Error('Please fill all required fields');
         }
 
-        const organizationRequest = await this.organizationsService.createOrganizationRequest(data);
+        const organizationRequest = await this.organizationsService.createOrganizationRequest(body);
         console.log('[REQUEST] Organization: ', organizationRequest);
         this.step = 'success';
         resolve();

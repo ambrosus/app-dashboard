@@ -87,7 +87,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
         city: new FormControl(null, []),
         country: new FormControl(null, []),
         locationId: new FormControl(null, []),
-        gln: new FormControl(null, []),
+        GLN: new FormControl(null, []),
       }),
     });
   }
@@ -241,9 +241,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
     // Location Event
     const location = eventForm.location;
-    const { lat, lng, name, city, country, locationId, gln } = location;
+    const { lat, lng, name, city, country, locationId, GLN } = location;
 
-    if ((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && gln) {
+    if ((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && GLN) {
       const _location = {
         type: 'ambrosus.event.location',
         location: {
@@ -256,7 +256,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
         city,
         country,
         locationId,
-        gln,
+        GLN,
       };
 
       data.push(_location);
@@ -302,10 +302,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
         // Location Event
         const location = data.location;
-        const { lat, lng, city, country, locationId, gln } = location;
+        const { lat, lng, city, country, locationId, GLN } = location;
 
-        if (lat || lat === 0 || (lng || lng === 0) || city || country || locationId || gln) {
-          if (!((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && gln)) {
+        if (lat || lat === 0 || (lng || lng === 0) || city || country || locationId || GLN) {
+          if (!((lat || lat === 0) && (lng || lng === 0) && city && country && locationId && GLN)) {
             throw new Error('Event location must either be blank or completely filled');
           }
         }

@@ -36,6 +36,15 @@ import { AgmCoreModule } from '@agm/core';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+import { environment } from 'environments/environment';
+
+let apiKey = '';
+if (environment.ambrosus) {
+  apiKey = 'AIzaSyBSOr58Z_uGBdXIwVi96pkgN5a_ivEkLTg';
+}
+if (environment.prod) {
+  apiKey = 'AIzaSyD8GeDfBs4X8ERrPuGTUsrpTN-y3CgpHks';
+}
 
 @NgModule({
   imports: [
@@ -45,7 +54,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     MatDialogModule,
     ReactiveFormsModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyBSOr58Z_uGBdXIwVi96pkgN5a_ivEkLTg',
+      apiKey,
     }),
     Angular2PromiseButtonModule.forRoot({
       spinnerTpl: '<span class="spinner"></span>',

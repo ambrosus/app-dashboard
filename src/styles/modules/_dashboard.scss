@@ -8,26 +8,45 @@
     flex-direction: row;
     width: 100%;
     background: #fff;
-    border-bottom: 1px solid #fafafa;
+    padding: 0 15px;
+
+    > .wrapper {
+      max-width: 1270px;
+    }
 
     .menu {
       display: flex;
       flex-direction: row;
-      max-width: 100%;
-      padding: 18px 20px;
+      width: 100%;
       overflow-x: auto;
+      border-bottom: 1px solid #eee;
 
       > li {
-        padding: 0 12px;
         flex: 0 0 auto;
+        margin-right: 25px;
+
+        &:last-child {
+          margin-right: 0;
+          padding-right: 15px;
+        }
 
         > a {
+          display: inline-block;
           font-size: 13px;
           font-weight: 400;
-          color: $black;
+          padding: 20px 0 14px;
+          color: $grey;
+          border-bottom: 2px solid #fff;
+          transition: color .2s, border-color .2s;
+
+          &:hover {
+            color: $black;
+            border-color: #eee;
+          }
 
           &.active {
             color: $blue;
+            border-color: $blue;
           }
         }
       }
