@@ -57,8 +57,8 @@ export class DashboardComponent implements OnInit {
         data: [],
       };
       timeSeries.count.map(stat => {
-        this.timeSeries.labels.push(stat.date);
-        this.timeSeries.data.push(stat.count);
+        this.timeSeries.labels.unshift(stat.date);
+        this.timeSeries.data.unshift(stat.count);
       });
       console.log(this.total, this.timeSeries);
 
