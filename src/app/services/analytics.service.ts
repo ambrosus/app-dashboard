@@ -51,4 +51,37 @@ export class AnalyticsService {
 
     return countSeries.data;
   }
+
+  public async amb(): Promise<any> {
+    const url = `${this.api.extended}/metrics/amb`;
+
+    const amb = await this.to(this.http.get(url));
+    if (amb.error) {
+      throw amb.error;
+    }
+
+    return amb;
+  }
+
+  public async bundle(): Promise<any> {
+    const url = `${this.api.extended}/metrics/bundle`;
+
+    const bundle = await this.to(this.http.get(url));
+    if (bundle.error) {
+      throw bundle.error;
+    }
+
+    return bundle;
+  }
+
+  public async balance(): Promise<any> {
+    const url = `${this.api.extended}/metrics/balance`;
+
+    const balance = await this.to(this.http.get(url));
+    if (balance.error) {
+      throw balance.error;
+    }
+
+    return balance;
+  }
 }

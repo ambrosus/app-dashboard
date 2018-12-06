@@ -47,6 +47,7 @@ export class AuthService {
     const validUntil = moment()
       .add(5, 'days')
       .unix();
+
     return secret ? this.sdk.getToken(secret, validUntil) : null;
   }
 

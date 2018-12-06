@@ -5,23 +5,23 @@
         <div class="top-stat">
           <h1 class="decoration">
             <app-svg-icon name="network" height="40" width="40" fill="0042ba"></app-svg-icon>
-            477,725<small>.00956 AMB</small>
+            {{ metrics.balance.balance }}<small> AMB</small>
           </h1>
-          <p>usd 5,663.01</p>
+          <p>usd {{ metrics.balance.balance * (metrics.amb.price_usd) }}</p>
         </div>
       </div>
       <div>
         <ul class="stats">
           <li>
-            <h2>0,61523 <small style="color: #999">USD</small></h2>
+            <h2>{{ metrics.amb.price_usd }} <small style="color: #999">USD</small></h2>
             <p>amb price in 24h</p>
           </li>
           <li class="secondary">
-            <h2>72,674 <small style="color: #00b7f9">AMB</small></h2>
+            <h2>{{ metrics.bundle.price }} <small style="color: #00b7f9">AMB</small></h2>
             <p>price per bundle</p>
           </li>
           <li class="secondary">
-            <h2>6,754</h2>
+            <h2>{{ (metrics.balance.balance / metrics.bundle.price) }}</h2>
             <p>bundles left on balance</p>
           </li>
         </ul>

@@ -8,48 +8,40 @@ export const timestampToDateString = ts => moment.unix(ts).format('MMMM Do YYYY,
 
 export const getTimestampMonthStart = () =>
     moment()
-        .tz('UTC')
         .startOf('M')
         .unix();
 
 export const getTimestampDateStart = date =>
     moment(date)
-        .tz('UTC')
         .startOf('d')
         .unix();
 
 export const getTimestampDateEnd = date =>
     moment(date)
-        .tz('UTC')
         .endOf('d')
         .unix();
 
 export const getTimestampSubHours = h =>
     moment()
-        .tz('UTC')
-        .subtract(h, 'h')
+        .subtract(h, 'hours')
         .unix();
 
 export const getTimestampSubDays = d =>
     moment()
-        .tz('UTC')
-        .subtract(d, 'd')
+        .subtract(d, 'days')
         .unix();
 
 export const getTimestampSubWeeks = w =>
     moment()
-        .tz('UTC')
-        .subtract(w, 'w')
+        .subtract(w, 'weeks')
         .unix();
 
 export const getTimestampSubMonths = m =>
     moment()
-        .tz('UTC')
-        .subtract(m, 'm')
+        .subtract(m, 'months')
         .unix();
 
 export const getTimestampAddDays = d =>
     moment()
-        .tz('UTC')
-        .add(d, 'd')
+        .add(d, 'days')
         .unix();
