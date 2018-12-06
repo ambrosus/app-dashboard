@@ -19,6 +19,10 @@ export class DashboardComponent implements OnInit {
     canvas: '',
   };
   total = 0;
+  timeSeries = {
+    labels: [],
+    data: [],
+  };
 
   constructor(
     private el: ElementRef,
@@ -46,14 +50,28 @@ export class DashboardComponent implements OnInit {
       const [start, end] = this.getStartEnd();
       const total = await this.analytisService.getTimeRangeCount(this.display, start, end);
       this.total = total.count;
-      console.log('[TOTAL]: ', this.total);
+      const timeSeries = await this.analytisService.getTimeRangeCountAggregate(this.display, start, end, this.getGroup());
+
+      this.timeSeries = {
+        labels: [],
+        data: [],
+      };
+      timeSeries.count.map(stat => {
+        this.timeSeries.labels.push(stat.date);
+        this.timeSeries.data.push(stat.count);
+      });
+      console.log(this.total, this.timeSeries);
+
+      if (this.diagram.canvas) {
+        this.diagram.canvas.destroy();
+      }
 
       this.diagram.canvas = new Chart(this.diagram.element, {
         type: 'bar',
         data: {
-          labels: [this.display, 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: this.timeSeries.labels,
           datasets: [{
-            data: [10, 20, 30, 40, 50, 60, 70],
+            data: this.timeSeries.data,
             backgroundColor: '#bed0ef',
             hoverBackgroundColor: '#bed0ef',
           }],
@@ -64,6 +82,7 @@ export class DashboardComponent implements OnInit {
           },
           scales: {
             xAxes: [{
+              maxBarThickness: 25,
               gridLines: {
                 display: false,
               },
@@ -83,6 +102,30 @@ export class DashboardComponent implements OnInit {
       console.log(error);
       this.messageService.error(error);
     }
+  }
+
+  getGroup() {
+    let group = '';
+
+    switch (this.groupBy) {
+      case '24h':
+        group = 'hour';
+        break;
+      case '7d':
+        group = 'day';
+        break;
+      case '28d':
+        group = 'day';
+        break;
+      case 'mtd':
+        group = 'day';
+        break;
+      case '12m':
+        group = 'month';
+        break;
+    }
+
+    return group;
   }
 
   getStartEnd() {
