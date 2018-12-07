@@ -2,25 +2,30 @@
   <div class="wrapper">
     <div class="flex start between">
       <div class="flex-0">
-        <div class="top-stat">
+        <div class="top-stat" *ngIf="metrics.balance.balance">
           <h1 class="decoration">
             <app-svg-icon name="network" height="40" width="40" fill="0042ba"></app-svg-icon>
             {{ metrics.balance.balance }}<small> AMB</small>
           </h1>
-          <p>usd {{ metrics.balance.balance * (metrics.amb.price_usd) }}</p>
+          <p>usd {{ metrics.balance.balance * (metrics.amb.price_usd) || 'unknown' }}</p>
         </div>
       </div>
       <div>
         <ul class="stats">
-          <li>
+          <li *ngIf="metrics.amb.price_usd">
             <h2>{{ metrics.amb.price_usd }} <small style="color: #999">USD</small></h2>
-            <p>amb price in 24h</p>
+            <p>
+              amb price in 24h
+              <span [style.color]="metrics.amb.percent_change_24h.charAt(0) === '-' ? '#ff5c00' : '#40d685'">
+                {{ metrics.amb.percent_change_24h }}%
+              </span>
+            </p>
           </li>
-          <li class="secondary">
+          <li class="secondary" *ngIf="metrics.bundle.price">
             <h2>{{ metrics.bundle.price }} <small style="color: #00b7f9">AMB</small></h2>
             <p>price per bundle</p>
           </li>
-          <li class="secondary">
+          <li class="secondary" *ngIf="metrics.balance.balance && metrics.bundle.price">
             <h2>{{ (metrics.balance.balance / metrics.bundle.price) }}</h2>
             <p>bundles left on balance</p>
           </li>
