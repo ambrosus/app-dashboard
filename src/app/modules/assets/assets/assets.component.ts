@@ -42,7 +42,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
         this.pagination = pagination;
-        console.log(pagination);
+        this.selected = 0;
 
         // Table form
         this.initTableForm();
@@ -63,7 +63,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.dialog.closeAll();
-        this.selected = false;
+        this.selected = 0;
       }
     });
   }
