@@ -5,6 +5,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
+import { checkTimeZone, checkText } from 'app/util';
 
 @Component({
   selector: 'app-organization',
@@ -42,13 +43,13 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.forms.organization = new FormGroup({
-      title: new FormControl(this.organization.title),
+      title: new FormControl(this.organization.title, [checkText()]),
       legalAddress: new FormControl(this.organization.legalAddress),
       owner: new FormControl({
         value: this.organization.owner,
         disabled: true,
       }),
-      timeZone: new FormControl(this.organization.timeZone),
+      timeZone: new FormControl(this.organization.timeZone, [checkTimeZone()]),
       active: new FormControl(this.organization.active),
     });
   }

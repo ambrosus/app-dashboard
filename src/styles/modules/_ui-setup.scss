@@ -41,7 +41,7 @@ ul {
 
 [disabled],
 :disabled {
-  opacity: 0.25;
+  opacity: 0.25 !important;
   cursor: not-allowed !important;
 }
 

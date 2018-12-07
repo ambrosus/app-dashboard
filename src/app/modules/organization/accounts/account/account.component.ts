@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
+import { checkText, checkEmail, checkTimeZone } from 'app/util';
 
 @Component({
   selector: 'app-account',
@@ -46,9 +47,9 @@ export class AccountComponent implements OnInit, OnDestroy {
   initForms() {
     this.forms.account = new FormGroup({
       address: new FormControl({ value: this.account.address, disabled: true }),
-      fullName: new FormControl(this.account.fullName),
-      email: new FormControl(this.account.email),
-      timeZone: new FormControl(this.account.timeZone),
+      fullName: new FormControl(this.account.fullName, [checkText()]),
+      email: new FormControl(this.account.email, [checkEmail(false)]),
+      timeZone: new FormControl(this.account.timeZone, [checkTimeZone()]),
     });
 
     this.forms.accountPermissions = new FormGroup({

@@ -16,7 +16,10 @@
           </h1>
           <p style="margin-top: 10px;">
             {{ selected ? 'of ' + forms.table.value.assets.length : 'showing ' + forms.table.value.assets.length + ' results' }}
-            <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
+            <span class="selectAll" *ngIf="selected !== forms.table.get('assets')['controls'].length" (click)="select()">
+              Select all
+            </span>
+            <span class="selectAll" *ngIf="selected" (click)="select(false)">Unselect all</span>
           </p>
         </div>
         <div class="flex-0">

@@ -1,8 +1,8 @@
-<form class="form" [formGroup]="forms.json" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
+<form class="form" [formGroup]="forms.json" (ngSubmit)="create()">
   <section>
     <label>
       <span>JSON *</span>
-      <textarea class="json" formControlName="data" (keyup)="validateJSON(input)" (keydown)="insertTab($event, input)" spellcheck="false" autofocus #input></textarea>
+      <textarea class="json" formControlName="data" (keydown)="insertTab($event, input)" spellcheck="false" autofocus #input [appError]="[forms.json, true]"></textarea>
     </label>
   </section>
 

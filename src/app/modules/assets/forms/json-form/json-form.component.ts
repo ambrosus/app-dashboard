@@ -3,7 +3,8 @@ import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Router } from '@angular/router';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
+import { checkJSON } from 'app/util';
 
 @Component({
   selector: 'app-json-form',
@@ -29,22 +30,12 @@ export class JsonFormComponent implements OnInit {
 
   ngOnInit() {
     this.forms.json = new FormGroup({
-      data: new FormControl('', [Validators.required]),
+      data: new FormControl('', [checkJSON(false)]),
     });
   }
 
   cancel() {
     this.router.navigate([`${location.pathname}`]);
-  }
-
-  validateJSON(input) {
-    try {
-      JSON.parse(input.value);
-      return true;
-    } catch (error) {
-      console.error('JSON is invalid, please fix it first');
-      return false;
-    }
   }
 
   insertTab(e, jsonInput) {

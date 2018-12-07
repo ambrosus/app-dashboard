@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
-import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 
 @Component({
   selector: 'app-assets',
@@ -29,8 +29,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loader;
   error;
   selected;
-  allSelected = false;
-  selectButton = 'Select all';
   back;
 
   constructor(
@@ -94,11 +92,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  select() {
-    this.allSelected = !this.allSelected;
-    this.selectButton = this.allSelected ? 'Unselect all' : 'Select all';
+  select(selected = true) {
     this.selected = this.forms.table.get('assets')['controls'].filter(asset => {
-      asset.get('selected').setValue(this.allSelected);
+      asset.get('selected').setValue(selected);
       return asset.get('selected').value;
     }).length;
   }

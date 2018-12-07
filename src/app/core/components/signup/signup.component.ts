@@ -3,7 +3,6 @@ import {
   FormControl,
   FormGroup,
   Validators,
-  AbstractControl,
 } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AuthService } from 'app/services/auth.service';
@@ -12,6 +11,7 @@ import { OrganizationsService } from 'app/services/organizations.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MessageService } from 'app/services/message.service';
+import { checkEmail, checkPrivateKey, checkText } from 'app/util';
 
 declare let Web3: any;
 
@@ -55,17 +55,12 @@ export class SignupComponent implements OnInit, OnDestroy {
       },
     );
     this.forms.privateKey = new FormGroup({
-      privateKey: new FormControl('', [
-        Validators.required,
-        this.validatePrivateKey,
-      ]),
-      address: new FormControl({ value: '', disabled: true }, [
-        Validators.required,
-      ]),
+      privateKey: new FormControl('', [checkPrivateKey(false)]),
+      address: new FormControl({ value: '', disabled: true }, [Validators.required]),
     });
     this.forms.request = new FormGroup({
-      title: new FormControl('', []),
-      email: new FormControl('', [Validators.required, this.validateEmail]),
+      title: new FormControl('', [checkText()]),
+      email: new FormControl('', [checkEmail(false)]),
       message: new FormControl('', [Validators.required]),
       terms: new FormControl('', [Validators.requiredTrue]),
     });
@@ -79,25 +74,6 @@ export class SignupComponent implements OnInit, OnDestroy {
     return P
       .then(response => response)
       .catch(error => ({ error }));
-  }
-
-  validatePrivateKey(control: AbstractControl) {
-    try {
-      const web3 = new Web3();
-      console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
-      return null;
-    } catch (e) {
-      return { 'Private key is invalid': control.value };
-    }
-  }
-
-  validateEmail(control: AbstractControl) {
-    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (!emailPattern.test(control.value)) {
-      return { 'Email is invalid': control.value };
-    }
-    return null;
   }
 
   async verifyInvite(): Promise<any> {
