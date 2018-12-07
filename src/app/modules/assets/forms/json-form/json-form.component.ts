@@ -43,10 +43,6 @@ export class JsonFormComponent implements OnInit {
     }
   }
 
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
-  }
-
   insertTab(e, jsonInput) {
     if (e.keyCode === 9) {
       const start = jsonInput.selectionStart;

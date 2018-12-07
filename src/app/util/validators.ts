@@ -93,8 +93,6 @@ export const checkJSON = (allowEmpty = true) => {
     };
 };
 
-
-
 export const checkPrivateKey = (allowEmpty = true) => {
     return (control: FormControl) => {
         try {
@@ -109,4 +107,19 @@ export const checkPrivateKey = (allowEmpty = true) => {
             return { 'Private key is invalid': control.value };
         }
     };
-}
+};
+
+export const checkAddress = (allowEmpty = true) => {
+    return (control: FormControl) => {
+        try {
+            if (allowEmpty && !control.value) {
+                return null;
+            }
+
+            const web3 = new Web3();
+            return web3.utils.isAddress(control.value) ? null : { 'Public key is invalid': control.value };
+        } catch (e) {
+            return { 'Public key is invalid': control.value };
+        }
+    };
+};

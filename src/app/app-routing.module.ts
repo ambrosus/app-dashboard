@@ -9,6 +9,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { AuthLoginGuard } from './guards/auth-login.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { SignupComponent } from './core/components/signup/signup.component';
+import { OwnKeyComponent } from './core/components/signup/own-key/own-key.component';
+import { GeneratedKeyComponent } from './core/components/signup/generated-key/generated-key.component';
+import { RequestComponent } from './core/components/signup/request/request.component';
+import { InitialComponent } from './core/components/signup/initial/initial.component';
 
 const routes: Routes = [
   {
@@ -25,7 +29,26 @@ const routes: Routes = [
   {
     path: 'signup',
     canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
     component: SignupComponent,
+    children: [
+      {
+        path: '',
+        component: InitialComponent,
+      },
+      {
+        path: 'own-key',
+        component: OwnKeyComponent,
+      },
+      {
+        path: 'generated-key',
+        component: GeneratedKeyComponent,
+      },
+      {
+        path: 'request',
+        component: RequestComponent,
+      },
+    ],
     runGuardsAndResolvers: 'always',
   },
   {
@@ -62,7 +85,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/',
+    redirectTo: '/login',
   },
 ];
 

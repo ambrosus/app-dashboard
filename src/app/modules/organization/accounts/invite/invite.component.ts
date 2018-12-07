@@ -47,10 +47,6 @@ export class InviteComponent {
     );
   }
 
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
-  }
-
   send() {
     this.promise['send'] = new Promise(async (resolve, reject) => {
       try {

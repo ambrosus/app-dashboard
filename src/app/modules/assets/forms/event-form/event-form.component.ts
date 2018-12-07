@@ -61,10 +61,6 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
-  }
-
   private initForm() {
     this.forms.event = new FormGroup({
       type: new FormControl(null, [Validators.required]),

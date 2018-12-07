@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit {
           scope.setUser({ account });
         });
         this.accountsService._account.next(account);
+        this.authService.signupAddress = '';
         this.router.navigate(['/assets']);
 
         this.messageService.dismissAll();

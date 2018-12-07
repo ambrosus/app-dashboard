@@ -6,19 +6,36 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { OrganizationsService } from '../services/organizations.service';
+import { SecureKeysComponent } from './components/signup/secure-keys/secure-keys.component';
+import { MatDialogModule } from '@angular/material';
+import { OwnKeyComponent } from './components/signup/own-key/own-key.component';
+import { GeneratedKeyComponent } from './components/signup/generated-key/generated-key.component';
+import { RequestComponent } from './components/signup/request/request.component';
+import { InitialComponent } from './components/signup/initial/initial.component';
 
 @NgModule({
   imports: [
     SharedModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    MatDialogModule,
   ],
-  exports: [AppRoutingModule],
+  exports: [
+    AppRoutingModule,
+  ],
   declarations: [
     TermsComponent,
     LoginComponent,
     SignupComponent,
+    SecureKeysComponent,
+    OwnKeyComponent,
+    GeneratedKeyComponent,
+    RequestComponent,
+    InitialComponent,
   ],
   providers: [OrganizationsService],
+  entryComponents: [
+    SecureKeysComponent,
+  ],
 })
 export class CoreModule { }

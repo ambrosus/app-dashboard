@@ -17,6 +17,7 @@ export class AuthService {
   sdk;
   web3;
   api;
+  signupAddress: any = '';
 
   constructor(
     private http: HttpClient,
@@ -50,14 +51,16 @@ export class AuthService {
     return secret ? this.sdk.getToken(secret, validUntil) : null;
   }
 
-  async verifyAccount(privateKey: string): Promise<any> {
-    let address;
-    try {
-      address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
-    } catch (e) {
-      throw new Error('Private key is invalid');
+  async verifyAccount(privateKey: string = '', address: string = ''): Promise<any> {
+    let _address = address;
+    if (privateKey) {
+      try {
+        _address = this.web3.eth.accounts.privateKeyToAccount(privateKey).address;
+      } catch (e) {
+        throw new Error('Private key is invalid');
+      }
     }
-    const url = `${this.api.extended}/account/${address}/exists`;
+    const url = `${this.api.extended}/account/${_address}/exists`;
 
     const account = await this.to(this.http.get(url));
     if (account.error) {
@@ -99,6 +102,8 @@ export class AuthService {
       console.log('[GET] Account: ', account);
       this.storageService.set('account', account);
       this.accountsService._account.next(account);
+      this.signupAddress = '';
+
       this.router.navigate(['/assets']);
 
       return account;

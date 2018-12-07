@@ -29,7 +29,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </section>
 
     <div>
-      <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+      <button type="button" class="transparent light" mat-dialog-close>Cancel</button>
       <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
     </div>
   </form>

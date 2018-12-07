@@ -62,10 +62,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
-  }
-
   private initForm() {
     this.forms.asset = new FormGroup({
       assetType: new FormControl(null, [Validators.required]),
