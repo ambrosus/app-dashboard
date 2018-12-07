@@ -13,6 +13,7 @@ import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { Router, NavigationStart } from '@angular/router';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-assets',
@@ -30,14 +31,18 @@ export class AssetsComponent implements OnInit, OnDestroy {
   error;
   selected;
   back;
+  account: any = {};
 
   constructor(
     public assetsService: AssetsService,
     public dialog: MatDialog,
     private router: Router,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
+
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);

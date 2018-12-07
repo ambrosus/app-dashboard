@@ -18,6 +18,7 @@ export class JsonFormComponent implements OnInit {
   } = {};
   sequenceNumber = 0;
   promise: any = {};
+  hasPermission = true;
 
   @Input() assetIds: String[];
   @Input() for: 'assets';
@@ -32,6 +33,14 @@ export class JsonFormComponent implements OnInit {
     this.forms.json = new FormGroup({
       data: new FormControl('', [checkJSON(false)]),
     });
+
+    const account: any = this.storageService.get('account') || {};
+    this.hasPermission = account.permissions && Array.isArray(account.permissions);
+    if (this.for === 'assets') {
+      this.hasPermission = this.hasPermission && account.permissions.indexOf('create_asset') > -1;
+    } else {
+      this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
+    }
   }
 
   cancel() {

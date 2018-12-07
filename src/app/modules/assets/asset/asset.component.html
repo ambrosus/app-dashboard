@@ -165,7 +165,7 @@
             <h2>Events</h2>
           </div>
           <div class="flex-0">
-            <button type="button" class="outline" (click)="openAddEventDialog()">Add event</button>
+            <button type="button" class="outline" *ngIf="account.permissions && account.permissions.indexOf('create_event') > -1" (click)="openAddEventDialog()">Add event</button>
           </div>
         </div>
       </header>

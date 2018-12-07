@@ -21,6 +21,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   } = {};
   autocomplete: any[] = autocomplete;
   promise: any = {};
+  hasPermission = true;
 
   @Input() assetIds: String[];
 
@@ -40,6 +41,9 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const account: any = this.storageService.get('account') || {};
+    this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
+
     this.initForm();
 
     this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
