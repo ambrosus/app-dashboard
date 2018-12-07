@@ -396,6 +396,10 @@ export class AssetsService {
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         (assets: any) => {
+          if (!assets.data || !Array.isArray(assets.data) || !assets.data.length) {
+            return observer.error('No asset');
+          }
+
           const ids = assets.data.reduce((_ids, asset, index, array) => {
             _ids.push(asset.assetId);
             return _ids;
@@ -502,13 +506,18 @@ export class AssetsService {
       ],
     };
 
-    return this.http.post(url, body).pipe(
-      map((events: any) => this.parseEvent(events.data[0])),
-      catchError(error => {
-        this.messageService.error(error);
-        return error;
-      }),
-    );
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (events: any) => {
+          if (!events.data || !Array.isArray(events.data) || !events.data.length) {
+            return observer.error('No event');
+          }
+
+          observer.next(this.parseEvent(events.data[0]));
+        },
+        error => observer.error('No event'),
+      );
+    });
   }
 
   // Create methods

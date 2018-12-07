@@ -14,7 +14,6 @@ import { RouterModule } from '@angular/router';
 import { AssetsOutletComponent } from './assets-outlet/assets-outlet.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
-import { AssetsService } from 'app/services/assets.service';
 import { AssetFormComponent } from './forms/asset-form/asset-form.component';
 import { EventFormComponent } from './forms/event-form/event-form.component';
 import { JsonFormComponent } from './forms/json-form/json-form.component';

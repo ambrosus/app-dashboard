@@ -1,0 +1,27 @@
+@import 'utils';
+
+app-secure-keys {
+  display: block;
+  padding: 50px 40px;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: $black !important;
+  }
+
+  p {
+    color: $black !important;
+  }
+
+  ul {
+    list-style-type: disc;
+    list-style-position: inside;
+    margin-bottom: 35px;
+
+    li {
+      margin-bottom: 5px;
+    }
+  }
+}

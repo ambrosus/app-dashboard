@@ -3,7 +3,8 @@ import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { Router } from '@angular/router';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
+import { checkJSON } from 'app/util';
 
 @Component({
   selector: 'app-json-form',
@@ -17,6 +18,7 @@ export class JsonFormComponent implements OnInit {
   } = {};
   sequenceNumber = 0;
   promise: any = {};
+  hasPermission = true;
 
   @Input() assetIds: String[];
   @Input() for: 'assets';
@@ -29,21 +31,15 @@ export class JsonFormComponent implements OnInit {
 
   ngOnInit() {
     this.forms.json = new FormGroup({
-      data: new FormControl('', [Validators.required]),
+      data: new FormControl('', [checkJSON(false)]),
     });
-  }
 
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
-  }
-
-  validateJSON(input) {
-    try {
-      JSON.parse(input.value);
-      return true;
-    } catch (error) {
-      console.error('JSON is invalid, please fix it first');
-      return false;
+    const account: any = this.storageService.get('account') || {};
+    this.hasPermission = account.permissions && Array.isArray(account.permissions);
+    if (this.for === 'assets') {
+      this.hasPermission = this.hasPermission && account.permissions.indexOf('create_asset') > -1;
+    } else {
+      this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
   }
 

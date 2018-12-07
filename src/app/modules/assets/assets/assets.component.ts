@@ -12,7 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
-import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-assets',
@@ -29,22 +30,24 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loader;
   error;
   selected;
-  allSelected = false;
-  selectButton = 'Select all';
   back;
+  account: any = {};
 
   constructor(
     public assetsService: AssetsService,
     public dialog: MatDialog,
     private router: Router,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
+
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
         this.pagination = pagination;
-        console.log(pagination);
+        this.selected = 0;
 
         // Table form
         this.initTableForm();
@@ -65,7 +68,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.dialog.closeAll();
-        this.selected = false;
+        this.selected = 0;
       }
     });
   }
@@ -94,11 +97,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  select() {
-    this.allSelected = !this.allSelected;
-    this.selectButton = this.allSelected ? 'Unselect all' : 'Select all';
+  select(selected = true) {
     this.selected = this.forms.table.get('assets')['controls'].filter(asset => {
-      asset.get('selected').setValue(this.allSelected);
+      asset.get('selected').setValue(selected);
       return asset.get('selected').value;
     }).length;
   }

@@ -34,8 +34,6 @@ export class InterceptorService implements HttpInterceptor {
       });
     }
 
-    console.log('REQUEST: ', request);
-
     return next.handle(request);
   }
 }

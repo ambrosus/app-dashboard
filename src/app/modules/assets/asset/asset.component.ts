@@ -21,6 +21,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   json: any = '';
   jsonEventsRaw: any;
   jsonEvents: any;
+  account: any = {};
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -40,6 +41,8 @@ export class AssetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
+
     this.subs[this.subs.length] = this.route.data.subscribe(
       ({ asset }: any) => {
         console.log('Asset: ', asset);
