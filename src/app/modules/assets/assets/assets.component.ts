@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 
 @Component({
@@ -43,6 +43,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
+    if (this.assetsService.assetsReset) {
+      this.assetsService.assets = { clean: true };
+      this.assetsService.searchQuery = {};
+      this.assetsService.search = false;
+      this.assetsService.getAssets().then();
+      this.assetsService.assetsReset = false;
+    }
+
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
@@ -70,11 +78,23 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.dialog.closeAll();
         this.selected = 0;
       }
+
+      if (e instanceof NavigationEnd) {
+        if (this.assetsService.assetsReset) {
+          this.assetsService.assets = { clean: true };
+          this.assetsService.searchQuery = {};
+          this.assetsService.search = false;
+          this.assetsService.getAssets().then(
+            resp => this.assetsService.assetsReset = false,
+          );
+        }
+      }
     });
   }
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+
     if (this.assetsService.search) {
       this.assetsService.assets = { clean: true };
       this.assetsService.searchQuery = {};

@@ -11,7 +11,11 @@ import { StorageService } from 'app/services/storage.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate, CanActivateChild {
-  constructor(private router: Router, private storageService: StorageService) {}
+
+  constructor(
+    private router: Router,
+    private storageService: StorageService,
+  ) { }
 
   checkPermission(
     accountPermissions: string[],
@@ -28,7 +32,7 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): boolean | Observable<boolean> | Promise<boolean> {
-    console.log('canActivate@PermissionsGuard');
+
     const { permissions } = <any>this.storageService.get('account');
 
     return new Promise(resolve => {
@@ -52,7 +56,7 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): boolean | Observable<boolean> | Promise<boolean> {
-    console.log('canActivateChild@PermissionsGuard');
+
     const { permissions } = <any>this.storageService.get('account');
 
     return new Promise(resolve => {

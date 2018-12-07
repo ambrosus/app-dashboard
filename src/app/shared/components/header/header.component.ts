@@ -124,11 +124,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   home() {
     if (this.assetsService.search) {
-      this.assetsService.assets = { clean: true };
-      this.assetsService.searchQuery = {};
-      this.assetsService.search = false;
       this.assetsService.assetsReset = true;
-      this.assetsService.getAssets().then();
     }
   }
 

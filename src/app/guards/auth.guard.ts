@@ -13,8 +13,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
 
-    console.log('canActivate@AuthGuard');
-
     return new Promise(resolve => {
       if (
         (state.url === '/login' || state.url.startsWith('/signup')) &&
@@ -35,8 +33,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
-
-    console.log('canActivateChild@AuthLoginGuard');
 
     return new Promise(resolve => {
       if (
