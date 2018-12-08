@@ -37,6 +37,7 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { environment } from 'environments/environment';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 let apiKey = '';
 if (environment.ambrosus) {
@@ -88,6 +89,7 @@ if (environment.prod) {
     TabComponent,
     TabsComponent,
     Angular2PromiseButtonModule,
+    ConfirmComponent,
   ],
   declarations: [
     AutocompleteinputDirective,
@@ -107,7 +109,11 @@ if (environment.prod) {
     ToggleDropDownDirective,
     TabComponent,
     TabsComponent,
+    ConfirmComponent,
   ],
-  entryComponents: [EventAddComponent],
+  entryComponents: [
+    EventAddComponent,
+    ConfirmComponent,
+  ],
 })
 export class SharedModule { }

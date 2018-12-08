@@ -28,7 +28,7 @@ button,
 
   + button,
   + .button {
-    margin-left: 10px;
+    margin: 10px 0 0 0;
   }
 
   &.outline {
@@ -80,6 +80,14 @@ button,
 
     &:hover {
       opacity: 0.25;
+    }
+  }
+
+  @include breakpoint-min(480) {
+
+    + button,
+    + .button {
+      margin: 0 0 0 10px;
     }
   }
 }

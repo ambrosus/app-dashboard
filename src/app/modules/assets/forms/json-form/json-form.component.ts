@@ -1,10 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
-import { Router } from '@angular/router';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { checkJSON } from 'app/util';
+import { MatDialog } from '@angular/material';
+import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 
 @Component({
   selector: 'app-json-form',
@@ -20,13 +21,13 @@ export class JsonFormComponent implements OnInit {
   promise: any = {};
   hasPermission = true;
 
-  @Input() assetIds: String[];
+  @Input() assetIds: string[];
   @Input() for: 'assets';
 
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
-    private router: Router,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -41,6 +42,21 @@ export class JsonFormComponent implements OnInit {
     } else {
       this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
+  }
+
+  confirm(question: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const dialogRef = this.dialog.open(ConfirmComponent, {
+        panelClass: 'confirm',
+        data: {
+          question,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        resolve(result);
+      });
+    });
   }
 
   insertTab(e, jsonInput) {
@@ -150,17 +166,37 @@ export class JsonFormComponent implements OnInit {
 
         const json = JSON.parse(data.data);
 
-        if (!confirm(`Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`)) { return; }
+        const confirm = await this.confirm(
+          `Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`);
+        console.log('Confirm ->', confirm);
+        if (!confirm) {
+          return reject();
+        }
 
         if (this.for === 'assets') {
           // Create asset and info event
           const asset = this.generateAsset();
           const infoEvent = this.generateEvents(json, [asset.assetId]);
 
+          this.assetsService.responses.push({
+            timestamp: Date.now(),
+            assets: {
+              success: [],
+              error: [],
+            },
+            events: {
+              success: [],
+              error: [],
+            },
+          });
+
           this.assetsService.createAsset(asset).subscribe(
             async response => {
               this.sequenceNumber += 1;
               const eventsCreated = await this.assetsService.createEvents(infoEvent);
+
+              console.log('JSON form assets done: ', this.assetsService.responses);
+
               resolve();
             },
             error => {
@@ -171,7 +207,22 @@ export class JsonFormComponent implements OnInit {
           // Edit or add events
           const events = this.generateEvents(json);
 
+          this.assetsService.responses.push({
+            timestamp: Date.now(),
+            assets: {
+              success: [],
+              error: [],
+            },
+            events: {
+              success: [],
+              error: [],
+            },
+          });
+
           const eventsCreated = await this.assetsService.createEvents(events);
+
+          console.log('JSON form events done: ', this.assetsService.responses);
+
           resolve();
         }
       } catch (error) {
