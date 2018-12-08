@@ -4,7 +4,6 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
-import { catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
 
@@ -43,9 +42,11 @@ export class AssetsService {
   progress: any = {
     title: '',
     creating: 0,
-    done: {
+    for: 'assets',
+    status: {
       asset: new Subject(),
       event: new Subject(),
+      done: new Subject(),
     },
   };
 
@@ -527,36 +528,38 @@ export class AssetsService {
 
   // Create methods
 
-  createAsset(asset: Object): Observable<any> {
-    const url = `${this.api.core}/assets`;
-    const data = { created: [], errors: [] };
+  createAsset(asset: Object) {
+    return new Observable(observer => {
+      const url = `${this.api.core}/assets`;
+      const data = { created: [], errors: [] };
 
-    return this.http.post(url, asset).pipe(
-      tap(response => {
-        this.progress.done.asset.next(response);
-        this.responses[this.responses.length - 1].assets.success.push(response);
+      this.http.post(url, asset).subscribe(
+        response => {
+          this.progress.status.asset.next(response);
+          this.responses[this.responses.length - 1].assets.success.push(response);
 
-        // debug
-        console.log('Create asset success: ', response);
+          // debug
+          console.log('Create asset success: ', response);
 
-        data['change'] = 'data';
-        data['type'] = 'start';
-        data['data'] = [response];
+          data['change'] = 'data';
+          data['type'] = 'start';
+          data['data'] = [response];
 
-        this.assets = data;
+          this.assets = data;
 
-        return response;
-      }),
-      catchError(error => {
-        this.progress.done.asset.error({ asset, error });
-        this.responses[this.responses.length - 1].assets.error.push(error);
+          observer.next(response);
+        },
+        error => {
+          this.progress.status.asset.error({ asset, error });
+          this.responses[this.responses.length - 1].assets.error.push(error);
 
-        // debug
-        console.log('Create asset error: ', error);
+          // debug
+          console.log('Create asset error: ', error);
 
-        return error;
-      }),
-    );
+          observer.error(error);
+        },
+      );
+    });
   }
 
   async createEvents(events: any[]): Promise<any> {
@@ -570,7 +573,7 @@ export class AssetsService {
 
         if (eventCreated.error) {
           data.errors.push({ event, error: eventCreated.error });
-          this.progress.done.event.error({ event, error: eventCreated.error });
+          this.progress.status.event.error({ event, error: eventCreated.error });
           this.responses[this.responses.length - 1].events.error.push(eventCreated.error);
 
           // debug
@@ -578,7 +581,7 @@ export class AssetsService {
 
         } else {
           data.created.push(eventCreated);
-          this.progress.done.event.next(eventCreated);
+          this.progress.status.event.next(eventCreated);
           this.responses[this.responses.length - 1].events.success.push(eventCreated);
 
           // debug

@@ -153,6 +153,10 @@
         > .title {
           padding: 45px 0 25px;
 
+          &:after {
+            top: 47px;
+          }
+
           > h2 {
             color: $light-blue;
             font-weight: 400;

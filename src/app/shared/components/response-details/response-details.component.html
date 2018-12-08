@@ -1,0 +1,73 @@
+<h2>All responses for this session</h2>
+
+<div class="accordions">
+  <div class="accordion" *ngFor="let response of this.assetsService.responses.reverse(); let i = index;">
+    <div class="title" [ngClass]="{ 'active': i === 0 }" appAccordion>{{ response.timestamp | date: 'medium' }}</div>
+    <div class="content" [ngClass]="{ 'active': i === 0 }">
+      <div style="margin-bottom: 25px;" *ngIf="response.assets.success.length || response.assets.error.length">
+        <h4 style="margin-bottom: 25px;">Assets</h4>
+
+        <div class="response success" *ngIf="response.assets.success.length" style="margin-bottom: 20px;">
+          <h5 style="margin-bottom: 20px;">Success</h5>
+
+          <div class="accordions">
+            <div class="accordion" *ngFor="let item of response.assets.success">
+              <div class="title" appAccordion>{{ item.assetId }}</div>
+              <div class="content json">
+                {{ stringify(item, null, 2) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="response error" *ngIf="response.assets.error.length">
+          <h5 style="margin-bottom: 20px;">Error</h5>
+
+          <div class="accordions">
+            <div class="accordion" *ngFor="let item of response.assets.error">
+              <div class="title" appAccordion>{{ item.error.reason || item.error.message || item.statusText }}</div>
+              <div class="content json">
+                {{ stringify(item, null, 2) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div *ngIf="response.events.success.length || response.events.error.length">
+        <h4 style="margin-bottom: 25px;">Events</h4>
+
+        <div class="response success" *ngIf="response.events.success.length" style="margin-bottom: 20px;">
+          <h5 style="margin-bottom: 20px;">Success</h5>
+
+          <div class="accordions">
+            <div class="accordion" *ngFor="let item of response.events.success">
+              <div class="title" appAccordion>{{ item.eventId }}</div>
+              <div class="content json">
+                {{ stringify(item, null, 2) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="response error" *ngIf="response.events.error.length">
+          <h5 style="margin-bottom: 20px;">Error</h5>
+
+          <div class="accordions">
+            <div class="accordion" *ngFor="let item of response.events.error">
+              <div class="title" appAccordion>{{ item.error.reason || item.error.message || item.statusText }}</div>
+              <div class="content json">
+                {{ stringify(item, null, 2) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="center" style="margin-top: 30px">
+  <button class="transparent" mat-dialog-close>Close</button>
+</div>

@@ -1,0 +1,76 @@
+@import 'utils';
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1
+  }
+}
+
+app-progress {
+  display: block;
+
+  > h4 {
+    margin: 10px 0 30px;
+  }
+
+  > .results {
+    animation: fadeIn .3s forwards;
+
+    h5 {
+      margin-bottom: 10px;
+    }
+
+    p + p {
+      margin: 0;
+    }
+
+    small {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: $grey;
+    }
+
+    span {
+      color: $black;
+    }
+
+    .success {
+      color: $green;
+    }
+
+    .error {
+      color: $red;
+    }
+  }
+
+  > .spinner {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 50%;
+    transition: background .2s ease-out;
+
+    &.completed {
+      background: $blue;
+
+      &:after {
+        content: '';
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        background-image: url('/assets/svg/success-light.svg');
+        z-index: 1;
+        left: 13px;
+        top: 15px;
+        background-size: contain;
+        animation: fadeIn .3s forwards;
+      }
+    }
+  }
+}

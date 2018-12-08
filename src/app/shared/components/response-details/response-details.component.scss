@@ -1,0 +1,48 @@
+@import 'utils';
+
+app-response-details {
+  display: block;
+
+  > h2 {
+    margin: 15px 0 30px;
+  }
+
+  .accordions {
+    > .accordion {
+      > .content {
+        &.active {
+          padding: 40px 20px;
+          border: 1px solid #eee;
+
+          &.json {
+            padding: 30px 20px;
+            background: #fff;
+            word-break: break-word;
+            overflow: hidden;
+            border: 1px solid #aaa;
+            font-size: 12px;
+            font-family: monospace;
+            white-space: pre;
+            line-height: 1.4;
+            color: $black;
+            text-align: left;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+
+  .response {
+    padding: 20px;
+    background: rgba($grey, .10);
+
+    &.error {
+      background: rgba($red, .04);
+    }
+
+    &.success {
+      background: rgba($green, .04);
+    }
+  }
+}

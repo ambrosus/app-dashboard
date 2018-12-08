@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
 import { MatDialog } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
+import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
 @Component({
   selector: 'app-asset-form',
@@ -67,6 +68,17 @@ export class AssetFormComponent implements OnInit {
         }),
       ]),
       groups: new FormArray([]),
+    });
+  }
+
+  progress() {
+    const dialogRef = this.dialog.open(ProgressComponent, {
+      panelClass: 'progress',
+      hasBackdrop: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Progress asset form closed', result);
     });
   }
 
@@ -310,20 +322,35 @@ export class AssetFormComponent implements OnInit {
           },
         });
 
+        // Start progress
+        this.assetsService.progress.title = 'Creating asset';
+        this.assetsService.progress.creating = 2;
+        this.assetsService.progress.for = 'assets';
+        this.progress();
+
         this.assetsService.createAsset(asset).subscribe(
           async response => {
             this.sequenceNumber += 1;
             const eventsCreated = await this.assetsService.createEvents([infoEvent]);
+
+            // Fire finished event
+            this.assetsService.progress.status.done.next();
 
             console.log('Asset form done: ', this.assetsService.responses);
 
             resolve();
           },
           error => {
+            // Fire finished event
+            this.assetsService.progress.status.done.next();
+
             throw new Error('Asset creation failed, aborting.');
           },
         );
       } catch (error) {
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
         console.error('[CREATE] Asset: ', error);
         reject();
       }

@@ -49,6 +49,25 @@ body {
   }
 }
 
+.responseDetails {
+  overflow-y: auto;
+}
+
+.progress {
+  @include breakpoint-min(480) {
+    position: fixed !important;
+    left: 15px;
+    bottom: 15px;
+    max-width: 100%;
+    width: 450px;
+  }
+
+  .mat-progress-spinner circle,
+  .mat-spinner circle {
+    stroke: $blue;
+  }
+}
+
 .confirm {
   max-width: 450px !important;
 }

@@ -6,6 +6,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { checkJSON } from 'app/util';
 import { MatDialog } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
+import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
 @Component({
   selector: 'app-json-form',
@@ -42,6 +43,17 @@ export class JsonFormComponent implements OnInit {
     } else {
       this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
+  }
+
+  progress() {
+    const dialogRef = this.dialog.open(ProgressComponent, {
+      panelClass: 'progress',
+      hasBackdrop: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Progress json form closed', result);
+    });
   }
 
   confirm(question: string): Promise<any> {
@@ -166,8 +178,13 @@ export class JsonFormComponent implements OnInit {
 
         const json = JSON.parse(data.data);
 
+        let amount = 1;
+        if (Array.isArray(json)) {
+          amount = json.length;
+        }
+
         const confirm = await this.confirm(
-          `Are you sure you want to proceed creating ${this.for === 'assets' ? 'this asset' : 'these events'}?`);
+          `Are you sure you want to proceed creating ${this.for === 'assets' ? '1 asset with' : ''} ${amount} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`);
         console.log('Confirm ->', confirm);
         if (!confirm) {
           return reject();
@@ -190,16 +207,28 @@ export class JsonFormComponent implements OnInit {
             },
           });
 
+          // Start progress
+          this.assetsService.progress.title = 'Creating asset';
+          this.assetsService.progress.creating = 2;
+          this.assetsService.progress.for = 'assets';
+          this.progress();
+
           this.assetsService.createAsset(asset).subscribe(
             async response => {
               this.sequenceNumber += 1;
               const eventsCreated = await this.assetsService.createEvents(infoEvent);
+
+              // Fire finished event
+              this.assetsService.progress.status.done.next();
 
               console.log('JSON form assets done: ', this.assetsService.responses);
 
               resolve();
             },
             error => {
+              // Fire finished event
+              this.assetsService.progress.status.done.next();
+
               throw new Error('Asset creation failed, aborting');
             },
           );
@@ -219,13 +248,25 @@ export class JsonFormComponent implements OnInit {
             },
           });
 
+          // Start progress
+          this.assetsService.progress.title = `Creating ${amount} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
+          this.assetsService.progress.creating = events.length;
+          this.assetsService.progress.for = 'events';
+          this.progress();
+
           const eventsCreated = await this.assetsService.createEvents(events);
+
+          // Fire finished event
+          this.assetsService.progress.status.done.next();
 
           console.log('JSON form events done: ', this.assetsService.responses);
 
           resolve();
         }
       } catch (error) {
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
         console.error(`[CREATE] ${this.for}`, error);
         reject();
       }

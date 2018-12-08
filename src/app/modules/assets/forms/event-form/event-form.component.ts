@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
 import { MatDialog } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
+import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
 @Component({
   selector: 'app-event-form',
@@ -34,6 +35,17 @@ export class EventFormComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
   ) { }
+
+  progress() {
+    const dialogRef = this.dialog.open(ProgressComponent, {
+      panelClass: 'progress',
+      hasBackdrop: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Progress event form closed', result);
+    });
+  }
 
   confirm(question: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -309,6 +321,7 @@ export class EventFormComponent implements OnInit {
             throw new Error('Event location must either be blank or completely filled');
           }
         }
+        console.log('Asset ids: ', this.assetIds);
 
         const confirm = await this.confirm(
           `You are about to create an event for ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}, are you sure you want to proceed?`);
@@ -317,7 +330,6 @@ export class EventFormComponent implements OnInit {
           return reject();
         }
 
-        // Make a request
         const events = [];
         this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
 
@@ -333,12 +345,24 @@ export class EventFormComponent implements OnInit {
           },
         });
 
+        // Start progress
+        this.assetsService.progress.title = `Creating ${events.length} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
+        this.assetsService.progress.creating = events.length;
+        this.assetsService.progress.for = 'events';
+        this.progress();
+
         const eventsCreated = await this.assetsService.createEvents(events);
+
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
 
         console.log('Event form done: ', this.assetsService.responses);
 
         resolve();
       } catch (error) {
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
         console.error('[CREATE] Events: ', error);
         reject();
       }
