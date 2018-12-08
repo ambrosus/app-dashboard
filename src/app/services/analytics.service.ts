@@ -42,7 +42,7 @@ export class AnalyticsService {
     end: number,
     group: string,
   ): Promise<any> {
-    const url = `${this.api.extended}/analytics/${collection}/count/${start}/${end}/aggregate?group=${group}`;
+    const url = `${this.api.extended}/analytics/${collection}/count/${start}/${end}/aggregate/${group}`;
 
     const countSeries = await this.to(this.http.get(url));
     if (countSeries.error) {
