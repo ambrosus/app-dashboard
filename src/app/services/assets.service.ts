@@ -4,10 +4,8 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
-import { map, catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
-import { AuthService } from './auth.service';
 
 declare let Web3: any;
 
@@ -16,8 +14,6 @@ declare let Web3: any;
 })
 export class AssetsService {
   inputChanged = new Subject();
-  creatingAsset = new Subject();
-  creatingEvent = new Subject();
   private _events: BehaviorSubject<any> = new BehaviorSubject({
     meta: {},
     data: [],
@@ -42,12 +38,22 @@ export class AssetsService {
   api;
   search = false;
   assetsReset = false;
+  responses: any[] = [];
+  progress: any = {
+    title: '',
+    creating: 0,
+    for: 'assets',
+    status: {
+      asset: new Subject(),
+      event: new Subject(),
+      done: new Subject(),
+    },
+  };
 
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
     private messageService: MessageService,
-    private authService: AuthService,
   ) {
     this.initSDK();
     this.web3 = new Web3();
@@ -522,47 +528,65 @@ export class AssetsService {
 
   // Create methods
 
-  createAsset(asset: Object): Observable<any> {
-    const url = `${this.api.core}/assets`;
-    const data = { created: [], errors: [] };
+  createAsset(asset: Object) {
+    return new Observable(observer => {
+      const url = `${this.api.core}/assets`;
+      const data = { created: [], errors: [] };
 
-    return this.http.post(url, asset).pipe(
-      tap(response => {
-        this.messageService.success('Asset created');
-        this.creatingAsset.next(response);
+      this.http.post(url, asset).subscribe(
+        response => {
+          this.progress.status.asset.next(response);
+          this.responses[this.responses.length - 1].assets.success.push(response);
 
-        data['change'] = 'data';
-        data['type'] = 'start';
-        data['data'] = [response];
-        this.assets = data;
+          // debug
+          console.log('Create asset success: ', response);
 
-        return response;
-      }),
-      catchError(error => {
-        this.creatingAsset.error({ asset, error });
-        this.messageService.error(error);
-        return error;
-      }),
-    );
+          data['change'] = 'data';
+          data['type'] = 'start';
+          data['data'] = [response];
+
+          this.assets = data;
+
+          observer.next(response);
+        },
+        error => {
+          this.progress.status.asset.error({ asset, error });
+          this.responses[this.responses.length - 1].assets.error.push(error);
+
+          // debug
+          console.log('Create asset error: ', error);
+
+          observer.error(error);
+        },
+      );
+    });
   }
 
-  async createEvents(events: Object[]): Promise<any> {
+  async createEvents(events: any[]): Promise<any> {
     const data = { created: [], errors: [] };
 
     try {
-      await events.map(async (event: any, index, array) => {
-        const url = `${this.api.core}/assets/${
-          event.content.idData.assetId
-          }/events`;
+      events.map(async (event: any, index, array) => {
+        const url = `${this.api.core}/assets/${event.content.idData.assetId}/events`;
+
         const eventCreated = await this.to(this.http.post(url, event));
+
         if (eventCreated.error) {
           data.errors.push({ event, error: eventCreated.error });
-          this.creatingEvent.error({ event, error: eventCreated.error });
-          this.messageService.error(eventCreated.error);
+          this.progress.status.event.error({ event, error: eventCreated.error });
+          this.responses[this.responses.length - 1].events.error.push(eventCreated.error);
+
+          // debug
+          console.log('Create event error: ', eventCreated.error);
+
         } else {
-          this.messageService.success(`Event created for asset: ${event.content.idData.assetId}`);
           data.created.push(eventCreated);
-          this.creatingEvent.next(eventCreated);
+          this.progress.status.event.next(eventCreated);
+          this.responses[this.responses.length - 1].events.success.push(eventCreated);
+
+          // debug
+          console.log('Create event success: ', eventCreated);
+
         }
 
         if (index === array.length - 1) {

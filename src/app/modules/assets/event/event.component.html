@@ -24,46 +24,18 @@
                     <h6>Event id</h6>
                     <p>{{ eventId }}</p>
                   </li>
-                  <li *ngIf="event.content?.idData?.assetId">
-                    <h6>Asset id</h6>
-                    <p>{{ event.content.idData.assetId }}</p>
-                  </li>
-                  <li *ngIf="event.content?.idData?.createdBy">
-                    <h6>Created by</h6>
-                    <p>{{ event.content.idData.createdBy }}</p>
-                  </li>
-                  <li *ngIf="event.content?.idData?.timestamp">
-                    <h6>Timestamp</h6>
-                    <p>{{ event.content.idData.timestamp }}</p>
-                  </li>
-                  <li *ngIf="event.content?.idData?.accessLevel">
-                    <h6>Access level</h6>
-                    <p>{{ event.content.idData.accessLevel }}</p>
-                  </li>
-                  <li *ngIf="event.content?.idData?.dataHash">
-                    <h6>Data hash</h6>
-                    <p>{{ event.content.idData.dataHash }}</p>
+                  <li *ngFor="let prop of objectKeys(event.content.idData)">
+                    <h6>{{ prop }}</h6>
+                    <p>{{ event.content.idData[prop] || 'No value' }}</p>
                   </li>
                 </ul>
               </div>
               <div>
                 <h5>Bundle metadata</h5>
                 <ul class="properties">
-                  <li *ngIf="event.metadata?.bundleId">
-                    <h6>Bundle id</h6>
-                    <p>{{ event.metadata.bundleId }}</p>
-                  </li>
-                  <li *ngIf="event.metadata?.bundleTransactionHash">
-                    <h6>Bundle transaction hash</h6>
-                    <p>{{ event.metadata.bundleTransactionHash }}</p>
-                  </li>
-                  <li *ngIf="event.metadata?.bundleUploadTimestamp">
-                    <h6>Bundle upload timestamp</h6>
-                    <p>{{ event.metadata.bundleUploadTimestamp }}</p>
-                  </li>
-                  <li *ngIf="event.metadata?.entityUploadTimestamp">
-                    <h6>Entity upload timestamp</h6>
-                    <p>{{ event.metadata.entityUploadTimestamp }}</p>
+                  <li *ngFor="let prop of objectKeys(event.metadata)">
+                    <h6>{{ prop }}</h6>
+                    <p>{{ event.metadata[prop] || 'No value' }}</p>
                   </li>
                 </ul>
               </div>

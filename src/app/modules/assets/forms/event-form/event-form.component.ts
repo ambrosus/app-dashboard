@@ -1,12 +1,13 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
+import { MatDialog } from '@angular/material';
+import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
+import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
 @Component({
   selector: 'app-event-form',
@@ -14,8 +15,7 @@ import { autocomplete } from 'app/constant';
   styleUrls: ['./event-form.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class EventFormComponent implements OnInit, OnDestroy {
-  subs: Subscription[] = [];
+export class EventFormComponent implements OnInit {
   forms: {
     event?: FormGroup,
   } = {};
@@ -23,7 +23,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   promise: any = {};
   hasPermission = true;
 
-  @Input() assetIds: String[];
+  @Input() assetIds: string[];
 
   isObject(value) {
     return typeof value === 'object';
@@ -32,9 +32,35 @@ export class EventFormComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
-    private router: Router,
     private sanitizer: DomSanitizer,
+    private dialog: MatDialog,
   ) { }
+
+  progress() {
+    const dialogRef = this.dialog.open(ProgressComponent, {
+      panelClass: 'progress',
+      hasBackdrop: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Progress event form closed', result);
+    });
+  }
+
+  confirm(question: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const dialogRef = this.dialog.open(ConfirmComponent, {
+        panelClass: 'confirm',
+        data: {
+          question,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        resolve(result);
+      });
+    });
+  }
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
@@ -45,20 +71,6 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
 
     this.initForm();
-
-    this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
-      response => console.log('[CREATE] Asset: ', response),
-      error => console.error('[CREATE] Asset: ', error),
-    );
-
-    this.subs[this.subs.length] = this.assetsService.creatingEvent.subscribe(
-      response => console.log('[CREATE] Event: ', response),
-      error => console.error('[CREATE] Event: ', error),
-    );
-  }
-
-  ngOnDestroy() {
-    this.subs.map(sub => sub.unsubscribe());
   }
 
   private initForm() {
@@ -309,18 +321,48 @@ export class EventFormComponent implements OnInit, OnDestroy {
             throw new Error('Event location must either be blank or completely filled');
           }
         }
+        console.log('Asset ids: ', this.assetIds);
 
-        if (!confirm(
-          `You are about to create an event for ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}, are you sure you want to proceed?`)) { return; }
+        const confirm = await this.confirm(
+          `You are about to create an event for ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}, are you sure you want to proceed?`);
+        console.log('Confirm ->', confirm);
+        if (!confirm) {
+          return reject();
+        }
 
-        // Make a request
         const events = [];
         this.assetIds.map(assetId => events.push(this.generateEvent(assetId)));
 
+        this.assetsService.responses.push({
+          timestamp: Date.now(),
+          assets: {
+            success: [],
+            error: [],
+          },
+          events: {
+            success: [],
+            error: [],
+          },
+        });
+
+        // Start progress
+        this.assetsService.progress.title = `Creating ${events.length} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
+        this.assetsService.progress.creating = events.length;
+        this.assetsService.progress.for = 'events';
+        this.progress();
+
         const eventsCreated = await this.assetsService.createEvents(events);
+
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
+        console.log('Event form done: ', this.assetsService.responses);
 
         resolve();
       } catch (error) {
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
         console.error('[CREATE] Events: ', error);
         reject();
       }

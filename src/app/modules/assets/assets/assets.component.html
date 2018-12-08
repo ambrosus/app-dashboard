@@ -41,19 +41,19 @@
               </label>
             </header>
             <main>
-              <a routerLink="/assets/{{ asset.value.assetId }}">
-                <div>
+              <div>
+                <a routerLink="/assets/{{ asset.value.assetId }}">
                   <h5 class="title">
                     {{ assetsService.getName(asset.value.info) }}
                   </h5>
-                  <p class="assetId">{{ asset.value.assetId }}</p>
-                  <p class="createdBy">
-                    <span class=flex-0>by</span>
-                    <span class="image"></span>
-                    <span class="address">{{ asset.value.createdBy }}</span>
-                  </p>
-                </div>
-              </a>
+                </a>
+                <p class="assetId">{{ asset.value.assetId }}</p>
+                <p class="createdBy">
+                  <span class=flex-0>by</span>
+                  <span class="image"></span>
+                  <span class="address">{{ asset.value.createdBy }}</span>
+                </p>
+              </div>
             </main>
           </div>
         </div>

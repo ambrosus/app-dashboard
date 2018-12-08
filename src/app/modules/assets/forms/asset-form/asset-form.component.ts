@@ -1,12 +1,13 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
+import { MatDialog } from '@angular/material';
+import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
+import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
 @Component({
   selector: 'app-asset-form',
@@ -14,8 +15,7 @@ import { autocomplete } from 'app/constant';
   styleUrls: ['./asset-form.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class AssetFormComponent implements OnInit, OnDestroy {
-  subs: Subscription[] = [];
+export class AssetFormComponent implements OnInit {
   forms: {
     asset?: FormGroup
   } = {};
@@ -24,7 +24,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   promise: any = {};
   hasPermission = true;
 
-  @Input() assetId: String;
+  @Input() assetId: string;
 
   isObject(value) {
     return typeof value === 'object';
@@ -33,8 +33,8 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   constructor(
     private storageService: StorageService,
     private assetsService: AssetsService,
-    private router: Router,
     private sanitizer: DomSanitizer,
+    private dialog: MatDialog,
   ) { }
 
   sanitizeUrl(url) {
@@ -46,20 +46,6 @@ export class AssetFormComponent implements OnInit, OnDestroy {
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_asset') > -1;
 
     this.initForm();
-
-    this.subs[this.subs.length] = this.assetsService.creatingAsset.subscribe(
-      response => console.log('[CREATE] Asset: ', response),
-      error => console.error('[CREATE] Asset: ', error),
-    );
-
-    this.subs[this.subs.length] = this.assetsService.creatingEvent.subscribe(
-      response => console.log('[CREATE] Event: ', response),
-      error => console.error('[CREATE] Event: ', error),
-    );
-  }
-
-  ngOnDestroy() {
-    this.subs.map(sub => sub.unsubscribe());
   }
 
   private initForm() {
@@ -82,6 +68,32 @@ export class AssetFormComponent implements OnInit, OnDestroy {
         }),
       ]),
       groups: new FormArray([]),
+    });
+  }
+
+  progress() {
+    const dialogRef = this.dialog.open(ProgressComponent, {
+      panelClass: 'progress',
+      hasBackdrop: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Progress asset form closed', result);
+    });
+  }
+
+  confirm(question: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const dialogRef = this.dialog.open(ConfirmComponent, {
+        panelClass: 'confirm',
+        data: {
+          question,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        resolve(result);
+      });
     });
   }
 
@@ -281,7 +293,7 @@ export class AssetFormComponent implements OnInit, OnDestroy {
   }
 
   create() {
-    this.promise['create'] = new Promise((resolve, reject) => {
+    this.promise['create'] = new Promise(async (resolve, reject) => {
       try {
         const form = this.forms.asset;
 
@@ -289,24 +301,56 @@ export class AssetFormComponent implements OnInit, OnDestroy {
           throw new Error('Please fill required fields');
         }
 
-        if (!confirm(`Are you sure you want to proceed creating this asset?`)) {
-          return;
+        const confirm = await this.confirm('Are you sure you want to proceed creating this asset?');
+        console.log('Confirm ->', confirm);
+        if (!confirm) {
+          return reject();
         }
 
         const asset = this.generateAsset();
         const infoEvent = this.generateInfoEvent(asset.assetId);
 
+        this.assetsService.responses.push({
+          timestamp: Date.now(),
+          assets: {
+            success: [],
+            error: [],
+          },
+          events: {
+            success: [],
+            error: [],
+          },
+        });
+
+        // Start progress
+        this.assetsService.progress.title = 'Creating asset';
+        this.assetsService.progress.creating = 2;
+        this.assetsService.progress.for = 'assets';
+        this.progress();
+
         this.assetsService.createAsset(asset).subscribe(
           async response => {
             this.sequenceNumber += 1;
             const eventsCreated = await this.assetsService.createEvents([infoEvent]);
+
+            // Fire finished event
+            this.assetsService.progress.status.done.next();
+
+            console.log('Asset form done: ', this.assetsService.responses);
+
             resolve();
           },
           error => {
+            // Fire finished event
+            this.assetsService.progress.status.done.next();
+
             throw new Error('Asset creation failed, aborting.');
           },
         );
       } catch (error) {
+        // Fire finished event
+        this.assetsService.progress.status.done.next();
+
         console.error('[CREATE] Asset: ', error);
         reject();
       }

@@ -25,10 +25,7 @@ import { MatNativeDateModule } from '@angular/material';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
-import {
-  IconLeftDirective,
-  IconRightDirective,
-} from './directives/icon.directive';
+import { IconLeftDirective, IconRightDirective } from './directives/icon.directive';
 import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
 import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive';
@@ -37,6 +34,11 @@ import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
 import { environment } from 'environments/environment';
+import { ConfirmComponent } from './components/confirm/confirm.component';
+import { ProgressComponent } from './components/progress/progress.component';
+
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ResponseDetailsComponent } from './components/response-details/response-details.component';
 
 let apiKey = '';
 if (environment.ambrosus) {
@@ -65,6 +67,7 @@ if (environment.prod) {
     }),
     MatDatepickerModule,
     MatNativeDateModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     CommonModule,
@@ -88,6 +91,8 @@ if (environment.prod) {
     TabComponent,
     TabsComponent,
     Angular2PromiseButtonModule,
+    ConfirmComponent,
+    ProgressComponent,
   ],
   declarations: [
     AutocompleteinputDirective,
@@ -107,7 +112,15 @@ if (environment.prod) {
     ToggleDropDownDirective,
     TabComponent,
     TabsComponent,
+    ConfirmComponent,
+    ProgressComponent,
+    ResponseDetailsComponent,
   ],
-  entryComponents: [EventAddComponent],
+  entryComponents: [
+    EventAddComponent,
+    ConfirmComponent,
+    ProgressComponent,
+    ResponseDetailsComponent,
+  ],
 })
 export class SharedModule { }
