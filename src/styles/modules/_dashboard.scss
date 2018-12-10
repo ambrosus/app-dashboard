@@ -1,0 +1,188 @@
+.dashboard {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+
+  > header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    background: #fff;
+    padding: 0 15px;
+
+    > .wrapper {
+      max-width: 1270px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      overflow-x: auto;
+      border-bottom: 1px solid #eee;
+
+      > li {
+        flex: 0 0 auto;
+        margin-right: 25px;
+
+        &:last-child {
+          margin-right: 0;
+          padding-right: 15px;
+        }
+
+        > a {
+          display: inline-block;
+          font-size: 13px;
+          font-weight: 400;
+          padding: 22px 0 14px;
+          color: $grey;
+          border-bottom: 2px solid #fff;
+          transition: color .2s, border-color .2s;
+
+          &:hover {
+            color: $black;
+            border-color: #eee;
+          }
+
+          &.active {
+            color: $blue;
+            border-color: $blue;
+          }
+        }
+      }
+    }
+  }
+
+  &__header {
+    padding: 45px 25px;
+
+    .top-stat {
+      h1 {
+        color: $light-blue;
+        max-width: 300px;
+      }
+
+      p {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-top: 5px;
+      }
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+
+      h2 {
+        font-weight: 400;
+      }
+
+      > li {
+        position: relative;
+        padding: 20px 0 0 15px;
+        text-align: right;
+        min-width: 192px;
+        margin-bottom: 10px;
+
+        > p {
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          margin-top: 5px;
+        }
+
+        &:before {
+          content: '';
+          width: 16px;
+          height: 4px;
+          display: inline-block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: $green;
+        }
+
+        &.secondary {
+          &:before {
+            background: $grey;
+          }
+        }
+      }
+    }
+  }
+
+  &__main {
+    padding: 0 25px 45px;
+
+    .chart {
+      width: 100%;
+      max-height: 375px;
+      margin-bottom: 50px;
+    }
+
+    .displayed {
+      margin: 25px 0 40px;
+
+      > p {
+        margin-bottom: 7px;
+
+        &::first-letter {
+          text-transform: capitalize;
+        }
+      }
+
+      > h6 {
+        color: $black;
+        font-weight: 400;
+
+        > span {
+          color: $grey;
+        }
+      }
+    }
+
+    .showMenu {
+
+      > li {
+        display: inline-block;
+        padding: 13px;
+        font-weight: 500;
+        color: $black;
+        cursor: pointer;
+        user-select: none;
+        transition: color .2s;
+        text-transform: capitalize;
+
+        &:first-child {
+          padding-left: 0;
+        }
+
+        &.active {
+          color: $blue;
+        }
+      }
+    }
+
+    .groupByMenu {
+      @extend .showMenu;
+      flex: 0 0 auto;
+
+      > li {
+        color: $grey;
+        font-size: 11px;
+        text-transform: uppercase;
+
+        &:last-child {
+          padding-right: 0;
+        }
+
+        &.active {
+          color: $black;
+        }
+      }
+    }
+  }
+}

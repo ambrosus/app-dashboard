@@ -114,6 +114,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   openAddEventDialog() {
     this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
       data: {
         assetIds: [this.assetId],
       },

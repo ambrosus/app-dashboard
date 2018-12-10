@@ -7,7 +7,7 @@
   </section>
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
-    <button type="button" class="transparent light" mat-dialog-close>Cancel</button>
+    <button type="button" class="transparent light" (click)="close()">Close</button>
     <button type="submit" [disabled]="forms.json.invalid" [promiseBtn]="promise.create">Create {{ for }}</button>
   </div>
 </form>

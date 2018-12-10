@@ -82,12 +82,13 @@ export class AssetFormComponent implements OnInit {
     });
   }
 
-  confirm(question: string): Promise<any> {
+  confirm(question: string, buttons = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const dialogRef = this.dialog.open(ConfirmComponent, {
         panelClass: 'confirm',
         data: {
           question,
+          buttons,
         },
       });
 
@@ -95,6 +96,14 @@ export class AssetFormComponent implements OnInit {
         resolve(result);
       });
     });
+  }
+
+  async close() {
+    const confirm = await this.confirm('Are you sure you want to close?', { cancel: 'No', ok: 'Yes' });
+    console.log('Confirm ->', confirm);
+    if (confirm) {
+      this.dialog.closeAll();
+    }
   }
 
   // Methods for adding/removing new fields to the form

@@ -17,7 +17,7 @@
       <div class="table organizations">
         <!-- Active -->
         <div *ngIf="show === 'all' || show === 'active'">
-          <h3 *ngIf="!organizations.length && show !== 'all'">No active organizations</h3>
+          <h3 *ngIf="!organizations.length && show !== 'all'" style="margin: 40px 0">No active organizations</h3>
           <div class="item" *ngFor="let organization of organizations">
             <header>
               <div class="image"></div>
@@ -58,7 +58,7 @@
         </div>
         <!-- Pending -->
         <div *ngIf="show === 'all' || show === 'pending'">
-          <h3 *ngIf="!organizationRequests.length && show !== 'all'">No pending organizations</h3>
+          <h3 *ngIf="!organizationRequests.length && show !== 'all'" style="margin: 40px 0">No pending organizations</h3>
           <div class="item" *ngFor="let organization of organizationRequests">
             <header>
               <div class="image"></div>
@@ -110,7 +110,7 @@
         </div>
         <!-- Disabled -->
         <div *ngIf="show === 'all' || show === 'disabled'">
-          <h3 *ngIf="!organizationsDisabled.length && show !== 'all'">No disabled organizations</h3>
+          <h3 *ngIf="!organizationsDisabled.length && show !== 'all'" style="margin: 40px 0">No disabled organizations</h3>
           <div class="item" *ngFor="let organization of organizationsDisabled">
             <header class="mute">
               <div class="image"></div>
@@ -151,7 +151,7 @@
         </div>
         <!-- Declined -->
         <div *ngIf="show === 'all' || show === 'declined'">
-          <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'">No declined organizations</h3>
+          <h3 *ngIf="!organizationRequestsDeclined.length && show !== 'all'" style="margin: 40px 0">No declined organizations</h3>
           <div class="item" *ngFor="let organization of organizationRequestsDeclined">
             <header class="mute">
               <div class="image"></div>

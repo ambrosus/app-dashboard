@@ -56,12 +56,13 @@ export class JsonFormComponent implements OnInit {
     });
   }
 
-  confirm(question: string): Promise<any> {
+  confirm(question: string, buttons = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const dialogRef = this.dialog.open(ConfirmComponent, {
         panelClass: 'confirm',
         data: {
           question,
+          buttons,
         },
       });
 
@@ -69,6 +70,14 @@ export class JsonFormComponent implements OnInit {
         resolve(result);
       });
     });
+  }
+
+  async close() {
+    const confirm = await this.confirm('Are you sure you want to close?', { cancel: 'No', ok: 'Yes' });
+    console.log('Confirm ->', confirm);
+    if (confirm) {
+      this.dialog.closeAll();
+    }
   }
 
   insertTab(e, jsonInput) {
@@ -193,7 +202,7 @@ export class JsonFormComponent implements OnInit {
         if (this.for === 'assets') {
           // Create asset and info event
           const asset = this.generateAsset();
-          const infoEvent = this.generateEvents(json, [asset.assetId]);
+          const events = this.generateEvents(json, [asset.assetId]);
 
           this.assetsService.responses.push({
             timestamp: Date.now(),
@@ -209,14 +218,14 @@ export class JsonFormComponent implements OnInit {
 
           // Start progress
           this.assetsService.progress.title = 'Creating asset';
-          this.assetsService.progress.creating = 2;
+          this.assetsService.progress.creating = 1 + events.length;
           this.assetsService.progress.for = 'assets';
           this.progress();
 
           this.assetsService.createAsset(asset).subscribe(
             async response => {
               this.sequenceNumber += 1;
-              const eventsCreated = await this.assetsService.createEvents(infoEvent);
+              const eventsCreated = await this.assetsService.createEvents(events);
 
               console.log('JSON form assets done: ', this.assetsService.responses);
 

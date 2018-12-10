@@ -142,6 +142,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
     this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
       data: {
         assetIds,
       },
@@ -151,6 +152,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   createAsset() {
     this.dialog.open(AssetAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
     });
   }
 }
