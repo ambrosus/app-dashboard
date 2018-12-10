@@ -1,3 +1,39 @@
-<p>
-  dashboard works!
-</p>
+<header class="dashboard__header">
+  <div class="wrapper">
+    <div class="flex start between">
+      <div class="flex-0">
+        <div class="top-stat">
+          <h1 class="decoration">
+            <app-svg-icon name="network" height="40" width="40" fill="0042ba"></app-svg-icon>
+            Organization analytics
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="dashboard__main">
+  <div class="wrapper">
+
+    <div class="flex between">
+      <ul class="showMenu">
+        <li *ngFor="let item of menus.display" [ngClass]="{ 'active': display === item }" (click)="changeDisplay(item)">{{ item }}s</li>
+      </ul>
+
+      <ul class="groupByMenu">
+        <li *ngFor="let item of menus.group" [ngClass]="{ 'active': groupBy === item }" (click)="changeGroupBy(item)">{{ item }}</li>
+      </ul>
+    </div>
+
+    <div class="displayed decoration">
+      <app-svg-icon name="legend" height="40" width="40" fill="0042ba"></app-svg-icon>
+      <p>{{ display }} created</p>
+      <h6>Total: <span>{{ total }}</span></h6>
+    </div>
+
+    <!-- Diagram -->
+    <div class="chart">
+      <canvas id="diagram" #diagram></canvas>
+    </div>
+  </div>
+</main>

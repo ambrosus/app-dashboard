@@ -21,6 +21,8 @@ export class AssetComponent implements OnInit, OnDestroy {
   json: any = '';
   jsonEventsRaw: any;
   jsonEvents: any;
+  account: any = {};
+  noContent = false;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -40,10 +42,18 @@ export class AssetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
+
     this.subs[this.subs.length] = this.route.data.subscribe(
       ({ asset }: any) => {
         console.log('Asset: ', asset);
         this.asset = asset;
+
+        if (asset.info) {
+          if (!(asset.info.images || asset.info.description || asset.info.documents || (asset.info.identifiers && asset.info.identifiers.identifiers) || (asset.info.properties && asset.info.properties.length) || (asset.info.groups && asset.info.groups.length))) {
+            this.noContent = true;
+          }
+        }
       },
     );
     this.subs[this.subs.length] = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
@@ -104,6 +114,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   openAddEventDialog() {
     this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
       data: {
         assetIds: [this.assetId],
       },

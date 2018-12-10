@@ -20,7 +20,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         <div *ngFor="let member of forms.invite.get('members')['controls']; let i = index" [formGroupName]="i">
           <label>
             <span>Email</span>
-            <input formControlName="email" type="email" /><a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
+            <input formControlName="email" type="email" />
+            <a class="remove" (click)="remove('members', i)" *ngIf="i !== 0">&times;</a>
           </label>
         </div>
         <a class="addMore" (click)="addMember()">+ Add invite</a>
@@ -28,7 +29,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </section>
 
     <div>
-      <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+      <button type="button" class="transparent light" mat-dialog-close>Cancel</button>
       <button type="submit" [disabled]="forms.invite.invalid" [promiseBtn]="promise.send">Invite</button>
     </div>
   </form>

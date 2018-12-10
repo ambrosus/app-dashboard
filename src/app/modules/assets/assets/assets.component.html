@@ -12,16 +12,19 @@
         <div>
           <h1 class="decoration">
             <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
-            {{ selected ? selected + ' Selected' : 'My assets' }}
+            {{ selected ? selected + ' Selected' : (assetsService.search ? 'Search results' : 'My assets') }}
           </h1>
           <p style="margin-top: 10px;">
-            {{ selected ? 'of ' + forms.table.value.assets.length : forms.table.value.assets.length + ' results' }}
-            <span class="selectAll" *ngIf="selected" (click)="select()">{{ selectButton }} </span>
+            {{ selected ? 'of ' + forms.table.value.assets.length : 'showing ' + forms.table.value.assets.length + ' results' }}
+            <span class="selectAll" *ngIf="selected !== forms.table.get('assets')['controls'].length" (click)="select()">
+              Select all
+            </span>
+            <span class="selectAll" *ngIf="selected" (click)="select(false)">Unselect all</span>
           </p>
         </div>
         <div class="flex-0">
-          <button type="button" *ngIf="!selected" (click)="createAsset()">Create Asset</button>
-          <button type="button" class="outline" *ngIf="selected" (click)="bulkEvent()">Bulk event</button>
+          <button type="button" *ngIf="!selected && account.permissions.indexOf('create_asset') > -1" (click)="createAsset()">Create Asset</button>
+          <button type="button" class="outline" *ngIf="selected && account.permissions.indexOf('create_event') > -1" (click)="bulkEvent()">Bulk event</button>
         </div>
       </div>
     </div>
@@ -38,26 +41,31 @@
               </label>
             </header>
             <main>
-              <a routerLink="/assets/{{ asset.value.assetId }}">
-                <div>
+              <div>
+                <a routerLink="/assets/{{ asset.value.assetId }}">
                   <h5 class="title">
                     {{ assetsService.getName(asset.value.info) }}
                   </h5>
-                  <p class="assetId">{{ asset.value.assetId }}</p>
-                  <p class="createdBy">
-                    <span class=flex-0>by</span>
-                    <span class="image"></span>
-                    <span class="address">{{ asset.value.createdBy }}</span>
-                  </p>
-                </div>
-              </a>
+                </a>
+                <p class="assetId">{{ asset.value.assetId }}</p>
+                <p class="createdBy">
+                  <span class=flex-0>by</span>
+                  <span class="image"></span>
+                  <span class="address">{{ asset.value.createdBy }}</span>
+                </p>
+              </div>
             </main>
           </div>
         </div>
       </form>
 
       <div class="center" *ngIf="pagination && pagination.hasNext">
-        <button class="transparent" (click)="loadAssets(pagination.next)">Show more</button>
+        <button class="transparent" *ngIf="!assetsService.search" (click)="assetsService.getAssets({ next: pagination.next })">
+          Show more assets
+        </button>
+        <button class="transparent" *ngIf="assetsService.search" (click)="assetsService.searchAssets({ next: pagination.next })">
+          Show more results
+        </button>
       </div>
     </div>
   </main>

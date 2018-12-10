@@ -1,0 +1,64 @@
+<!-- STEP 2: Generate keys -->
+<div *ngIf="step === 'generate'" class="block-center">
+  <h2>
+    <app-svg-icon class="back" name="back-arrow" height="8" routerLink="/signup"></app-svg-icon>
+    Generate new keys
+  </h2>
+  <p class="meta" style="margin-bottom: 60px;">
+    Keys will be generated locally on your device/browser.
+  </p>
+
+  <div class="warning">
+    <h5>Important information</h5>
+    <div style="margin-bottom: 30px">
+      <img src="/assets/raster/spy-cam.png" style="margin-right: 32px" />
+      <img src="/assets/raster/spy-person.png" />
+    </div>
+    <div style="margin-bottom: 30px">
+      <p>
+        The keys provide access to your account. <br />Be diligent to keep
+        your private key safe.
+      </p>
+      <p>
+        Do NOT lose it! It cannot be recovered if you do. <br />Do NOT share
+        it! Your account may be misused. <br />Create a backup.
+      </p>
+    </div>
+    <a (click)="openSecureKeysDialog()">How to secure the keys?</a>
+  </div>
+
+  <button type="button" (click)="generateKeys()">I Understand</button>
+</div>
+
+<!-- STEP 3: Save keys -->
+<div *ngIf="step === 'save'" class="block-center">
+  <h2 style="color: #40D685">First, save your keys!</h2>
+  <p class="meta">Find your public/private key pair below.</p>
+  <div class="keys">
+    <h6>Your public key</h6>
+    <p>{{ forms.keys.value.address }}</p>
+
+    <h6>Your private key</h6>
+    <p>{{ forms.keys.getRawValue().privateKey }}</p>
+
+    <h6>
+      <a download="keys.json" [attr.href]="downloadJSON()">Download Keystore file (JSON)
+        <app-svg-icon name="download" width="32" height="29" fill="#333"></app-svg-icon>
+      </a>
+    </h6>
+  </div>
+  <p class="right" style="margin-bottom: 40px">
+    <a (click)="openSecureKeysDialog()">How to secure the keys?</a>
+  </p>
+  <div class="form">
+    <label style="text-align: center">
+      <input type="checkbox" [checked]="saved" (change)="saved = !saved" appCustomCheckbox />
+      I have saved my keys
+    </label>
+  </div>
+  <div style="justify-content: center; margin-top: 45px;">
+    <button type="button" [disabled]="!saved" (click)="savedKeys()" [promiseBtn]="savedKeys">
+      Continue
+    </button>
+  </div>
+</div>

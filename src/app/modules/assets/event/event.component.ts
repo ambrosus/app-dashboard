@@ -45,11 +45,12 @@ export class EventComponent implements OnInit, OnDestroy {
         this.event = data.event;
         try {
           this.location = {
-            lat: this.event.info.location.location.geometry.coordinates[0],
-            lng: this.event.info.location.location.geometry.coordinates[1],
+            lat: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
+            lng: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
           };
           delete this.event.info.location.type;
           delete this.event.info.location.location;
+          delete this.event.info.location.geoJson;
         } catch (e) { }
       },
       err => console.error('Event: ', err),

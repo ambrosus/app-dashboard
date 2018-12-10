@@ -1,0 +1,33 @@
+<!-- STEP 1: Options -->
+<div class="block-center">
+  <h2>Registration</h2>
+  <p>
+    Public/private key pair is required to access the blockchain and complete
+    transactions.
+  </p>
+  <p style="margin-bottom: 90px">
+    You are free to either register your own key or use our secure key
+    generator.<br />Don’t worry, in either case,
+    <b>we do not store your private key.</b>
+  </p>
+
+  <div class="options">
+    <div class="option">
+      <img src="/assets/raster/key.png" alt="Register my own key" />
+      <button type="button" routerLink="/signup/own-key">
+        Register my own key
+      </button>
+    </div>
+    <p class="options__separator meta__caption"><b>OR</b></p>
+    <div class="option">
+      <img src="/assets/raster/key-generate.png" alt="Generate keys for me" />
+      <button class="outline" type="button" routerLink="/signup/generated-key">
+        Generate keys for me
+      </button>
+    </div>
+  </div>
+
+  <div class="center" style="margin: 90px 0 30px">
+    <a routerLink="/login">Already a user?</a>
+  </div>
+</div>

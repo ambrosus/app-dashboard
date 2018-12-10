@@ -11,10 +11,9 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
-import { AuthService } from 'app/services/auth.service';
-import { StorageService } from 'app/services/storage.service';
-import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
-import { Router, NavigationStart } from '@angular/router';
+import { FormGroup, FormControl, FormArray } from '@angular/forms';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { StorageService } from '../../../services/storage.service';
 
 @Component({
   selector: 'app-assets',
@@ -31,24 +30,32 @@ export class AssetsComponent implements OnInit, OnDestroy {
   loader;
   error;
   selected;
-  allSelected = false;
-  selectButton = 'Select all';
   back;
+  account: any = {};
 
   constructor(
     public assetsService: AssetsService,
-    private authService: AuthService,
     public dialog: MatDialog,
-    private storageService: StorageService,
     private router: Router,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
+
+    if (this.assetsService.assetsReset) {
+      this.assetsService.assets = { clean: true };
+      this.assetsService.searchQuery = {};
+      this.assetsService.search = false;
+      this.assetsService.getAssets().then();
+      this.assetsService.assetsReset = false;
+    }
+
     this.subs[this.subs.length] = this.assetsService.assets.subscribe(
       ({ data, pagination }: any) => {
         console.log('[GET] Assets: ', data);
         this.pagination = pagination;
-        this.loader = false;
+        this.selected = 0;
 
         // Table form
         this.initTableForm();
@@ -66,38 +73,40 @@ export class AssetsComponent implements OnInit, OnDestroy {
       },
     );
 
-    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
+    this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.dialog.closeAll();
+        this.selected = 0;
+      }
+
+      if (e instanceof NavigationEnd) {
+        if (this.assetsService.assetsReset) {
+          this.assetsService.assets = { clean: true };
+          this.assetsService.searchQuery = {};
+          this.assetsService.search = false;
+          this.assetsService.getAssets().then(
+            resp => this.assetsService.assetsReset = false,
+          );
+        }
       }
     });
   }
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+
+    if (this.assetsService.search) {
+      this.assetsService.assets = { clean: true };
+      this.assetsService.searchQuery = {};
+      this.assetsService.search = false;
+      this.assetsService.assetsReset = true;
+    }
   }
 
   initTableForm() {
     this.forms.table = new FormGroup({
       assets: new FormArray([]),
     });
-  }
-
-  loadAssets(next = '', limit = 15) {
-    this.selected = 0;
-    this.dialog.closeAll();
-    this.loader = true;
-    const token = this.authService.getToken();
-    const account = <any>this.storageService.get('account') || {};
-    const { address } = account;
-    const options = {
-      limit,
-      token,
-      address,
-      next,
-    };
-
-    this.assetsService.getAssets(options).then();
   }
 
   JSONparse(value) {
@@ -108,11 +117,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  select() {
-    this.allSelected = !this.allSelected;
-    this.selectButton = this.allSelected ? 'Unselect all' : 'Select all';
+  select(selected = true) {
     this.selected = this.forms.table.get('assets')['controls'].filter(asset => {
-      asset.get('selected').setValue(this.allSelected);
+      asset.get('selected').setValue(selected);
       return asset.get('selected').value;
     }).length;
   }
@@ -135,6 +142,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
     this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
       data: {
         assetIds,
       },
@@ -144,6 +152,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   createAsset() {
     this.dialog.open(AssetAddComponent, {
       panelClass: 'dialog',
+      disableClose: true,
     });
   }
 }

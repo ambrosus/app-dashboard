@@ -4,7 +4,6 @@ import {
   FormControl,
   FormGroup,
   Validators,
-  AbstractControl,
 } from '@angular/forms';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MatDialog } from '@angular/material';
@@ -13,8 +12,7 @@ import { AccountsService } from 'app/services/accounts.service';
 import { StorageService } from 'app/services/storage.service';
 import { MessageService } from 'app/services/message.service';
 import * as Sentry from '@sentry/browser';
-
-declare let Web3: any;
+import { checkPrivateKey, checkEmail } from 'app/util';
 
 @Component({
   selector: 'app-login',
@@ -39,37 +37,15 @@ export class LoginComponent implements OnInit {
     private messageService: MessageService,
   ) {
     this.forms.email = new FormGroup({
-      email: new FormControl(null, [Validators.required, this.validateEmail]),
+      email: new FormControl(null, [checkEmail(false)]),
       password: new FormControl(null, [Validators.required]),
     });
     this.forms.privateKey = new FormGroup({
-      privateKey: new FormControl(null, [
-        Validators.required,
-        this.validatePrivateKey,
-      ]),
+      privateKey: new FormControl(null, [checkPrivateKey(false)]),
     });
   }
 
   ngOnInit() { }
-
-  validatePrivateKey(control: AbstractControl) {
-    try {
-      const web3 = new Web3();
-      console.log(web3.eth.accounts.privateKeyToAccount(control.value).address);
-      return null;
-    } catch (e) {
-      return { 'Private key is invalid': control.value };
-    }
-  }
-
-  validateEmail(control: AbstractControl) {
-    const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (!emailPattern.test(control.value)) {
-      return { 'Email is invalid': control.value };
-    }
-    return null;
-  }
 
   // Private key form
 
@@ -95,6 +71,7 @@ export class LoginComponent implements OnInit {
           scope.setUser({ account });
         });
         this.accountsService._account.next(account);
+        this.authService.signupAddress = '';
         this.router.navigate(['/assets']);
 
         this.messageService.dismissAll();

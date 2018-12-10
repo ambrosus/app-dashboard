@@ -4,6 +4,7 @@ import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
 import { MessageService } from 'app/services/message.service';
+import { checkEmail, checkPassword, checkText, comparePasswords, checkTimeZone } from '../../../util';
 
 declare let Web3: any;
 
@@ -37,26 +38,16 @@ export class GeneralComponent implements OnInit {
         { value: this.account.address, disabled: true },
         [Validators.required],
       ),
-      fullName: new FormControl(this.account.fullName, []),
-      email: new FormControl(this.account.email, []),
-      timeZone: new FormControl(this.account.timeZone, []),
-      password: new FormControl('', []),
-      passwordConfirm: new FormControl('', [this.comparePasswords]),
+      fullName: new FormControl(this.account.fullName, [checkText()]),
+      email: new FormControl(this.account.email, [checkEmail(false)]),
+      timeZone: new FormControl(this.account.timeZone, [checkTimeZone()]),
+      password: new FormControl('', [checkPassword()]),
+      passwordConfirm: new FormControl('', [comparePasswords()]),
     });
 
-    this.timezones = moment.tz.names();
-  }
+    console.log(this.forms.edit);
 
-  comparePasswords(control: FormControl) {
-    try {
-      const data = this.forms.edit.value;
-      if (!data.password) {
-        return null;
-      }
-      return control.value === data.password ? null : { 'Passwords do not match': true };
-    } catch (e) {
-      return null;
-    }
+    this.timezones = moment.tz.names();
   }
 
   save() {
@@ -73,6 +64,9 @@ export class GeneralComponent implements OnInit {
         if (data.password) {
           data['token'] = btoa(JSON.stringify(this.web3.eth.accounts.encrypt(secret, data.password)));
         }
+
+        delete data.password;
+        delete data.passwordConfirm;
 
         this.account = await this.accountsService.modifyAccount(this.account.address, data);
         this.storageService.set('account', this.account);

@@ -5,14 +5,17 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
-import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AuthService } from 'app/services/auth.service';
 import { AccountsService } from 'app/services/accounts.service';
+import { MessageService } from 'app/services/message.service';
 import { Subscription } from 'rxjs';
-import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { autocomplete } from 'app/constant';
 import { Router, NavigationStart } from '@angular/router';
-import { MatDatepicker } from '@angular/material';
+import { AssetsService } from 'app/services/assets.service';
+import { StorageService } from 'app/services/storage.service';
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-header',
@@ -24,30 +27,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
     search?: FormGroup;
-    searchAdvance?: FormGroup;
   } = {};
   isLoggedin;
   account: any = {};
   advanced = false;
   autocomplete: any[] = autocomplete;
   dropDown: any = {};
-
-  @ViewChild('from') fromDate: MatDatepicker<Date>;
+  promise: any = {};
 
   constructor(
     private authService: AuthService,
     private accountsService: AccountsService,
     private router: Router,
+    private messageService: MessageService,
+    private assetsService: AssetsService,
+    private storageService: StorageService,
   ) { }
-
-  asd() {
-    try {
-      console.log(this.fromDate);
-      this.fromDate.open();
-    } catch (error) {
-      console.warn(error);
-    }
-  }
 
   ngOnInit() {
     this.subs[this.subs.length] = this.accountsService._account.subscribe(
@@ -114,11 +109,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
 
     this.initSearchForm();
-    this.initSearchAdvanceForm();
 
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.advanced = false;
+        this.initSearchForm();
       }
     });
   }
@@ -127,15 +122,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  initSearchForm() {
-    this.forms.search = new FormGroup({
-      input: new FormControl(),
-    });
+  home() {
+    if (this.assetsService.search) {
+      this.assetsService.assetsReset = true;
+    }
   }
 
-  initSearchAdvanceForm() {
-    this.forms.searchAdvance = new FormGroup({
-      input: new FormControl(),
+  initSearchForm() {
+    this.forms.search = new FormGroup({
+      name: new FormControl(),
       from: new FormControl(),
       to: new FormControl(),
       state: new FormArray([]),
@@ -148,7 +143,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       location: new FormGroup({
         country: new FormControl(),
         city: new FormControl(),
-        gln: new FormControl(),
+        GLN: new FormControl(),
         locationId: new FormControl(),
         lat: new FormControl(),
         lng: new FormControl(),
@@ -157,7 +152,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   remove(array, index: number) {
-    (<FormArray>this.forms.searchAdvance.get(array)).removeAt(index);
+    (<FormArray>this.forms.search.get(array)).removeAt(index);
   }
 
   addTag(event, input) {
@@ -166,16 +161,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (event.keyCode === 13 || event.keyCode === 9) {
       if (value) {
         value = value.trim();
-        this.forms.searchAdvance
-          .get('state')
-        ['controls'].push(new FormControl(value));
+        this.forms.search.get('state')['controls'].push(new FormControl(value));
         input.value = '';
       }
     }
   }
 
   addIdentifier() {
-    this.forms.searchAdvance.get('identifiers')['controls'].push(
+    this.forms.search.get('identifiers')['controls'].push(
       new FormGroup({
         name: new FormControl(null, []),
         value: new FormControl(null, []),
@@ -200,6 +193,46 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   search() {
-    console.log('Searching...');
+    this.promise['search'] = new Promise(async (resolve, reject) => {
+      try {
+        const form = this.forms.search;
+        const data = form.getRawValue();
+        const account = <any>this.storageService.get('account') || {};
+        data.address = account.address;
+
+        if (form.invalid) {
+          throw new Error('Form is invalid');
+        }
+
+        if (data.from) {
+          data.from = moment(data.from).unix();
+        }
+        if (data.to) {
+          data.to = moment(data.to).unix();
+        }
+        if (data.state.length) {
+          data.state.map((type, index) => {
+            data.state.splice(index, 1, `ambrosus.asset.${type}`);
+            return type;
+          });
+        }
+
+        this.assetsService.searchQuery = data;
+        this.assetsService.assets = { clean: true };
+        const search = await this.assetsService.searchAssets();
+        this.assetsService.search = true;
+
+        this.router.navigate(['/']);
+
+        resolve();
+      } catch (error) {
+        console.error('[SEARCH]: ', error);
+        this.messageService.error(error);
+        this.assetsService.searchQuery = {};
+        this.assetsService.assets = { clean: true };
+        this.assetsService.search = false;
+        reject();
+      }
+    });
   }
 }

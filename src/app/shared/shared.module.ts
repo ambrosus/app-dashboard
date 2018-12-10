@@ -25,10 +25,7 @@ import { MatNativeDateModule } from '@angular/material';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { AutofocusDirective } from './directives/auto-focus.directive';
-import {
-  IconLeftDirective,
-  IconRightDirective,
-} from './directives/icon.directive';
+import { IconLeftDirective, IconRightDirective } from './directives/icon.directive';
 import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
 import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive';
@@ -36,6 +33,20 @@ import { AgmCoreModule } from '@agm/core';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
+import { environment } from 'environments/environment';
+import { ConfirmComponent } from './components/confirm/confirm.component';
+import { ProgressComponent } from './components/progress/progress.component';
+
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ResponseDetailsComponent } from './components/response-details/response-details.component';
+
+let apiKey = '';
+if (environment.ambrosus) {
+  apiKey = 'AIzaSyBSOr58Z_uGBdXIwVi96pkgN5a_ivEkLTg';
+}
+if (environment.prod) {
+  apiKey = 'AIzaSyD8GeDfBs4X8ERrPuGTUsrpTN-y3CgpHks';
+}
 
 @NgModule({
   imports: [
@@ -45,7 +56,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     MatDialogModule,
     ReactiveFormsModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCIf-xvKaHu8pgMCuOgw8Ft9gnMgmAOBVw',
+      apiKey,
     }),
     Angular2PromiseButtonModule.forRoot({
       spinnerTpl: '<span class="spinner"></span>',
@@ -56,6 +67,7 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     }),
     MatDatepickerModule,
     MatNativeDateModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     CommonModule,
@@ -79,6 +91,8 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     TabComponent,
     TabsComponent,
     Angular2PromiseButtonModule,
+    ConfirmComponent,
+    ProgressComponent,
   ],
   declarations: [
     AutocompleteinputDirective,
@@ -98,7 +112,15 @@ import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
     ToggleDropDownDirective,
     TabComponent,
     TabsComponent,
+    ConfirmComponent,
+    ProgressComponent,
+    ResponseDetailsComponent,
   ],
-  entryComponents: [EventAddComponent],
+  entryComponents: [
+    EventAddComponent,
+    ConfirmComponent,
+    ProgressComponent,
+    ResponseDetailsComponent,
+  ],
 })
 export class SharedModule { }
