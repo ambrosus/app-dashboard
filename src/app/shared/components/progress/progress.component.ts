@@ -14,7 +14,7 @@ import { ResponseDetailsComponent } from '../response-details/response-details.c
 export class ProgressComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   title = '';
-  value = 0;
+  value = 0.1;
   results = false;
 
   constructor(
@@ -22,21 +22,29 @@ export class ProgressComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
   ) {
     this.subs[this.subs.length] = this.assetsService.progress.status.asset.subscribe(
-      resp => this.value += Math.floor(100 / this.assetsService.progress.creating),
-      error => this.value += Math.floor(100 / this.assetsService.progress.creating),
+      resp => {
+        console.log('AS Inc spinner value: ', 100 / this.assetsService.progress.creating);
+        this.value += 100 / this.assetsService.progress.creating;
+      },
     );
+
     this.subs[this.subs.length] = this.assetsService.progress.status.event.subscribe(
-      resp => this.value += Math.floor(100 / this.assetsService.progress.creating),
-      error => this.value += Math.floor(100 / this.assetsService.progress.creating),
+      resp => {
+        console.log('ES Inc spinner value: ', 100 / this.assetsService.progress.creating);
+        this.value += 100 / this.assetsService.progress.creating;
+      },
     );
+
     this.subs[this.subs.length] = this.assetsService.progress.status.done.subscribe(
       resp => {
+        console.log('Inc done: ', 100);
         this.value = 100;
         setTimeout(() => {
           this.results = true;
         }, 1000);
       },
       error => {
+        console.log('Inc done: ', 100);
         this.value = 100;
         setTimeout(() => {
           this.results = true;

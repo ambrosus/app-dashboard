@@ -550,7 +550,7 @@ export class AssetsService {
           observer.next(response);
         },
         error => {
-          this.progress.status.asset.error({ asset, error });
+          this.progress.status.asset.next({ asset, error });
           this.responses[this.responses.length - 1].assets.error.push(error);
 
           // debug
@@ -564,57 +564,63 @@ export class AssetsService {
 
   async createEvents(events: any[]): Promise<any> {
     const data = { created: [], errors: [] };
+    let timeout = 0;
 
     try {
-      events.map(async (event: any, index, array) => {
-        const url = `${this.api.core}/assets/${event.content.idData.assetId}/events`;
+      events.forEach((event: any, index, array) => {
+        timeout += 600;
 
-        const eventCreated = await this.to(this.http.post(url, event));
+        setTimeout(async () => {
+          const url = `${this.api.core}/assets/${event.content.idData.assetId}/events`;
 
-        if (eventCreated.error) {
-          data.errors.push({ event, error: eventCreated.error });
-          this.progress.status.event.error({ event, error: eventCreated.error });
-          this.responses[this.responses.length - 1].events.error.push(eventCreated.error);
+          const eventCreated = await this.to(this.http.post(url, event));
 
-          // debug
-          console.log('Create event error: ', eventCreated.error);
+          if (eventCreated.error) {
+            data.errors.push({ event, error: eventCreated.error });
+            this.responses[this.responses.length - 1].events.error.push(eventCreated.error);
+            this.progress.status.event.next();
 
-        } else {
-          data.created.push(eventCreated);
-          this.progress.status.event.next(eventCreated);
-          this.responses[this.responses.length - 1].events.success.push(eventCreated);
+            // debug
+            console.log('Create event error: ', eventCreated.error);
 
-          // debug
-          console.log('Create event success: ', eventCreated);
+          } else {
+            data.created.push(eventCreated);
+            this.progress.status.event.next(eventCreated);
+            this.responses[this.responses.length - 1].events.success.push(eventCreated);
 
-        }
-
-        if (index === array.length - 1) {
-          // Update _events
-          const eventsData = this._events.getValue().data;
-          if (eventsData && eventsData.length) {
-            data['change'] = 'data';
-            data['type'] = 'start';
-            data['data'] = data.created;
-            this.events = data;
+            // debug
+            console.log('Create event success: ', eventCreated);
           }
 
-          // Update _assets
-          let assetsData = this._assets.getValue().data;
-          assetsData = assetsData.map(asset => {
-            const assetEvents = data.created.filter(
-              _event => asset.assetId === _event.content.idData.assetId,
-            );
-            const info = this.findEvent('info', assetEvents);
-            if (info) {
-              asset['info'] = info;
-            }
-            return asset;
-          });
-          const options = { change: 'data', type: 'all', data: assetsData };
+          if (index === array.length - 1) {
+            this.progress.status.done.next();
 
-          this.assets = options;
-        }
+            // Update _events
+            const eventsData = this._events.getValue().data;
+            if (eventsData && eventsData.length) {
+              data['change'] = 'data';
+              data['type'] = 'start';
+              data['data'] = data.created;
+              this.events = data;
+            }
+
+            // Update _assets
+            let assetsData = this._assets.getValue().data;
+            assetsData = assetsData.map(asset => {
+              const assetEvents = data.created.filter(
+                _event => asset.assetId === _event.content.idData.assetId,
+              );
+              const info = this.findEvent('info', assetEvents);
+              if (info) {
+                asset['info'] = info;
+              }
+              return asset;
+            });
+            const options = { change: 'data', type: 'all', data: assetsData };
+
+            this.assets = options;
+          }
+        }, timeout);
       });
 
       return data;

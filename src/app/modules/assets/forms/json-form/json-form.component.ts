@@ -48,7 +48,7 @@ export class JsonFormComponent implements OnInit {
   progress() {
     const dialogRef = this.dialog.open(ProgressComponent, {
       panelClass: 'progress',
-      hasBackdrop: false,
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -218,17 +218,11 @@ export class JsonFormComponent implements OnInit {
               this.sequenceNumber += 1;
               const eventsCreated = await this.assetsService.createEvents(infoEvent);
 
-              // Fire finished event
-              this.assetsService.progress.status.done.next();
-
               console.log('JSON form assets done: ', this.assetsService.responses);
 
               resolve();
             },
             error => {
-              // Fire finished event
-              this.assetsService.progress.status.done.next();
-
               throw new Error('Asset creation failed, aborting');
             },
           );
@@ -256,17 +250,11 @@ export class JsonFormComponent implements OnInit {
 
           const eventsCreated = await this.assetsService.createEvents(events);
 
-          // Fire finished event
-          this.assetsService.progress.status.done.next();
-
           console.log('JSON form events done: ', this.assetsService.responses);
 
           resolve();
         }
       } catch (error) {
-        // Fire finished event
-        this.assetsService.progress.status.done.next();
-
         console.error(`[CREATE] ${this.for}`, error);
         reject();
       }
