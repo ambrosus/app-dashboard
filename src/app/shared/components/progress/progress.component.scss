@@ -55,6 +55,7 @@ app-progress {
     overflow: hidden;
     border-radius: 50%;
     transition: background .2s ease-out;
+    margin-bottom: 20px;
 
     &.completed {
       background: $blue;

@@ -39,7 +39,7 @@ export class EventFormComponent implements OnInit {
   progress() {
     const dialogRef = this.dialog.open(ProgressComponent, {
       panelClass: 'progress',
-      hasBackdrop: false,
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -353,15 +353,10 @@ export class EventFormComponent implements OnInit {
 
         const eventsCreated = await this.assetsService.createEvents(events);
 
-        // Fire finished event
-        this.assetsService.progress.status.done.next();
-
         console.log('Event form done: ', this.assetsService.responses);
 
         resolve();
       } catch (error) {
-        // Fire finished event
-        this.assetsService.progress.status.done.next();
 
         console.error('[CREATE] Events: ', error);
         reject();

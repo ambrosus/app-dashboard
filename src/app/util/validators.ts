@@ -84,7 +84,17 @@ export const checkJSON = (allowEmpty = true) => {
             if (allowEmpty && !control.value) {
                 return null;
             }
-            console.log(JSON.parse(control.value));
+            const value = JSON.parse(control.value);
+
+            if (value instanceof Array) {
+                const notObjects = value.every(item => item instanceof Object);
+
+                if (!notObjects) {
+                    throw new Error();
+                }
+            } else if (!(value instanceof Object)) {
+                throw new Error();
+            }
 
             return null;
         } catch (error) {
