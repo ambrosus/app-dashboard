@@ -6,6 +6,7 @@ import { AccountsService } from 'app/services/accounts.service';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
+import { checkText, checkTimeZone } from 'app/util';
 
 @Component({
   selector: 'app-settings',
@@ -35,8 +36,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.account = this.storageService.get('account');
     this.forms.settings = new FormGroup({
       owner: new FormControl({ value: '', disabled: true }),
-      title: new FormControl('', [Validators.required]),
-      timeZone: new FormControl(''),
+      title: new FormControl('', [checkText()]),
+      timeZone: new FormControl('', [checkTimeZone()]),
       legalAddress: new FormControl(''),
       active: new FormControl(this.organization.active),
     });

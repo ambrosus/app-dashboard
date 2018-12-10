@@ -4,6 +4,7 @@ import { OrganizationsService } from 'app/services/organizations.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'app/services/message.service';
+import { checkEmail } from 'app/util';
 
 @Component({
   selector: 'app-invite',
@@ -26,7 +27,7 @@ export class InviteComponent {
     this.forms.invite = new FormGroup({
       members: new FormArray([
         new FormGroup({
-          email: new FormControl('', []),
+          email: new FormControl('', [checkEmail()]),
         }),
       ]),
     });
@@ -44,10 +45,6 @@ export class InviteComponent {
         email: new FormControl('', []),
       }),
     );
-  }
-
-  cancel() {
-    this.router.navigate([`${location.pathname}`]);
   }
 
   send() {

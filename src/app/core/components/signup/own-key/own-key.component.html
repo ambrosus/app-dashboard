@@ -1,0 +1,24 @@
+<!-- STEP 2: Register key -->
+<div>
+  <div class="block-center">
+    <h2>
+      <app-svg-icon class="back" name="back-arrow" height="8" routerLink="/signup"></app-svg-icon>
+      Register your public key
+    </h2>
+    <p class="meta" style="margin-bottom: 60px;">
+      We will register your public key (also known as address).
+    </p>
+  </div>
+
+  <form class="form" [formGroup]="forms.keys" (ngSubmit)="verifyAccount()" style="max-width: 624px">
+    <label>
+      <span>Your public key</span>
+      <input formControlName="address" type="text" [appError]="[forms.keys, true]" />
+    </label>
+    <div style="justify-content: center; margin-top: 45px;">
+      <button type="submit" [disabled]="forms.keys.invalid" [promiseBtn]="promise.keys">
+        Continue
+      </button>
+    </div>
+  </form>
+</div>

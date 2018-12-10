@@ -1,13 +1,13 @@
-<form class="form" [formGroup]="forms.json" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
+<form class="form" [formGroup]="forms.json" (ngSubmit)="create()">
   <section>
     <label>
       <span>JSON *</span>
-      <textarea class="json" formControlName="data" (keyup)="validateJSON(input)" (keydown)="insertTab($event, input)" spellcheck="false" autofocus #input></textarea>
+      <textarea class="json" formControlName="data" (keydown)="insertTab($event, input)" spellcheck="false" autofocus #input [appError]="[forms.json, true]"></textarea>
     </label>
   </section>
 
-  <div style="padding: 0 40px;">
-    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+  <div style="padding: 0 40px;" *ngIf="hasPermission">
+    <button type="button" class="transparent light" mat-dialog-close>Cancel</button>
     <button type="submit" [disabled]="forms.json.invalid" [promiseBtn]="promise.create">Create {{ for }}</button>
   </div>
 </form>

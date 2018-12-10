@@ -1,0 +1,12 @@
+@import 'utils';
+
+app-confirm {
+  display: block;
+
+  > p {
+    font-size: 14px;
+    color: $black;
+    margin-top: 5px;
+    user-select: none;
+  }
+}

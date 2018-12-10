@@ -14,7 +14,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <input formControlName="name" type="text">
     </label>
     <label>
-      <span>Asset type</span>
+      <span>Asset type *</span>
       <input formControlName="assetType" type="text">
     </label>
     <label>
@@ -102,8 +102,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
   </section>
 
-  <div style="padding: 0 40px;">
-    <button type="button" class="transparent light" (click)="cancel()">Cancel</button>
+  <div style="padding: 0 40px;" *ngIf="hasPermission">
+    <button type="button" class="transparent light" mat-dialog-close>Cancel</button>
     <button type="submit" [disabled]="forms.asset.invalid" [promiseBtn]="promise.create">Create</button>
   </div>
 </form>

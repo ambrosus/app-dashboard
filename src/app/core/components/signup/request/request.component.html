@@ -1,0 +1,40 @@
+<!-- STEP 4: Request form -->
+<div *ngIf="step === 'request'" class="block-center">
+  <h2>Almost done</h2>
+  <p class="meta">
+    For better customer experience please share a few more details.
+  </p>
+  <form class="form" [formGroup]="forms.request" (ngSubmit)="requestOrganization()" style="max-width: 410px">
+    <label>
+      <span>Organization name</span>
+      <input formControlName="title" type="text" name="new-title" autocomplete="new_title" [appError]="[forms.request, true]" />
+    </label>
+    <label>
+      <span>Your email *</span>
+      <input formControlName="email" name="new-email2" autocomplete="off" type="email" [appError]="[forms.request]" />
+    </label>
+    <label>
+      <span>What makes you interested in our solution? *</span>
+      <textarea formControlName="message" [appError]="[forms.request]" rows="2"></textarea>
+    </label>
+    <label>
+      <input type="checkbox" formControlName="terms" appCustomCheckbox />
+      I've read <a>Terms of Service</a>
+    </label>
+    <div style="justify-content: center; margin-top: 45px;">
+      <button type="submit" [disabled]="forms.request.invalid" [promiseBtn]="promise.request">
+        Register
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- STEP 5: Success -->
+<div *ngIf="step === 'success'" class="block-center">
+  <img src="/assets/svg/success.svg" style="margin: 80px 0 47px; height: 24px" />
+  <h2 style="margin: 0; margin-bottom: 20px">Thank you!</h2>
+  <p class="meta">
+    Your application has been successfully submitted for approval.<br />Once
+    reviewed, we will send you an email with further instructions.
+  </p>
+</div>

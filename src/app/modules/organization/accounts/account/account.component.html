@@ -21,7 +21,7 @@
           </label>
           <label class="w50" for="timeZone">
             <span>Time Zone</span>
-            <input formControlName="timeZone" list="timezones" id="timeZone" />
+            <input formControlName="timeZone" list="timezones" id="timeZone" [appError]="[forms.account, true]" />
             <datalist id="timezones">
               <option *ngFor="let timezone of timezones" value="{{ timezone }}">
               </option>
@@ -30,12 +30,12 @@
         </div>
         <div class="group">
           <label class="w50">
-            <span>Name</span>
-            <input formControlName="fullName" type="text" />
+            <span>Full name</span>
+            <input formControlName="fullName" type="text" [appError]="[forms.account, true]" />
           </label>
           <label class="w50">
             <span>Email</span>
-            <input formControlName="email" type="email" />
+            <input formControlName="email" type="email" [appError]="[forms.account, true]" />
           </label>
         </div>
         <div>
@@ -74,12 +74,12 @@
             Register accounts
           </label>
           <label>
-            <input type="checkbox" formControlName="create_event" appCustomCheckbox />
-            Create events
-          </label>
-          <label>
             <input type="checkbox" formControlName="create_asset" appCustomCheckbox />
             Create assets
+          </label>
+          <label>
+            <input type="checkbox" formControlName="create_event" appCustomCheckbox />
+            Create events
           </label>
         </div>
         <div>

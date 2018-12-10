@@ -29,7 +29,7 @@
           </label>
           <label class="w50">
             <span>Title</span>
-            <input formControlName="title" type="text">
+            <input formControlName="title" type="text" [appError]="[forms.settings, true]">
           </label>
         </div>
         <div class="group">
@@ -39,7 +39,7 @@
           </label>
           <label class="w50" for="timeZone">
             <span>Time zone</span>
-            <input formControlName="timeZone" list="timezones" id="timeZone">
+            <input formControlName="timeZone" list="timezones" id="timeZone" [appError]="[forms.settings, true]">
             <datalist id="timezones">
               <option *ngFor="let timezone of timezones" value="{{ timezone }}">
             </datalist>

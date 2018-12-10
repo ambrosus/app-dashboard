@@ -4,10 +4,8 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
-import { map, catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
-import { AuthService } from './auth.service';
 
 declare let Web3: any;
 
@@ -16,8 +14,6 @@ declare let Web3: any;
 })
 export class AssetsService {
   inputChanged = new Subject();
-  creatingAsset = new Subject();
-  creatingEvent = new Subject();
   private _events: BehaviorSubject<any> = new BehaviorSubject({
     meta: {},
     data: [],
@@ -42,12 +38,22 @@ export class AssetsService {
   api;
   search = false;
   assetsReset = false;
+  responses: any[] = [];
+  progress: any = {
+    title: '',
+    creating: 0,
+    for: 'assets',
+    status: {
+      asset: new Subject(),
+      event: new Subject(),
+      done: new Subject(),
+    },
+  };
 
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
     private messageService: MessageService,
-    private authService: AuthService,
   ) {
     this.initSDK();
     this.web3 = new Web3();
@@ -396,6 +402,10 @@ export class AssetsService {
     return new Observable(observer => {
       this.http.post(url, body).subscribe(
         (assets: any) => {
+          if (!assets.data || !Array.isArray(assets.data) || !assets.data.length) {
+            return observer.error('No asset');
+          }
+
           const ids = assets.data.reduce((_ids, asset, index, array) => {
             _ids.push(asset.assetId);
             return _ids;
@@ -502,86 +512,115 @@ export class AssetsService {
       ],
     };
 
-    return this.http.post(url, body).pipe(
-      map((events: any) => this.parseEvent(events.data[0])),
-      catchError(error => {
-        this.messageService.error(error);
-        return error;
-      }),
-    );
+    return new Observable(observer => {
+      this.http.post(url, body).subscribe(
+        (events: any) => {
+          if (!events.data || !Array.isArray(events.data) || !events.data.length) {
+            return observer.error('No event');
+          }
+
+          observer.next(this.parseEvent(events.data[0]));
+        },
+        error => observer.error('No event'),
+      );
+    });
   }
 
   // Create methods
 
-  createAsset(asset: Object): Observable<any> {
-    const url = `${this.api.core}/assets`;
-    const data = { created: [], errors: [] };
+  createAsset(asset: Object) {
+    return new Observable(observer => {
+      const url = `${this.api.core}/assets`;
+      const data = { created: [], errors: [] };
 
-    return this.http.post(url, asset).pipe(
-      tap(response => {
-        this.messageService.success('Asset created');
-        this.creatingAsset.next(response);
+      this.http.post(url, asset).subscribe(
+        response => {
+          this.progress.status.asset.next(response);
+          this.responses[this.responses.length - 1].assets.success.push(response);
 
-        data['change'] = 'data';
-        data['type'] = 'start';
-        data['data'] = [response];
-        this.assets = data;
+          // debug
+          console.log('Create asset success: ', response);
 
-        return response;
-      }),
-      catchError(error => {
-        this.creatingAsset.error({ asset, error });
-        this.messageService.error(error);
-        return error;
-      }),
-    );
+          data['change'] = 'data';
+          data['type'] = 'start';
+          data['data'] = [response];
+
+          this.assets = data;
+
+          observer.next(response);
+        },
+        error => {
+          this.progress.status.asset.next({ asset, error });
+          this.responses[this.responses.length - 1].assets.error.push(error);
+
+          // debug
+          console.log('Create asset error: ', error);
+
+          observer.error(error);
+        },
+      );
+    });
   }
 
-  async createEvents(events: Object[]): Promise<any> {
+  async createEvents(events: any[]): Promise<any> {
     const data = { created: [], errors: [] };
+    let timeout = 0;
 
     try {
-      await events.map(async (event: any, index, array) => {
-        const url = `${this.api.core}/assets/${
-          event.content.idData.assetId
-          }/events`;
-        const eventCreated = await this.to(this.http.post(url, event));
-        if (eventCreated.error) {
-          data.errors.push({ event, error: eventCreated.error });
-          this.creatingEvent.error({ event, error: eventCreated.error });
-          this.messageService.error(eventCreated.error);
-        } else {
-          this.messageService.success(`Event created for asset: ${event.content.idData.assetId}`);
-          data.created.push(eventCreated);
-          this.creatingEvent.next(eventCreated);
-        }
+      events.forEach((event: any, index, array) => {
+        timeout += 600;
 
-        if (index === array.length - 1) {
-          // Update _events
-          const eventsData = this._events.getValue().data;
-          if (eventsData && eventsData.length) {
-            data['change'] = 'data';
-            data['type'] = 'start';
-            data['data'] = data.created;
-            this.events = data;
+        setTimeout(async () => {
+          const url = `${this.api.core}/assets/${event.content.idData.assetId}/events`;
+
+          const eventCreated = await this.to(this.http.post(url, event));
+
+          if (eventCreated.error) {
+            data.errors.push({ event, error: eventCreated.error });
+            this.responses[this.responses.length - 1].events.error.push(eventCreated.error);
+            this.progress.status.event.next();
+
+            // debug
+            console.log('Create event error: ', eventCreated.error);
+
+          } else {
+            data.created.push(eventCreated);
+            this.progress.status.event.next(eventCreated);
+            this.responses[this.responses.length - 1].events.success.push(eventCreated);
+
+            // debug
+            console.log('Create event success: ', eventCreated);
           }
 
-          // Update _assets
-          let assetsData = this._assets.getValue().data;
-          assetsData = assetsData.map(asset => {
-            const assetEvents = data.created.filter(
-              _event => asset.assetId === _event.content.idData.assetId,
-            );
-            const info = this.findEvent('info', assetEvents);
-            if (info) {
-              asset['info'] = info;
-            }
-            return asset;
-          });
-          const options = { change: 'data', type: 'all', data: assetsData };
+          if (index === array.length - 1) {
+            this.progress.status.done.next();
 
-          this.assets = options;
-        }
+            // Update _events
+            const eventsData = this._events.getValue().data;
+            if (eventsData && eventsData.length) {
+              data['change'] = 'data';
+              data['type'] = 'start';
+              data['data'] = data.created;
+              this.events = data;
+            }
+
+            // Update _assets
+            let assetsData = this._assets.getValue().data;
+            assetsData = assetsData.map(asset => {
+              const assetEvents = data.created.filter(
+                _event => asset.assetId === _event.content.idData.assetId,
+              );
+              const info = this.findEvent('info', assetEvents);
+              if (info) {
+                asset['info'] = info;
+              }
+              return asset;
+            });
+            const options = { change: 'data', type: 'all', data: assetsData };
+
+            this.assets = options;
+          }
+        }, timeout);
       });
 
       return data;

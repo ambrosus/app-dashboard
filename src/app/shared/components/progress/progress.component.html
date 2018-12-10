@@ -1,0 +1,43 @@
+<h4>{{ title || 'Creating...' }}</h4>
+
+<div class="spinner" [ngClass]="{'completed': value >= 100}">
+  <mat-progress-spinner diameter="40" [mode]="'determinate'" [value]="value"></mat-progress-spinner>
+</div>
+
+<div class="results flex between">
+  <div *ngIf="assetsService.progress.for === 'assets'">
+    <h5>Assets</h5>
+    <p class="success">
+      <small>Success:</small>
+      <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].assets.success.length }">
+        {{ assetsService.responses[assetsService.responses.length - 1].assets.success.length }}
+      </span>
+    </p>
+    <p class="error">
+      <small>Error:</small>
+      <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].assets.error.length }">
+        {{ assetsService.responses[assetsService.responses.length - 1].assets.error.length }}
+      </span>
+    </p>
+  </div>
+  <div>
+    <h5>Events</h5>
+    <p class="success">
+      <small>Success:</small>
+      <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].events.success.length }">
+        {{ assetsService.responses[assetsService.responses.length - 1].events.success.length }}
+      </span>
+    </p>
+    <p class="error">
+      <small>Error:</small>
+      <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].events.error.length }">
+        {{ assetsService.responses[assetsService.responses.length - 1].events.error.length }}
+      </span>
+    </p>
+  </div>
+</div>
+
+<div class="center" style="margin-top: 30px" *ngIf="value >= 100">
+  <button class="transparent light" mat-dialog-close>Close</button>
+  <button class="transparent" (click)="moreDetails()">More details</button>
+</div>
