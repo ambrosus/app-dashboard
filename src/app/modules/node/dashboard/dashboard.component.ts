@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ElementRef } from '@angular/core';
 import { AnalyticsService } from 'app/services/analytics.service';
-import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/utils/datetime.util';
+import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/util';
 import { MessageService } from 'app/services/message.service';
 import * as moment from 'moment-timezone';
 

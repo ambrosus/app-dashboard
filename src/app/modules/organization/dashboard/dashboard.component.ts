@@ -1,7 +1,9 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { AnalyticsService } from 'app/services/analytics.service';
 import { MessageService } from 'app/services/message.service';
-import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/utils/datetime.util';
+import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/util';
+import * as moment from 'moment-timezone';
+import { StorageService } from 'app/services/storage.service';
 
 declare let Chart: any;
 
@@ -22,14 +24,17 @@ export class DashboardComponent implements OnInit {
     labels: [],
     data: [],
   };
+  account: any = {};
 
   constructor(
     private el: ElementRef,
     private analytisService: AnalyticsService,
     private messageService: MessageService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit() {
+    this.account = this.storageService.get('account') || {};
     this.diagram.element = this.el.nativeElement.querySelector('#diagram');
     this.generateDiagram();
   }
@@ -44,20 +49,39 @@ export class DashboardComponent implements OnInit {
     this.generateDiagram();
   }
 
+  format() {
+    switch (this.groupBy) {
+      case '24h':
+        return 'HH';
+      case '7d':
+        return 'DD-MM';
+      case 'mtd':
+        return 'DD-MM';
+      case '28d':
+        return 'DD-MM';
+      case '12m':
+        return 'MMMM';
+      default:
+        return 'Y-MM-DD-HH';
+    }
+  }
+
   async generateDiagram(): Promise<any> {
     try {
       const [start, end] = this.getStartEnd();
-      const total = await this.analytisService.getTimeRangeCount(this.display, start, end);
+      console.log(start, end);
+      const total = await this.analytisService.getTimeRangeCountForOrganization(this.account.organization, this.display, start, end);
       this.total = total.count;
-      const timeSeries = await this.analytisService.getTimeRangeCountAggregate(this.display, start, end, this.getGroup());
+      const timeSeries = await this.analytisService.getTimeRangeCountAggregateForOrganization(this.account.organization, this.display, start, end, this.getGroup());
+      console.log('timeSeries: ', timeSeries);
 
       this.timeSeries = {
         labels: [],
         data: [],
       };
       timeSeries.count.map(stat => {
-        this.timeSeries.labels.unshift(stat.date);
-        this.timeSeries.data.unshift(stat.count);
+        this.timeSeries.labels.push(moment(stat.timestamp * 1000).format(this.format()));
+        this.timeSeries.data.push(stat.count);
       });
       console.log(this.total, this.timeSeries);
 
@@ -104,27 +128,14 @@ export class DashboardComponent implements OnInit {
   }
 
   getGroup() {
-    let group = '';
-
     switch (this.groupBy) {
       case '24h':
-        group = 'hour';
-        break;
-      case '7d':
-        group = 'day';
-        break;
-      case '28d':
-        group = 'day';
-        break;
-      case 'mtd':
-        group = 'day';
-        break;
+        return 'hour';
       case '12m':
-        group = 'month';
-        break;
+        return 'month';
+      default:
+        return 'day';
     }
-
-    return group;
   }
 
   getStartEnd() {
@@ -134,29 +145,26 @@ export class DashboardComponent implements OnInit {
     switch (this.groupBy) {
       case '24h':
         start = getTimestampSubHours(24);
-        end = getTimestamp();
         break;
 
       case '7d':
         start = getTimestampSubDays(7);
-        end = getTimestamp();
         break;
 
       case 'mtd':
         start = getTimestampMonthStart();
-        end = getTimestamp();
         break;
 
       case '28d':
         start = getTimestampSubDays(28);
-        end = getTimestamp();
         break;
 
       case '12m':
         start = getTimestampSubMonths(12);
-        end = getTimestamp();
         break;
     }
+
+    end = getTimestamp();
 
     return [start, end];
   }

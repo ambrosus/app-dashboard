@@ -1,5 +1,5 @@
 <p>{{ data.question || 'Are you sure you want to proceed?' }}</p>
 <div class="center" style="margin-top: 30px">
-  <button class="transparent" [mat-dialog-close]="false">Cancel</button>
-  <button class="transparent" [mat-dialog-close]="true">Ok</button>
+  <button class="transparent" [mat-dialog-close]="false">{{ data.no || 'Cancel' }}</button>
+  <button class="transparent" [mat-dialog-close]="true">{{ data.yes || 'Ok' }}</button>
 </div>
