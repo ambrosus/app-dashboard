@@ -346,7 +346,7 @@ export class EventFormComponent implements OnInit {
         });
 
         // Start progress
-        this.assetsService.progress.title = `Creating ${events.length} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
+        this.assetsService.progress.title = `Creating 1 event, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
         this.assetsService.progress.creating = events.length;
         this.assetsService.progress.for = 'events';
         this.progress();
