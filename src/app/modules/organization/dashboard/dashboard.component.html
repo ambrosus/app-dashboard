@@ -17,16 +17,11 @@
 
     <div class="flex between">
       <ul class="showMenu">
-        <li [ngClass]="{ 'active': display === 'asset' }" (click)="changeDisplay('asset')">Assets</li>
-        <li [ngClass]="{ 'active': display === 'event' }" (click)="changeDisplay('event')">Events</li>
+        <li *ngFor="let item of menus.display" [ngClass]="{ 'active': display === item }" (click)="changeDisplay(item)">{{ item }}s</li>
       </ul>
 
       <ul class="groupByMenu">
-        <li [ngClass]="{ 'active': groupBy === '24h' }" (click)="changeGroupBy('24h')">24h</li>
-        <li [ngClass]="{ 'active': groupBy === '7d' }" (click)="changeGroupBy('7d')">7d</li>
-        <li [ngClass]="{ 'active': groupBy === 'mtd' }" (click)="changeGroupBy('mtd')">mtd</li>
-        <li [ngClass]="{ 'active': groupBy === '28d' }" (click)="changeGroupBy('28d')">28d</li>
-        <li [ngClass]="{ 'active': groupBy === '12m' }" (click)="changeGroupBy('12m')">12m</li>
+        <li *ngFor="let item of menus.group" [ngClass]="{ 'active': groupBy === item }" (click)="changeGroupBy(item)">{{ item }}</li>
       </ul>
     </div>
 

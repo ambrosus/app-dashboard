@@ -154,6 +154,7 @@
         cursor: pointer;
         user-select: none;
         transition: color .2s;
+        text-transform: capitalize;
 
         &:first-child {
           padding-left: 0;

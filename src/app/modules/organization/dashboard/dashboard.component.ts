@@ -25,6 +25,10 @@ export class DashboardComponent implements OnInit {
     data: [],
   };
   account: any = {};
+  menus = {
+    display: ['asset', 'event'],
+    group: ['24h', '7d', 'mtd', '28d', '12m'],
+  };
 
   constructor(
     private el: ElementRef,
