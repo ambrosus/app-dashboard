@@ -17,6 +17,7 @@ import { LoginSignupComponent } from './core/components/help/pages/login-signup/
 import { AssetsComponent } from './core/components/help/pages/assets/assets.component';
 import { NodeDashboardComponent } from './core/components/help/pages/node-dashboard/node-dashboard.component';
 import { OrganizationDashboardComponent } from './core/components/help/pages/organization-dashboard/organization-dashboard.component';
+import { IntroductionComponent } from './core/components/help/pages/introduction/introduction.component';
 
 const routes: Routes = [
   {
@@ -32,7 +33,11 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'assets',
+        redirectTo: 'introduction',
+      },
+      {
+        path: 'introduction',
+        component: IntroductionComponent,
       },
       {
         path: 'assets',

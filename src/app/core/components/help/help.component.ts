@@ -10,12 +10,16 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 export class HelpComponent {
   sidebar = [
     {
-      title: 'Assets',
-      link: '/help/assets',
+      title: 'Introduction',
+      link: '/help/introduction',
     },
     {
       title: 'Login/Signup',
       link: '/help/authentication',
+    },
+    {
+      title: 'Assets',
+      link: '/help/assets',
     },
     {
       title: 'Node dashboard',

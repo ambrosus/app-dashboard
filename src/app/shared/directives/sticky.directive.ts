@@ -35,9 +35,6 @@ export class StickyDirective implements OnInit {
     if (this.screenWidth > 768) {
       this.windowOffsetTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
-      console.log('Window offset: ', this.windowOffsetTop);
-      console.log('This offset: ', this.offset);
-      console.log('Calc: ', this.windowOffsetTop + +this.offsetTop);
       if (this.windowOffsetTop + +this.offsetTop > this.offset) {
         this.addSticky();
       } else {

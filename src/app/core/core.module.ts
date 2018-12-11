@@ -17,6 +17,7 @@ import { AssetsComponent } from './components/help/pages/assets/assets.component
 import { OrganizationDashboardComponent } from './components/help/pages/organization-dashboard/organization-dashboard.component';
 import { NodeDashboardComponent } from './components/help/pages/node-dashboard/node-dashboard.component';
 import { LoginSignupComponent } from './components/help/pages/login-signup/login-signup.component';
+import { IntroductionComponent } from './components/help/pages/introduction/introduction.component';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { LoginSignupComponent } from './components/help/pages/login-signup/login
     OrganizationDashboardComponent,
     NodeDashboardComponent,
     LoginSignupComponent,
+    IntroductionComponent,
   ],
   providers: [OrganizationsService],
   entryComponents: [
