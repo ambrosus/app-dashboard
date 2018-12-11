@@ -102,7 +102,7 @@ export class OwnKeyComponent implements OnInit, OnDestroy {
           }
         } else {
           console.log('[VERIFY] Account: ', verified);
-          throw new Error('This account already exists, please use another private key');
+          throw new Error('This account already exists, please use another public key/address.');
         }
       } catch (error) {
         console.error('[VERIFY] Account: ', error);
