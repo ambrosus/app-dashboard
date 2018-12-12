@@ -21,7 +21,7 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { GlobalErrorHandler } from './services/global-error-handler.service';
+import { NgProgressModule } from 'ngx-progressbar';
 
 if (!isDevMode) {
   Sentry.init({
@@ -53,11 +53,12 @@ export class SentryErrorHandler implements ErrorHandler {
       enabled: environment.production,
     }),
     MatSnackBarModule,
+    NgProgressModule,
   ],
   providers: [
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler,
+      useClass: SentryErrorHandler,
     },
     {
       provide: HTTP_INTERCEPTORS,
