@@ -1,9 +1,9 @@
 <h2>All responses for this session</h2>
 
 <div class="accordions">
-  <div class="accordion" *ngFor="let response of this.assetsService.responses.reverse(); let i = index;">
-    <div class="title" [ngClass]="{ 'active': i === 0 }" appAccordion>{{ response.timestamp | date: 'medium' }}</div>
-    <div class="content" [ngClass]="{ 'active': i === 0 }">
+  <div class="accordion" *ngFor="let response of this.assetsService.responses; let i = index;">
+    <div class="title" [ngClass]="{ 'active': i === this.assetsService.responses.length - 1 }" appAccordion>{{ response.timestamp | date: 'medium' }}</div>
+    <div class="content" [ngClass]="{ 'active': i === this.assetsService.responses.length - 1 }">
       <div style="margin-bottom: 25px;" *ngIf="response.assets.success.length || response.assets.error.length">
         <h4 style="margin-bottom: 25px;">Assets</h4>
 

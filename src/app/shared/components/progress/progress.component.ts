@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ResponseDetailsComponent } from '../response-details/response-details.component';
 
 @Component({
@@ -16,6 +16,9 @@ export class ProgressComponent implements OnInit, OnDestroy {
   title = '';
   value = 0.1;
   results = false;
+  dialogs: {
+    moreDetails?: MatDialogRef<any>,
+  } = {};
 
   constructor(
     public assetsService: AssetsService,
@@ -63,11 +66,11 @@ export class ProgressComponent implements OnInit, OnDestroy {
   }
 
   moreDetails() {
-    const dialogRef = this.dialog.open(ResponseDetailsComponent, {
+    this.dialogs.moreDetails = this.dialog.open(ResponseDetailsComponent, {
       panelClass: 'responseDetails',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.dialogs.moreDetails.afterClosed().subscribe(result => {
       console.log('Response details closed', result);
     });
   }

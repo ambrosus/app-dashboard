@@ -4,7 +4,7 @@ import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
@@ -23,6 +23,9 @@ export class AssetComponent implements OnInit, OnDestroy {
   jsonEvents: any;
   account: any = {};
   noContent = false;
+  dialogs: {
+    event?: MatDialogRef<any>,
+  } = {};
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -56,13 +59,13 @@ export class AssetComponent implements OnInit, OnDestroy {
         }
       },
     );
+
+    this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
+      if (this.dialogs.event) { this.dialogs.event.close(); }
+    });
+
     this.subs[this.subs.length] = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
     this.assetsService.events.subscribe(events => this.timeline = events && events.data && !!events.data.length);
-    this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
-      if (e instanceof NavigationStart) {
-        this.dialog.closeAll();
-      }
-    });
   }
 
   ngOnDestroy() {
@@ -112,7 +115,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   openAddEventDialog() {
-    this.dialog.open(EventAddComponent, {
+    this.dialogs.event = this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
       disableClose: true,
       data: {

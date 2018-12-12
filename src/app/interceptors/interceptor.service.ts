@@ -4,19 +4,27 @@ import {
   HttpInterceptor,
   HttpHandler,
   HttpRequest,
+  HttpResponse,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
+import { tap } from 'rxjs/operators';
+import { NgProgress } from 'ngx-progressbar';
 
 @Injectable()
 export class InterceptorService implements HttpInterceptor {
-  constructor(private authService: AuthService) { }
+
+  constructor(
+    private authService: AuthService,
+    public loader: NgProgress,
+  ) { }
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     let request: HttpRequest<any> = req.clone();
+    this.loader.start();
 
     const token = this.authService.getToken();
     const tokenNotNeeded = ['/assets'];
@@ -34,6 +42,17 @@ export class InterceptorService implements HttpInterceptor {
       });
     }
 
-    return next.handle(request);
+    return next.handle(request).pipe(
+      tap(
+        (event: HttpEvent<any>) => {
+          if (event instanceof HttpResponse) {
+            this.loader.done();
+          }
+        },
+        (err: any) => {
+          this.loader.done();
+        },
+      ),
+    );
   }
 }
