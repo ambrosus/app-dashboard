@@ -12,7 +12,7 @@ import { MessageService } from 'app/services/message.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { autocomplete } from 'app/constant';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
@@ -114,6 +114,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       if (e instanceof NavigationStart) {
         this.advanced = false;
         this.initSearchForm();
+      }
+
+      if (e instanceof NavigationEnd) {
+        this.isLoggedin = this.authService.isLoggedIn();
+        console.log('Is logged in: ', this.isLoggedin);
       }
     });
   }

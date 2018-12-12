@@ -22,6 +22,7 @@ import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { NgProgressModule } from 'ngx-progressbar';
+import { ErrorHandlerService } from './services/error-handler.service';
 
 if (!isDevMode) {
   Sentry.init({
@@ -58,7 +59,7 @@ export class SentryErrorHandler implements ErrorHandler {
   providers: [
     {
       provide: ErrorHandler,
-      useClass: SentryErrorHandler,
+      useClass: ErrorHandlerService,
     },
     {
       provide: HTTP_INTERCEPTORS,
