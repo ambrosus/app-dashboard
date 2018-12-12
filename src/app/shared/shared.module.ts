@@ -39,6 +39,7 @@ import { ProgressComponent } from './components/progress/progress.component';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ResponseDetailsComponent } from './components/response-details/response-details.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 let apiKey = '';
 if (environment.ambrosus) {
@@ -93,6 +94,7 @@ if (environment.prod) {
     Angular2PromiseButtonModule,
     ConfirmComponent,
     ProgressComponent,
+    SidebarComponent,
   ],
   declarations: [
     AutocompleteinputDirective,
@@ -115,6 +117,7 @@ if (environment.prod) {
     ConfirmComponent,
     ProgressComponent,
     ResponseDetailsComponent,
+    SidebarComponent,
   ],
   entryComponents: [
     EventAddComponent,

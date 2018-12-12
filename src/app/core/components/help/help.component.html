@@ -1,0 +1,17 @@
+<div class="page">
+  <header>
+    <div class="wrapper">
+      <h1>Help</h1>
+    </div>
+  </header>
+  <main>
+    <div class="wrapper flex start" style="align-items: stretch;">
+      <div class="flex-0">
+        <app-sidebar [items]="sidebar"></app-sidebar>
+      </div>
+      <div class="content">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
+</div>

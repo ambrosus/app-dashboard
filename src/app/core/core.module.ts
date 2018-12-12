@@ -12,6 +12,12 @@ import { OwnKeyComponent } from './components/signup/own-key/own-key.component';
 import { GeneratedKeyComponent } from './components/signup/generated-key/generated-key.component';
 import { RequestComponent } from './components/signup/request/request.component';
 import { InitialComponent } from './components/signup/initial/initial.component';
+import { HelpComponent } from './components/help/help.component';
+import { AssetsComponent } from './components/help/pages/assets/assets.component';
+import { OrganizationDashboardComponent } from './components/help/pages/organization-dashboard/organization-dashboard.component';
+import { NodeDashboardComponent } from './components/help/pages/node-dashboard/node-dashboard.component';
+import { LoginSignupComponent } from './components/help/pages/login-signup/login-signup.component';
+import { IntroductionComponent } from './components/help/pages/introduction/introduction.component';
 
 @NgModule({
   imports: [
@@ -32,6 +38,12 @@ import { InitialComponent } from './components/signup/initial/initial.component'
     GeneratedKeyComponent,
     RequestComponent,
     InitialComponent,
+    HelpComponent,
+    AssetsComponent,
+    OrganizationDashboardComponent,
+    NodeDashboardComponent,
+    LoginSignupComponent,
+    IntroductionComponent,
   ],
   providers: [OrganizationsService],
   entryComponents: [

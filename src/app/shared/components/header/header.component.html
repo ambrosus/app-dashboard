@@ -5,7 +5,13 @@
   If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
   This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<header [ngClass]="{ 'advanced': advanced }">
+<header *ngIf="!account.address">
+  <div class="wrapper">
+    <div class="logo"><a routerLink="/" (click)="home()"></a></div>
+  </div>
+</header>
+
+<header *ngIf="account.address" [ngClass]="{ 'advanced': advanced }">
   <div class="wrapper">
     <div class="dropDown left" appToggleDropDown>
       <app-svg-icon name="hamburger_menu" width="25" height="25" fill="333"></app-svg-icon>

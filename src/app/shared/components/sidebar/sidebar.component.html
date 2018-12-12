@@ -1,0 +1,7 @@
+<ul appSticky addClass="fixed" offsetTop="95">
+  <li *ngFor="let item of items">
+    <a class="title" [routerLink]="item.link" routerLinkActive="active">
+      {{ item.title }}
+    </a>
+  </li>
+</ul>

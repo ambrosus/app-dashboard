@@ -58,7 +58,11 @@ export class AssetsService {
     this.initSDK();
     this.web3 = new Web3();
     this.api = environment.api;
-    this.getAssets().then();
+
+    const account: any = this.storageService.get('account') || {};
+    if (account.address) {
+      this.getAssets().then();
+    }
   }
 
   to(O: Observable<any>) {

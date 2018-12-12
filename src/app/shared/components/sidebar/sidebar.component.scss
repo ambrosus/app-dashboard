@@ -1,0 +1,54 @@
+@import 'utils';
+
+app-sidebar {
+  display: block;
+  width: 100%;
+
+  @include breakpoint-min(768) {
+    width: 250px;
+  }
+
+  > .fixed {
+    width: 250px;
+    position: fixed;
+    margin-top: 95px;
+  }
+
+  > ul {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    top: 0;
+    box-shadow: 0 4px 8px rgba($black, 0.1);
+
+    > li {
+      width: 100%;
+      border-bottom: 1px solid #eee;
+      user-select: none;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+
+      > .title {
+        transition: color .2s, background-color .2s, padding-left .2s;
+        position: relative;
+        padding: 15px 35px 15px 15px;
+        color: $black;
+        font-size: 13px;
+        display: inline-block;
+        width: 100%;
+
+        &:hover {
+          padding-left: 20px;
+        }
+
+        &.active {
+          color: #fff;
+          background: $blue;
+        }
+      }
+    }
+  }
+}
