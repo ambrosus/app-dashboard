@@ -5,7 +5,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
@@ -23,6 +23,10 @@ export class AssetFormComponent implements OnInit {
   sequenceNumber = 0;
   promise: any = {};
   hasPermission = true;
+  dialogs: {
+    progress?: MatDialogRef<any>,
+    confirm?: MatDialogRef<any>,
+  } = {};
 
   @Input() assetId: string;
 
@@ -72,19 +76,21 @@ export class AssetFormComponent implements OnInit {
   }
 
   progress() {
-    const dialogRef = this.dialog.open(ProgressComponent, {
+    this.dialog.closeAll();
+
+    this.dialogs.progress = this.dialog.open(ProgressComponent, {
       panelClass: 'progress',
-      disableClose: true,
+      hasBackdrop: false,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.dialogs.progress.afterClosed().subscribe(result => {
       console.log('Progress asset form closed', result);
     });
   }
 
   confirm(question: string, buttons = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      const dialogRef = this.dialog.open(ConfirmComponent, {
+      this.dialogs.confirm = this.dialog.open(ConfirmComponent, {
         panelClass: 'confirm',
         data: {
           question,
@@ -92,18 +98,10 @@ export class AssetFormComponent implements OnInit {
         },
       });
 
-      dialogRef.afterClosed().subscribe(result => {
+      this.dialogs.confirm.afterClosed().subscribe(result => {
         resolve(result);
       });
     });
-  }
-
-  async close() {
-    const confirm = await this.confirm('Are you sure you want to close?', { cancel: 'No', ok: 'Yes' });
-    console.log('Confirm ->', confirm);
-    if (confirm) {
-      this.dialog.closeAll();
-    }
   }
 
   // Methods for adding/removing new fields to the form
@@ -336,6 +334,7 @@ export class AssetFormComponent implements OnInit {
         this.assetsService.progress.creating = 2;
         this.assetsService.progress.for = 'assets';
         this.progress();
+        this.assetsService.progress.status.start.next();
 
         const assetCreated = await this.assetsService.createAsset(asset);
 

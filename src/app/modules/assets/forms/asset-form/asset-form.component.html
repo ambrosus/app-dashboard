@@ -103,7 +103,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </section>
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
-    <button type="button" class="transparent light" (click)="close()">Close</button>
+    <button type="button" class="transparent light" mat-dialog-close>Close</button>
     <button type="submit" [disabled]="forms.asset.invalid" [promiseBtn]="promise.create">Create</button>
   </div>
 </form>

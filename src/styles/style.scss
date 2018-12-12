@@ -54,6 +54,10 @@ body {
 }
 
 .progress {
+  > .mat-dialog-container {
+    box-shadow: 0px 7px 35px rgba(0, 0, 0, 0.07);
+  }
+
   @include breakpoint-min(480) {
     position: fixed !important;
     left: 15px;

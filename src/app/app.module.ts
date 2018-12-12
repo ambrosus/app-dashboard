@@ -21,6 +21,7 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { GlobalErrorHandler } from './services/global-error-handler.service';
 
 if (!isDevMode) {
   Sentry.init({
@@ -56,7 +57,7 @@ export class SentryErrorHandler implements ErrorHandler {
   providers: [
     {
       provide: ErrorHandler,
-      useClass: SentryErrorHandler,
+      useClass: GlobalErrorHandler,
     },
     {
       provide: HTTP_INTERCEPTORS,

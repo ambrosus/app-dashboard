@@ -44,6 +44,7 @@ export class AssetsService {
     creating: 0,
     for: 'assets',
     status: {
+      start: new Subject(),
       asset: new Subject(),
       event: new Subject(),
       done: new Subject(),
