@@ -199,11 +199,11 @@ export class JsonFormComponent implements OnInit {
           json = [json];
         }
 
-        let message = '';
+        let message = 'Are you sure you want to proceed creating ';
         if (this.for === 'assets') {
-          message = `Are you sure you want to proceed creating ${json.length} asset${json.length === 1 ? '' : 's'}?`;
+          message += `${json.length} asset${json.length === 1 ? '' : 's'}?`;
         } else {
-          message = `Are you sure you want to proceed creating ${json.length} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`;
+          message += `${json.length} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`;
         }
 
         const confirm = await this.confirm(message);
