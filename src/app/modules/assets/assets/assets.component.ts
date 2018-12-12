@@ -8,7 +8,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
@@ -32,6 +32,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   selected;
   back;
   account: any = {};
+  dialogs: {
+    asset?: MatDialogRef<any>,
+    event?: MatDialogRef<any>,
+  } = {};
 
   constructor(
     public assetsService: AssetsService,
@@ -42,6 +46,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
+
+    if (this.assetsService.initiatedNoAssets) {
+      this.assetsService.getAssets().then();
+    }
 
     if (this.assetsService.assetsReset) {
       this.assetsService.assets = { clean: true };
@@ -73,9 +81,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
       },
     );
 
+    this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
+      if (this.dialogs.asset) { this.dialogs.asset.close(); }
+      if (this.dialogs.event) { this.dialogs.event.close(); }
+    });
+
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
-        this.dialog.closeAll();
         this.selected = 0;
       }
 
@@ -140,7 +152,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (!assetIds.length) {
       return alert(`You didn\'t select any assets. Please do so first.`);
     }
-    this.dialog.open(EventAddComponent, {
+    this.dialogs.event = this.dialog.open(EventAddComponent, {
       panelClass: 'dialog',
       disableClose: true,
       data: {
@@ -150,7 +162,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   createAsset() {
-    this.dialog.open(AssetAddComponent, {
+    this.dialogs.asset = this.dialog.open(AssetAddComponent, {
       panelClass: 'dialog',
       disableClose: true,
     });

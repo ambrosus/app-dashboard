@@ -6,19 +6,20 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 */
 import { Router, NavigationEnd } from '@angular/router';
-import { Component, ElementRef, HostListener, Renderer2, isDevMode } from '@angular/core';
+import { Component, Renderer2, isDevMode } from '@angular/core';
+import { ViewEncapsulation } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
   initialLoad = false;
   previousUrl: string;
 
   constructor(
-    private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
   ) {
