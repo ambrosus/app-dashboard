@@ -7,6 +7,7 @@ import { checkJSON } from 'app/util';
 import { MatDialog } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import { MessageService } from 'app/services/message.service';
 
 @Component({
   selector: 'app-json-form',
@@ -29,6 +30,7 @@ export class JsonFormComponent implements OnInit {
     private storageService: StorageService,
     private assetsService: AssetsService,
     private dialog: MatDialog,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit() {
@@ -43,6 +45,12 @@ export class JsonFormComponent implements OnInit {
     } else {
       this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
+  }
+
+  to(P: Promise<any>) {
+    return P
+      .then(response => response)
+      .catch(error => ({ error }));
   }
 
   progress() {
@@ -132,11 +140,10 @@ export class JsonFormComponent implements OnInit {
 
     _assetIds.map(assetId => {
       const assetEvents = JSON.parse(JSON.stringify(json));
+      let incTimestamp = 1;
 
       assetEvents
-        .filter(
-          event => event.content && event.content.idData && event.content.data,
-        )
+        .filter(event => event.content && event.content.idData && event.content.data)
         .map(event => {
           event.content.idData['assetId'] = assetId;
           event.content.idData['createdBy'] = address;
@@ -145,17 +152,15 @@ export class JsonFormComponent implements OnInit {
           );
           if (
             !event.content.idData['timestamp'] ||
-            !this.assetsService.validTimestamp(
-              event.content.idData['timestamp'],
-            )
+            !this.assetsService.validTimestamp(event.content.idData['timestamp'])
           ) {
             event.content.idData['timestamp'] = Math.floor(
               new Date().getTime() / 1000,
             );
-          } else {
-            event.content.idData['timestamp'] =
-              event.content.idData['timestamp'] + 1;
           }
+          event.content.idData['timestamp'] = event.content.idData['timestamp'] + incTimestamp;
+          incTimestamp += 1;
+
           if (
             !event.content.idData['accessLevel'] &&
             event.content.idData['accessLevel'] !== 0
@@ -185,24 +190,33 @@ export class JsonFormComponent implements OnInit {
           throw new Error('Please insert some JSON data');
         }
 
-        const json = JSON.parse(data.data);
-
-        let amount = 1;
-        if (Array.isArray(json)) {
-          amount = json.length;
+        let json = JSON.parse(data.data);
+        if (!Array.isArray(json)) {
+          throw new Error('JSON has to be an array of objects (creating multiple events on one or more assets), or array of arrays (creating multiple assets), where each array has multiple events');
         }
 
-        const confirm = await this.confirm(
-          `Are you sure you want to proceed creating ${this.for === 'assets' ? '1 asset with' : ''} ${amount} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`);
+        if (this.for === 'assets' && !json.every(item => Array.isArray(item))) {
+          json = [json];
+        }
+
+        let message = 'Are you sure you want to proceed creating ';
+        if (this.for === 'assets') {
+          message += `${json.length} asset${json.length === 1 ? '' : 's'}?`;
+        } else {
+          message += `${json.length} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`;
+        }
+
+        const confirm = await this.confirm(message);
         console.log('Confirm ->', confirm);
         if (!confirm) {
           return reject();
         }
 
         if (this.for === 'assets') {
-          // Create asset and info event
-          const asset = this.generateAsset();
-          const events = this.generateEvents(json, [asset.assetId]);
+          const creating = json.reduce((number, events) => {
+            number += events.length;
+            return number;
+          }, 0) + json.length;
 
           this.assetsService.responses.push({
             timestamp: Date.now(),
@@ -217,24 +231,25 @@ export class JsonFormComponent implements OnInit {
           });
 
           // Start progress
-          this.assetsService.progress.title = 'Creating asset';
-          this.assetsService.progress.creating = 1 + events.length;
+          this.assetsService.progress.title = `Creating ${json.length} asset${json.length === 1 ? '' : 's'}`;
+          this.assetsService.progress.creating = creating;
           this.assetsService.progress.for = 'assets';
           this.progress();
 
-          this.assetsService.createAsset(asset).subscribe(
-            async response => {
-              this.sequenceNumber += 1;
+          for (const _events of json) {
+            const asset = this.generateAsset();
+            const events = this.generateEvents(_events, [asset.assetId]);
+            this.sequenceNumber += 1;
+
+            const assetCreated = await this.to(this.assetsService.createAsset(asset));
+
+            if (!assetCreated.error) {
               const eventsCreated = await this.assetsService.createEvents(events);
+            }
+          }
+          this.assetsService.progress.status.done.next();
 
-              console.log('JSON form assets done: ', this.assetsService.responses);
-
-              resolve();
-            },
-            error => {
-              throw new Error('Asset creation failed, aborting');
-            },
-          );
+          resolve();
         } else {
           // Edit or add events
           const events = this.generateEvents(json);
@@ -252,18 +267,23 @@ export class JsonFormComponent implements OnInit {
           });
 
           // Start progress
-          this.assetsService.progress.title = `Creating ${amount} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
+          this.assetsService.progress.title = `Creating ${json.length} event${events.length === 1 ? '' : 's'}, on ${this.assetIds.length} asset${this.assetIds.length === 1 ? '' : 's'}`;
           this.assetsService.progress.creating = events.length;
           this.assetsService.progress.for = 'events';
           this.progress();
 
           const eventsCreated = await this.assetsService.createEvents(events);
 
+          this.assetsService.progress.status.done.next();
+
           console.log('JSON form events done: ', this.assetsService.responses);
 
           resolve();
         }
       } catch (error) {
+        this.assetsService.progress.status.done.next();
+
+        this.messageService.error(error);
         console.error(`[CREATE] ${this.for}`, error);
         reject();
       }

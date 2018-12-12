@@ -337,20 +337,19 @@ export class AssetFormComponent implements OnInit {
         this.assetsService.progress.for = 'assets';
         this.progress();
 
-        this.assetsService.createAsset(asset).subscribe(
-          async response => {
-            this.sequenceNumber += 1;
-            const eventsCreated = await this.assetsService.createEvents([infoEvent]);
+        const assetCreated = await this.assetsService.createAsset(asset);
 
-            console.log('Asset form done: ', this.assetsService.responses);
+        this.sequenceNumber += 1;
+        const eventsCreated = await this.assetsService.createEvents([infoEvent]);
 
-            resolve();
-          },
-          error => {
-            throw new Error('Asset creation failed, aborting.');
-          },
-        );
+        this.assetsService.progress.status.done.next();
+
+        console.log('Asset form done: ', this.assetsService.responses);
+
+        resolve();
       } catch (error) {
+        this.assetsService.progress.status.done.next();
+
         console.error('[CREATE] Asset: ', error);
         reject();
       }

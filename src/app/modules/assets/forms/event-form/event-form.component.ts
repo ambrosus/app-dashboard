@@ -362,10 +362,13 @@ export class EventFormComponent implements OnInit {
 
         const eventsCreated = await this.assetsService.createEvents(events);
 
+        this.assetsService.progress.status.done.next();
+
         console.log('Event form done: ', this.assetsService.responses);
 
         resolve();
       } catch (error) {
+        this.assetsService.progress.status.done.next();
 
         console.error('[CREATE] Events: ', error);
         reject();
