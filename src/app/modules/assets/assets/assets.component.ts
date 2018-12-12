@@ -49,6 +49,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
     if (this.assetsService.initiatedNoAssets) {
       this.assetsService.getAssets().then();
+      this.assetsService.initiatedNoAssets = false;
     }
 
     if (this.assetsService.assetsReset) {
