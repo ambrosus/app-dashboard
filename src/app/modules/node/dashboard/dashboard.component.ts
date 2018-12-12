@@ -5,6 +5,7 @@ import { MessageService } from 'app/services/message.service';
 import * as moment from 'moment-timezone';
 
 declare let Chart: any;
+declare let Web3: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +34,7 @@ export class DashboardComponent implements OnInit {
     display: ['bundle', 'asset', 'event'],
     group: ['24h', '7d', 'mtd', '28d', '12m'],
   };
+  web3;
 
   constructor(
     private el: ElementRef,
@@ -41,8 +43,15 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.web3 = new Web3();
     this.diagram.element = this.el.nativeElement.querySelector('#diagram');
     this.getMetrics();
+  }
+
+  formatAMB(val) {
+    const BN = this.web3.utils.BN;
+    const num = val * Math.pow(10, -18);
+    return new BN(num).toString();
   }
 
   async getMetrics(): Promise<any> {
@@ -50,6 +59,7 @@ export class DashboardComponent implements OnInit {
       this.metrics.amb = await this.analytisService.amb();
       this.metrics.bundle = await this.analytisService.bundle();
       this.metrics.balance = await this.analytisService.balance();
+      this.metrics.balance.balance = this.formatAMB(this.metrics.balance.balance);
     } catch (error) {
       console.error(error);
     }
