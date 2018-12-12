@@ -49,6 +49,7 @@ export class AssetsService {
       done: new Subject(),
     },
   };
+  initiatedNoAssets = false;
 
   constructor(
     private storageService: StorageService,
@@ -62,6 +63,8 @@ export class AssetsService {
     const account: any = this.storageService.get('account') || {};
     if (account.address) {
       this.getAssets().then();
+    } else {
+      this.initiatedNoAssets = true;
     }
   }
 

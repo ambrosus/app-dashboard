@@ -43,6 +43,10 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
+    if (this.assetsService.initiatedNoAssets) {
+      this.assetsService.getAssets().then();
+    }
+
     if (this.assetsService.assetsReset) {
       this.assetsService.assets = { clean: true };
       this.assetsService.searchQuery = {};
