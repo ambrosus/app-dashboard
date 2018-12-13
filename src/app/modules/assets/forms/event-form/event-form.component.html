@@ -12,6 +12,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
+<h3 *ngIf="assetsService.progress.status.inProgress" style="padding: 0 30px; text-align: center; color: #f7a120;">Please wait until current upload completes</h3>
+
 <form class="form" [formGroup]="forms.event" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
 
   <section>
@@ -148,6 +150,6 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>Close</button>
-    <button type="submit" [disabled]="forms.event.invalid" [promiseBtn]="promise.create">Create</button>
+    <button type="submit" [disabled]="forms.event.invalid || assetsService.progress.status.inProgress" [promiseBtn]="promise.create">Create</button>
   </div>
 </form>

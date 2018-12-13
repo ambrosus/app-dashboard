@@ -27,6 +27,8 @@ try {
 
 if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
   core = 'https://hermes.ambrosus-test.com';
+  dev = true;
+  prod = false;
 }
 
 export const environment = {
