@@ -77,15 +77,6 @@
         <p style="color: #333;">{{ asset.info.description }}</p>
       </section>
 
-      <!-- QR code -->
-      <section class="flex decoration">
-        <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
-        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
-        <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba;">
-          Check on amb.to
-        </a>
-      </section>
-
       <!-- Identifiers -->
       <section *ngIf="asset.info?.identifiers?.identifiers">
         <h5>Identifiers</h5>
@@ -133,6 +124,15 @@
             </li>
           </ul>
         </div>
+      </section>
+
+      <!-- QR code -->
+      <section class="flex decoration">
+        <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
+        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
+        <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba;">
+          Check on amb.to
+        </a>
       </section>
 
     </div>

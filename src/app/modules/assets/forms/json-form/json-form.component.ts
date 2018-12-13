@@ -32,7 +32,7 @@ export class JsonFormComponent implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private assetsService: AssetsService,
+    public assetsService: AssetsService,
     private dialog: MatDialog,
     private messageService: MessageService,
   ) { }
@@ -183,6 +183,10 @@ export class JsonFormComponent implements OnInit {
       try {
         const form = this.forms.json;
         const data = form.value;
+
+        if (this.assetsService.progress.status.inProgress) {
+          throw new Error('Please wait until current upload completes');
+        }
 
         if (form.invalid) {
           throw new Error('Please insert some JSON data');

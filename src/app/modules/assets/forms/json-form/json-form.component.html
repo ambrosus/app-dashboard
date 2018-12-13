@@ -1,3 +1,5 @@
+<h3 *ngIf="assetsService.progress.status.inProgress" style="padding: 0 30px; text-align: center; color: #f7a120;">Please wait until current upload completes</h3>
+
 <form class="form" [formGroup]="forms.json" (ngSubmit)="create()">
   <section>
     <label>
@@ -8,6 +10,6 @@
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>Close</button>
-    <button type="submit" [disabled]="forms.json.invalid" [promiseBtn]="promise.create">Create {{ for }}</button>
+    <button type="submit" [disabled]="forms.json.invalid || assetsService.progress.status.inProgress" [promiseBtn]="promise.create">Create {{ for }}</button>
   </div>
 </form>
