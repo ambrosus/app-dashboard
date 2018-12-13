@@ -5,15 +5,15 @@
         <div class="top-stat" *ngIf="metrics.balance.balance">
           <h1 class="decoration">
             <app-svg-icon name="network" height="40" width="40" fill="0042ba"></app-svg-icon>
-            {{ metrics.balance.balance | number }}<small> AMB</small>
+            {{ metrics.balance.balance | number: '1.0-0' }}<small> AMB</small>
           </h1>
-          <p>usd {{ (metrics.balance.balance * (metrics.amb.price_usd) | number) || 'unknown' }}</p>
+          <p>usd {{ (metrics.balance.balance * (metrics.amb.price_usd) | number: '1.0-2') || 'unknown' }}</p>
         </div>
       </div>
       <div>
         <ul class="stats">
           <li *ngIf="metrics.amb.price_usd">
-            <h2>{{ metrics.amb.price_usd | number }} <small style="color: #999">USD</small></h2>
+            <h2>{{ metrics.amb.price_usd | number: '1.3-4' }} <small style="color: #999">USD</small></h2>
             <p>
               amb price in 24h
               <span [style.color]="metrics.amb.percent_change_24h.charAt(0) === '-' ? '#ff5c00' : '#40d685'">
@@ -22,11 +22,11 @@
             </p>
           </li>
           <li class="secondary" *ngIf="metrics.bundle.price">
-            <h2>{{ metrics.bundle.price | number }} <small style="color: #00b7f9">AMB</small></h2>
+            <h2>{{ metrics.bundle.price | number: '1.0-2' }} <small style="color: #00b7f9">AMB</small></h2>
             <p>price per bundle</p>
           </li>
           <li class="secondary" *ngIf="metrics.balance.balance && metrics.bundle.price">
-            <h2>{{ (metrics.balance.balance / metrics.bundle.price) | number }}</h2>
+            <h2>{{ (metrics.balance.balance / metrics.bundle.price) | number: '1.0-0' }}</h2>
             <p>bundles left on balance</p>
           </li>
         </ul>
