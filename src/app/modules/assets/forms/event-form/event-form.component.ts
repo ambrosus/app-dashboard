@@ -35,10 +35,17 @@ export class EventFormComponent implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private assetsService: AssetsService,
+    public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
   ) { }
+
+  ngOnInit() {
+    const account: any = this.storageService.get('account') || {};
+    this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
+
+    this.initForm();
+  }
 
   progress() {
     this.dialog.closeAll();
@@ -71,13 +78,6 @@ export class EventFormComponent implements OnInit {
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
-  }
-
-  ngOnInit() {
-    const account: any = this.storageService.get('account') || {};
-    this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
-
-    this.initForm();
   }
 
   private initForm() {
@@ -309,6 +309,10 @@ export class EventFormComponent implements OnInit {
     this.promise['create'] = new Promise(async (resolve, reject) => {
       try {
         const form = this.forms.event;
+
+        if (this.assetsService.progress.status.inProgress) {
+          throw new Error('Please wait until current upload completes');
+        }
 
         if (form.invalid) {
           throw new Error('Form is invalid');

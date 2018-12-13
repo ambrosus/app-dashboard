@@ -36,7 +36,7 @@ export class AssetFormComponent implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private assetsService: AssetsService,
+    public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
   ) { }
@@ -303,6 +303,10 @@ export class AssetFormComponent implements OnInit {
     this.promise['create'] = new Promise(async (resolve, reject) => {
       try {
         const form = this.forms.asset;
+
+        if (this.assetsService.progress.status.inProgress) {
+          throw new Error('Please wait until current upload completes');
+        }
 
         if (form.invalid) {
           throw new Error('Please fill required fields');

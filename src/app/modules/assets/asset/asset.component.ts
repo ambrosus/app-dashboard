@@ -53,7 +53,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.asset = asset;
 
         if (asset.info) {
-          if (!(asset.info.images || asset.info.description || asset.info.documents || (asset.info.identifiers && asset.info.identifiers.identifiers) || (asset.info.properties && asset.info.properties.length) || (asset.info.groups && asset.info.groups.length))) {
+          if (!(asset.info.images || asset.info.description || asset.info.documents || (asset.info.properties && asset.info.properties.length) || (asset.info.groups && asset.info.groups.length))) {
             this.noContent = true;
           }
         }

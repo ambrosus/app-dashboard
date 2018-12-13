@@ -48,6 +48,7 @@ export class AssetsService {
       asset: new Subject(),
       event: new Subject(),
       done: new Subject(),
+      inProgress: false,
     },
   };
   initiatedNoAssets = false;
@@ -67,6 +68,14 @@ export class AssetsService {
     } else {
       this.initiatedNoAssets = true;
     }
+
+    this.progress.status.start.subscribe(next => {
+      this.progress.status.inProgress = true;
+    });
+
+    this.progress.status.done.subscribe(next => {
+      this.progress.status.inProgress = false;
+    });
   }
 
   to(O: Observable<any>) {
