@@ -1,43 +1,58 @@
-<mat-progress-bar class="progress" [mode]="'determinate'" [value]="value"></mat-progress-bar>
+<mat-progress-bar *ngIf="!minimized" class="progress" [mode]="'determinate'" [value]="value"></mat-progress-bar>
+<div [ngClass]="{ 'minimized': minimized, 'complete': value >= 100 }">
 
-<h4>
-  {{ title || 'Creating...' }}
-  <button class="no-style close" *ngIf="value >= 100" mat-dialog-close>&times;</button>
-</h4>
+  <a *ngIf="minimized" (click)="toggleMinimize()">
+    <div class="progress-background" [style.transform]="'translateX(' + value + '%)'"></div>
+    <h5 class="title">
+      {{ title || 'Creating...' }}
+      <button class="no-style close" *ngIf="value >= 100" mat-dialog-close>&times;</button>
+    </h5>
+  </a>
 
-<div class="results">
-  <div class="w50" *ngIf="assetsService.progress.for === 'assets'">
-    <h5>Assets</h5>
-    <p class="success">
-      <small>Success:</small>
-      <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].assets.success.length }">
-        {{ assetsService.responses[assetsService.responses.length - 1].assets.success.length }}
-      </span>
-    </p>
-    <p class="error">
-      <small>Error:</small>
-      <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].assets.error.length }">
-        {{ assetsService.responses[assetsService.responses.length - 1].assets.error.length }}
-      </span>
-    </p>
+  <div *ngIf="!minimized">
+    <a (click)="toggleMinimize()">
+      <h5 class="title">
+        {{ title || 'Creating...' }}
+        <button class="no-style close" *ngIf="value >= 100" mat-dialog-close>&times;</button>
+      </h5>
+    </a>
+
+    <div class="results">
+      <div class="w50" *ngIf="assetsService.progress.for === 'assets'">
+        <h5>Assets</h5>
+        <p class="success">
+          <small>Success:</small>
+          <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].assets.success.length }">
+            {{ assetsService.responses[assetsService.responses.length - 1].assets.success.length }}
+          </span>
+        </p>
+        <p class="error">
+          <small>Error:</small>
+          <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].assets.error.length }">
+            {{ assetsService.responses[assetsService.responses.length - 1].assets.error.length }}
+          </span>
+        </p>
+      </div>
+      <div class="w50">
+        <h5>Events</h5>
+        <p class="success">
+          <small>Success:</small>
+          <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].events.success.length }">
+            {{ assetsService.responses[assetsService.responses.length - 1].events.success.length }}
+          </span>
+        </p>
+        <p class="error">
+          <small>Error:</small>
+          <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].events.error.length }">
+            {{ assetsService.responses[assetsService.responses.length - 1].events.error.length }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="center" style="margin-top: 30px" *ngIf="value >= 100">
+      <button class="transparent" (click)="moreDetails()">More details</button>
+    </div>
   </div>
-  <div class="w50">
-    <h5>Events</h5>
-    <p class="success">
-      <small>Success:</small>
-      <span [ngClass]="{ 'success': assetsService.responses[assetsService.responses.length - 1].events.success.length }">
-        {{ assetsService.responses[assetsService.responses.length - 1].events.success.length }}
-      </span>
-    </p>
-    <p class="error">
-      <small>Error:</small>
-      <span [ngClass]="{ 'error': assetsService.responses[assetsService.responses.length - 1].events.error.length }">
-        {{ assetsService.responses[assetsService.responses.length - 1].events.error.length }}
-      </span>
-    </p>
-  </div>
-</div>
 
-<div class="center" style="margin-top: 30px" *ngIf="value >= 100">
-  <button class="transparent" (click)="moreDetails()">More details</button>
 </div>
