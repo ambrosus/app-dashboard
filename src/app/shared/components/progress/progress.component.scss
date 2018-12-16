@@ -56,16 +56,18 @@ app-progress {
   .title {
     margin: 10px 0 25px;
     position: relative;
-    padding-right: 20px;
+    padding-right: 30px;
     line-height: 1.25;
 
     > .close {
       position: absolute;
-      top: 0;
+      top: -4px;
       right: 0;
       font-size: 19px;
       font-weight: 400;
       color: $grey;
+      width: 30px;
+      height: 30px;
     }
   }
 

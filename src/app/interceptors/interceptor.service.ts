@@ -24,7 +24,9 @@ export class InterceptorService implements HttpInterceptor {
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     let request: HttpRequest<any> = req.clone();
-    this.loader.start();
+    if (request.url.indexOf('https') === -1 || request.url.indexOf('/extended') > -1) {
+      this.loader.start();
+    }
 
     const token = this.authService.getToken();
     const tokenNotNeeded = ['/assets'];
