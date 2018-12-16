@@ -7,7 +7,7 @@
 -->
 <header *ngIf="!isLoggedin">
   <div class="wrapper">
-    <div class="logo"><a routerLink="/" (click)="home()"></a></div>
+    <div class="logo"><a routerLink="/"></a></div>
   </div>
 </header>
 
@@ -18,7 +18,7 @@
       <app-drop-down [items]="dropDown.menu"></app-drop-down>
     </div>
 
-    <div class="logo"><a routerLink="/" (click)="home()"></a></div>
+    <div class="logo"><a routerLink="/"></a></div>
 
     <div class="header__menu">
       <!-- Desktop menu -->
@@ -62,12 +62,12 @@
         </label>
         <div class="group">
           <label class="w25">
-            <span>Created from</span>
+            <span>Created from <span class="clear" (click)="clear('from')">Clear</span></span>
             <input [matDatepicker]="from" (click)="from.open()" placeholder="Choose from date" formControlName="from">
             <mat-datepicker #from></mat-datepicker>
           </label>
           <label class="w25">
-            <span>To</span>
+            <span>To <span class="clear" (click)="clear('to')">Clear</span></span>
             <input [matDatepicker]="to" (click)="to.open()" placeholder="Choose to date" formControlName="to">
             <mat-datepicker #to></mat-datepicker>
           </label>

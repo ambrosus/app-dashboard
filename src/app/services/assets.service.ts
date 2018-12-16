@@ -24,6 +24,11 @@ export class AssetsService {
     data: [],
     pagination: {},
   });
+  private _assetsSearch: BehaviorSubject<any> = new BehaviorSubject({
+    meta: {},
+    data: [],
+    pagination: {},
+  });
   searchQuery: {
     from?: number,
     to?: number,
@@ -36,8 +41,6 @@ export class AssetsService {
   ambrosus;
   web3;
   api;
-  search = false;
-  assetsReset = false;
   responses: any[] = [];
   progress: any = {
     title: '',
@@ -86,6 +89,10 @@ export class AssetsService {
 
   get assets(): any {
     return this._assets.asObservable();
+  }
+
+  get assetsSearch(): any {
+    return this._assetsSearch.asObservable();
   }
 
   get events(): any {
@@ -149,6 +156,38 @@ export class AssetsService {
       } else {
         options.data = assets.data.concat(options.data);
         this._assets.next(options);
+      }
+    }
+  }
+
+  set assetsSearch(options) {
+    if (options) {
+      options = JSON.parse(JSON.stringify(options));
+      const assets = this._assetsSearch.getValue();
+
+      if (options.clean) {
+        console.log('clean');
+        this._assetsSearch.next({
+          meta: {},
+          data: [],
+          pagination: {},
+        });
+      } else if (options.change === 'data' && Array.isArray(options.data)) {
+        switch (options.type) {
+          case 'all':
+            assets['data'] = options.data;
+            break;
+          case 'start':
+            options.data.map(asset => assets.data.unshift(asset));
+            break;
+          case 'end':
+            assets.data = assets.data.concat(options.data);
+            break;
+        }
+        this._assetsSearch.next(assets);
+      } else {
+        options.data = assets.data.concat(options.data);
+        this._assetsSearch.next(options);
       }
     }
   }
@@ -332,8 +371,7 @@ export class AssetsService {
       return asset;
     });
 
-    this.search = true;
-    this.assets = assets;
+    this.assetsSearch = assets;
 
     Promise.resolve();
   }
@@ -345,7 +383,6 @@ export class AssetsService {
     let { limit, next } = options;
     const account = <any>this.storageService.get('account') || {};
     const { address } = account;
-    this.assetsReset = false;
     limit = limit || 15;
     next = next || '';
 

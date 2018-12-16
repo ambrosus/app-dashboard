@@ -1,0 +1,13 @@
+@import 'utils';
+
+app-search {
+  display: block;
+  width: 100%;
+
+  .selectAll {
+    text-transform: uppercase;
+    font-size: 11px;
+    color: $blue;
+    margin-left: 15px;
+  }
+}

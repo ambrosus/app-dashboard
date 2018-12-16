@@ -50,12 +50,14 @@ export class RequestComponent implements OnInit, OnDestroy {
         const address = this.authService.signupAddress;
         const form = this.forms.request;
         const { title, email, message } = form.getRawValue();
-        const body = {
+        const body: any = {
           address,
-          title,
           email,
           message,
         };
+        if (title && title.trim()) {
+          body.title = title;
+        }
 
         if (form.invalid) {
           throw new Error('Please fill all required fields');

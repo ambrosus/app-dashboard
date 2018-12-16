@@ -16,12 +16,30 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import * as moment from 'moment-timezone';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD.MM.YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  providers: [
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
@@ -113,7 +131,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subs[this.subs.length] = this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationStart) {
         this.advanced = false;
-        this.initSearchForm();
       }
 
       if (e instanceof NavigationEnd) {
@@ -125,12 +142,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
-  }
-
-  home() {
-    if (this.assetsService.search) {
-      this.assetsService.assetsReset = true;
-    }
   }
 
   initSearchForm() {
@@ -160,6 +171,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     (<FormArray>this.forms.search.get(array)).removeAt(index);
   }
 
+  clear(control) {
+    this.forms.search.get(control).setValue('');
+  }
+
   addTag(event, input) {
     let value = event.target.value;
 
@@ -182,6 +197,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    this.assetsService.assets = { clean: true };
+    this.assetsService.assetsSearch = { clean: true };
     this.authService.logout();
   }
 
@@ -205,6 +222,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         const account = <any>this.storageService.get('account') || {};
         data.address = account.address;
 
+        console.log('Form: ', form.valid, form, data);
+
         if (form.invalid) {
           throw new Error('Form is invalid');
         }
@@ -222,20 +241,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
           });
         }
 
+        this.assetsService.assetsSearch = { clean: true };
         this.assetsService.searchQuery = data;
-        this.assetsService.assets = { clean: true };
         const search = await this.assetsService.searchAssets();
-        this.assetsService.search = true;
 
-        this.router.navigate(['/']);
+        this.router.navigate(['/assets/search']);
 
         resolve();
       } catch (error) {
         console.error('[SEARCH]: ', error);
         this.messageService.error(error);
         this.assetsService.searchQuery = {};
-        this.assetsService.assets = { clean: true };
-        this.assetsService.search = false;
         reject();
       }
     });

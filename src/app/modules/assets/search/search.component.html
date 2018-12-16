@@ -12,7 +12,7 @@
         <div>
           <h1 class="decoration">
             <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
-            {{ selected ? selected + ' Selected' : 'My assets' }}
+            {{ selected ? selected + ' Selected' : 'Search results' }}
           </h1>
           <p style="margin-top: 10px;">
             {{ selected ? 'of ' + forms.table.value.assets.length : 'showing ' + forms.table.value.assets.length + ' results' }}
@@ -23,7 +23,6 @@
           </p>
         </div>
         <div class="flex-0">
-          <button type="button" *ngIf="!selected && account.permissions.indexOf('create_asset') > -1" (click)="createAsset()">Create Asset</button>
           <button type="button" class="outline" *ngIf="selected && account.permissions.indexOf('create_event') > -1" (click)="bulkEvent()">Bulk event</button>
         </div>
       </div>
@@ -60,8 +59,8 @@
       </form>
 
       <div class="center" *ngIf="pagination && pagination.hasNext">
-        <button class="transparent" *ngIf="!assetsService.search" (click)="assetsService.getAssets({ next: pagination.next })">
-          Show more assets
+        <button class="transparent" (click)="assetsService.searchAssets({ next: pagination.next })">
+          Show more results
         </button>
       </div>
     </div>

@@ -239,6 +239,10 @@ app-header {
 
           > .search {
             max-width: 100%;
+
+            input {
+              padding-right: 60px;
+            }
           }
         }
       }
