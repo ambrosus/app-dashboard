@@ -1,10 +1,11 @@
-<h4>{{ title || 'Creating...' }}</h4>
+<mat-progress-bar class="progress" [mode]="'determinate'" [value]="value"></mat-progress-bar>
 
-<div class="spinner" [ngClass]="{'completed': value >= 100}">
-  <mat-progress-spinner diameter="40" [mode]="'determinate'" [value]="value"></mat-progress-spinner>
-</div>
+<h4>
+  {{ title || 'Creating...' }}
+  <button class="no-style close" *ngIf="value >= 100" mat-dialog-close>&times;</button>
+</h4>
 
-<div class="results flex between">
+<div class="results">
   <div class="w50" *ngIf="assetsService.progress.for === 'assets'">
     <h5>Assets</h5>
     <p class="success">
@@ -38,6 +39,5 @@
 </div>
 
 <div class="center" style="margin-top: 30px" *ngIf="value >= 100">
-  <button class="transparent light" mat-dialog-close>Close</button>
   <button class="transparent" (click)="moreDetails()">More details</button>
 </div>

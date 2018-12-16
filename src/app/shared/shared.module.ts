@@ -20,7 +20,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventAddComponent } from './../modules/assets/event-add/event-add.component';
 import { CustomCheckboxDirective } from './directives/custom-checkbox.directive';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material';
+import { MatNativeDateModule, MatProgressBarModule } from '@angular/material';
 
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -37,7 +37,6 @@ import { environment } from 'environments/environment';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { ProgressComponent } from './components/progress/progress.component';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ResponseDetailsComponent } from './components/response-details/response-details.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 
@@ -68,7 +67,7 @@ if (environment.prod) {
     }),
     MatDatepickerModule,
     MatNativeDateModule,
-    MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   exports: [
     CommonModule,

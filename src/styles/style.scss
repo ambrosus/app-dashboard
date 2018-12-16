@@ -51,24 +51,34 @@ body {
 
 .responseDetails {
   overflow-y: auto;
-}
+  max-width: 100% !important;
 
-.progress {
   > .mat-dialog-container {
     box-shadow: 0px 7px 35px rgba(0, 0, 0, 0.07);
   }
 
+  @include breakpoint-min(640) {
+    max-width: 85vw !important;
+  }
+}
+
+.progress {
+  position: fixed !important;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 100% !important;
+
+  > .mat-dialog-container {
+    padding: 0;
+    box-shadow: 0px 7px 35px rgba(0, 0, 0, 0.07);
+  }
+
   @include breakpoint-min(480) {
-    position: fixed !important;
     left: 15px;
     bottom: 15px;
     max-width: 100%;
-    width: 450px;
-  }
-
-  .mat-progress-spinner circle,
-  .mat-spinner circle {
-    stroke: $blue;
+    width: 450px !important;
   }
 }
 

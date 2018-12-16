@@ -23,21 +23,13 @@ import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { NgProgressModule } from 'ngx-progressbar';
 import { ErrorHandlerService } from './services/error-handler.service';
+const { prod, test } = environment;
 
-if (!isDevMode) {
+if (test || prod) {
   Sentry.init({
     dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
-    environment: 'prod',
+    environment: test ? 'test' : 'prod',
   });
-}
-
-@Injectable()
-export class SentryErrorHandler implements ErrorHandler {
-  constructor() { }
-  handleError(error) {
-    Sentry.captureException(error.originalError || error);
-    throw error;
-  }
 }
 
 @NgModule({

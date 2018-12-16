@@ -199,6 +199,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   logout() {
     this.assetsService.assets = { clean: true };
     this.assetsService.assetsSearch = { clean: true };
+    this.assetsService.initiatedNoAssets = true;
     this.authService.logout();
   }
 
