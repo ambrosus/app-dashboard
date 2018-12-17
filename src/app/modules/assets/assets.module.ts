@@ -19,6 +19,7 @@ import { EventFormComponent } from './forms/event-form/event-form.component';
 import { JsonFormComponent } from './forms/json-form/json-form.component';
 import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   imports: [
@@ -31,9 +32,10 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
   declarations: [
     AssetComponent,
     AssetsComponent,
-    AssetAddComponent,
     AssetsOutletComponent,
     EventComponent,
+    SearchComponent,
+    AssetAddComponent,
     EventAddComponent,
     AssetFormComponent,
     EventFormComponent,
@@ -48,6 +50,13 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
       useClass: InterceptorService,
       multi: true,
     },
+  ],
+  entryComponents: [
+    AssetAddComponent,
+    EventAddComponent,
+    AssetFormComponent,
+    EventFormComponent,
+    JsonFormComponent,
   ],
 })
 export class AssetsModule { }

@@ -9,6 +9,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Component, Renderer2 } from '@angular/core';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { environment } from 'environments/environment.prod';
+import { RequestService } from './services/request.service';
 
 @Component({
   selector: 'app-root',
@@ -19,15 +20,29 @@ import { environment } from 'environments/environment.prod';
 export class AppComponent {
   initialLoad = false;
   previousUrl: string;
+  loading = false;
 
   constructor(
     private renderer: Renderer2,
     private router: Router,
+    private requestService: RequestService,
   ) {
     if (!environment.dev) {
       console.log = function () { };
       console.error = function () { };
     }
+
+    this.requestService.request.start.subscribe(next => {
+      if (!this.loading) {
+        this.loading = true;
+      }
+    });
+
+    this.requestService.request.done.subscribe(next => {
+      if (this.loading) {
+        this.loading = false;
+      }
+    });
 
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {

@@ -8,6 +8,7 @@ import { AssetsOutletComponent } from './assets-outlet/assets-outlet.component';
 import { EventComponent } from './event/event.component';
 import { EventAddComponent } from './event-add/event-add.component';
 import { EventResolver } from 'app/services/event-resolver.service';
+import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
   {
@@ -15,13 +16,12 @@ const routes: Routes = [
     component: AssetsOutletComponent,
     children: [
       { path: '', component: AssetsComponent },
-      { path: 'new', component: AssetAddComponent },
+      { path: 'search', component: SearchComponent },
       {
         path: ':assetid',
         component: AssetComponent,
         resolve: { asset: AssetResolver },
       },
-      { path: 'events/new', component: EventAddComponent },
       {
         path: ':assetid/events/:eventid',
         component: EventComponent,

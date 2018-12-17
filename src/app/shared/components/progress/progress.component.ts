@@ -19,11 +19,16 @@ export class ProgressComponent implements OnInit, OnDestroy {
   dialogs: {
     moreDetails?: MatDialogRef<any>,
   } = {};
+  minimized = false;
 
   constructor(
     public assetsService: AssetsService,
     private dialog: MatDialog,
   ) {
+    if (window.innerWidth < 768) {
+      this.minimized = true;
+    }
+
     this.subs[this.subs.length] = this.assetsService.progress.status.asset.subscribe(
       resp => {
         console.log('AS Inc spinner value: ', 100 / this.assetsService.progress.creating);
@@ -54,6 +59,12 @@ export class ProgressComponent implements OnInit, OnDestroy {
         }, 1000);
       },
     );
+  }
+
+  toggleMinimize() {
+    setTimeout(() => {
+      this.minimized = !this.minimized;
+    }, 300);
   }
 
   ngOnInit() {
