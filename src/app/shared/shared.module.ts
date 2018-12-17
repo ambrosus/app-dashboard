@@ -94,6 +94,7 @@ if (environment.prod) {
     ConfirmComponent,
     ProgressComponent,
     SidebarComponent,
+    MatProgressBarModule,
   ],
   declarations: [
     AutocompleteinputDirective,

@@ -14,7 +14,7 @@
             <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
             {{ selected ? selected + ' Selected' : 'My assets' }}
           </h1>
-          <p style="margin-top: 10px;">
+          <p style="margin-top: 10px;" *ngIf="forms.table">
             {{ selected ? 'of ' + forms.table.value.assets.length : 'showing ' + forms.table.value.assets.length + ' results' }}
             <span class="selectAll" *ngIf="selected !== forms.table.get('assets')['controls'].length" (click)="select()">
               Select all
@@ -32,7 +32,7 @@
   <main>
     <div class="wrapper">
 
-      <form [formGroup]="forms.table" (change)="isSelected()">
+      <form *ngIf="forms.table" [formGroup]="forms.table" (change)="isSelected()">
         <div class="table" formArrayName="assets">
           <div class="item" [ngClass]="{ selected: asset.value.selected }" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
             <header>

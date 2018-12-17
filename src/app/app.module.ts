@@ -9,7 +9,7 @@ import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Injectable, ErrorHandler, isDevMode } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -21,7 +21,6 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { NgProgressModule } from 'ngx-progressbar';
 import { ErrorHandlerService } from './services/error-handler.service';
 const { prod, test } = environment;
 
@@ -46,7 +45,6 @@ if (test || prod) {
       enabled: environment.production,
     }),
     MatSnackBarModule,
-    NgProgressModule,
   ],
   providers: [
     {

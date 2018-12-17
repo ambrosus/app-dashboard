@@ -9,14 +9,14 @@ import {
 import { Observable } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
 import { tap } from 'rxjs/operators';
-import { NgProgress } from 'ngx-progressbar';
+import { RequestService } from 'app/services/request.service';
 
 @Injectable()
 export class InterceptorService implements HttpInterceptor {
 
   constructor(
     private authService: AuthService,
-    public loader: NgProgress,
+    private requestService: RequestService,
   ) { }
 
   intercept(
@@ -25,7 +25,7 @@ export class InterceptorService implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     let request: HttpRequest<any> = req.clone();
     if (request.url.indexOf('https') === -1 || request.url.indexOf('/extended') > -1) {
-      this.loader.start();
+      this.requestService.request.start.next();
     }
 
     const token = this.authService.getToken();
@@ -48,11 +48,11 @@ export class InterceptorService implements HttpInterceptor {
       tap(
         (event: HttpEvent<any>) => {
           if (event instanceof HttpResponse) {
-            this.loader.done();
+            this.requestService.request.done.next();
           }
         },
         (err: any) => {
-          this.loader.done();
+          this.requestService.request.done.next();
         },
       ),
     );
