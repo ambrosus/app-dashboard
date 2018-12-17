@@ -54,13 +54,7 @@ body {
   top: 0;
   left: 0;
   z-index: 999999999;
-  opacity: 1 !important;
   transition: opacity .3s !important;
-
-  &.hide {
-    opacity: 0 !important;
-    transition: opacity .7s !important;
-  }
 
   &.mat-progress-bar {
     height: 3px;

@@ -22,12 +22,16 @@ import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { ErrorHandlerService } from './services/error-handler.service';
-const { prod, test } = environment;
+const { ambrosus, test, prod } = environment;
 
-if (test || prod) {
+let env = 'dev';
+if (test) { env = 'test'; }
+if (prod) { env = 'prod'; }
+
+if (ambrosus) {
   Sentry.init({
     dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
-    environment: test ? 'test' : 'prod',
+    environment: env,
   });
 }
 

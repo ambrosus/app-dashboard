@@ -10,8 +10,7 @@ export class ErrorHandlerService implements ErrorHandler {
   constructor() { }
 
   handleError(error) {
-    if (environment.test || environment.prod) {
-      Sentry.captureException(error.originalError || error);
-    }
+    Sentry.captureException(error.originalError || error);
+    console.log(error);
   }
 }
