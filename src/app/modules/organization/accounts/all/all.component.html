@@ -34,12 +34,13 @@
                 </div>
               </a>
               <div class="meta">
-                <div></div>
-                <div style="margin: 0">
-                  <span class="status" style="color: #40D685;">Active</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div></div>
+                  <div style="margin: 0">
+                    <span class="status" style="color: #40D685;">Active</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Disable',
@@ -47,7 +48,8 @@
                       args: [self, 'accountModify', { address: acc.address, data: { permissions: [] } }]
                     }]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -78,14 +80,15 @@
                 </div>
               </a>
               <div class="meta">
-                <div>
-                  <button type="button" class="transparent" (click)="actions('inviteResend', { email: [ invite.email ] })">Resend</button>
-                </div>
-                <div>
-                  <span class="status" style="color: #F7A120;">Pending</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div>
+                    <button type="button" class="transparent" (click)="actions('inviteResend', { email: [ invite.email ] })">Resend</button>
+                  </div>
+                  <div>
+                    <span class="status" style="color: #F7A120;">Pending</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [
                       {
                         type: 'action',
@@ -101,7 +104,8 @@
                       }
                     ]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -125,12 +129,13 @@
                 </div>
               </a>
               <div class="meta">
-                <div></div>
-                <div style="margin: 0;">
-                  <span class="status" style="color: #D64040;">Disabled</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div></div>
+                  <div style="margin: 0;">
+                    <span class="status" style="color: #D64040;">Disabled</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Activate',
@@ -138,7 +143,8 @@
                       args: [self, 'accountModify', { address: acc.address, data: { permissions: ['create_asset', 'create_event'] } }]
                     }]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>

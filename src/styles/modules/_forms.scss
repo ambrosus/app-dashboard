@@ -82,6 +82,15 @@
     color: $grey;
     margin-bottom: 25px;
 
+    .clear {
+      text-transform: capitalize;
+      font-weight: 400;
+      display: inline-block;
+      margin-left: 10px;
+      color: $light-blue;
+      cursor: pointer;
+    }
+
     > span:first-child {
       font-weight: 500;
       text-transform: uppercase;

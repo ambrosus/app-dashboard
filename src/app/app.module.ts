@@ -9,7 +9,7 @@ import { InterceptorService } from 'app/interceptors/interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Injectable, ErrorHandler, isDevMode } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -21,23 +21,18 @@ import { environment } from '../environments/environment';
 import { SharedModule } from './shared/shared.module';
 import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { NgProgressModule } from 'ngx-progressbar';
 import { ErrorHandlerService } from './services/error-handler.service';
+const { ambrosus, test, prod } = environment;
 
-if (!isDevMode) {
+let env = 'dev';
+if (test) { env = 'test'; }
+if (prod) { env = 'prod'; }
+
+if (ambrosus) {
   Sentry.init({
     dsn: 'https://3bed4d5c72424dac81458cac8a594789@sentry.io/1319719',
-    environment: 'prod',
+    environment: env,
   });
-}
-
-@Injectable()
-export class SentryErrorHandler implements ErrorHandler {
-  constructor() { }
-  handleError(error) {
-    Sentry.captureException(error.originalError || error);
-    throw error;
-  }
 }
 
 @NgModule({
@@ -54,7 +49,6 @@ export class SentryErrorHandler implements ErrorHandler {
       enabled: environment.production,
     }),
     MatSnackBarModule,
-    NgProgressModule,
   ],
   providers: [
     {

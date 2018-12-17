@@ -1,4 +1,4 @@
-<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1" [speed]="500" [showSpinner]="false" [direction]="'leftToRightIncreased'" [color]="'#0042ba'" [trickleSpeed]="300" [thick]="false" [ease]="'ease'"></ng-progress>
+<mat-progress-bar class="loader" [style.opacity]="loading ? '1' : '0'" mode="indeterminate"></mat-progress-bar>
 <app-header *ngIf="initialLoad && !hideHeader()"></app-header>
 
 <router-outlet></router-outlet>

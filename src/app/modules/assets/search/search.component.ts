@@ -1,10 +1,4 @@
-/*
-Copyright: Ambrosus Technologies GmbH
-Email: tech@ambrosus.com
-This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
-This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
-*/
+
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
@@ -12,16 +6,16 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 
 @Component({
-  selector: 'app-assets',
-  templateUrl: './assets.component.html',
-  styleUrls: ['./assets.component.scss'],
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class AssetsComponent implements OnInit, OnDestroy {
+export class SearchComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   forms: {
     table?: FormGroup;
@@ -44,14 +38,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
-    if (this.assetsService.initiatedNoAssets) {
-      this.assetsService.getAssets().then();
-      this.assetsService.initiatedNoAssets = false;
-    }
-
-    this.subs[this.subs.length] = this.assetsService.assets.subscribe(
+    this.subs[this.subs.length] = this.assetsService.assetsSearch.subscribe(
       ({ data, pagination }: any) => {
-        console.log('[GET] Assets: ', data);
+        console.log('[GET] Assets search: ', data);
         this.pagination = pagination;
         this.selected = 0;
 

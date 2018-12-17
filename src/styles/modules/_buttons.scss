@@ -26,6 +26,14 @@ button,
   padding: 11px 15px;
   transition: all 0.2s;
 
+  &.no-style {
+    width: auto;
+    padding: 0;
+    border-radius: 0;
+    background: initial;
+    border: none;
+  }
+
   + button,
   + .button {
     margin: 10px 0 0 0;

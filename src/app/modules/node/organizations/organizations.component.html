@@ -36,12 +36,13 @@
                 </div>
               </a>
               <div class="meta">
-                <div></div>
-                <div style="margin: 0">
-                  <span class="status" style="color: #40D685;">Active</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div></div>
+                  <div style="margin: 0">
+                    <span class="status" style="color: #40D685;">Active</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Disable',
@@ -49,7 +50,8 @@
                       args: [self, 'organizationModify', { id: organization.organizationId, data: { active: false } }]
                     }]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -77,15 +79,19 @@
                 </div>
               </a>
               <div class="meta">
-                <div>
-                  <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
-                  <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
+                <div style="text-align: left; margin-bottom: 25px;">
+                  <p>{{ organization.message }}</p>
                 </div>
-                <div>
-                  <span class="status" style="color: #F7A120;">Pending</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div>
+                    <button type="button" class="outline" (click)="actions('organizationRequest', { id: organization.address, approved: true })">Approve</button>
+                    <button type="button" class="transparent" (click)="actions('organizationRequest', { id: organization.address, approved: false })">Decline</button>
+                  </div>
+                  <div>
+                    <span class="status" style="color: #F7A120;">Pending</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [
                       {
                         type: 'action',
@@ -101,7 +107,8 @@
                       }
                     ]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -129,12 +136,13 @@
                 </div>
               </a>
               <div class="meta">
-                <div></div>
-                <div style="margin: 0">
-                  <span class="status" style="color: #D64040;">Disabled</span>
-                  <span class="verticalMenu" appToggleDropDown>
-                    <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
-                    <app-drop-down [items]="{
+                <div class="action">
+                  <div></div>
+                  <div style="margin: 0">
+                    <span class="status" style="color: #D64040;">Disabled</span>
+                    <span class="verticalMenu" appToggleDropDown>
+                      <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
+                      <app-drop-down [items]="{
                     items: [{
                       type: 'action',
                       title: 'Activate',
@@ -142,7 +150,8 @@
                       args: [self, 'organizationModify', { id: organization.organizationId, data: { active: true } }]
                     }]
                   }"></app-drop-down>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -170,10 +179,12 @@
                 </div>
               </a>
               <div class="meta">
-                <div>
-                </div>
-                <div style="margin: 0">
-                  <span class="status" style="color: #D64040;">Declined</span>
+                <div class="action">
+                  <div>
+                  </div>
+                  <div style="margin: 0">
+                    <span class="status" style="color: #D64040;">Declined</span>
+                  </div>
                 </div>
               </div>
             </main>

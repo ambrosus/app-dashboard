@@ -12,9 +12,9 @@
         <div>
           <h1 class="decoration">
             <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
-            {{ selected ? selected + ' Selected' : 'My assets' }}
+            {{ selected ? selected + ' Selected' : 'Search results' }}
           </h1>
-          <p style="margin-top: 10px;" *ngIf="forms.table">
+          <p style="margin-top: 10px;">
             {{ selected ? 'of ' + forms.table.value.assets.length : 'showing ' + forms.table.value.assets.length + ' results' }}
             <span class="selectAll" *ngIf="selected !== forms.table.get('assets')['controls'].length" (click)="select()">
               Select all
@@ -23,7 +23,6 @@
           </p>
         </div>
         <div class="flex-0">
-          <button type="button" *ngIf="!selected && account.permissions.indexOf('create_asset') > -1" (click)="createAsset()">Create Asset</button>
           <button type="button" class="outline" *ngIf="selected && account.permissions.indexOf('create_event') > -1" (click)="bulkEvent()">Bulk event</button>
         </div>
       </div>
@@ -32,7 +31,7 @@
   <main>
     <div class="wrapper">
 
-      <form *ngIf="forms.table" [formGroup]="forms.table" (change)="isSelected()">
+      <form [formGroup]="forms.table" (change)="isSelected()">
         <div class="table" formArrayName="assets">
           <div class="item" [ngClass]="{ selected: asset.value.selected }" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
             <header>
@@ -60,8 +59,8 @@
       </form>
 
       <div class="center" *ngIf="pagination && pagination.hasNext">
-        <button class="transparent" *ngIf="!assetsService.search" (click)="assetsService.getAssets({ next: pagination.next })">
-          Show more assets
+        <button class="transparent" (click)="assetsService.searchAssets({ next: pagination.next })">
+          Show more results
         </button>
       </div>
     </div>
