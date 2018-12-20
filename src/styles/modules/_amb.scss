@@ -91,6 +91,15 @@
       margin-bottom: 40px;
       cursor: initial;
 
+      &.identifiers {
+        .properties {
+          h6 {
+            font-size: 12px;
+            text-transform: initial;
+          }
+        }
+      }
+
       &.groups {
         display: flex;
         flex-direction: column;
