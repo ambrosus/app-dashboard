@@ -46,7 +46,8 @@
     </div>
   </header>
   <main>
-    <div class="wrapper">
+    <div class="wrapper decoration">
+      <app-svg-icon *ngIf="!noContent" name="content" height="40" width="40" fill="9198BB"></app-svg-icon>
 
       <!-- Images -->
       <section class="images" *ngIf="event.info?.images" style="margin-bottom: 25px;">
@@ -60,8 +61,7 @@
       </section>
 
       <!-- Identifiers -->
-      <section class="decoration" *ngIf="event.info?.identifiers?.identifiers">
-        <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
+      <section class="identifiers" *ngIf="event.info?.identifiers?.identifiers">
         <h5>Identifiers</h5>
         <ul class="properties">
           <li *ngFor="let key of objectKeys(event.info.identifiers.identifiers)">

@@ -78,7 +78,7 @@
       </section>
 
       <!-- Identifiers -->
-      <section *ngIf="asset.info?.identifiers?.identifiers">
+      <section class="identifiers" *ngIf="asset.info?.identifiers?.identifiers">
         <h5>Identifiers</h5>
         <ul class="properties">
           <li *ngFor="let key of objectKeys(asset.info.identifiers.identifiers)">

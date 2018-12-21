@@ -23,7 +23,7 @@ app-progress {
 
   > .complete {
     > a {
-      background-color: #fafafa;
+      background-color: #eee;
     }
   }
 
@@ -47,7 +47,7 @@ app-progress {
         left: -100%;
         width: 100%;
         height: 100%;
-        background-color: #fafafa;
+        background-color: #eee;
         transition: transform .2s ease-in;
       }
     }

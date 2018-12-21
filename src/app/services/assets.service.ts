@@ -210,7 +210,8 @@ export class AssetsService {
     next?: string;
   } = {}): Promise<any> {
     let { limit, next } = options;
-    const { from, to, name, state, identifiers, location, address } = this.searchQuery;
+    const { name, state, identifiers, location, address } = this.searchQuery;
+    let { from, to } = this.searchQuery;
     limit = limit || 15;
     next = next || '';
 
@@ -228,6 +229,18 @@ export class AssetsService {
       limit,
       next,
     };
+
+    if (to) {
+      to = moment(to * 1000).tz('UTC').unix();
+    }
+
+    if (from) {
+      from = moment(from * 1000).tz('UTC').unix();
+
+      if (moment().tz('UTC').format('DD.MM.YYYY') === moment(from * 1000).format('DD.MM.YYYY')) {
+        from = moment().startOf('day').tz('UTC').unix();
+      }
+    }
 
     if (from && to) {
       body.query.push({
@@ -306,6 +319,8 @@ export class AssetsService {
         });
       }
     }
+
+    console.log(JSON.stringify(body, null, 2));
 
     const events = await this.to(this.http.post(url, body));
     if (events.error) {
