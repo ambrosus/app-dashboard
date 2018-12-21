@@ -16,6 +16,7 @@ export class EventComponent implements OnInit, OnDestroy {
   eventId;
   event;
   location: any = false;
+  noContent = false;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -43,6 +44,20 @@ export class EventComponent implements OnInit, OnDestroy {
       data => {
         console.log('Event: ', data);
         this.event = data.event;
+
+        if (this.event.info) {
+          if (
+            !this.event.info.images &&
+            !this.event.info.description &&
+            !this.event.info.documents &&
+            !(this.event.info.identifiers && this.event.info.identifiers.identifiers) &&
+            !(this.event.info.properties && this.event.info.properties.length) &&
+            !(this.event.info.groups && this.event.info.groups.length)
+          ) {
+            this.noContent = true;
+          }
+        }
+
         try {
           this.location = {
             lat: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
@@ -55,6 +70,7 @@ export class EventComponent implements OnInit, OnDestroy {
       },
       err => console.error('Event: ', err),
     );
+
     this.subs[this.subs.length] = this.route.params.subscribe(resp => {
       this.assetId = resp.assetid;
       this.eventId = resp.eventid;

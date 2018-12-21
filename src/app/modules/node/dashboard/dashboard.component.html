@@ -22,8 +22,8 @@
             </p>
           </li>
           <li class="secondary" *ngIf="metrics.bundle.price">
-            <h2>{{ metrics.bundle.price | number: '1.0-2' }} <small style="color: #00b7f9">AMB</small></h2>
-            <p>price per bundle</p>
+            <h2>{{ metrics.bundle.price / metrics.amb.price_usd | number: '1.0-2' }} <small style="color: #00b7f9">AMB</small></h2>
+            <p>price per bundle <span style="color: #00b7f9">{{metrics.bundle.price}}$</span></p>
           </li>
           <li class="secondary" *ngIf="metrics.balance.balance && metrics.bundle.price">
             <h2>{{ (metrics.balance.balance / metrics.bundle.price) | number: '1.0-0' }}</h2>

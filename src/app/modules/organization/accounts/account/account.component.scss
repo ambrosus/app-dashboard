@@ -11,4 +11,15 @@ app-account {
   .disabled {
     color: $red;
   }
+
+  .permissions {
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      max-width: 200px !important;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+  }
 }
