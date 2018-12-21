@@ -29,7 +29,7 @@ try {
 } catch (e) { }
 
 if (location.hostname === 'localhost') {
-  core = 'https://hermes.ambrosus-dev.com';
+  core = 'https://hermes.ambrosus-test.com';
   dev = true;
   prod = false;
   ambrosus = true;
