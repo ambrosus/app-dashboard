@@ -38,9 +38,9 @@ export class GeneralComponent implements OnInit {
         { value: this.account.address, disabled: true },
         [Validators.required],
       ),
-      fullName: new FormControl(this.account.fullName, [checkText()]),
+      fullName: new FormControl(this.account.fullName, [checkText(false)]),
       email: new FormControl(this.account.email, [checkEmail(false)]),
-      timeZone: new FormControl(this.account.timeZone, [checkTimeZone()]),
+      timeZone: new FormControl(this.account.timeZone, [checkTimeZone(false)]),
       password: new FormControl('', [checkPassword()]),
       passwordConfirm: new FormControl('', [comparePasswords()]),
     });
@@ -68,7 +68,15 @@ export class GeneralComponent implements OnInit {
         delete data.password;
         delete data.passwordConfirm;
 
-        this.account = await this.accountsService.modifyAccount(this.account.address, data);
+        const body = {};
+        Object.keys(data).map(prop => {
+          if (data[prop] && (data[prop] !== this.account[prop])) {
+            body[prop] = data[prop];
+          }
+        });
+        console.log('(Account settings) body: ', body);
+
+        this.account = await this.accountsService.modifyAccount(this.account.address, body);
         this.storageService.set('account', this.account);
         this.accountsService._account.next(this.account);
 

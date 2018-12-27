@@ -35,7 +35,7 @@
         <div class="group">
           <label class="w50">
             <span>Legal address</span>
-            <input formControlName="legalAddress" type="text">
+            <input formControlName="legalAddress" type="text" [appError]="[forms.settings, true]">
           </label>
           <label class="w50" for="timeZone">
             <span>Time zone</span>

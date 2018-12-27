@@ -2,6 +2,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  padding-top: 53px;
 
   > header {
     display: flex;
@@ -9,6 +10,10 @@
     width: 100%;
     background: #fff;
     padding: 0 15px;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    z-index: 1;
 
     > .wrapper {
       max-width: 1270px;

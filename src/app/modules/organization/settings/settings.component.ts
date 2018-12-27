@@ -36,9 +36,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.account = this.storageService.get('account');
     this.forms.settings = new FormGroup({
       owner: new FormControl({ value: '', disabled: true }),
-      title: new FormControl('', [checkText()]),
-      timeZone: new FormControl('', [checkTimeZone()]),
-      legalAddress: new FormControl(''),
+      title: new FormControl('', [checkText(false)]),
+      timeZone: new FormControl('', [checkTimeZone(false)]),
+      legalAddress: new FormControl('', [checkText(false)]),
       active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();
@@ -82,11 +82,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
           throw new Error('Please fill all required fields');
         }
 
-        Object.keys(data).map(p => {
-          if (data[p]) {
-            body[p] = data[p];
+        Object.keys(data).map(prop => {
+          if (data[prop] && (data[prop] !== this.organization[prop])) {
+            body[prop] = data[prop];
           }
         });
+        console.log('(Organization settings) body: ', body);
 
         this.organization = await this.organizationsService.modifyOrganization(this.account.organization, body);
         await this.getOrganization();
