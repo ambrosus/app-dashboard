@@ -13,7 +13,6 @@ import { OrganizationsService } from 'app/services/organizations.service';
 })
 export class InitialComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
-  inviteId: string;
 
   constructor(
     private authService: AuthService,
@@ -24,10 +23,9 @@ export class InitialComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subs[this.subs.length] = this.route.queryParams.subscribe(
-      queryParams => {
-        this.inviteId = queryParams.inviteId;
-        if (this.inviteId) {
-          this.verifyInvite();
+      {inviteId} => {
+        if (inviteId) {
+          this.verifyInvite(inviteId);
         }
       },
     );
@@ -37,10 +35,10 @@ export class InitialComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
-  async verifyInvite(): Promise<any> {
+  async verifyInvite(inviteId): Promise<any> {
     try {
-      const invite = await this.organizationsService.verifyInvite(this.inviteId);
-      this.authService.inviteId = this.inviteId;
+      const invite = await this.organizationsService.verifyInvite(inviteId);
+      this.authService.inviteId = inviteId;
       console.log('[GET] Invite verified: ', invite);
     } catch (error) {
       this.authService.inviteId = '';
