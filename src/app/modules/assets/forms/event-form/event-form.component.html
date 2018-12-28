@@ -101,7 +101,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="group" *ngFor="let identifier of forms.event.get('identifiers')['controls']; let i = index" [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
-          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
+          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" style="text-transform: uppercase" />
         </label>
         <label class="w50">
           <span>Value</span>

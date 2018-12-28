@@ -47,9 +47,9 @@ export class AccountComponent implements OnInit, OnDestroy {
   initForms() {
     this.forms.account = new FormGroup({
       address: new FormControl({ value: this.account.address, disabled: true }),
-      fullName: new FormControl(this.account.fullName, [checkText()]),
+      fullName: new FormControl(this.account.fullName, [checkText(false)]),
       email: new FormControl(this.account.email, [checkEmail(false)]),
-      timeZone: new FormControl(this.account.timeZone, [checkTimeZone()]),
+      timeZone: new FormControl(this.account.timeZone, [checkTimeZone(false)]),
     });
 
     this.forms.accountPermissions = new FormGroup({
@@ -87,17 +87,18 @@ export class AccountComponent implements OnInit, OnDestroy {
       try {
         const form = this.forms.account;
         const data = form.value;
-        const body = {};
 
         if (form.invalid) {
           throw new Error('Form is invalid');
         }
 
-        Object.keys(data).map(p => {
-          if (data[p]) {
-            body[p] = data[p];
+        const body = {};
+        Object.keys(data).map(prop => {
+          if (data[prop] && (data[prop] !== this.account[prop])) {
+            body[prop] = data[prop];
           }
         });
+        console.log('(Organization account settings) body: ', body);
 
         const account = await this.accountsService.modifyAccount(this.account.address, body);
         await this.getAccount();

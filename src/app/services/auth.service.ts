@@ -18,6 +18,7 @@ export class AuthService {
   web3;
   api;
   signupAddress: any = '';
+  inviteId: string;
 
   constructor(
     private http: HttpClient,
