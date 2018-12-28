@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { checkAddress } from 'app/util';
 import { OrganizationsService } from 'app/services/organizations.service';
@@ -19,15 +18,12 @@ declare let Web3: any;
   styleUrls: ['./generated-key.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GeneratedKeyComponent implements OnInit, OnDestroy {
-  subs: Subscription[] = [];
+export class GeneratedKeyComponent implements OnInit {
   forms: {
     keys?: FormGroup;
   } = {};
   promise: any = {};
   web3;
-  inviteId;
-  invite;
   saveKeys = false;
   saved = false;
   step = 'generate';
@@ -45,38 +41,16 @@ export class GeneratedKeyComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.web3 = new Web3();
 
-    this.subs[this.subs.length] = this.route.queryParams.subscribe(
-      queryParams => {
-        this.inviteId = queryParams.inviteId;
-        if (this.inviteId) {
-          this.verifyInvite();
-        }
-      },
-    );
-
     this.forms.keys = new FormGroup({
       privateKey: new FormControl({ value: '', disabled: true }, []),
       address: new FormControl('', [checkAddress(false)]),
     });
   }
 
-  ngOnDestroy() {
-    this.subs.map(sub => sub.unsubscribe());
-  }
-
   to(P: Promise<any>) {
     return P
       .then(response => response)
       .catch(error => ({ error }));
-  }
-
-  async verifyInvite(): Promise<any> {
-    try {
-      this.invite = await this.organizationsService.verifyInvite(this.inviteId);
-      console.log('[GET] Invite verified: ', this.invite);
-    } catch (error) {
-      this.router.navigate(['/login']);
-    }
   }
 
   openSecureKeysDialog() {
@@ -104,11 +78,12 @@ export class GeneratedKeyComponent implements OnInit, OnDestroy {
 
         const verified = await this.to(this.authService.verifyAccount(null, address));
         if (verified.error) {
-          if (this.invite) {
+          if (this.authService.inviteId) {
             try {
               const body = { address };
 
-              await this.organizationsService.acceptInvite(this.inviteId, body);
+              await this.organizationsService.acceptInvite(this.authService.inviteId, body);
+              this.messageService.success('Registration successful');
               this.router.navigate(['/login']);
             } catch (error) {
               reject();

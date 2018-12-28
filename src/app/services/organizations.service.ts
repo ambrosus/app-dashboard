@@ -169,6 +169,7 @@ export class OrganizationsService {
 
   async verifyInvite(inviteId: string): Promise<any> {
     const url = `${this.api.extended}/organization/invite/${inviteId}/exists`;
+    console.log('Verify invite: ', url);
 
     const invite = await this.to(this.http.get(url));
     if (invite.error) {

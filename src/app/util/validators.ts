@@ -22,7 +22,7 @@ export const checkText = (allowEmpty = true) => {
             if (allowEmpty && !control.value) {
                 return null;
             }
-            const pattern = /^[a-zA-Z_-\s]{2,100}$/;
+            const pattern = /^[a-zA-Z0-9_-\s]{2,100}$/;
             return pattern.test(control.value) ? null : { 'Input is invalid': true };
         } catch (error) {
             return null;

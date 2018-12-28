@@ -43,13 +43,13 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.forms.organization = new FormGroup({
-      title: new FormControl(this.organization.title, [checkText()]),
-      legalAddress: new FormControl(this.organization.legalAddress),
+      title: new FormControl(this.organization.title, [checkText(false)]),
+      legalAddress: new FormControl(this.organization.legalAddress, [checkText(false)]),
       owner: new FormControl({
         value: this.organization.owner,
         disabled: true,
       }),
-      timeZone: new FormControl(this.organization.timeZone, [checkTimeZone()]),
+      timeZone: new FormControl(this.organization.timeZone, [checkTimeZone(false)]),
       active: new FormControl(this.organization.active),
     });
   }
@@ -75,11 +75,12 @@ export class OrganizationComponent implements OnInit, OnDestroy {
           throw new Error('Form is invalid');
         }
 
-        Object.keys(data).map(property => {
-          if (data[property]) {
-            body[property] = data[property];
+        Object.keys(data).map(prop => {
+          if (data[prop] && (data[prop] !== this.organization[prop])) {
+            body[prop] = data[prop];
           }
         });
+        console.log('(Node organization settings) body: ', body);
 
         const organization = await this.organizationsService.modifyOrganization(this.organizationId, body);
         await this.getOrganization();
