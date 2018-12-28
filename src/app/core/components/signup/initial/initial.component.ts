@@ -23,7 +23,7 @@ export class InitialComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subs[this.subs.length] = this.route.queryParams.subscribe(
-      {inviteId} => {
+      ({ inviteId }) => {
         if (inviteId) {
           this.verifyInvite(inviteId);
         }
