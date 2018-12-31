@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AssetsService } from 'app/services/assets.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { getLocation, getUrlName } from 'app/util';
 
 @Component({
   selector: 'app-event',
@@ -17,6 +18,8 @@ export class EventComponent implements OnInit, OnDestroy {
   event;
   location: any = false;
   noContent = false;
+  getUrlName = getUrlName;
+  getLocation = getLocation;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;

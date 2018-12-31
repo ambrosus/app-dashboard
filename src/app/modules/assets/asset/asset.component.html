@@ -6,7 +6,7 @@
           <div class="title" appAccordion>
             <h2 class="decoration">
               <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
-              {{ assetsService.getName(asset.info) }}
+              {{ getName(asset.info) }}
             </h2>
             <p class="address">{{ asset.assetId }}</p>
             <p class="createdBy">
@@ -55,7 +55,7 @@
 
       <div class="flex between" style="margin-top: 40px;">
         <button class="transparent flex-0" (click)="json = ''">View as Data</button>
-        <a class="button outline flex-0" [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()">
+        <a class="button outline flex-0" [download]="getName(asset.info) + '.json'" [href]="downloadJSON()">
           Download JSON
         </a>
       </div>
@@ -96,7 +96,7 @@
           <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
             <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>
             <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url" target="_blank">
-              {{ assetsService.getUrlName(asset.info.documents[document].url) }}
+              {{ getUrlName(asset.info.documents[document].url) }}
             </a>
           </li>
         </ul>
@@ -152,7 +152,7 @@
 
       <h4 *ngIf="!timeline; else timeline">No events</h4>
       <ng-template #timeline>
-        <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.info)"></app-events-timeline>
+        <app-events-timeline [assetId]="assetId" [name]="getName(asset.info)"></app-events-timeline>
       </ng-template>
     </div>
   </div>

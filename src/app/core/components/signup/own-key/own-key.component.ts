@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
-import { Subscription } from 'rxjs';
 import { FormGroup, FormControl } from '@angular/forms';
 import { OrganizationsService } from 'app/services/organizations.service';
 import { AuthService } from 'app/services/auth.service';
 import { MessageService } from 'app/services/message.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { checkAddress } from 'app/util';
-
 declare let Web3: any;
 
 @Component({

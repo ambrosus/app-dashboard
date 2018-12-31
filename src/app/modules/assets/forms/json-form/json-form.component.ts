@@ -3,7 +3,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { checkJSON } from 'app/util';
+import { checkJSON, sign, calculateHash, validTimestamp } from 'app/util';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
@@ -116,11 +116,11 @@ export class JsonFormComponent implements OnInit {
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret),
+      signature: sign(idData, secret),
     };
 
     const asset = {
-      assetId: this.assetsService.calculateHash(content),
+      assetId: calculateHash(content),
       content,
     };
 
@@ -145,12 +145,10 @@ export class JsonFormComponent implements OnInit {
         .map(event => {
           event.content.idData['assetId'] = assetId;
           event.content.idData['createdBy'] = address;
-          event.content.idData['dataHash'] = this.assetsService.calculateHash(
-            event.content.data,
-          );
+          event.content.idData['dataHash'] = calculateHash(event.content.data);
           if (
             !event.content.idData['timestamp'] ||
-            !this.assetsService.validTimestamp(event.content.idData['timestamp'])
+            !validTimestamp(event.content.idData['timestamp'])
           ) {
             event.content.idData['timestamp'] = Math.floor(
               new Date().getTime() / 1000,
@@ -166,11 +164,11 @@ export class JsonFormComponent implements OnInit {
             event.content.idData['accessLevel'] = 1;
           }
 
-          event.content['signature'] = this.assetsService.sign(
+          event.content['signature'] = sign(
             event.content.idData,
             secret,
           );
-          event['eventId'] = this.assetsService.calculateHash(event.content);
+          event['eventId'] = calculateHash(event.content);
         });
       allEvents = allEvents.concat(assetEvents);
     });

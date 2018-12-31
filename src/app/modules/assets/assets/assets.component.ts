@@ -14,6 +14,7 @@ import { AssetAddComponent } from './../asset-add/asset-add.component';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { Router, NavigationStart } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
+import { getImage, getName } from 'app/util';
 
 @Component({
   selector: 'app-assets',
@@ -33,6 +34,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     asset?: MatDialogRef<any>,
     event?: MatDialogRef<any>,
   } = {};
+  getImage = getImage;
+  getName = getName;
 
   constructor(
     public assetsService: AssetsService,

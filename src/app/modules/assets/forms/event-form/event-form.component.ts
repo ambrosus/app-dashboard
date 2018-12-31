@@ -8,6 +8,7 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import { calculateHash, sign } from 'app/util';
 
 @Component({
   selector: 'app-event-form',
@@ -288,17 +289,17 @@ export class EventFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: eventForm.accessLevel,
       createdBy: address,
-      dataHash: this.assetsService.calculateHash(data),
+      dataHash: calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret),
+      signature: sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: this.assetsService.calculateHash(content),
+      eventId: calculateHash(content),
       content,
     };
 

@@ -33,7 +33,8 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     state: RouterStateSnapshot,
   ): boolean | Observable<boolean> | Promise<boolean> {
 
-    const { permissions } = <any>this.storageService.get('account');
+    const account = <any>this.storageService.get('account') || {};
+    const permissions = account.permissions || [];
 
     return new Promise(resolve => {
       const requiredPermissions = route.data.permissions || [];
@@ -57,7 +58,8 @@ export class PermissionsGuard implements CanActivate, CanActivateChild {
     state: RouterStateSnapshot,
   ): boolean | Observable<boolean> | Promise<boolean> {
 
-    const { permissions } = <any>this.storageService.get('account');
+    const account = <any>this.storageService.get('account') || {};
+    const permissions = account.permissions || [];
 
     return new Promise(resolve => {
       const requiredPermissions = route.data.permissions || [];

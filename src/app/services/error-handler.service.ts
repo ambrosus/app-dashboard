@@ -1,6 +1,5 @@
 import { Injectable, ErrorHandler } from '@angular/core';
 import * as Sentry from '@sentry/browser';
-import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root',

@@ -8,6 +8,7 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import { sign, calculateHash } from 'app/util';
 
 @Component({
   selector: 'app-asset-form',
@@ -187,11 +188,11 @@ export class AssetFormComponent implements OnInit {
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret),
+      signature: sign(idData, secret),
     };
 
     const asset = {
-      assetId: this.assetsService.calculateHash(content),
+      assetId: calculateHash(content),
       content,
     };
 
@@ -282,17 +283,17 @@ export class AssetFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: assetForm.accessLevel,
       createdBy: address,
-      dataHash: this.assetsService.calculateHash(data),
+      dataHash: calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret),
+      signature: sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: this.assetsService.calculateHash(content),
+      eventId: calculateHash(content),
       content,
     };
 

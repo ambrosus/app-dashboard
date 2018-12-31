@@ -10,6 +10,7 @@ import { AssetsService } from 'app/services/assets.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'app/services/auth.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
+import { getLocation } from 'app/util';
 
 @Component({
   selector: 'app-events-timeline',
@@ -20,6 +21,7 @@ import { ViewEncapsulation } from '@angular/compiler/src/core';
 export class EventsTimelineComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
   pagination;
+  getLocation = getLocation;
 
   @Input() assetId;
   @Input() name;
