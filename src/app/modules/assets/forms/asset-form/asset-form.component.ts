@@ -8,7 +8,6 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
-import { sign, calculateHash } from 'app/util';
 
 @Component({
   selector: 'app-asset-form',
@@ -111,22 +110,24 @@ export class AssetFormComponent implements OnInit {
     (<FormArray>this.forms.asset.get(array)).removeAt(index);
   }
 
-  addImage(event, input) {
-    if (event.keyCode === 13) {
-      const value = event.target.value;
-      const form = this.forms.asset.value;
-      let name = value.split('/');
-      name = form.images.length ? name[name.length - 1] : 'default';
-      if (value) {
-        (<FormArray>this.forms.asset.get('images')).push(
-          new FormGroup({
-            name: new FormControl(name, []),
-            url: new FormControl(event.target.value, []),
-          }),
-        );
-      }
-      input.value = '';
+  addImage(input) {
+    const value = input.value;
+    const form = this.forms.asset.value;
+    let name = value.split('/');
+    name = form.images.length ? name[name.length - 1] : 'default';
+    if (name !== 'default') {
+      name = name.split('.');
+      name = name[0];
     }
+    if (value) {
+      (<FormArray>this.forms.asset.get('images')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          url: new FormControl(value, []),
+        }),
+      );
+    }
+    input.value = '';
   }
 
   addIdentifier() {
@@ -188,11 +189,11 @@ export class AssetFormComponent implements OnInit {
 
     const content = {
       idData,
-      signature: sign(idData, secret),
+      signature: this.assetsService.ambrosus.sign(idData, secret),
     };
 
     const asset = {
-      assetId: calculateHash(content),
+      assetId: this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 
@@ -283,17 +284,17 @@ export class AssetFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: assetForm.accessLevel,
       createdBy: address,
-      dataHash: calculateHash(data),
+      dataHash: this.assetsService.ambrosus.calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: sign(idData, secret),
+      signature: this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: calculateHash(content),
+      eventId: this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 

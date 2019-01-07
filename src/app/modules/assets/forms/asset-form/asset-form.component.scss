@@ -7,6 +7,26 @@ app-asset-form {
     padding-bottom: 70px;
   }
 
+  .images {
+    position: relative;
+
+    > input {
+      padding-right: 50px !important;
+    }
+
+    > h5 {
+      margin: 50px 0 25px;
+    }
+
+    > .addImage {
+      font-weight: 500;
+      color: $light-blue;
+      position: absolute;
+      top: 55px;
+      right: 15px;
+    }
+  }
+
   .image-preview {
     display: flex;
     flex-direction: row;

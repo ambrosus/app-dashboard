@@ -8,7 +8,6 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
-import { calculateHash, sign } from 'app/util';
 
 @Component({
   selector: 'app-event-form',
@@ -118,22 +117,21 @@ export class EventFormComponent implements OnInit {
     (<FormArray>this.forms.event.get(array)).removeAt(index);
   }
 
-  addDocument(event, input) {
-    if (event.keyCode === 13) {
-      const value = event.target.value;
-      const form = this.forms.event.value;
-      let name = value.split('/');
-      name = name[name.length - 1];
-      if (value) {
-        (<FormArray>this.forms.event.get('documents')).push(
-          new FormGroup({
-            name: new FormControl(name, []),
-            url: new FormControl(event.target.value, []),
-          }),
-        );
-      }
-      input.value = '';
+  addDocument(input) {
+    const value = input.value;
+    let name = value.split('/');
+    name = name[name.length - 1];
+    name = name.split('.');
+    name = name[0];
+    if (value) {
+      (<FormArray>this.forms.event.get('documents')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          url: new FormControl(value, []),
+        }),
+      );
     }
+    input.value = '';
   }
 
   addIdentifier() {
@@ -289,17 +287,17 @@ export class EventFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: eventForm.accessLevel,
       createdBy: address,
-      dataHash: calculateHash(data),
+      dataHash: this.assetsService.ambrosus.calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: sign(idData, secret),
+      signature: this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: calculateHash(content),
+      eventId: this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 

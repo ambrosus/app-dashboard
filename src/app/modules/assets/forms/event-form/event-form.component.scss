@@ -7,6 +7,30 @@ app-event-form {
     padding-bottom: 70px;
   }
 
+  .documents {
+    position: relative;
+
+    > input {
+      padding-right: 50px !important;
+    }
+
+    > h5 {
+      margin: 50px 0 25px;
+    }
+
+    > .addDocument {
+      font-weight: 500;
+      color: $light-blue;
+      position: absolute;
+      top: 55px;
+      right: 15px;
+    }
+
+    > div {
+      margin-top: 10px;
+    }
+  }
+
   .document-preview {
     display: flex;
     flex-direction: row;

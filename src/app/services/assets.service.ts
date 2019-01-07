@@ -6,7 +6,6 @@ import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
-import { parseTimelineEvents, findEvent, parseAsset, parseEvent } from 'app/util';
 declare let Web3: any;
 
 @Injectable({
@@ -100,7 +99,7 @@ export class AssetsService {
   set events(options) {
     if (options && options.data) {
       options = JSON.parse(JSON.stringify(options));
-      options.data = parseTimelineEvents(options.data);
+      options.data = this.ambrosus.utils.parseTimelineEvents(options.data);
       const events = this._events.getValue();
       if (options.change === 'data' && Array.isArray(options.data)) {
         switch (options.type) {
@@ -378,7 +377,7 @@ export class AssetsService {
       );
 
       if (asset.info) {
-        asset.info = findEvent('info', [asset.info]);
+        asset.info = this.ambrosus.utils.findEvent('info', [asset.info]);
       }
 
       return asset;
@@ -445,7 +444,7 @@ export class AssetsService {
       );
 
       if (asset.info) {
-        asset.info = findEvent('info', [asset.info]);
+        asset.info = this.ambrosus.utils.findEvent('info', [asset.info]);
       }
 
       return asset;
@@ -487,11 +486,11 @@ export class AssetsService {
 
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
-              assets.data[0]['info'] = findEvent(
+              assets.data[0]['info'] = this.ambrosus.utils.findEvent(
                 'info',
                 infoEvents.data,
               );
-              parseAsset(assets.data[0]);
+              this.ambrosus.utils.parseAsset(assets.data[0]);
 
               observer.next(assets.data[0]);
               observer.complete();
@@ -586,7 +585,7 @@ export class AssetsService {
             return observer.error('No event');
           }
 
-          observer.next(parseEvent(events.data[0]));
+          observer.next(this.ambrosus.utils.parseEvent(events.data[0]));
         },
         error => observer.error('No event'),
       );
@@ -672,7 +671,7 @@ export class AssetsService {
           const assetEvents = data.created.filter(
             _event => asset.assetId === _event.content.idData.assetId,
           );
-          const info = findEvent('info', assetEvents);
+          const info = this.ambrosus.utils.findEvent('info', assetEvents);
           if (info) {
             asset['info'] = info;
           }

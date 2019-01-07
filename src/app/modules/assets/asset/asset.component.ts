@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
-import { getName, getUrlName } from 'app/util';
 
 @Component({
   selector: 'app-asset',
@@ -27,8 +26,6 @@ export class AssetComponent implements OnInit, OnDestroy {
   dialogs: {
     event?: MatDialogRef<any>,
   } = {};
-  getName = getName;
-  getUrlName = getUrlName;
 
   objectKeys = Object.keys;
   isArray = Array.isArray;

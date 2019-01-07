@@ -22,7 +22,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </p>
     <div class="location" *ngIf="event.location">
       <app-svg-icon name="location-pin" height="24" width="20"></app-svg-icon>
-      <p>{{ getLocation(event) }}</p>
+      <p>{{ assetsService.ambrosus.utils.getLocation(event) }}</p>
     </div>
   </li>
 
