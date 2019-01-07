@@ -5,7 +5,6 @@ import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
 import { MessageService } from 'app/services/message.service';
 import { checkEmail, checkPassword, checkText, comparePasswords, checkTimeZone } from '../../../util';
-
 declare let Web3: any;
 
 @Component({

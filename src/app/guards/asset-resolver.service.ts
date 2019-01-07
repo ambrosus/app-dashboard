@@ -1,4 +1,4 @@
-import { AssetsService } from './assets.service';
+import { AssetsService } from '../services/assets.service';
 import { Observable } from 'rxjs';
 import { map, first, catchError } from 'rxjs/operators';
 import {

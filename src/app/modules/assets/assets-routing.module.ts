@@ -1,13 +1,11 @@
-import { AssetResolver } from 'app/services/asset-resolver.service';
+import { AssetResolver } from 'app/guards/asset-resolver.service';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AssetsComponent } from 'app/modules/assets/assets/assets.component';
 import { AssetComponent } from 'app/modules/assets/asset/asset.component';
-import { AssetAddComponent } from './asset-add/asset-add.component';
 import { AssetsOutletComponent } from './assets-outlet/assets-outlet.component';
 import { EventComponent } from './event/event.component';
-import { EventAddComponent } from './event-add/event-add.component';
-import { EventResolver } from 'app/services/event-resolver.service';
+import { EventResolver } from 'app/guards/event-resolver.service';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [

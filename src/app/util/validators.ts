@@ -1,5 +1,4 @@
 import { FormControl } from '@angular/forms';
-
 declare let Web3: any;
 
 export const checkEmail = (allowEmpty = true) => {

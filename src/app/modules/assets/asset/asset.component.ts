@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';

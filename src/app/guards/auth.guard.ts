@@ -15,13 +15,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
     return new Promise(resolve => {
       if (
-        (state.url === '/login' || state.url.startsWith('/signup')) &&
+        (state.url === '/login' || state.url.indexOf('/signup') > -1) &&
         this.auth.isLoggedIn()
       ) {
         this.router.navigate(['/assets']);
         return resolve(false);
       } else if (
-        !(state.url === '/login' || state.url.startsWith('/signup')) &&
+        !(state.url === '/login' || state.url.indexOf('/signup') > -1) &&
         !this.auth.isLoggedIn()
       ) {
         this.router.navigate(['/login']);
@@ -36,13 +36,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
     return new Promise(resolve => {
       if (
-        (state.url === '/login' || state.url.startsWith('/signup')) &&
+        (state.url === '/login' || state.url.indexOf('/signup') > -1) &&
         this.auth.isLoggedIn()
       ) {
         this.router.navigate(['/assets']);
         return resolve(false);
       } else if (
-        !(state.url === '/login' || state.url.startsWith('/signup')) &&
+        !(state.url === '/login' || state.url.indexOf('/signup') > -1) &&
         !this.auth.isLoggedIn()
       ) {
         this.router.navigate(['/login']);

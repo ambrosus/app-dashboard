@@ -1,6 +1,5 @@
-import { AssetsResolver } from 'app/services/assets-resolver.service';
-import { EventResolver } from 'app/services/event-resolver.service';
-import { AssetResolver } from 'app/services/asset-resolver.service';
+import { EventResolver } from 'app/guards/event-resolver.service';
+import { AssetResolver } from 'app/guards/asset-resolver.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -44,7 +43,6 @@ import { SearchComponent } from './search/search.component';
   providers: [
     AssetResolver,
     EventResolver,
-    AssetsResolver,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,

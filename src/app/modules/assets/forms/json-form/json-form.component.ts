@@ -116,11 +116,11 @@ export class JsonFormComponent implements OnInit {
 
     const content = {
       idData,
-      signature: this.assetsService.sign(idData, secret),
+      signature: this.assetsService.ambrosus.sign(idData, secret),
     };
 
     const asset = {
-      assetId: this.assetsService.calculateHash(content),
+      assetId: this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 
@@ -145,12 +145,10 @@ export class JsonFormComponent implements OnInit {
         .map(event => {
           event.content.idData['assetId'] = assetId;
           event.content.idData['createdBy'] = address;
-          event.content.idData['dataHash'] = this.assetsService.calculateHash(
-            event.content.data,
-          );
+          event.content.idData['dataHash'] = this.assetsService.ambrosus.calculateHash(event.content.data);
           if (
             !event.content.idData['timestamp'] ||
-            !this.assetsService.validTimestamp(event.content.idData['timestamp'])
+            !this.assetsService.ambrosus.utils.validTimestamp(event.content.idData['timestamp'])
           ) {
             event.content.idData['timestamp'] = Math.floor(
               new Date().getTime() / 1000,
@@ -166,11 +164,11 @@ export class JsonFormComponent implements OnInit {
             event.content.idData['accessLevel'] = 1;
           }
 
-          event.content['signature'] = this.assetsService.sign(
+          event.content['signature'] = this.assetsService.ambrosus.sign(
             event.content.idData,
             secret,
           );
-          event['eventId'] = this.assetsService.calculateHash(event.content);
+          event['eventId'] = this.assetsService.ambrosus.calculateHash(event.content);
         });
       allEvents = allEvents.concat(assetEvents);
     });

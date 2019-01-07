@@ -3,9 +3,9 @@ import { AnalyticsService } from 'app/services/analytics.service';
 import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/util';
 import { MessageService } from 'app/services/message.service';
 import * as moment from 'moment-timezone';
+declare let Web3: any;
 
 declare let Chart: any;
-declare let Web3: any;
 
 @Component({
   selector: 'app-dashboard',

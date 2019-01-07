@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 
 import { AuthGuard } from './guards/auth.guard';
-import { AuthLoginGuard } from './guards/auth-login.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 
 import { TermsComponent } from './core/components/terms/terms.component';
@@ -96,16 +95,16 @@ const routes: Routes = [
   },
   {
     path: 'node',
-    canActivate: [AuthLoginGuard, PermissionsGuard],
-    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    canActivate: [AuthGuard, PermissionsGuard],
+    canActivateChild: [AuthGuard, PermissionsGuard],
     loadChildren: 'app/modules/node/node.module#NodeModule',
     runGuardsAndResolvers: 'always',
     data: { permissions: ['super_account'] },
   },
   {
     path: 'organization',
-    canActivate: [AuthLoginGuard, PermissionsGuard],
-    canActivateChild: [AuthLoginGuard, PermissionsGuard],
+    canActivate: [AuthGuard, PermissionsGuard],
+    canActivateChild: [AuthGuard, PermissionsGuard],
     loadChildren: 'app/modules/organization/organization.module#OrganizationModule',
     runGuardsAndResolvers: 'always',
     data: { permissions: ['manage_accounts'] },
@@ -131,6 +130,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' }),
   ],
   exports: [RouterModule],
-  providers: [AuthGuard, AuthLoginGuard, PermissionsGuard],
+  providers: [AuthGuard, PermissionsGuard],
 })
 export class AppRoutingModule { }

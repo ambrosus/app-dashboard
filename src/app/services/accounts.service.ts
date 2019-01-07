@@ -3,8 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from './storage.service';
 import { environment } from 'environments/environment';
-
-declare let AmbrosusSDK: any;
+import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 declare let Web3: any;
 
 interface Account {

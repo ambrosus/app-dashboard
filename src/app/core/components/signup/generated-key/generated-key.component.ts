@@ -9,7 +9,6 @@ import { AuthService } from 'app/services/auth.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MessageService } from 'app/services/message.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
-
 declare let Web3: any;
 
 @Component({
