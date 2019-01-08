@@ -12,11 +12,16 @@ import { GeneratedKeyComponent } from './core/components/signup/generated-key/ge
 import { RequestComponent } from './core/components/signup/request/request.component';
 import { InitialComponent } from './core/components/signup/initial/initial.component';
 import { HelpComponent } from './core/components/help/help.component';
-import { LoginSignupComponent } from './core/components/help/pages/login-signup/login-signup.component';
-import { AssetsComponent } from './core/components/help/pages/assets/assets.component';
-import { NodeDashboardComponent } from './core/components/help/pages/node-dashboard/node-dashboard.component';
-import { OrganizationDashboardComponent } from './core/components/help/pages/organization-dashboard/organization-dashboard.component';
 import { IntroductionComponent } from './core/components/help/pages/introduction/introduction.component';
+import { LoggingIntoTheAccountComponent } from './core/components/help/pages/logging-into-the-account/logging-into-the-account.component';
+import { InvitingUsersAndManagingAccountsComponent } from './core/components/help/pages/inviting-users-and-managing-accounts/inviting-users-and-managing-accounts.component';
+import { ViewingAndCreatingAssetsComponent } from './core/components/help/pages/viewing-and-creating-assets/viewing-and-creating-assets.component';
+import { ViewingAndCreatingEventsComponent } from './core/components/help/pages/viewing-and-creating-events/viewing-and-creating-events.component';
+import { SearchingForAssetsComponent } from './core/components/help/pages/searching-for-assets/searching-for-assets.component';
+import { ViewingOrganizationStatisticsComponent } from './core/components/help/pages/viewing-organization-statistics/viewing-organization-statistics.component';
+import { GettingStartedComponent } from './core/components/help/pages/getting-started/getting-started.component';
+import { EditingPersonalAccountSettingsComponent } from './core/components/help/pages/editing-personal-account-settings/editing-personal-account-settings.component';
+import { EditingOrganizationDetailsComponent } from './core/components/help/pages/editing-organization-details/editing-organization-details.component';
 
 const routes: Routes = [
   {
@@ -39,20 +44,40 @@ const routes: Routes = [
         component: IntroductionComponent,
       },
       {
-        path: 'assets',
-        component: AssetsComponent,
+        path: 'getting-started',
+        component: GettingStartedComponent,
       },
       {
-        path: 'authentication',
-        component: LoginSignupComponent,
+        path: 'logging-into-the-account',
+        component: LoggingIntoTheAccountComponent,
       },
       {
-        path: 'node',
-        component: NodeDashboardComponent,
+        path: 'editing-personal-account-settings',
+        component: EditingPersonalAccountSettingsComponent,
       },
       {
-        path: 'organization',
-        component: OrganizationDashboardComponent,
+        path: 'editing-organization-details',
+        component: EditingOrganizationDetailsComponent,
+      },
+      {
+        path: 'inviting-users-and-managing-accounts',
+        component: InvitingUsersAndManagingAccountsComponent,
+      },
+      {
+        path: 'viewing-and-creating-assets',
+        component: ViewingAndCreatingAssetsComponent,
+      },
+      {
+        path: 'viewing-and-creating-events',
+        component: ViewingAndCreatingEventsComponent,
+      },
+      {
+        path: 'searching-for-assets',
+        component: SearchingForAssetsComponent,
+      },
+      {
+        path: 'viewing-organization-statistics',
+        component: ViewingOrganizationStatisticsComponent,
       },
     ],
   },

@@ -8,6 +8,7 @@ export class StickyDirective implements OnInit {
   windowOffsetTop = 0;
   offset = 0;
   screenWidth;
+  documentHeight = 0;
 
   @Input() addClass = 'fixed';
   @Input() offsetTop = 0;
@@ -32,10 +33,13 @@ export class StickyDirective implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
+    this.documentHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight,
+      document.body.clientHeight);
+
     if (this.screenWidth > 768) {
       this.windowOffsetTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
-      if (this.windowOffsetTop + +this.offsetTop > this.offset) {
+      if ((this.windowOffsetTop + +this.offsetTop > this.offset) && this.documentHeight > 1000) {
         this.addSticky();
       } else {
         this.removeSticky();
