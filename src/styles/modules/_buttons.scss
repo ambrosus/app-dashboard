@@ -24,7 +24,8 @@ button,
   word-break: keep-all;
   user-select: none;
   padding: 11px 15px;
-  transition: all 0.2s;
+  transition-property: opacity, color, background, border;
+  transition-duration: .2s;
 
   &.no-style {
     width: auto;

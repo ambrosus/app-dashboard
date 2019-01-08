@@ -14,20 +14,40 @@ export class HelpComponent {
       link: '/help/introduction',
     },
     {
-      title: 'Login/Signup',
-      link: '/help/authentication',
+      title: 'Getting started',
+      link: '/help/getting-started',
     },
     {
-      title: 'Assets',
-      link: '/help/assets',
+      title: 'Logging into the account',
+      link: '/help/logging-into-the-account',
     },
     {
-      title: 'Node dashboard',
-      link: '/help/node',
+      title: 'Editing personal account settings',
+      link: '/help/editing-personal-account-settings',
     },
     {
-      title: 'Organization dashboard',
-      link: '/help/organization',
+      title: 'Editing organization details',
+      link: '/help/editing-organization-details',
+    },
+    {
+      title: 'Inviting users and managing accounts',
+      link: '/help/inviting-users-and-managing-accounts',
+    },
+    {
+      title: 'Viewing and creating assets',
+      link: '/help/viewing-and-creating-assets',
+    },
+    {
+      title: 'Viewing and creating events',
+      link: '/help/viewing-and-creating-events',
+    },
+    {
+      title: 'Searching for assets',
+      link: '/help/searching-for-assets',
+    },
+    {
+      title: 'Viewing organization statistics',
+      link: '/help/viewing-organization-statistics',
     },
   ];
 
