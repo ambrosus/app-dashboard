@@ -38,7 +38,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       owner: new FormControl({ value: '', disabled: true }),
       title: new FormControl('', [checkText(false)]),
       timeZone: new FormControl('', [checkTimeZone(false)]),
-      legalAddress: new FormControl('', [checkText(false)]),
+      legalAddress: new FormControl('', [checkText(false, true)]),
       active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();

@@ -15,13 +15,13 @@ export const checkEmail = (allowEmpty = true) => {
     };
 };
 
-export const checkText = (allowEmpty = true) => {
+export const checkText = (allowEmpty = true, allowDotsAndCommas = false) => {
     return (control: FormControl) => {
         try {
             if (allowEmpty && !control.value) {
                 return null;
             }
-            const pattern = /^[a-zA-Z0-9_-\s]{2,100}$/;
+            const pattern = allowDotsAndCommas ? /^[a-zA-Z0-9_.,-\s]{2,100}$/ : /^[a-zA-Z0-9_-\s]{2,100}$/;
             return pattern.test(control.value) ? null : { 'Input is invalid': true };
         } catch (error) {
             return null;
