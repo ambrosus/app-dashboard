@@ -47,7 +47,7 @@ export class AccountComponent implements OnInit, OnDestroy {
   initForms() {
     this.forms.account = new FormGroup({
       address: new FormControl({ value: this.account.address, disabled: true }),
-      fullName: new FormControl(this.account.fullName, [checkText(false)]),
+      fullName: new FormControl(this.account.fullName, [checkText({ allowEmpty: false })]),
       email: new FormControl(this.account.email, [checkEmail(false)]),
       timeZone: new FormControl(this.account.timeZone, [checkTimeZone(false)]),
     });

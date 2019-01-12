@@ -36,9 +36,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.account = this.storageService.get('account');
     this.forms.settings = new FormGroup({
       owner: new FormControl({ value: '', disabled: true }),
-      title: new FormControl('', [checkText(false)]),
+      title: new FormControl('', [checkText({ allowEmpty: false })]),
       timeZone: new FormControl('', [checkTimeZone(false)]),
-      legalAddress: new FormControl('', [checkText(false, true)]),
+      legalAddress: new FormControl('', [checkText({ allowEmpty: false, allowDotsAndCommas: true })]),
       active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();

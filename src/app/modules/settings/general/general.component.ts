@@ -37,7 +37,7 @@ export class GeneralComponent implements OnInit {
         { value: this.account.address, disabled: true },
         [Validators.required],
       ),
-      fullName: new FormControl(this.account.fullName, [checkText(false)]),
+      fullName: new FormControl(this.account.fullName, [checkText({ allowEmpty: false })]),
       email: new FormControl(this.account.email, [checkEmail(false)]),
       timeZone: new FormControl(this.account.timeZone, [checkTimeZone(false)]),
       password: new FormControl('', [checkPassword()]),
