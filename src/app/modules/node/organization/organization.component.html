@@ -55,6 +55,20 @@
           </button>
         </div>
       </form>
+      <hr />
+      <div class="details">
+        <h2 class="title">Details</h2>
+        <div class="group">
+          <div class="w50" *ngIf="organization.hasOwnProperty('createdOn')">
+            <h6>Created on</h6>
+            <span>{{ organization.createdOn | date: 'MMM dd, y hh:mm:ss' }}</span>
+          </div>
+          <div class="w50" *ngIf="organization.hasOwnProperty('modifiedOn')">
+            <h6>Last modified on</h6>
+            <span>{{ organization.modifiedOn | date: 'MMM dd, y hh:mm:ss' }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

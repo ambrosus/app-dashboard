@@ -4,11 +4,39 @@ app-organization {
   display: block;
   background: #fff;
 
+  hr {
+    margin: 40px 0;
+  }
+
   .active {
     color: $green;
   }
 
   .disabled {
     color: $red;
+  }
+
+  .details {
+    > h2 {
+      margin-bottom: 24px;
+    }
+
+    > .group {
+      > div {
+        display: inline-block;
+        margin-bottom: 32px;
+
+        > h6 {
+          color: $grey;
+          font-weight: 500;
+          text-transform: uppercase;
+          margin-bottom: 4px;
+        }
+
+        > span {
+          color: #333;
+        }
+      }
+    }
   }
 }
