@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AssetAddComponent } from '../asset-add/asset-add.component';
 
 @Component({
   selector: 'app-asset',
@@ -25,6 +26,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   noContent = false;
   dialogs: {
     event?: MatDialogRef<any>,
+    asset?: MatDialogRef<any>,
   } = {};
 
   objectKeys = Object.keys;
@@ -40,15 +42,14 @@ export class AssetComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     public assetsService: AssetsService,
     public dialog: MatDialog,
-    private router: Router,
     private sanitizer: DomSanitizer,
   ) { }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
-    this.subs[this.subs.length] = this.route.data.subscribe(
-      ({ asset }: any) => {
+    this.subs[this.subs.length] = this.assetsService.asset.subscribe(
+      (asset: any) => {
         console.log('Asset: ', asset);
         this.asset = asset;
 
@@ -68,7 +69,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     );
 
     this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
-      if (this.dialogs.event) { this.dialogs.event.close(); }
+      Object.keys(this.dialogs).map(key => this.dialogs[key].close());
     });
 
     this.subs[this.subs.length] = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
@@ -77,6 +78,17 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+  }
+
+  editInfoEvent() {
+    this.dialogs.asset = this.dialog.open(AssetAddComponent, {
+      panelClass: 'dialog',
+      disableClose: true,
+      data: {
+        assetId: this.asset.assetId,
+        prefill: this.asset,
+      },
+    });
   }
 
   async viewJSON() {

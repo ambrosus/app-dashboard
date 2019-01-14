@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
@@ -27,8 +27,11 @@ export class AssetFormComponent implements OnInit {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
   } = {};
+  asset: any;
+  infoEvent: any;
 
   @Input() assetId: string;
+  @Input() prefill: any;
 
   isObject(value) {
     return typeof value === 'object';
@@ -39,6 +42,7 @@ export class AssetFormComponent implements OnInit {
     public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
   sanitizeUrl(url) {
@@ -49,7 +53,64 @@ export class AssetFormComponent implements OnInit {
     const account: any = this.storageService.get('account') || {};
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_asset') > -1;
 
+    this.assetId = this.assetId || this.data.assetId;
+    this.prefill = this.prefill || this.data.prefill;
+
     this.initForm();
+    if (this.prefill) {
+      this.prefillForm();
+    }
+  }
+
+  private prefillForm() {
+    const form = this.forms.asset;
+    const info = this.prefill.info || {};
+
+    form.get('assetType').setValue(info.assetType);
+    form.get('name').setValue(info.name);
+    form.get('description').setValue(info.description);
+    if (info.images) {
+      Object.keys(info.images).map(key => {
+        this.addImage({ value: info.images[key].url });
+      });
+    }
+    if (this.prefill.identifiers) {
+      Object.keys(this.prefill.identifiers.identifiers).map(key => {
+        this.addIdentifier(key, this.prefill.identifiers.identifiers[key][0]);
+      });
+    }
+    if (Array.isArray(info.properties)) {
+      info.properties.map(property => {
+        this.addProperty(property.key, property.value);
+      });
+    }
+    if (Array.isArray(info.groups)) {
+      info.groups.map(group => {
+        const groupProperties = [];
+
+        Object.keys(group.value).map(key => {
+          groupProperties.push(
+            new FormGroup({
+              name: new FormControl(key, []),
+              value: new FormControl(group.value[key], []),
+            }),
+          );
+        });
+
+        (<FormArray>this.forms.asset.get('groups')).push(
+          new FormGroup({
+            title: new FormControl(group.key, []),
+            content: new FormArray(groupProperties),
+          }),
+        );
+      });
+    }
+
+    try {
+      form.get('accessLevel').setValue(this.prefill.content.idData.accessLevel || 0);
+    } catch (error) {
+      console.error('Info event prefill: ', error);
+    }
   }
 
   private initForm() {
@@ -59,18 +120,8 @@ export class AssetFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       images: new FormArray([]),
-      identifiers: new FormArray([
-        new FormGroup({
-          name: new FormControl(null, []),
-          value: new FormControl(null, []),
-        }),
-      ]),
-      properties: new FormArray([
-        new FormGroup({
-          name: new FormControl(null, []),
-          value: new FormControl(null, []),
-        }),
-      ]),
+      identifiers: new FormArray([]),
+      properties: new FormArray([]),
       groups: new FormArray([]),
     });
   }
@@ -130,20 +181,20 @@ export class AssetFormComponent implements OnInit {
     input.value = '';
   }
 
-  addIdentifier() {
+  addIdentifier(name = null, value = null) {
     (<FormArray>this.forms.asset.get('identifiers')).push(
       new FormGroup({
-        name: new FormControl(null, []),
-        value: new FormControl(null, []),
+        name: new FormControl(name, []),
+        value: new FormControl(value, []),
       }),
     );
   }
 
-  addProperty() {
+  addProperty(name = null, value = null) {
     (<FormArray>this.forms.asset.get('properties')).push(
       new FormGroup({
-        name: new FormControl(null, []),
-        value: new FormControl(null, []),
+        name: new FormControl(name, []),
+        value: new FormControl(value, []),
       }),
     );
   }
@@ -196,6 +247,8 @@ export class AssetFormComponent implements OnInit {
       assetId: this.assetsService.ambrosus.calculateHash(content),
       content,
     };
+
+    this.assetId = asset.assetId;
 
     return asset;
   }
@@ -314,14 +367,16 @@ export class AssetFormComponent implements OnInit {
           throw new Error('Please fill required fields');
         }
 
-        const confirm = await this.confirm('Are you sure you want to proceed creating this asset?');
+        const confirm = await this.confirm(`Are you sure you want to proceed ${this.prefill ? 'editing' : 'creating'} this asset?`);
         console.log('Confirm ->', confirm);
         if (!confirm) {
           return reject();
         }
 
-        const asset = this.generateAsset();
-        const infoEvent = this.generateInfoEvent(asset.assetId);
+        if (!this.prefill) {
+          this.asset = this.generateAsset();
+        }
+        this.infoEvent = this.generateInfoEvent(this.assetId);
 
         this.assetsService.responses.push({
           timestamp: Date.now(),
@@ -336,16 +391,18 @@ export class AssetFormComponent implements OnInit {
         });
 
         // Start progress
-        this.assetsService.progress.title = 'Creating asset';
-        this.assetsService.progress.creating = 2;
+        this.assetsService.progress.title = `${this.prefill ? 'Creating' : 'Editing'} asset`;
+        this.assetsService.progress.creating = this.prefill ? 1 : 2;
         this.assetsService.progress.for = 'assets';
         this.progress();
         this.assetsService.progress.status.start.next();
 
-        const assetCreated = await this.assetsService.createAsset(asset);
+        if (!this.prefill) {
+          const assetCreated = await this.assetsService.createAsset(this.asset);
 
-        this.sequenceNumber += 1;
-        const eventsCreated = await this.assetsService.createEvents([infoEvent]);
+          this.sequenceNumber += 1;
+        }
+        const eventsCreated = await this.assetsService.createEvents([this.infoEvent]);
 
         this.assetsService.progress.status.done.next();
 

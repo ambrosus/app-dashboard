@@ -40,10 +40,10 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.data.subscribe(
-      data => {
-        console.log('Event: ', data);
-        this.event = data.event;
+    this.subs[this.subs.length] = this.assetsService.event.subscribe(
+      event => {
+        console.log('Event: ', event);
+        this.event = event;
 
         if (this.event.info) {
           if (
