@@ -75,16 +75,18 @@ export class AssetFormComponent implements OnInit {
       });
     }
     if (this.prefill.identifiers) {
+      this.remove('identifiers', 0);
       Object.keys(this.prefill.identifiers.identifiers).map(key => {
         this.addIdentifier(key, this.prefill.identifiers.identifiers[key][0]);
       });
     }
-    if (Array.isArray(info.properties)) {
+    if (Array.isArray(info.properties) && info.properties.length) {
+      this.remove('properties', 0);
       info.properties.map(property => {
         this.addProperty(property.key, property.value);
       });
     }
-    if (Array.isArray(info.groups)) {
+    if (Array.isArray(info.groups) && info.groups.length) {
       info.groups.map(group => {
         const groupProperties = [];
 
@@ -120,8 +122,18 @@ export class AssetFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       images: new FormArray([]),
-      identifiers: new FormArray([]),
-      properties: new FormArray([]),
+      identifiers: new FormArray([
+        new FormGroup({
+          name: new FormControl(null, []),
+          value: new FormControl(null, []),
+        }),
+      ]),
+      properties: new FormArray([
+        new FormGroup({
+          name: new FormControl(null, []),
+          value: new FormControl(null, []),
+        }),
+      ]),
       groups: new FormArray([]),
     });
   }
