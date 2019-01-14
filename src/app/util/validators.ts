@@ -1,6 +1,11 @@
 import { FormControl } from '@angular/forms';
 declare let Web3: any;
 
+interface CheckTextOptions {
+    allowEmpty?: boolean;
+    allowDotsAndCommas?: boolean;
+}
+
 export const checkEmail = (allowEmpty = true) => {
     return (control: FormControl) => {
         try {
@@ -15,13 +20,15 @@ export const checkEmail = (allowEmpty = true) => {
     };
 };
 
-export const checkText = (allowEmpty = true) => {
+export const checkText = (options: CheckTextOptions = {}) => {
     return (control: FormControl) => {
         try {
+            const { allowEmpty = true, allowDotsAndCommas = false } = options;
+
             if (allowEmpty && !control.value) {
                 return null;
             }
-            const pattern = /^[a-zA-Z0-9_-\s]{2,100}$/;
+            const pattern = allowDotsAndCommas ? /^[a-zA-Z0-9_.,-\s]{2,100}$/ : /^[a-zA-Z0-9_-\s]{2,100}$/;
             return pattern.test(control.value) ? null : { 'Input is invalid': true };
         } catch (error) {
             return null;
