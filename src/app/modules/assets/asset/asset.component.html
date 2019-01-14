@@ -42,7 +42,10 @@
             </div>
             <div class="flex between" style="align-items: center; margin-top: 15px;">
               <button class="transparent flex-0" (click)="viewJSON()">{{ json || 'View as JSON' }}</button>
-              <button class="transparent flex-0" (click)="editInfoEvent()">Edit asset</button>
+              <button class="transparent flex-0" (click)="editInfoEvent()">
+                <app-svg-icon name="edit" height="25" width="25" style="margin-right: 7px"></app-svg-icon>
+                Edit info
+              </button>
             </div>
           </div>
         </div>
