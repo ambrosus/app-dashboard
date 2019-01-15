@@ -73,7 +73,7 @@ export class EventFormComponent implements OnInit {
       });
     } catch (error) { }
 
-    form.get('type').setValue(`ambrosus.event.${type}`);
+    form.get('type').setValue(`ambrosus.${type === 'info' ? 'asset' : 'event'}.${type}`);
     form.get('name').setValue(info.name);
     form.get('description').setValue(info.description);
     if (info.images) {

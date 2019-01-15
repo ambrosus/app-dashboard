@@ -55,6 +55,10 @@ export class AssetsService {
     },
   };
   initiatedNoAssets = false;
+  json = {
+    asset: {},
+    event: {},
+  };
 
   constructor(
     private storageService: StorageService,
@@ -483,10 +487,10 @@ export class AssetsService {
 
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
-              assets.data[0]['info'] = this.ambrosus.utils.findEvent(
-                'info',
-                infoEvents.data,
-              );
+              const info = this.ambrosus.utils.findEvent('info', infoEvents.data);
+              this.json.asset = JSON.parse(JSON.stringify(infoEvents.data[0]));
+
+              assets.data[0]['info'] = info;
               this.ambrosus.utils.parseAsset(assets.data[0]);
 
               this.asset.next(assets.data[0]);
@@ -584,6 +588,8 @@ export class AssetsService {
           if (!events.data || !Array.isArray(events.data) || !events.data.length) {
             return observer.error('No event');
           }
+
+          this.json.event = JSON.parse(JSON.stringify(events.data[0]));
 
           this.event.next(this.ambrosus.utils.parseEvent(events.data[0]));
           observer.next(this.ambrosus.utils.parseEvent(events.data[0]));

@@ -97,6 +97,7 @@ export class EventComponent implements OnInit, OnDestroy {
       data: {
         assetIds: [this.assetId],
         prefill: this.eventPrefill,
+        for: 'events',
       },
     });
   }

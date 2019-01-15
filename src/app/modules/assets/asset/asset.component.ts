@@ -87,6 +87,7 @@ export class AssetComponent implements OnInit, OnDestroy {
       data: {
         assetId: this.asset.assetId,
         prefill: this.asset,
+        for: 'assets',
       },
     });
   }
