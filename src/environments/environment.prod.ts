@@ -25,7 +25,7 @@ try {
     test = true;
     prod = false;
   }
-} catch (e) { }
+} catch (error) { }
 
 if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
   core = 'https://hermes.ambrosus-test.com';
