@@ -35,12 +35,22 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <textarea formControlName="description" rows="1"></textarea>
     </label>
 
-    <div formArrayName="documents" class="documents">
+    <div formArrayName="images" class="media">
+      <h5>Images</h5>
+      <input type="url" placeholder="Enter an image url" #imageInput>
+      <a class="addMedia" (click)="addImage(imageInput)">Add</a>
+      <div class="image-preview">
+        <div *ngFor="let image of forms.event.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrlImage(image.url)" (click)="remove('images', i)"></div>
+      </div>
+    </div>
+
+    <div formArrayName="documents" class="media">
       <h5>Documents</h5>
       <input type="url" placeholder="Enter a document url" #documentInput>
-      <a class="addDocument" (click)="addDocument(documentInput)">Add</a>
-      <div *ngFor="let document of forms.event.value.documents; let i = index" [formGroupName]="i" (click)="remove('documents', i)">
-        <a [href]="sanitizeUrl(document.url)" target="_blank">{{ document.name }}</a>
+      <a class="addMedia" (click)="addDocument(documentInput)">Add</a>
+      <div class="document-preview" *ngFor="let document of forms.event.value.documents; let i = index" [formGroupName]="i">
+        <a [href]="sanitizeUrlDocument(document.url)" target="_blank">{{ document.name }}</a>
+        <a class="remove" (click)="remove('documents', i)">&times;</a>
       </div>
     </div>
   </section>
@@ -100,7 +110,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="group" *ngFor="let identifier of forms.event.get('identifiers')['controls']; let i = index" [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
-          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" style="text-transform: uppercase" />
+          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
         </label>
         <label class="w50">
           <span>Value</span>

@@ -1,4 +1,4 @@
-<div class="amb">
+<div class="amb" *ngIf="asset">
   <header>
     <div class="wrapper">
       <div class="accordions">
@@ -40,7 +40,13 @@
                 </ul>
               </div>
             </div>
-            <button class="transparent" (click)="viewJSON()" style="margin-top: 15px;">{{ json || 'View as JSON' }}</button>
+            <div class="flex between" style="align-items: center; margin-top: 15px;">
+              <button class="transparent flex-0" (click)="viewJSON()">{{ json || 'View as JSON' }}</button>
+              <button class="transparent flex-0" (click)="editInfoEvent()">
+                <app-svg-icon name="edit" height="25" width="25" style="margin-right: 7px"></app-svg-icon>
+                Edit info
+              </button>
+            </div>
           </div>
         </div>
       </div>

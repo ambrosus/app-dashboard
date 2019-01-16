@@ -1,10 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { AssetsService } from 'app/services/assets.service';
 import { StorageService } from 'app/services/storage.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { checkJSON } from 'app/util';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 import { MessageService } from 'app/services/message.service';
@@ -29,12 +29,14 @@ export class JsonFormComponent implements OnInit {
 
   @Input() assetIds: string[];
   @Input() for: 'assets';
+  @Input() prefill: any;
 
   constructor(
     private storageService: StorageService,
     public assetsService: AssetsService,
     private dialog: MatDialog,
     private messageService: MessageService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
   ngOnInit() {
@@ -49,6 +51,35 @@ export class JsonFormComponent implements OnInit {
     } else {
       this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
+
+    this.assetIds = this.data.assetIds || [this.data.assetId] || this.assetIds;
+    this.for = this.for || this.data.for;
+    this.prefill = this.prefill || this.data.prefill;
+    if (this.prefill) {
+      this.prefillForm();
+    }
+  }
+
+  prefillForm() {
+    let json = JSON.parse(JSON.stringify(this.for === 'assets' ? this.assetsService.json.asset : this.assetsService.json.event));
+    delete json._id;
+    delete json.assetId;
+    delete json.metadata;
+    delete json.repository;
+    delete json.eventId;
+    delete json.content.idData.dataHash;
+    delete json.content.signature;
+    json.content.data.map(obj => {
+      if (obj.type.split('.').length === 1) {
+        obj.type = `ambrosus.${this.for === 'assets' ? 'asset' : 'event'}.${obj.type}`;
+      }
+    });
+
+    if (!Array.isArray(json)) {
+      json = [json];
+    }
+
+    this.forms.json.get('data').setValue(JSON.stringify(json, null, 2));
   }
 
   to(P: Promise<any>) {
@@ -195,15 +226,15 @@ export class JsonFormComponent implements OnInit {
           throw new Error('JSON has to be an array of objects (creating multiple events on one or more assets), or array of arrays (creating multiple assets), where each array has multiple events');
         }
 
-        if (this.for === 'assets' && !json.every(item => Array.isArray(item))) {
+        if (this.for === 'assets' && !this.prefill && !json.every(item => Array.isArray(item))) {
           json = [json];
         }
 
-        let message = 'Are you sure you want to proceed creating ';
+        let message = `Are you sure you want to proceed ${this.prefill ? 'editing' : 'creating'} `;
         if (this.for === 'assets') {
           message += `${json.length} asset${json.length === 1 ? '' : 's'}?`;
         } else {
-          message += `${json.length} events${this.for === 'assets' ? '' : ` on ${this.assetIds.length} assets`}?`;
+          message += `${json.length} event${json.length === 1 ? '' : 's'}${this.for === 'assets' ? '' : ` on ${this.assetIds.length} asset${json.length === 1 ? '' : 's'}`}?`;
         }
 
         const confirm = await this.confirm(message);
@@ -212,7 +243,7 @@ export class JsonFormComponent implements OnInit {
           return reject();
         }
 
-        if (this.for === 'assets') {
+        if (this.for === 'assets' && !this.prefill) {
           const creating = json.reduce((number, events) => {
             number += events.length;
             return number;

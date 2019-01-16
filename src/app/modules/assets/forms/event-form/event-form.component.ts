@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { autocomplete } from 'app/constant';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
 
@@ -28,6 +28,7 @@ export class EventFormComponent implements OnInit {
   } = {};
 
   @Input() assetIds: string[];
+  @Input() prefill: any;
 
   isObject(value) {
     return typeof value === 'object';
@@ -38,13 +39,104 @@ export class EventFormComponent implements OnInit {
     public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
   ngOnInit() {
     const account: any = this.storageService.get('account') || {};
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
 
+    this.assetIds = this.assetIds || this.data.assetIds;
+    this.prefill = this.prefill || this.data.prefill;
+
     this.initForm();
+    if (this.prefill) {
+      this.prefillForm();
+    }
+  }
+
+  private prefillForm() {
+    const form = this.forms.event;
+    const event = this.prefill || {};
+    const info = this.prefill.info || {};
+    let type = '';
+
+    try {
+      this.prefill.content.data.map(obj => {
+        obj.type = obj.type.split('.');
+        obj.type = obj.type[obj.type.length - 1];
+        obj.type = obj.type.toLowerCase();
+
+        if (['location', 'identifiers'].indexOf(obj.type) === -1) {
+          type = obj.type;
+        }
+      });
+    } catch (error) { }
+
+    form.get('type').setValue(`ambrosus.${type === 'info' ? 'asset' : 'event'}.${type}`);
+    form.get('name').setValue(info.name);
+    form.get('description').setValue(info.description);
+    if (info.images) {
+      Object.keys(info.images).map(key => {
+        this.addImage({ value: info.images[key].url });
+      });
+    }
+    if (info.documents) {
+      Object.keys(info.documents).map(key => {
+        this.addDocument({ value: info.documents[key].url });
+      });
+    }
+    if (info.identifiers) {
+      this.remove('identifiers', 0);
+      Object.keys(info.identifiers.identifiers).map(key => {
+        this.addIdentifier(key, info.identifiers.identifiers[key][0]);
+      });
+    }
+    if (Array.isArray(info.properties) && info.properties.length) {
+      this.remove('properties', 0);
+      info.properties.map(property => {
+        this.addProperty(property.key, property.value);
+      });
+    }
+    if (Array.isArray(info.groups) && info.groups.length) {
+      info.groups.map(group => {
+        const groupProperties = [];
+
+        Object.keys(group.value).map(key => {
+          groupProperties.push(
+            new FormGroup({
+              name: new FormControl(key, []),
+              value: new FormControl(group.value[key], []),
+            }),
+          );
+        });
+
+        (<FormArray>this.forms.event.get('groups')).push(
+          new FormGroup({
+            title: new FormControl(group.key, []),
+            content: new FormArray(groupProperties),
+          }),
+        );
+      });
+    }
+
+    try {
+      if (info.location) {
+        const formLocation = form.get('location');
+        const lat = info.location.geoJson ? info.location.geoJson.coordinates[0] : info.location.location.geometry.coordinates[0];
+        const lng = info.location.geoJson ? info.location.geoJson.coordinates[0] : info.location.location.geometry.coordinates[0];
+
+        formLocation.get('lat').setValue(lat);
+        formLocation.get('lng').setValue(lng);
+        formLocation.get('city').setValue(info.location.city);
+        formLocation.get('country').setValue(info.location.country);
+        formLocation.get('locationId').setValue(info.location.locationId);
+        formLocation.get('GLN').setValue(info.location.GLN);
+      }
+      form.get('accessLevel').setValue(event.content.idData.accessLevel || 0);
+    } catch (error) {
+      console.error('Event prefill: ', error);
+    }
   }
 
   progress() {
@@ -76,8 +168,12 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  sanitizeUrl(url) {
+  sanitizeUrlDocument(url) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+
+  sanitizeUrlImage(url) {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
   }
 
   private initForm() {
@@ -87,6 +183,7 @@ export class EventFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       documents: new FormArray([]),
+      images: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -121,8 +218,6 @@ export class EventFormComponent implements OnInit {
     const value = input.value;
     let name = value.split('/');
     name = name[name.length - 1];
-    name = name.split('.');
-    name = name[0];
     if (value) {
       (<FormArray>this.forms.event.get('documents')).push(
         new FormGroup({
@@ -134,20 +229,40 @@ export class EventFormComponent implements OnInit {
     input.value = '';
   }
 
-  addIdentifier() {
+  addImage(input) {
+    const value = input.value;
+    const form = this.forms.event.value;
+    let name = value.split('/');
+    name = form.images.length ? name[name.length - 1] : 'default';
+    if (name !== 'default') {
+      name = name.split('.');
+      name = name[0];
+    }
+    if (value) {
+      (<FormArray>this.forms.event.get('images')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          url: new FormControl(value, []),
+        }),
+      );
+    }
+    input.value = '';
+  }
+
+  addIdentifier(name = null, value = null) {
     (<FormArray>this.forms.event.get('identifiers')).push(
       new FormGroup({
-        name: new FormControl(null, []),
-        value: new FormControl(null, []),
+        name: new FormControl(name, []),
+        value: new FormControl(value, []),
       }),
     );
   }
 
-  addProperty() {
+  addProperty(name = null, value = null) {
     (<FormArray>this.forms.event.get('properties')).push(
       new FormGroup({
-        name: new FormControl(null, []),
-        value: new FormControl(null, []),
+        name: new FormControl(name, []),
+        value: new FormControl(value, []),
       }),
     );
   }

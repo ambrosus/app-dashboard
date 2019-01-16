@@ -23,6 +23,8 @@ export class AssetsService {
     data: [],
     pagination: {},
   });
+  public asset: BehaviorSubject<any> = new BehaviorSubject({});
+  public event: BehaviorSubject<any> = new BehaviorSubject({});
   private _assetsSearch: BehaviorSubject<any> = new BehaviorSubject({
     meta: {},
     data: [],
@@ -53,6 +55,10 @@ export class AssetsService {
     },
   };
   initiatedNoAssets = false;
+  json = {
+    asset: {},
+    event: {},
+  };
 
   constructor(
     private storageService: StorageService,
@@ -472,11 +478,6 @@ export class AssetsService {
             return observer.error('No asset');
           }
 
-          const ids = assets.data.reduce((_ids, asset, index, array) => {
-            _ids.push(asset.assetId);
-            return _ids;
-          }, []);
-
           // Get latest info events
           url = `${this.api.extended}/event/latest/type`;
           body = {
@@ -486,11 +487,13 @@ export class AssetsService {
 
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
-              assets.data[0]['info'] = this.ambrosus.utils.findEvent(
-                'info',
-                infoEvents.data,
-              );
+              const info = this.ambrosus.utils.findEvent('info', infoEvents.data);
+              this.json.asset = JSON.parse(JSON.stringify(infoEvents.data[0]));
+
+              assets.data[0]['info'] = info;
               this.ambrosus.utils.parseAsset(assets.data[0]);
+
+              this.asset.next(assets.data[0]);
 
               observer.next(assets.data[0]);
               observer.complete();
@@ -534,6 +537,7 @@ export class AssetsService {
       this.messageService.error(events.error);
       return;
     }
+    console.log('(GET) Events:', events);
 
     this.events = events;
   }
@@ -585,7 +589,11 @@ export class AssetsService {
             return observer.error('No event');
           }
 
+          this.json.event = JSON.parse(JSON.stringify(events.data[0]));
+
+          this.event.next(this.ambrosus.utils.parseEvent(events.data[0]));
           observer.next(this.ambrosus.utils.parseEvent(events.data[0]));
+          observer.complete();
         },
         error => observer.error('No event'),
       );
@@ -635,7 +643,7 @@ export class AssetsService {
 
   async createEvents(events: any[]): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const data = { created: [], errors: [] };
+      const data: any = { created: [], errors: [] };
 
       try {
         for (const event of events) {
@@ -665,6 +673,14 @@ export class AssetsService {
           this.events = data;
         }
 
+        // Update event
+        const eventData = this.event.getValue();
+        try {
+          if (data.created.length === 1 && eventData.content.idData.assetId === data.created[0].content.idData.assetId) {
+            this.event.next(this.ambrosus.utils.parseEvent(JSON.parse(JSON.stringify(data.created[0]))));
+          }
+        } catch (error) { }
+
         // Update _assets
         let assetsData = this._assets.getValue().data;
         assetsData = assetsData.map(asset => {
@@ -678,8 +694,23 @@ export class AssetsService {
           return asset;
         });
         const options = { change: 'data', type: 'all', data: assetsData };
-
         this.assets = options;
+
+        // Update asset
+        const assetData = this.asset.getValue();
+        try {
+          if (data.created.length === 1 && assetData.assetId === data.created[0].content.idData.assetId) {
+            const info = this.ambrosus.utils.findEvent('info', JSON.parse(JSON.stringify(data.created)));
+            const asset = {
+              info,
+              content: assetData.content,
+              metadata: assetData.metadata,
+            };
+            this.ambrosus.utils.parseAsset(asset);
+            this.asset.next(asset);
+          }
+        } catch (error) { }
+
         resolve(options);
 
         return data;

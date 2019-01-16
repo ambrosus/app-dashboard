@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AssetsService } from 'app/services/assets.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MatDialogRef, MatDialog } from '@angular/material';
+import { EventAddComponent } from '../event-add/event-add.component';
 
 @Component({
   selector: 'app-event',
@@ -15,8 +17,12 @@ export class EventComponent implements OnInit, OnDestroy {
   assetId;
   eventId;
   event;
+  eventPrefill;
   location: any = false;
   noContent = false;
+  dialogs: {
+    event?: MatDialogRef<any>,
+  } = {};
 
   objectKeys = Object.keys;
   isArray = Array.isArray;
@@ -33,6 +39,7 @@ export class EventComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
+    public dialog: MatDialog,
   ) { }
 
   ngOnDestroy() {
@@ -40,10 +47,12 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subs[this.subs.length] = this.route.data.subscribe(
-      data => {
-        console.log('Event: ', data);
-        this.event = data.event;
+    this.subs[this.subs.length] = this.assetsService.event.subscribe(
+      event => {
+        console.log('Event: ', event);
+        this.event = event;
+        this.eventPrefill = JSON.parse(JSON.stringify(event));
+        console.log('Event prefill: ', this.eventPrefill);
 
         if (this.event.info) {
           if (
@@ -71,9 +80,25 @@ export class EventComponent implements OnInit, OnDestroy {
       err => console.error('Event: ', err),
     );
 
+    this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
+      Object.keys(this.dialogs).map(key => this.dialogs[key].close());
+    });
+
     this.subs[this.subs.length] = this.route.params.subscribe(resp => {
       this.assetId = resp.assetid;
       this.eventId = resp.eventid;
+    });
+  }
+
+  editEvent() {
+    this.dialogs.event = this.dialog.open(EventAddComponent, {
+      panelClass: 'dialog',
+      disableClose: true,
+      data: {
+        assetIds: [this.assetId],
+        prefill: this.eventPrefill,
+        for: 'events',
+      },
     });
   }
 
