@@ -18,6 +18,8 @@ try {
   if (core.indexOf('-dev') > -1) {
     dev = true;
     prod = false;
+    // Fix for now, for dev working against -test
+    core = 'https://hermes.ambrosus-test.com';
   }
   if (core.indexOf('-test') > -1) {
     test = true;
