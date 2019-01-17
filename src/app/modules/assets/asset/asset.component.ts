@@ -92,14 +92,18 @@ export class AssetComponent implements OnInit, OnDestroy {
         delete event.content.idData.dataHash;
         delete event.content.signature;
         delete event.metadata;
+        delete event.repository;
 
         event.content.idData.assetId = '{{ assetId }}';
         event.content.idData.timestamp = '{{ timestamp }}';
 
-        event.content.data.map(item => ({
-          ...item,
-          timestamp: '{{ timestamp }}',
-        }));
+        event.content.data.map(item => {
+          if (item.timestamp) {
+            item.timestamp = '{{ timestamp }}';
+          }
+
+          return item;
+        });
 
         return event;
       });
