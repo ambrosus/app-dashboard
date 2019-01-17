@@ -21,15 +21,17 @@ try {
   if (core.indexOf('-dev') > -1) {
     dev = true;
     prod = false;
+    // Fix for now, for dev working against -test
+    core = 'https://hermes.ambrosus-test.com';
   }
   if (core.indexOf('-test') > -1) {
     test = true;
     prod = false;
   }
-} catch (e) { }
+} catch (error) { }
 
 if (location.hostname === 'localhost') {
-  core = 'https://hermes.ambrosus-dev.com';
+  core = 'https://hermes.ambrosus-test.com';
   dev = true;
   prod = false;
   ambrosus = true;
