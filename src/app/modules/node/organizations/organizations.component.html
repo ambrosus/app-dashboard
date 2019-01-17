@@ -32,7 +32,7 @@
                     <span class="flex-0">owner</span>
                     <span class="image"></span>
                     <span class="address">{{ organization.owner }}</span>
-                    <span class="registrationDate flex-1 right">{{ organization.createdOn }}</span>
+                    <span class="color--black flex-1 right">{{ organization.createdOn }}</span>
                   </p>
                 </div>
               </a>
@@ -41,7 +41,7 @@
                   <div></div>
                   <div style="margin: 0">
                     <span class="status" style="color: #40D685;">Active</span>
-                    <span class="modifiedOn" *ngIf="organization.hasOwnProperty('modifiedOn')">Since {{ organization.modifiedOn | date: 'MMM dd, yyyy hh:mm:ss' }}</span>
+                    <span class="modifiedOn" *ngIf="organization.modifiedOn">Since {{ organization.modifiedOn | date: 'MMM dd, yyyy hh:mm:ss' }}</span>
                     <span class="verticalMenu" appToggleDropDown>
                       <app-svg-icon name="menu-vertical" height="20" width="20"></app-svg-icon>
                       <app-drop-down [items]="{

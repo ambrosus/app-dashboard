@@ -48,10 +48,6 @@
           word-break: break-all;
         }
 
-        .registrationDate {
-          color: $black;
-        }
-
         > .image {
           display: inline-block;
           width: 24px;
@@ -99,10 +95,6 @@
             margin-right: 24px;
             top: 2px;
             flex: 0 0 auto;
-          }
-
-          .modifiedOn {
-            margin-right: 24px;
           }
 
           .verticalMenu {
