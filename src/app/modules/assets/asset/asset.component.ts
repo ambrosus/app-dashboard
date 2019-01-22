@@ -98,6 +98,28 @@ export class AssetComponent implements OnInit, OnDestroy {
     if (this.jsonEvents) { return this.jsonEvents; }
     try {
       this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
+      this.jsonEventsRaw.data.map(event => {
+
+        delete event._id;
+        delete event.eventId;
+        delete event.content.idData.dataHash;
+        delete event.content.signature;
+        delete event.metadata;
+        delete event.repository;
+
+        event.content.idData.assetId = '{{ assetId }}';
+        event.content.idData.timestamp = '{{ timestamp }}';
+
+        event.content.data.map(item => {
+          if (item.timestamp) {
+            item.timestamp = '{{ timestamp }}';
+          }
+
+          return item;
+        });
+
+        return event;
+      });
       this.jsonEvents = JSON.stringify(this.jsonEventsRaw.data, null, 2);
     } catch (error) {
       console.error('[GET] Max events: ', error);
