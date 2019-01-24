@@ -6,9 +6,8 @@ import * as moment from 'moment-timezone';
 import { AccountsService } from './accounts.service';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-
-declare let AmbrosusSDK: any;
 declare let Web3: any;
+import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 
 @Injectable({
   providedIn: 'root',

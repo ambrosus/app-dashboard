@@ -5,7 +5,6 @@ import * as moment from 'moment-timezone';
 import { AccountsService } from 'app/services/accounts.service';
 import { MessageService } from 'app/services/message.service';
 import { checkEmail, checkPassword, checkText, comparePasswords, checkTimeZone } from '../../../util';
-
 declare let Web3: any;
 
 @Component({
@@ -38,7 +37,7 @@ export class GeneralComponent implements OnInit {
         { value: this.account.address, disabled: true },
         [Validators.required],
       ),
-      fullName: new FormControl(this.account.fullName, [checkText(false)]),
+      fullName: new FormControl(this.account.fullName, [checkText({ allowEmpty: false })]),
       email: new FormControl(this.account.email, [checkEmail(false)]),
       timeZone: new FormControl(this.account.timeZone, [checkTimeZone(false)]),
       password: new FormControl('', [checkPassword()]),

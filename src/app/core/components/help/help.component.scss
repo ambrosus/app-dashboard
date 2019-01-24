@@ -1,7 +1,18 @@
 @import 'utils';
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
+
 app-help {
   display: block;
+  cursor: initial;
 
   .wrapper {
     max-width: 1024px;
@@ -36,6 +47,8 @@ app-help {
 
     img {
       margin: 25px 0;
+      box-shadow: 0px 5px 30px rgba(0, 0, 0, 0.05);
+      animation: fadeIn .3s forwards;
     }
 
     code {
@@ -57,7 +70,7 @@ app-help {
       margin-bottom: 20px;
 
       + p {
-        margin-bottom: 15px;
+        margin-top: 15px;
       }
     }
 
@@ -69,6 +82,7 @@ app-help {
         list-style-position: inside;
         font-size: 13px;
         line-height: 1.55;
+        padding-left: 15px;
 
         > ul {
           padding-left: 20px;
@@ -88,6 +102,7 @@ app-help {
         list-style-position: inside;
         font-size: 13px;
         line-height: 1.55;
+        padding-left: 15px;
 
         > ul {
           padding-left: 20px;

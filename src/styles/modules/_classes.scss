@@ -103,3 +103,9 @@
 .mute {
   opacity: 0.5 !important;
 }
+
+.color {
+  &--black {
+    color: $black;
+  }
+}

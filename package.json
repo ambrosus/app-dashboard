@@ -32,7 +32,7 @@
     "@angular/service-worker": "^6.1.0",
     "@sendgrid/mail": "^6.3.1",
     "@sentry/browser": "^4.3.0",
-    "ambrosus-javascript-sdk": "^0.9.3",
+    "ambrosus-javascript-sdk": "^0.11.2",
     "angular2-promise-buttons": "^2.1.1",
     "animate.css": "^3.7.0",
     "core-js": "^2.5.7",
@@ -46,7 +46,7 @@
     "rxjs-compat": "^6.3.3",
     "sanitize.css": "^6.0.0",
     "uuid": "^3.3.2",
-    "web3": "1.0.0-beta.36",
+    "web3": "^1.0.0-beta.36",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { EventAddComponent } from './../event-add/event-add.component';
 import { Subscription } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { AssetsService } from 'app/services/assets.service';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AssetAddComponent } from '../asset-add/asset-add.component';
 
 @Component({
   selector: 'app-asset',
@@ -25,6 +26,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   noContent = false;
   dialogs: {
     event?: MatDialogRef<any>,
+    asset?: MatDialogRef<any>,
   } = {};
 
   objectKeys = Object.keys;
@@ -40,15 +42,14 @@ export class AssetComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     public assetsService: AssetsService,
     public dialog: MatDialog,
-    private router: Router,
     private sanitizer: DomSanitizer,
   ) { }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
 
-    this.subs[this.subs.length] = this.route.data.subscribe(
-      ({ asset }: any) => {
+    this.subs[this.subs.length] = this.assetsService.asset.subscribe(
+      (asset: any) => {
         console.log('Asset: ', asset);
         this.asset = asset;
 
@@ -68,7 +69,7 @@ export class AssetComponent implements OnInit, OnDestroy {
     );
 
     this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
-      if (this.dialogs.event) { this.dialogs.event.close(); }
+      Object.keys(this.dialogs).map(key => this.dialogs[key].close());
     });
 
     this.subs[this.subs.length] = this.route.params.subscribe(({ assetid }: any) => this.assetId = assetid);
@@ -79,12 +80,46 @@ export class AssetComponent implements OnInit, OnDestroy {
     this.subs.map(sub => sub.unsubscribe());
   }
 
+  editInfoEvent() {
+    this.dialogs.asset = this.dialog.open(AssetAddComponent, {
+      panelClass: 'dialog',
+      disableClose: true,
+      data: {
+        assetId: this.asset.assetId,
+        prefill: this.asset,
+        for: 'assets',
+      },
+    });
+  }
+
   async viewJSON() {
     if (this.json) { return this.json = ''; }
     this.json = 'View as Data';
     if (this.jsonEvents) { return this.jsonEvents; }
     try {
       this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
+      this.jsonEventsRaw.data.map(event => {
+
+        delete event._id;
+        delete event.eventId;
+        delete event.content.idData.dataHash;
+        delete event.content.signature;
+        delete event.metadata;
+        delete event.repository;
+
+        event.content.idData.assetId = '{{ assetId }}';
+        event.content.idData.timestamp = '{{ timestamp }}';
+
+        event.content.data.map(item => {
+          if (item.timestamp) {
+            item.timestamp = '{{ timestamp }}';
+          }
+
+          return item;
+        });
+
+        return event;
+      });
       this.jsonEvents = JSON.stringify(this.jsonEventsRaw.data, null, 2);
     } catch (error) {
       console.error('[GET] Max events: ', error);

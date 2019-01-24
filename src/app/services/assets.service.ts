@@ -6,7 +6,6 @@ import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
-
 declare let Web3: any;
 
 @Injectable({
@@ -24,6 +23,8 @@ export class AssetsService {
     data: [],
     pagination: {},
   });
+  public asset: BehaviorSubject<any> = new BehaviorSubject({});
+  public event: BehaviorSubject<any> = new BehaviorSubject({});
   private _assetsSearch: BehaviorSubject<any> = new BehaviorSubject({
     meta: {},
     data: [],
@@ -39,7 +40,6 @@ export class AssetsService {
     address?: string,
   } = {};
   ambrosus;
-  web3;
   api;
   responses: any[] = [];
   progress: any = {
@@ -55,6 +55,10 @@ export class AssetsService {
     },
   };
   initiatedNoAssets = false;
+  json = {
+    asset: {},
+    event: {},
+  };
 
   constructor(
     private storageService: StorageService,
@@ -62,7 +66,6 @@ export class AssetsService {
     private messageService: MessageService,
   ) {
     this.initSDK();
-    this.web3 = new Web3();
     this.api = environment.api;
 
     const account: any = this.storageService.get('account') || {};
@@ -102,7 +105,7 @@ export class AssetsService {
   set events(options) {
     if (options && options.data) {
       options = JSON.parse(JSON.stringify(options));
-      options.data = this.parseTimelineEvents(options.data);
+      options.data = this.ambrosus.utils.parseTimelineEvents(options.data);
       const events = this._events.getValue();
       if (options.change === 'data' && Array.isArray(options.data)) {
         switch (options.type) {
@@ -380,7 +383,7 @@ export class AssetsService {
       );
 
       if (asset.info) {
-        asset.info = this.findEvent('info', [asset.info]);
+        asset.info = this.ambrosus.utils.findEvent('info', [asset.info]);
       }
 
       return asset;
@@ -447,7 +450,7 @@ export class AssetsService {
       );
 
       if (asset.info) {
-        asset.info = this.findEvent('info', [asset.info]);
+        asset.info = this.ambrosus.utils.findEvent('info', [asset.info]);
       }
 
       return asset;
@@ -475,11 +478,6 @@ export class AssetsService {
             return observer.error('No asset');
           }
 
-          const ids = assets.data.reduce((_ids, asset, index, array) => {
-            _ids.push(asset.assetId);
-            return _ids;
-          }, []);
-
           // Get latest info events
           url = `${this.api.extended}/event/latest/type`;
           body = {
@@ -489,11 +487,13 @@ export class AssetsService {
 
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
-              assets.data[0]['info'] = this.findEvent(
-                'info',
-                infoEvents.data,
-              );
-              this.parseAsset(assets.data[0]);
+              const info = this.ambrosus.utils.findEvent('info', infoEvents.data);
+              this.json.asset = JSON.parse(JSON.stringify(infoEvents.data[0]));
+
+              assets.data[0]['info'] = info;
+              this.ambrosus.utils.parseAsset(assets.data[0]);
+
+              this.asset.next(assets.data[0]);
 
               observer.next(assets.data[0]);
               observer.complete();
@@ -537,6 +537,7 @@ export class AssetsService {
       this.messageService.error(events.error);
       return;
     }
+    console.log('(GET) Events:', events);
 
     this.events = events;
   }
@@ -588,7 +589,11 @@ export class AssetsService {
             return observer.error('No event');
           }
 
-          observer.next(this.parseEvent(events.data[0]));
+          this.json.event = JSON.parse(JSON.stringify(events.data[0]));
+
+          this.event.next(this.ambrosus.utils.parseEvent(events.data[0]));
+          observer.next(this.ambrosus.utils.parseEvent(events.data[0]));
+          observer.complete();
         },
         error => observer.error('No event'),
       );
@@ -638,7 +643,7 @@ export class AssetsService {
 
   async createEvents(events: any[]): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const data = { created: [], errors: [] };
+      const data: any = { created: [], errors: [] };
 
       try {
         for (const event of events) {
@@ -668,21 +673,44 @@ export class AssetsService {
           this.events = data;
         }
 
+        // Update event
+        const eventData = this.event.getValue();
+        try {
+          if (data.created.length === 1 && eventData.content.idData.assetId === data.created[0].content.idData.assetId) {
+            this.event.next(this.ambrosus.utils.parseEvent(JSON.parse(JSON.stringify(data.created[0]))));
+          }
+        } catch (error) { }
+
         // Update _assets
         let assetsData = this._assets.getValue().data;
         assetsData = assetsData.map(asset => {
           const assetEvents = data.created.filter(
             _event => asset.assetId === _event.content.idData.assetId,
           );
-          const info = this.findEvent('info', assetEvents);
+          const info = this.ambrosus.utils.findEvent('info', assetEvents);
           if (info) {
             asset['info'] = info;
           }
           return asset;
         });
         const options = { change: 'data', type: 'all', data: assetsData };
-
         this.assets = options;
+
+        // Update asset
+        const assetData = this.asset.getValue();
+        try {
+          if (data.created.length === 1 && assetData.assetId === data.created[0].content.idData.assetId) {
+            const info = this.ambrosus.utils.findEvent('info', JSON.parse(JSON.stringify(data.created)));
+            const asset = {
+              info,
+              content: assetData.content,
+              metadata: assetData.metadata,
+            };
+            this.ambrosus.utils.parseAsset(asset);
+            this.asset.next(asset);
+          }
+        } catch (error) { }
+
         resolve(options);
 
         return data;
@@ -691,272 +719,5 @@ export class AssetsService {
         throw error;
       }
     });
-  }
-
-  // UTILS
-
-  getName(obj, alternative = 'No title') {
-    try {
-      const name = obj.name;
-      let type = obj.type.split('.');
-      type = type[type.length - 1];
-      return [name, type].find(i => i);
-    } catch (e) {
-      return alternative;
-    }
-  }
-
-  getUrlName(url) {
-    let name = url.split('/');
-    name = name[name.length - 1];
-    return name;
-  }
-
-  getImage(obj) {
-    try {
-      return obj.images.default.url;
-    } catch (e) {
-      return '/assets/raster/assets-image-default.png';
-    }
-  }
-
-  getLocation(event) {
-    const location = event.location || event;
-    const { city, country, name } = location;
-    return (
-      [city, country, name].filter(item => !!item).join(', ') || 'No place attached'
-    );
-  }
-
-  sortEventsByTimestamp(a, b) {
-    if (a.timestamp > b.timestamp) {
-      return -1;
-    }
-    if (a.timestamp < b.timestamp) {
-      return 1;
-    }
-    return 0;
-  }
-
-  parseEvent(event) {
-    event.info = {};
-    event.info['groups'] = [];
-    event.info['properties'] = [];
-
-    // Extract event objects
-    if (event.content.data && Array.isArray(event.content.data)) {
-      event.content.data.map((obj, index, array) => {
-        const type = obj.type.split('.');
-        obj.type = type[type.length - 1].toLowerCase();
-
-        if (obj.type === 'location' || obj.type === 'identifiers') {
-          event.info[obj.type] = obj;
-        } else {
-          event.info.name = obj.name || obj.type;
-
-          Object.keys(obj).map((key: any) => {
-            if (['images', 'documents', 'description'].indexOf(key) > -1) {
-              event.info[key] = obj[key];
-            }
-
-            if (
-              [
-                'type',
-                'name',
-                'assetType',
-                'eventId',
-                'createdBy',
-                'timestamp',
-                'location',
-                'images',
-                'documents',
-                'description',
-                'identifiers',
-                'groups',
-                'properties',
-              ].indexOf(key) === -1
-            ) {
-              const property = {
-                key,
-                value: obj[key],
-              };
-              event.info[
-                typeof property.value === 'string' ||
-                  Array.isArray(property.value)
-                  ? 'properties'
-                  : 'groups'
-              ].push(property);
-            }
-          });
-        }
-
-        return obj;
-      });
-    }
-
-    return event;
-  }
-
-  parseAsset(asset) {
-    if (!asset.info) {
-      asset.info = {};
-    }
-    asset.info['groups'] = [];
-    asset.info['properties'] = [];
-
-    Object.keys(asset.info).map((key: any) => {
-      if (key === 'location' || key === 'identifiers') {
-        asset[key] = asset.info[key];
-      } else {
-        if (
-          [
-            'type',
-            'name',
-            'assetType',
-            'images',
-            'eventId',
-            'createdBy',
-            'timestamp',
-            'groups',
-            'properties',
-          ].indexOf(key) === -1
-        ) {
-          const property = {
-            key,
-            value: asset.info[key],
-          };
-          asset.info[
-            typeof property.value === 'string' || Array.isArray(property.value)
-              ? 'properties'
-              : 'groups'
-          ].push(property);
-        }
-      }
-    });
-  }
-
-  parseTimelineEvents(e) {
-    const account: any = this.storageService.get('account') || {};
-
-    const events = e.reduce((_events, { content, eventId }) => {
-      const timestamp = content.idData.timestamp;
-      const createdBy = content.idData.createdBy;
-
-      if (content && content.data) {
-        content.data.map(obj => {
-          const parts = obj.type.split('.');
-          const type = parts[parts.length - 1];
-          const category = parts[parts.length - 2] || 'asset';
-          const namespace = parts[parts.length - 3] || 'ambrosus';
-          const ago = moment.tz(timestamp * 1000, account.timeZone || 'UTC').fromNow();
-
-          obj.timestamp = timestamp;
-          obj.createdBy = createdBy;
-          obj.name = obj.name || type;
-          obj.type = type;
-          obj.eventId = eventId;
-          obj.ago = ago;
-
-          if (obj.type === 'location' && category === 'event') {
-            content.data.reduce((location, _event) => {
-              if (_event.type !== 'location') {
-                _event.location = location;
-              }
-            }, obj);
-          }
-
-          const notInclude = ['location', 'identifier', 'identifiers'];
-          if (notInclude.indexOf(obj.type) === -1) {
-            _events.push(obj);
-          }
-
-          return obj;
-        });
-      }
-      return _events;
-    }, []);
-
-    events.sort(this.sortEventsByTimestamp);
-
-    return events;
-  }
-
-  sign(data, secret) {
-    return this.web3.eth.accounts.sign(this.serializeForHashing(data), secret).signature;
-  }
-
-  calculateHash(data) {
-    return this.web3.eth.accounts.hashMessage(this.serializeForHashing(data));
-  }
-
-  serializeForHashing(object) {
-    const isDict = subject =>
-      typeof subject === 'object' && !Array.isArray(subject);
-    const isstring = subject => typeof subject === 'string';
-    const isArray = subject => Array.isArray(subject);
-
-    if (isDict(object)) {
-      const content = Object.keys(object)
-        .sort()
-        .map(key => `"${key}":${this.serializeForHashing(object[key])}`)
-        .join(',');
-      return `{${content}}`;
-    } else if (isArray(object)) {
-      const content = object
-        .map(item => this.serializeForHashing(item))
-        .join(',');
-      return `[${content}]`;
-    } else if (isstring(object)) {
-      return `"${object}"`;
-    }
-
-    return object.toString();
-  }
-
-  validTimestamp(timestamp) {
-    return new Date(timestamp).getTime() > 0;
-  }
-
-  isLatest(type) {
-    return (['info', 'redirection', 'identifiers', 'branding', 'location'].indexOf(type) === -1);
-  }
-
-  findEvent(eventType, events) {
-    let e = false;
-    events.map(event => {
-      if (event.content.data) {
-        event.content.data.map(obj => {
-          const type = obj.type.split('.');
-          obj.type = type[type.length - 1];
-          obj.type = obj.type.toLowerCase();
-
-          if (obj.type === 'location' || obj.type === 'identifiers') {
-            event.content.data.map(_obj => {
-              if (['location', 'identifiers'].indexOf(_obj.type) === -1) {
-                _obj[obj.type === 'location' ? 'location' : 'identifiers'] = obj;
-              }
-            });
-          }
-
-          switch (eventType) {
-            case 'latest':
-              if (this.isLatest(obj.type)) {
-                e = obj;
-              }
-              break;
-            default:
-              if (obj.type === eventType) {
-                e = obj;
-              }
-          }
-
-          return obj;
-        });
-      }
-
-      return event;
-    });
-
-    return e;
   }
 }

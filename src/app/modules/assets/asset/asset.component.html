@@ -1,4 +1,4 @@
-<div class="amb">
+<div class="amb" *ngIf="asset">
   <header>
     <div class="wrapper">
       <div class="accordions">
@@ -6,7 +6,7 @@
           <div class="title" appAccordion>
             <h2 class="decoration">
               <app-svg-icon name="asset" height="40" width="40" fill="9198BB"></app-svg-icon>
-              {{ assetsService.getName(asset.info) }}
+              {{ assetsService.ambrosus.utils.getName(asset.info) }}
             </h2>
             <p class="address">{{ asset.assetId }}</p>
             <p class="createdBy">
@@ -40,7 +40,13 @@
                 </ul>
               </div>
             </div>
-            <button class="transparent" (click)="viewJSON()" style="margin-top: 15px;">{{ json || 'View as JSON' }}</button>
+            <div class="flex between" style="align-items: center; margin-top: 15px;">
+              <button class="transparent flex-0" (click)="viewJSON()">{{ json || 'View as JSON' }}</button>
+              <button class="transparent flex-0" (click)="editInfoEvent()">
+                <app-svg-icon name="edit" height="25" width="25" style="margin-right: 7px"></app-svg-icon>
+                Edit info
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -55,7 +61,7 @@
 
       <div class="flex between" style="margin-top: 40px;">
         <button class="transparent flex-0" (click)="json = ''">View as Data</button>
-        <a class="button outline flex-0" [download]="assetsService.getName(asset.info) + '.json'" [href]="downloadJSON()">
+        <a class="button outline flex-0" [download]="assetsService.ambrosus.utils.getName(asset.info) + '.json'" [href]="downloadJSON()">
           Download JSON
         </a>
       </div>
@@ -96,7 +102,7 @@
           <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
             <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>
             <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url" target="_blank">
-              {{ assetsService.getUrlName(asset.info.documents[document].url) }}
+              {{ assetsService.ambrosus.utils.getUrlName(asset.info.documents[document].url) }}
             </a>
           </li>
         </ul>
@@ -152,7 +158,7 @@
 
       <h4 *ngIf="!timeline; else timeline">No events</h4>
       <ng-template #timeline>
-        <app-events-timeline [assetId]="assetId" [name]="assetsService.getName(asset.info)"></app-events-timeline>
+        <app-events-timeline [assetId]="assetId" [name]="assetsService.ambrosus.utils.getName(asset.info)"></app-events-timeline>
       </ng-template>
     </div>
   </div>

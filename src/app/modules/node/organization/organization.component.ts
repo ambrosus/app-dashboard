@@ -43,8 +43,12 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.forms.organization = new FormGroup({
-      title: new FormControl(this.organization.title, [checkText(false)]),
-      legalAddress: new FormControl(this.organization.legalAddress, [checkText(false)]),
+      title: new FormControl(this.organization.title, [
+        checkText({ allowEmpty: false, allowDotsAndCommas: true }),
+      ]),
+      legalAddress: new FormControl(this.organization.legalAddress, [
+        checkText({ allowEmpty: false, allowDotsAndCommas: true }),
+      ]),
       owner: new FormControl({
         value: this.organization.owner,
         disabled: true,

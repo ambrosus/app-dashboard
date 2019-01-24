@@ -40,6 +40,12 @@
                 </ul>
               </div>
             </div>
+            <div class="right" style="margin-top: 15px;">
+              <button class="transparent" (click)="editEvent()">
+                <app-svg-icon name="edit" height="25" width="25" style="margin-right: 7px"></app-svg-icon>
+                Edit event
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -79,7 +85,7 @@
           <li class="property" *ngFor="let document of objectKeys(event.info.documents)">
             <h6 *ngIf="event.info?.documents[document]?.name">{{ event.info.documents[document].name }}</h6>
             <a *ngIf="event.info?.documents[document]?.url" [href]="event.info.documents[document].url" target="_blank">
-              {{ assetsService.getUrlName(event.info.documents[document].url) }}
+              {{ assetsService.ambrosus.utils.getUrlName(event.info.documents[document].url) }}
             </a>
           </li>
         </ul>
@@ -112,7 +118,7 @@
       <!-- Location -->
       <section class="decoration" *ngIf="event.info?.location">
         <app-svg-icon name="location" height="40" width="40" fill="9198BB"></app-svg-icon>
-        <h5 style="color: #00B7F9">{{ assetsService.getLocation(event.info.location) }}</h5>
+        <h5 style="color: #00B7F9">{{ assetsService.ambrosus.utils.getLocation(event.info.location) }}</h5>
         <ul class="properties">
           <li *ngFor="let key of objectKeys(event.info.location)">
             <h6>{{ key }}</h6>
