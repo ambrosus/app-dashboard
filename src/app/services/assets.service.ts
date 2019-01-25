@@ -488,7 +488,7 @@ export class AssetsService {
           this.http.post(url, body).subscribe(
             (infoEvents: any) => {
               const info = this.ambrosus.utils.findEvent('info', infoEvents.data);
-              this.json.asset = JSON.parse(JSON.stringify(infoEvents.data[0]));
+              this.json.asset = JSON.parse(JSON.stringify(infoEvents.data[0] || {}));
 
               assets.data[0]['info'] = info;
               this.ambrosus.utils.parseAsset(assets.data[0]);
