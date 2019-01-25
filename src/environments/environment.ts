@@ -22,7 +22,7 @@ try {
     dev = true;
     prod = false;
     // Fix for now, for dev working against -test
-    core = 'https://hermes.ambrosus-dev.com';
+    core = 'https://hermes.ambrosus-test.com';
   }
   if (core.indexOf('-test') > -1) {
     test = true;
