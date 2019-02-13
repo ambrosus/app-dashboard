@@ -36,6 +36,8 @@ export class DashboardComponent implements OnInit {
   };
   web3;
 
+  string = String;
+
   constructor(
     private el: ElementRef,
     private analytisService: AnalyticsService,
