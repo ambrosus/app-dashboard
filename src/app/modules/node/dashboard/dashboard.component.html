@@ -16,7 +16,7 @@
             <h2>{{ metrics.amb.price_usd | number: '1.3-4' }} <small style="color: #999">USD</small></h2>
             <p>
               amb price in 24h
-              <span [style.color]="metrics.amb.percent_change_24h.charAt(0) === '-' ? '#ff5c00' : '#40d685'">
+              <span [style.color]="string(metrics.amb.percent_change_24h).charAt(0) === '-' ? '#ff5c00' : '#40d685'">
                 {{ metrics.amb.percent_change_24h }}%
               </span>
             </p>
