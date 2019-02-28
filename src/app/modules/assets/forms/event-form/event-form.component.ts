@@ -46,8 +46,8 @@ export class EventFormComponent implements OnInit {
     const account: any = this.storageService.get('account') || {};
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_event') > -1;
 
-    this.assetIds = this.assetIds || this.data.assetIds;
-    this.prefill = this.prefill || this.data.prefill;
+    this.assetIds = this.assetIds || this.data && this.data.assetIds;
+    this.prefill = this.prefill || this.data && this.data.prefill;
 
     this.initForm();
     if (this.prefill) {

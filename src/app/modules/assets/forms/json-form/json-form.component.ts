@@ -52,9 +52,10 @@ export class JsonFormComponent implements OnInit {
       this.hasPermission = this.hasPermission && account.permissions.indexOf('create_event') > -1;
     }
 
-    this.assetIds = this.data.assetIds || [this.data.assetId] || this.assetIds;
-    this.for = this.for || this.data.for;
-    this.prefill = this.prefill || this.data.prefill;
+    this.assetIds = this.data && (this.data.assetIds || [this.data.assetId]) || this.assetIds;
+    this.for = this.for || this.data && this.data.for;
+    this.prefill = this.prefill || this.data && this.data.prefill;
+
     if (this.prefill) {
       this.prefillForm();
     }

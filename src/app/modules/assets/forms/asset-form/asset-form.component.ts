@@ -53,8 +53,8 @@ export class AssetFormComponent implements OnInit {
     const account: any = this.storageService.get('account') || {};
     this.hasPermission = account.permissions && Array.isArray(account.permissions) && account.permissions.indexOf('create_asset') > -1;
 
-    this.assetId = this.assetId || this.data.assetId;
-    this.prefill = this.prefill || this.data.prefill;
+    this.assetId = this.assetId || this.data && this.data.assetId;
+    this.prefill = this.prefill || this.data && this.data.prefill;
 
     this.initForm();
     if (this.prefill) {
