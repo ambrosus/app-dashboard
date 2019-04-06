@@ -41,9 +41,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
       ]),
       timeZone: new FormControl('', [checkTimeZone(false)]),
       legalAddress: new FormControl('', [checkText({ allowEmpty: false, allowDotsAndCommas: true })]),
-      logo: new FormControl(''),
-      colorPrimary: new FormControl(''),
-      colorSecondary: new FormControl(''),
+      logo: new FormControl(),
+      colorPrimary: new FormControl(),
+      colorSecondary: new FormControl(),
       active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();
