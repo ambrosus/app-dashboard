@@ -85,22 +85,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
         const body = {
           active: data.active,
         };
-        if (data.logo) {
-          body['logo'] = data.logo;
-        }
-        if (data.colorPrimary) {
-          body['colorPrimary'] = data.colorPrimary;
-        }
-        if (data.colorSecondary) {
-          body['colorSecondary'] = data.colorSecondary;
-        }
 
         if (form.invalid) {
           throw new Error('Please fill all required fields');
         }
 
         Object.keys(data).map(prop => {
-          if (data[prop] && (data[prop] !== this.organization[prop])) {
+          if (!this.organization[prop] || (data[prop] && data[prop] !== this.organization[prop])) {
             body[prop] = data[prop];
           }
         });
