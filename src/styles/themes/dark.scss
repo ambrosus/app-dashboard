@@ -57,7 +57,7 @@
     color: #fff;
   }
 
-  input:not([type='checkbox']),
+  input:not([type='checkbox']):not([type='color']),
   .input,
   textarea {
     color: #fff;
@@ -90,7 +90,7 @@
     &.error {
       color: $dark-red;
 
-      input:not([type='checkbox']),
+      input:not([type='checkbox']):not([type='color']),
       .input,
       textarea {
         border-color: $dark-red !important;

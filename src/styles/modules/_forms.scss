@@ -283,7 +283,13 @@
     }
   }
 
-  input:not([type='checkbox']),
+  input[type='color'] {
+    display: block;
+    width: 90px;
+    height: 24px;
+  }
+
+  input:not([type='checkbox']):not([type='color']),
   .input,
   textarea {
     font-family: 'Rubiko', sans-serif;

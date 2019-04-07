@@ -45,6 +45,21 @@
             </datalist>
           </label>
         </div>
+        <h4 style="margin-bottom: 20px;">Branding</h4>
+        <label>
+          <span>Logo</span>
+          <input type="text" formControlName="logo">
+        </label>
+        <div class="group">
+          <label class="w50">
+            <span>Primary color</span>
+            <input type="color" formControlName="colorPrimary">
+          </label>
+          <label class="w50">
+            <span>Secondary color</span>
+            <input type="color" formControlName="colorSecondary">
+          </label>
+        </div>
         <label style="display: inline;">
           <input type="checkbox" formControlName="active" appCustomCheckbox />
           Active

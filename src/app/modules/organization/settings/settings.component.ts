@@ -41,6 +41,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
       ]),
       timeZone: new FormControl('', [checkTimeZone(false)]),
       legalAddress: new FormControl('', [checkText({ allowEmpty: false, allowDotsAndCommas: true })]),
+      logo: new FormControl(),
+      colorPrimary: new FormControl(),
+      colorSecondary: new FormControl(),
       active: new FormControl(this.organization.active),
     });
     this.getOrganization().then();
@@ -64,6 +67,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
       form.get('title').setValue(this.organization.title);
       form.get('timeZone').setValue(this.organization.timeZone);
       form.get('legalAddress').setValue(this.organization.legalAddress);
+      form.get('logo').setValue(this.organization.logo);
+      form.get('colorPrimary').setValue(this.organization.colorPrimary);
+      form.get('colorSecondary').setValue(this.organization.colorSecondary);
       form.get('active').setValue(this.organization.active);
     } catch (error) {
       console.error('[GET] Organization: ', error);
@@ -85,7 +91,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
         }
 
         Object.keys(data).map(prop => {
-          if (data[prop] && (data[prop] !== this.organization[prop])) {
+          if (!this.organization[prop] || (data[prop] && data[prop] !== this.organization[prop])) {
             body[prop] = data[prop];
           }
         });
