@@ -124,7 +124,7 @@ export class EventFormComponent implements OnInit {
       if (info.location) {
         const formLocation = form.get('location');
         const lat = info.location.geoJson ? info.location.geoJson.coordinates[0] : info.location.location.geometry.coordinates[0];
-        const lng = info.location.geoJson ? info.location.geoJson.coordinates[0] : info.location.location.geometry.coordinates[0];
+        const lng = info.location.geoJson ? info.location.geoJson.coordinates[1] : info.location.location.geometry.coordinates[1];
 
         formLocation.get('lat').setValue(lat);
         formLocation.get('lng').setValue(lng);
