@@ -70,7 +70,7 @@ export class EventComponent implements OnInit, OnDestroy {
         try {
           this.location = {
             lat: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
-            lng: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
+            lng: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[1] : this.event.info.location.location.geometry.coordinates[1],
           };
           delete this.event.info.location.type;
           delete this.event.info.location.location;

@@ -18,8 +18,6 @@ try {
   if (core.indexOf('-dev') > -1) {
     dev = true;
     prod = false;
-    // Fix for now, for dev working against -test
-    core = 'https://hermes.ambrosus-test.com';
   }
   if (core.indexOf('-test') > -1) {
     test = true;
@@ -28,7 +26,7 @@ try {
 } catch (error) { }
 
 if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
-  core = 'https://hermes.ambrosus-test.com';
+  core = 'https://hermes.ambrosus-dev.com';
   dev = true;
   prod = false;
   ambrosus = true;
