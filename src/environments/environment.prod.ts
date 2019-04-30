@@ -36,7 +36,7 @@ export const environment = {
   production: true,
   api: {
     core,
-    extended: `http://localhost:3000`,
+    extended: `${core}/extended`,
   },
   test,
   prod,
