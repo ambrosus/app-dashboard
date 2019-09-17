@@ -99,7 +99,7 @@ export class OrganizationsService {
      })
     };
 
-    const organizationRequest = await this.to(this.http.post(url, body));
+    const organizationRequest = await this.to(this.http.post(url, body, httpOptions));
     if (organizationRequest.error) {
       throw organizationRequest.error;
     }
