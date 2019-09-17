@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { MessageService } from './message.service';
-import { HttpHeaders } from '@angular/common/http';
 
 interface Organization {
   _id?: string;
@@ -92,14 +91,7 @@ export class OrganizationsService {
   async createOrganizationRequest(body: OrganizationRequest): Promise<any> {
     const url = `${this.api.extended}/organization/request`;
 
-    const httpOptions = {
-     headers: new HttpHeaders({
-      'Content-Type':  'application/json',
-      'Access-Control-Allow-Origin': '*'
-     })
-    };
-
-    const organizationRequest = await this.to(this.http.post(url, body, httpOptions));
+    const organizationRequest = await this.to(this.http.post(url, body));
     if (organizationRequest.error) {
       throw organizationRequest.error;
     }
