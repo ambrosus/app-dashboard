@@ -23,11 +23,16 @@ let ambrosus = false;
 
 try {
   core = location.hostname.split('.');
+
+  console.log(test1)
+
   if (core.length === 3) {
     core = [core[0].split('-')[1], ...core.slice(1)];
   } else {
     core.shift();
   }
+
+  console.log(core)
 
   if (['ambrosus', 'ambrosus-dev', 'ambrosus-test'].indexOf(core[core.length - 2]) > -1) {
     ambrosus = true;
