@@ -40,7 +40,7 @@ export const environment = {
   production: true,
   api: {
     core,
-    extended: `${core}/extended`,
+    extended: `${core}`,
   },
   test,
   prod,
