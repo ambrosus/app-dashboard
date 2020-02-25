@@ -1,0 +1,14 @@
+FROM node:10-alpine as builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run buildnop
+
+FROM busybox
+COPY --from=builder /app/dist /var/www/dashboard
+
+VOLUME /var/www/dashboard
+CMD ["sleep", "infinity"]

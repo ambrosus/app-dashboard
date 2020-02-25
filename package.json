@@ -1,11 +1,12 @@
 {
   "name": "dashboard",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "server.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot",
     "build": "ng build --prod --aot",
+    "buildnop": "ng build --prod --aot --base-href /dashboard/",
     "test": "ng test",
     "lint": "nodemon --exec \"ng lint || exit 1\" --ext ts,html,scss",
     "e2e": "ng e2e",
