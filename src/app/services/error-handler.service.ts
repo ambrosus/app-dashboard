@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/browser';
 @Injectable({
   providedIn: 'root',
 })
+
 export class ErrorHandlerService implements ErrorHandler {
 
   constructor() { }

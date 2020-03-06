@@ -611,7 +611,7 @@ export class AssetsService {
       try {
         await this.wait();
 
-        const url = `${this.api.core}/assets`;
+        const url = `${this.api.extended}/asset2/create/${asset.assetId}`;
         const data = { created: [], errors: [] };
 
         const assetCreated = await this.to(this.http.post(url, asset));
@@ -648,8 +648,8 @@ export class AssetsService {
       try {
         for (const event of events) {
           await this.wait();
-
-          const url = `${this.api.core}/assets/${event.content.idData.assetId}/events`;
+          
+          const url = `${this.api.extended}/event2/create/${event.eventId}`;
 
           const eventCreated = await this.to(this.http.post(url, event));
 
