@@ -49,7 +49,7 @@ try {
   }
 
   core = core.join('.');
-  core = 'http://'+location.host;
+  core = 'http://' + location.host;
 
   if (core.indexOf('-dev') > -1) {
     dev = true;
@@ -79,6 +79,3 @@ export const environment = {
   dev,
   ambrosus,
 };
-
-console.log('PROD-ENV core '+environment.api.core);
-console.log('PROD-ENV extended '+environment.api.extended);
