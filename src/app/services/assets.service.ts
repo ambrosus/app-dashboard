@@ -648,7 +648,7 @@ export class AssetsService {
       try {
         for (const event of events) {
           await this.wait();
-          
+
           const url = `${this.api.extended}/event2/create/${event.eventId}`;
 
           const eventCreated = await this.to(this.http.post(url, event));
