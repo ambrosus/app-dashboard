@@ -49,7 +49,7 @@ try {
   }
 
   core = core.join('.');
-  core = 'http://' + location.host;
+  core = `${location.protocol}//${location.host}`;
 
   if (core.indexOf('-dev') > -1) {
     dev = true;
