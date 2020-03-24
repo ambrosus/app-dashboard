@@ -45,7 +45,7 @@ if (ambrosus) {
     CoreModule,
     AssetsModule,
     SharedModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', {
+    ServiceWorkerModule.register('/dashboard/ngsw-worker.js', {
       enabled: environment.production,
     }),
     MatSnackBarModule,
