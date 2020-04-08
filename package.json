@@ -5,12 +5,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot",
-    "build": "ng build --prod --aot",
-    "buildnop": "ng build --prod --aot --base-href /dashboard/",
+    "build": "ng build --prod --aot --base-href /dashboard/",
     "test": "ng test",
     "lint": "nodemon --exec \"ng lint || exit 1\" --ext ts,html,scss",
     "e2e": "ng e2e",
-    "postinstall": "ng build --prod --output-path=dist --aot"
+    "postinstall": "ng build --prod --output-path=dist --aot --base-href /dashboard/"
   },
   "private": true,
   "dependencies": {
