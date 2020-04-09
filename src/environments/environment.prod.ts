@@ -68,6 +68,11 @@ if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
   ambrosus = true;
 }
 
+const custom_core = '{HERMES_URL}';
+if (custom_core) {
+  core = custom_core;
+}
+
 export const environment = {
   production: true,
   api: {

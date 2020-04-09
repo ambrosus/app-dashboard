@@ -5,7 +5,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run buildnop
+RUN npm run build
 
 FROM busybox
 COPY --from=builder /app/dist /var/www/dashboard
