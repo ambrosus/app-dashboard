@@ -10,7 +10,6 @@
     "lint": "nodemon --exec \"ng lint || exit 1\" --ext ts,html,scss",
     "e2e": "ng e2e",
     "updateEnv": "node update-env.js",
-    "postinstall": "ng build --prod --output-path=dist --aot --base-href /dashboard/"
   },
   "private": true,
   "dependencies": {
