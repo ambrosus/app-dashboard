@@ -18,7 +18,7 @@ export class SvgIconComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.path = this.url ? this.url : `/dashboard/assets/svg/${this.name}.svg`;
+    this.path = this.url ? this.url : `./assets/svg/${this.name}.svg`;
     this.loadSvg();
   }
 
