@@ -7,10 +7,13 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class GettingStartedComponent implements OnInit {
-
   constructor() { }
 
   ngOnInit() {
+  }
+
+  getSignUpUrl() {
+    return `${window.location.origin}/signup`;
   }
 
 }
