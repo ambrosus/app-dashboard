@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . ./
 
+RUN npm run updateEnv
 RUN npm run build
 
 FROM nginx:1.15.5-alpine
