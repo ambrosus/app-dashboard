@@ -198,7 +198,7 @@
               border-radius: 50%;
               position: relative;
               background-color: #eee;
-              background-image: url('./assets/raster/account-image-default.png');
+              background-image: url('/assets/raster/account-image-default.png');
               background-size: cover;
               background-repeat: no-repeat;
               background-position: 50%;
@@ -273,7 +273,7 @@
     background-size: cover;
     background-position: 50%;
     background-color: #eee;
-    background-image: url('./assets/raster/account-image-default.png');
+    background-image: url('/assets/raster/account-image-default.png');
     margin-right: 15px;
   }
 
