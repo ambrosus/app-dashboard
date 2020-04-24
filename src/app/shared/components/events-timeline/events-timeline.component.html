@@ -6,7 +6,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at h
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
 <ul *ngIf="(assetsService.events | async).data.length">
-  <li class="event" *ngFor="let event of (assetsService.events | async).data" [routerLink]="'/assets/' + assetId + '/events/' + event.eventId">
+  <li class="event" *ngFor="let event of (assetsService.events | async).data" [routerLink]="'./assets/' + assetId + '/events/' + event.eventId">
     <div class="pin">
       <div class="icon"></div>
       <span class="ago">{{ event.ago }}</span>

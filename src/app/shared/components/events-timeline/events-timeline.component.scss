@@ -42,7 +42,7 @@ app-events-timeline {
         > .icon {
           width: 40px;
           height: 40px;
-          background-image: url('/assets/svg/event-color.svg');
+          background-image: url('./assets/svg/event-color.svg');
           background-size: contain;
           background-repeat: no-repeat;
           background-position: 50%;
@@ -60,7 +60,7 @@ app-events-timeline {
         > .pin {
 
           > .icon {
-            background-image: url('/assets/svg/asset-darker.svg');
+            background-image: url('./assets/svg/asset-darker.svg');
           }
         }
       }
@@ -137,7 +137,7 @@ app-events-timeline {
           border-radius: 50%;
           position: relative;
           background-color: #eee;
-          background-image: url('/assets/raster/account-image-default.png');
+          background-image: url('./assets/raster/account-image-default.png');
           background-size: cover;
           background-repeat: no-repeat;
           background-position: 50%;

@@ -12,7 +12,7 @@ export class IconLeftDirective implements OnInit {
   constructor(private http: HttpClient, private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
-    this.path = `/assets/svg/${this.appIconLeft}.svg`;
+    this.path = `./assets/svg/${this.appIconLeft}.svg`;
     this.loadIcon();
   }
 
@@ -42,7 +42,7 @@ export class IconRightDirective implements OnInit {
   constructor(private http: HttpClient, private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
-    this.path = `/assets/svg/${this.appIconRight}.svg`;
+    this.path = `./assets/svg/${this.appIconRight}.svg`;
     this.loadIcon();
   }
 

@@ -36,13 +36,13 @@
         <div class="table" formArrayName="assets">
           <div class="item" [ngClass]="{ selected: asset.value.selected }" *ngFor="let asset of forms.table.get('assets')['controls']; let i = index" [formGroupName]="i">
             <header>
-              <label class="image" [style.backgroundImage]="'url(' + (assetsService.ambrosus.utils.getImage(asset.value.info) || '/dashboard/assets/raster/assets-image-default.png') + ')'">
+              <label class="image" [style.backgroundImage]="'url(' + (assetsService.ambrosus.utils.getImage(asset.value.info) || './assets/raster/assets-image-default.png') + ')'">
                 <input formControlName="selected" type="checkbox" />
               </label>
             </header>
             <main>
               <div>
-                <a routerLink="/assets/{{ asset.value.assetId }}">
+                <a routerLink="./assets/{{ asset.value.assetId }}">
                   <h5 class="title">
                     {{ assetsService.ambrosus.utils.getName(asset.value.info) }}
                   </h5>
