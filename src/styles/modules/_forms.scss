@@ -7,7 +7,7 @@
   .media {
     position: relative;
 
-    > input {
+    input {
       padding-right: 50px !important;
     }
 
@@ -25,6 +25,71 @@
 
     > div {
       margin-top: 10px;
+    }
+
+    .or {
+      font-size: 18px;
+      color: $black;
+      padding-bottom: 10px;
+    }
+
+    .downloadRow{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .download {
+        padding: 10px;
+        font-size: 16px;
+        color: $white;
+        text-align: center;
+        margin: 0 auto;
+        background: linear-gradient(90deg, $dark-blue 0%, $dark-purple 100%);
+        border-radius: 20px;
+        border: 1px solid $purple-blue;
+        cursor: pointer;
+      }
+
+      .rowFiles {
+        width: 100%;
+        margin-top: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        .fileWrapper {
+          margin: 0 20px 10px;
+        }
+
+        li .fileImg{
+          width: 75px;
+          height: 75px;
+          background-image: url("/assets/svg/document.svg");
+          background-repeat: no-repeat;
+        }
+
+        li p{
+          width: 75px;
+          font-size: 10px;
+          text-align: center;
+        }
+
+        @media (max-width: 480px) {
+          .fileWrapper {
+            margin: 0 15px 7px;
+          }
+
+          li .fileImg{
+            width: 50px;
+            height: 50px;
+          }
+
+          li p{
+            width: 50px;
+            font-size: 8px;
+          }
+        }
+      }
     }
   }
 
