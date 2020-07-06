@@ -43,7 +43,8 @@ export class AssetFormComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
+  ) {
+  }
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
@@ -122,6 +123,7 @@ export class AssetFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       images: new FormArray([]),
+      rows: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -191,6 +193,51 @@ export class AssetFormComponent implements OnInit {
       );
     }
     input.value = '';
+  }
+
+  async addRowUrl(input) {
+    const value = input.value;
+    let name = value.split('/');
+    name = name[name.length - 1];
+
+    const blob = await fetch(input.value)
+      .then(res => res.blob());
+
+    if (blob.type === 'text/html') {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+      if (value) {
+        (<FormArray>this.forms.asset.get('rows')).push(
+          new FormGroup({
+            name: new FormControl(name, []),
+            data: new FormControl(reader.result, []),
+            type: new FormControl(blob.type, []),
+          }),
+        );
+      }
+    };
+
+    input.value = '';
+  }
+
+  async addRowFile(input) {
+    const blob = input.path[0].files[0];
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+        (<FormArray>this.forms.asset.get('rows')).push(
+          new FormGroup({
+            name: new FormControl(blob.name, []),
+            data: new FormControl(reader.result, []),
+            type: new FormControl(blob.type, []),
+          }),
+        );
+    };
   }
 
   addIdentifier(name = null, value = null) {
