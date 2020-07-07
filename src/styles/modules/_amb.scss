@@ -152,6 +152,26 @@
         background-repeat: no-repeat;
       }
     }
+
+    .rows {
+
+      .rowsWrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+
+        .file {
+          margin-bottom: 10px;
+          width: 75px;
+          height: 75px;
+          background-image: url("/assets/svg/document.svg");
+          background-repeat: no-repeat;
+        }
+
+        .fileName {
+          text-align: center;
+        }
+      }
+    }
   }
 
   > header {

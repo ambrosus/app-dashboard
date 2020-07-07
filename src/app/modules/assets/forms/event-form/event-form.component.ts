@@ -184,6 +184,7 @@ export class EventFormComponent implements OnInit {
       accessLevel: new FormControl(0, []),
       documents: new FormArray([]),
       images: new FormArray([]),
+      rows: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),

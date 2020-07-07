@@ -61,7 +61,8 @@
 
       <div class="flex between" style="margin-top: 40px;">
         <button class="transparent flex-0" (click)="json = ''">View as Data</button>
-        <a class="button outline flex-0" [download]="assetsService.ambrosus.utils.getName(asset.info) + '.json'" [href]="downloadJSON()">
+        <a class="button outline flex-0" [download]="assetsService.ambrosus.utils.getName(asset.info) + '.json'"
+           [href]="downloadJSON()">
           Download JSON
         </a>
       </div>
@@ -74,7 +75,22 @@
 
       <!-- Images -->
       <section class="images" *ngIf="asset.info?.images" style="margin-bottom: 25px;">
-        <div class="image" *ngFor="let image of objectKeys(asset.info.images)" [style.backgroundImage]="sanitizeUrl(asset.info.images[image]['url'])"></div>
+        <div class="image" *ngFor="let image of objectKeys(asset.info.images)"
+             [style.backgroundImage]="sanitizeUrl(asset.info.images[image]['url'])">
+        </div>
+      </section>
+
+      <!-- Rows -->
+      <section class="rows" *ngIf="asset.info?.rows" style="margin-bottom: 25px;">
+        <h5>Rows</h5>
+        <div class="rowsWrapper">
+          <div *ngFor="let row of asset.info.rows">
+            <div class="file"></div>
+            <a class="fileName" href="{{row.data}}" download="{{row.name}}">
+              {{row.name.length > 20 ? row.name.substring(0, 17) + '...' : row.name}}
+            </a>
+          </div>
+        </div>
       </section>
 
       <!-- Description -->
@@ -113,8 +129,17 @@
         <h5>Properties</h5>
         <ul class="properties">
           <li *ngFor="let property of asset.info.properties">
-            <h6 *ngIf="!isArray(property.value)">{{ property.key }}</h6>
-            <p [ngClass]="{ 'json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></p>
+            <h6 *ngIf="!isArray(property.value)">
+              {{ property.key }}
+            </h6>
+            <p [ngClass]="{ 'json': isObject(property.value) }"
+               [innerHtml]="
+                 property.key === 'rows' ? '' :
+                 isObject(property.value)
+               ? valueJSON(stringify(property.value, null, 5))
+               : property.value"
+            >
+            </p>
           </li>
         </ul>
       </section>
@@ -122,11 +147,16 @@
       <section class="groups" *ngIf="asset.info?.groups && asset.info.groups.length">
         <div class="group" *ngFor="let group of asset.info.groups">
           <h5>{{ group.key }}</h5>
-
           <ul class="properties">
             <li *ngFor="let property of objectKeys(group.value)">
-              <h6 *ngIf="!isArray(group.value[property])">{{ property }}</h6>
-              <p [ngClass]="{ 'json': isObject(group.value[property]) }" [innerHtml]="isObject(group.value[property]) ? valueJSON(stringify(group.value[property], null, 5)) : group.value[property]"></p>
+              <h6 *ngIf="!isArray(group.value[property])">
+                {{ property }}
+              </h6>
+              <p [ngClass]="{ 'json': isObject(group.value[property]) }"
+                 [innerHtml]="isObject(group.value[property])
+                 ? valueJSON(stringify(group.value[property], null, 5))
+                 : group.value[property]">
+              </p>
             </li>
           </ul>
         </div>
@@ -135,7 +165,8 @@
       <!-- QR code -->
       <section class="flex decoration">
         <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
-        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
+        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode
+                     (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
         <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba;">
           Check on amb.to
         </a>
@@ -151,14 +182,18 @@
             <h2>Events</h2>
           </div>
           <div class="flex-0">
-            <button type="button" class="outline" *ngIf="account.permissions && account.permissions.indexOf('create_event') > -1" (click)="openAddEventDialog()">Add event</button>
+            <button type="button" class="outline"
+                    *ngIf="account.permissions && account.permissions.indexOf('create_event') > -1"
+                    (click)="openAddEventDialog()">Add event
+            </button>
           </div>
         </div>
       </header>
 
       <h4 *ngIf="!timeline; else timeline">No events</h4>
       <ng-template #timeline>
-        <app-events-timeline [assetId]="assetId" [name]="assetsService.ambrosus.utils.getName(asset.info)"></app-events-timeline>
+        <app-events-timeline [assetId]="assetId"
+                             [name]="assetsService.ambrosus.utils.getName(asset.info)"></app-events-timeline>
       </ng-template>
     </div>
   </div>

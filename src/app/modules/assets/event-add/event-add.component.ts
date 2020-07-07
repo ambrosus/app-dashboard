@@ -24,7 +24,7 @@ export class EventAddComponent implements OnInit {
   ngOnInit() { }
 
   tabOpen(open, element) {
-    this.json = open === 'form' ? false : true;
+    this.json = open !== 'form';
     const tabHeaderItems = this.el.nativeElement.querySelectorAll('.tab_header_item');
     for (const item of tabHeaderItems) {
       this.renderer.removeClass(item, 'active');

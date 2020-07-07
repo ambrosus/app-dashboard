@@ -228,15 +228,15 @@ export class AssetFormComponent implements OnInit {
     const blob = input.path[0].files[0];
 
     const reader = new FileReader();
-    reader.readAsDataURL(blob);
+    await reader.readAsDataURL(blob);
     reader.onloadend = () => {
-        (<FormArray>this.forms.asset.get('rows')).push(
-          new FormGroup({
-            name: new FormControl(blob.name, []),
-            data: new FormControl(reader.result, []),
-            type: new FormControl(blob.type, []),
-          }),
-        );
+      (<FormArray>this.forms.asset.get('rows')).push(
+        new FormGroup({
+          name: new FormControl(blob.name, []),
+          data: new FormControl(reader.result, []),
+          type: new FormControl(blob.type, []),
+        }),
+      );
     };
   }
 
@@ -352,7 +352,7 @@ export class AssetFormComponent implements OnInit {
     const images = assetForm.images;
     if (images.length > 0) {
       const _images = {};
-      images.map((image, index, array) => {
+      images.forEach(image => {
         if (image.name && image.url) {
           _images[image.name] = {};
           _images[image.name]['url'] = image.url;
@@ -362,6 +362,11 @@ export class AssetFormComponent implements OnInit {
       if (Object.keys(_images).length) {
         info['images'] = _images;
       }
+    }
+
+    // Rows
+    if (assetForm.rows.length > 0) {
+      info['rows'] = assetForm.rows;
     }
 
     // Properties
