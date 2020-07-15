@@ -11,16 +11,26 @@
       padding-right: 50px !important;
     }
 
+    .inputError {
+      border-color: red !important;
+    }
+
     > h5 {
       margin: 50px 0 25px;
     }
 
     > .addMedia {
       font-weight: 500;
-      color: $light-blue;
+      color: $light-grey;
       position: absolute;
       top: 55px;
       right: 15px;
+      cursor: default;
+    }
+
+    > .activeAddMedia {
+      cursor: pointer;
+      color: $light-blue;
     }
 
     > div {

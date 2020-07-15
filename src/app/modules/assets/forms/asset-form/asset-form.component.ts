@@ -8,6 +8,7 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import isUrl from 'is-url';
 
 @Component({
   selector: 'app-asset-form',
@@ -175,15 +176,35 @@ export class AssetFormComponent implements OnInit {
     (<FormArray>this.forms.asset.get(array)).removeAt(index);
   }
 
+  addUrl(e, id, type) {
+    const { target, target: { value } } = e;
+
+    if (value) {
+      if ((!isUrl(value) && !isUrl('http://' + value)) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
+        target.classList.add('inputError');
+        document.querySelector('#' + id).classList.remove('activeAddMedia');
+        return;
+      }
+      document.querySelector('#' + id).classList.add('activeAddMedia');
+    } else {
+      document.querySelector('#' + id).classList.remove('activeAddMedia');
+    }
+
+    e.target.classList.remove('inputError');
+  }
+
   addImage(input) {
     const value = input.value;
     const form = this.forms.asset.value;
     let name = value.split('/');
+
     name = form.images.length ? name[name.length - 1] : 'default';
+
     if (name !== 'default') {
       name = name.split('.');
       name = name[0];
     }
+
     if (value) {
       (<FormArray>this.forms.asset.get('images')).push(
         new FormGroup({
@@ -197,31 +218,20 @@ export class AssetFormComponent implements OnInit {
 
   async addRowUrl(input) {
     const value = input.value;
-    let name = value.split('/');
-    name = name[name.length - 1];
 
-    const blob = await fetch(input.value)
-      .then(res => res.blob());
+    if (value) {
+      let name = value.split('/');
+      name = name[name.length - 1];
 
-    if (blob.type === 'text/html') {
-      return;
+      (<FormArray>this.forms.asset.get('rows')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          data: new FormControl(value, []),
+          type: new FormControl('url', []),
+        }),
+      );
+      input.value = '';
     }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = () => {
-      if (value) {
-        (<FormArray>this.forms.asset.get('rows')).push(
-          new FormGroup({
-            name: new FormControl(name, []),
-            data: new FormControl(reader.result, []),
-            type: new FormControl(blob.type, []),
-          }),
-        );
-      }
-    };
-
-    input.value = '';
   }
 
   async addRowFile(input) {

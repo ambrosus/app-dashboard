@@ -86,7 +86,11 @@
         <div class="rowsWrapper">
           <div *ngFor="let row of asset.info.rows">
             <div class="file"></div>
-            <a class="fileName" href="{{row.data}}" download="{{row.name}}">
+            <a class="fileName"
+               href="{{row.data}}"
+               download="{{row.name}}"
+               target="_blank"
+            >
               {{row.name.length > 20 ? row.name.substring(0, 17) + '...' : row.name}}
             </a>
           </div>
@@ -113,7 +117,6 @@
       <!-- Documents -->
       <section *ngIf="asset.info?.documents">
         <h5>Documents</h5>
-
         <ul class="properties">
           <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
             <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>

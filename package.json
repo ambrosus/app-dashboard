@@ -37,6 +37,7 @@
     "animate.css": "^3.7.0",
     "core-js": "^2.5.7",
     "downloadjs": "^1.4.7",
+    "is-url": "^1.2.4",
     "moment": "2.23.0",
     "moment-timezone": "0.5.23",
     "normalize.css": "^8.0.0",

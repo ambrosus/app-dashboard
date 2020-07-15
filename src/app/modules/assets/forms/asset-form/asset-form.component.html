@@ -31,8 +31,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
     <div formArrayName="images" class="media">
       <h5>Images</h5>
-      <input type="url" placeholder="Enter an image url" #imageInput>
-      <a class="addMedia" (click)="addImage(imageInput)">Add</a>
+      <input (keyup)="addUrl($event, 'addImage', 'image')"
+             (change)="addUrl($event, 'addImage', 'image')"
+             type="url"
+             placeholder="Enter an image url" #imageInput>
+      <a id="addImage" class="addMedia" (click)="addImage(imageInput)">
+        Add
+      </a>
       <div class="image-preview">
         <div *ngFor="let image of forms.asset.value.images; let i = index"
              [formGroupName]="i"
@@ -43,11 +48,19 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
 
     <div formArrayName="rows" class="media">
-      <h5>Rows</h5>
+      <h5>
+        Rows
+      </h5>
       <label>
-        <input type="url" placeholder="Enter a row url" #rowInput>
+        <input (change)="addUrl($event, 'addRow','file')"
+               (keyup)="addUrl($event, 'addRow','file')"
+               type="url"
+               placeholder="Enter a row url"
+               #rowInput>
       </label>
-      <a class="addMedia" (click)="addRowUrl(rowInput)">Add</a>
+      <a id="addRow" class="addMedia" (click)="addRowUrl(rowInput)">
+        Add
+      </a>
       <div class="downloadRow">
         <p class="or">
           or
