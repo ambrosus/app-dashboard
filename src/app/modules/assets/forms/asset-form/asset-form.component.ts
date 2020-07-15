@@ -124,7 +124,7 @@ export class AssetFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       images: new FormArray([]),
-      rows: new FormArray([]),
+      raws: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -216,14 +216,14 @@ export class AssetFormComponent implements OnInit {
     input.value = '';
   }
 
-  async addRowUrl(input) {
+  async addRawUrl(input) {
     const value = input.value;
 
     if (value) {
       let name = value.split('/');
       name = name[name.length - 1];
 
-      (<FormArray>this.forms.asset.get('rows')).push(
+      (<FormArray>this.forms.asset.get('raws')).push(
         new FormGroup({
           name: new FormControl(name, []),
           data: new FormControl(value, []),
@@ -234,14 +234,14 @@ export class AssetFormComponent implements OnInit {
     }
   }
 
-  async addRowFile(input) {
+  async addRawFile(input) {
     const blob = input.path[0].files[0];
 
     const reader = new FileReader();
     await reader.readAsDataURL(blob);
 
     reader.onloadend = () => {
-      (<FormArray>this.forms.asset.get('rows')).push(
+      (<FormArray>this.forms.asset.get('raws')).push(
         new FormGroup({
           name: new FormControl(blob.name, []),
           data: new FormControl(reader.result, []),
@@ -377,9 +377,9 @@ export class AssetFormComponent implements OnInit {
       }
     }
 
-    // Rows
-    if (assetForm.rows.length > 0) {
-      info['rows'] = assetForm.rows;
+    // Raws
+    if (assetForm.raws.length > 0) {
+      info['raws'] = assetForm.raws;
     }
 
     // Properties

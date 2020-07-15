@@ -47,30 +47,30 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       </div>
     </div>
 
-    <div formArrayName="rows" class="media">
+    <div formArrayName="raws" class="media">
       <h5>
-        Rows
+        Raws
       </h5>
       <label>
-        <input (change)="addUrl($event, 'addRow','file')"
+        <input (change)="addUrl($event, 'addRaw','file')"
                (keyup)="addUrl($event, 'addRow','file')"
                type="url"
-               placeholder="Enter a row url"
-               #rowInput>
+               placeholder="Enter a raw file  url"
+               #rawInput>
       </label>
-      <a id="addRow" class="addMedia" (click)="addRowUrl(rowInput)">
+      <a id="addRow" class="addMedia" (click)="addRawUrl(rawInput)">
         Add
       </a>
-      <div class="downloadRow">
+      <div class="downloadRaw">
         <p class="or">
           or
         </p>
-        <input (change)="addRowFile($event)" style="display: none" id="rowFile" type="file">
-        <label class="download" for="rowFile">
-          Download row
+        <input (change)="addRawFile($event)" style="display: none" id="rawFile" type="file">
+        <label class="download" for="rawFile">
+          Download raw file
         </label>
-        <ul class="rowFiles">
-          <li *ngFor="let item of forms.asset.value.rows">
+        <ul class="rawFiles">
+          <li *ngFor="let item of forms.asset.value.raws">
             <div class="fileWrapper">
               <div class="fileImg"></div>
               <p>{{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}</p>

@@ -80,18 +80,18 @@
         </div>
       </section>
 
-      <!-- Rows -->
-      <section class="rows" *ngIf="asset.info?.rows" style="margin-bottom: 25px;">
-        <h5>Rows</h5>
-        <div class="rowsWrapper">
-          <div *ngFor="let row of asset.info.rows">
+      <!-- Raws -->
+      <section class="raws" *ngIf="asset.info?.raws" style="margin-bottom: 25px;">
+        <h5>Raws</h5>
+        <div class="rawsWrapper">
+          <div *ngFor="let raw of asset.info.raws">
             <div class="file"></div>
             <a class="fileName"
-               href="{{row.data}}"
-               download="{{row.name}}"
+               href="{{raw.data}}"
+               download="{{raw.name}}"
                target="_blank"
             >
-              {{row.name.length > 20 ? row.name.substring(0, 17) + '...' : row.name}}
+              {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
             </a>
           </div>
         </div>
@@ -137,7 +137,7 @@
             </h6>
             <p [ngClass]="{ 'json': isObject(property.value) }"
                [innerHtml]="
-                 property.key === 'rows' ? '' :
+                 property.key === 'raws' ? '' :
                  isObject(property.value)
                ? valueJSON(stringify(property.value, null, 5))
                : property.value"
