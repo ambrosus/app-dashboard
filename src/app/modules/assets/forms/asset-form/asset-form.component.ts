@@ -229,6 +229,7 @@ export class AssetFormComponent implements OnInit {
 
     const reader = new FileReader();
     await reader.readAsDataURL(blob);
+
     reader.onloadend = () => {
       (<FormArray>this.forms.asset.get('rows')).push(
         new FormGroup({
@@ -238,6 +239,8 @@ export class AssetFormComponent implements OnInit {
         }),
       );
     };
+
+    input.target.value = '';
   }
 
   addIdentifier(name = null, value = null) {
