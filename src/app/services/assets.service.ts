@@ -404,7 +404,7 @@ export class AssetsService {
     limit = limit || 15;
     next = next || '';
 
-    let url = `${this.api.extended}/asset/query`;
+    let url = `${this.api.extended}/asset2/query`;
     let body: any = {
       query: [
         {
