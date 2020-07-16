@@ -24,7 +24,7 @@ export class AssetFormComponent implements OnInit {
   sequenceNumber = 0;
   promise: any = {};
   hasPermission = true;
-  bundleSize = 0;
+  bundleSize: number|string = 0;
   tooLargeBundleSize = false;
   dialogs: {
     progress?: MatDialogRef<any>,
