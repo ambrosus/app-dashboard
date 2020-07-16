@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 let core: any = '';
 let test = false;
-let prod = true;
+let prod = false;
 let dev = false;
 let ambrosus = false;
 
@@ -43,13 +43,13 @@ if (location.hostname === 'localhost') {
 export const environment = {
   production: false,
   api: {
-    core,
-    extended: `${core}`,
+    core: 'https://test-nop.ambrosus-test.com',
+    extended: `https://test-nop.ambrosus-test.com`,
   },
-  test,
-  prod,
-  dev,
-  ambrosus,
+  test: true,
+  prod: false,
+  dev: false,
+  ambrosus: true,
 };
 
 /*

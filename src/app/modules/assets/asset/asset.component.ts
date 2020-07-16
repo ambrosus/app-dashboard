@@ -56,6 +56,7 @@ export class AssetComponent implements OnInit, OnDestroy {
         if (asset.info) {
           if (
             !asset.info.images &&
+            !asset.info.raws &&
             !asset.info.description &&
             !asset.info.documents &&
             !(asset.info.identifiers && asset.info.identifiers.identifiers) &&

@@ -57,6 +57,7 @@ export class EventComponent implements OnInit, OnDestroy {
         if (this.event.info) {
           if (
             !this.event.info.images &&
+            !this.event.info.rows &&
             !this.event.info.description &&
             !this.event.info.documents &&
             !(this.event.info.identifiers && this.event.info.identifiers.identifiers) &&

@@ -68,7 +68,7 @@ if (location.hostname === 'localhost' || location.hostname === 'herokuapp') {
   ambrosus = true;
 }
 
-const custom_core = '{HERMES_URL}';
+const custom_core = 'https://test-nop.ambrosus-test.com';
 if (custom_core) {
   core = custom_core;
 }

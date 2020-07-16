@@ -8,6 +8,7 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import isUrl from 'is-url';
 
 @Component({
   selector: 'app-asset-form',
@@ -23,6 +24,8 @@ export class AssetFormComponent implements OnInit {
   sequenceNumber = 0;
   promise: any = {};
   hasPermission = true;
+  bundleSize: number|string = 0;
+  tooLargeBundleSize = false;
   dialogs: {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
@@ -43,7 +46,8 @@ export class AssetFormComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
+  ) {
+  }
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
@@ -71,7 +75,7 @@ export class AssetFormComponent implements OnInit {
     form.get('description').setValue(info.description);
     if (info.images) {
       Object.keys(info.images).map(key => {
-        this.addImage({ value: info.images[key].url });
+        this.addImage(null, { value: info.images[key].url });
       });
     }
     if (this.prefill.identifiers) {
@@ -122,6 +126,7 @@ export class AssetFormComponent implements OnInit {
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
       images: new FormArray([]),
+      raws: new FormArray([]),
       identifiers: new FormArray([
         new FormGroup({
           name: new FormControl(null, []),
@@ -171,17 +176,75 @@ export class AssetFormComponent implements OnInit {
 
   remove(array, index: number) {
     (<FormArray>this.forms.asset.get(array)).removeAt(index);
+    this.calculateBundle();
   }
 
-  addImage(input) {
+  calculateBundle() {
+    const event = this.generateInfoEvent(this.assetId, true);
+    const bundle = JSON.stringify(event);
+    const size = (encodeURI(bundle).split(/%..|./).length + 100000) / 1000000;
+
+    this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
+
+    if (this.bundleSize >= 16) {
+      this.tooLargeBundleSize = true;
+      document.querySelector('.maxBundle').classList.add('maxBundleError');
+      document.querySelector('#download').classList.add('displayedDownload');
+
+      [].forEach.call(document.querySelectorAll('.addMedia'),
+        button => button.classList.remove('activeAddMedia'));
+
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = true);
+    } else {
+      this.tooLargeBundleSize = false;
+      document.querySelector('.maxBundle').classList.remove('maxBundleError');
+      document.querySelector('#download').classList.remove('displayedDownload');
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = false);
+    }
+  }
+
+  checkBundleSize(event) {
+    if (this.tooLargeBundleSize) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  addUrl(event, id, type) {
+    const { target, target: { value } } = event;
+
+    if (value) {
+      if ((!isUrl(value) && !isUrl('http://' + value)) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
+        target.classList.add('inputError');
+        document.querySelector('#' + id).classList.remove('activeAddMedia');
+        return;
+      }
+      document.querySelector('#' + id).classList.add('activeAddMedia');
+    } else {
+      document.querySelector('#' + id).classList.remove('activeAddMedia');
+    }
+
+    event.target.classList.remove('inputError');
+  }
+
+  addImage(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
     const value = input.value;
     const form = this.forms.asset.value;
     let name = value.split('/');
+
     name = form.images.length ? name[name.length - 1] : 'default';
+
     if (name !== 'default') {
       name = name.split('.');
       name = name[0];
     }
+
     if (value) {
       (<FormArray>this.forms.asset.get('images')).push(
         new FormGroup({
@@ -189,8 +252,65 @@ export class AssetFormComponent implements OnInit {
           url: new FormControl(value, []),
         }),
       );
+      input.value = '';
     }
-    input.value = '';
+
+    if (event) {
+      event.target.classList.remove('activeAddMedia');
+    }
+    this.calculateBundle();
+  }
+
+  async addRawUrl(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
+    const value = input.value;
+
+    if (value) {
+      let name = value.split('/');
+      name = name[name.length - 1];
+
+      (<FormArray>this.forms.asset.get('raws')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          data: new FormControl(value, []),
+          type: new FormControl('url', []),
+        }),
+      );
+      input.value = '';
+    }
+    event.target.classList.remove('activeAddMedia');
+    this.calculateBundle();
+  }
+
+  async addRawFile(event) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
+    const path = event.path || (event.composedPath && event.composedPath());
+
+    const blob = path[0].files[0];
+
+    const reader = new FileReader();
+    await reader.readAsDataURL(blob);
+
+    reader.onloadend = () => {
+      if (!reader.result) { return; }
+
+      (<FormArray>this.forms.asset.get('raws')).push(
+        new FormGroup({
+          name: new FormControl(blob.name, []),
+          data: new FormControl(reader.result, []),
+          type: new FormControl(blob.type, []),
+        }),
+      );
+      this.calculateBundle();
+    };
+
+    event.target.value = '';
   }
 
   addIdentifier(name = null, value = null) {
@@ -265,7 +385,7 @@ export class AssetFormComponent implements OnInit {
     return asset;
   }
 
-  private generateInfoEvent(_assetId = this.assetId) {
+  private generateInfoEvent(_assetId = this.assetId, calculation = false) {
     const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     const assetForm = this.forms.asset.getRawValue();
@@ -305,7 +425,7 @@ export class AssetFormComponent implements OnInit {
     const images = assetForm.images;
     if (images.length > 0) {
       const _images = {};
-      images.map((image, index, array) => {
+      images.forEach(image => {
         if (image.name && image.url) {
           _images[image.name] = {};
           _images[image.name]['url'] = image.url;
@@ -315,6 +435,11 @@ export class AssetFormComponent implements OnInit {
       if (Object.keys(_images).length) {
         info['images'] = _images;
       }
+    }
+
+    // Raws
+    if (assetForm.raws.length > 0) {
+      info['raws'] = assetForm.raws;
     }
 
     // Properties
@@ -349,17 +474,17 @@ export class AssetFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: assetForm.accessLevel,
       createdBy: address,
-      dataHash: this.assetsService.ambrosus.calculateHash(data),
+      dataHash: calculation ? '...' : this.assetsService.ambrosus.calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: this.assetsService.ambrosus.sign(idData, secret),
+      signature: calculation ? '...' : this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: this.assetsService.ambrosus.calculateHash(content),
+      eventId: calculation ? '...' : this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 
