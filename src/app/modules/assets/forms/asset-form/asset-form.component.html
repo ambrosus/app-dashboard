@@ -29,20 +29,29 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <textarea formControlName="description" rows="1"></textarea>
     </label>
 
+    <h3 class="maxBundle">
+      Maximum bundle size 16 megabytes.
+      <br/>
+      {{'Used ' + this.bundleSize + ' megabytes.'}}
+    </h3>
+
     <div formArrayName="images" class="media">
       <h5>Images</h5>
-      <input (keyup)="addUrl($event, 'addImage', 'image')"
-             (change)="addUrl($event, 'addImage', 'image')"
+      <input (input)="addUrl($event, 'addImage', 'image')"
+             class="urlInput"
              type="url"
-             placeholder="Enter an image url" #imageInput>
-      <a id="addImage" class="addMedia" (click)="addImage(imageInput)">
+             placeholder="Enter an image url"
+             #imageInput
+      >
+      <a id="addImage" class="addMedia" (click)="addImage($event, imageInput)">
         Add
       </a>
       <div class="image-preview">
         <div *ngFor="let image of forms.asset.value.images; let i = index"
              [formGroupName]="i"
              [style.backgroundImage]="sanitizeUrl(image.url)"
-             (click)="remove('images', i)">
+        >
+            <div class="closeFile" (click)="remove('images', i)"></div>
         </div>
       </div>
     </div>
@@ -51,14 +60,13 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <h5>
         Raws
       </h5>
-      <label>
-        <input (change)="addUrl($event, 'addRaw','file')"
-               (keyup)="addUrl($event, 'addRow','file')"
-               type="url"
-               placeholder="Enter a raw file  url"
-               #rawInput>
-      </label>
-      <a id="addRow" class="addMedia" (click)="addRawUrl(rawInput)">
+      <input (input)="addUrl($event, 'addRow','file')"
+             class="urlInput"
+             type="url"
+             placeholder="Enter a raw file url"
+             #rawInput
+      >
+      <a id="addRow" class="addMedia" (click)="addRawUrl($event, rawInput)">
         Add
       </a>
       <div class="downloadRaw">
@@ -66,14 +74,20 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           or
         </p>
         <input (change)="addRawFile($event)" style="display: none" id="rawFile" type="file">
-        <label class="download" for="rawFile">
+        <label (click)="checkBundleSize($event)" id="download" class="download" for="rawFile">
           Download raw file
         </label>
         <ul class="rawFiles">
-          <li *ngFor="let item of forms.asset.value.raws">
+          <li *ngFor="let item of forms.asset.value.raws; let i = index;"
+              [formGroupName]="i"
+          >
             <div class="fileWrapper">
-              <div class="fileImg"></div>
-              <p>{{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}</p>
+              <div class="fileImg">
+                <div class="closeFile" (click)="remove('raws', i)"></div>
+              </div>
+              <p>
+                {{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}
+              </p>
             </div>
           </li>
         </ul>
@@ -154,7 +168,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>Close</button>
-    <button type="submit" [disabled]="forms.asset.invalid || assetsService.progress.status.inProgress"
+    <button type="submit" [disabled]="forms.asset.invalid || tooLargeBundleSize || assetsService.progress.status.inProgress"
             [promiseBtn]="promise.create">
       Create
     </button>

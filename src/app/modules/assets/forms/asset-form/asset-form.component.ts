@@ -24,6 +24,8 @@ export class AssetFormComponent implements OnInit {
   sequenceNumber = 0;
   promise: any = {};
   hasPermission = true;
+  bundleSize = 0;
+  tooLargeBundleSize = false;
   dialogs: {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
@@ -73,7 +75,7 @@ export class AssetFormComponent implements OnInit {
     form.get('description').setValue(info.description);
     if (info.images) {
       Object.keys(info.images).map(key => {
-        this.addImage({ value: info.images[key].url });
+        this.addImage(null, { value: info.images[key].url });
       });
     }
     if (this.prefill.identifiers) {
@@ -174,10 +176,44 @@ export class AssetFormComponent implements OnInit {
 
   remove(array, index: number) {
     (<FormArray>this.forms.asset.get(array)).removeAt(index);
+    this.calculateBundle();
   }
 
-  addUrl(e, id, type) {
-    const { target, target: { value } } = e;
+  calculateBundle() {
+    const event = this.generateInfoEvent(this.assetId, true);
+    const bundle = JSON.stringify(event);
+    const size = (encodeURI(bundle).split(/%..|./).length + 100000) / 1000000;
+
+    this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
+
+    if (this.bundleSize >= 16) {
+      this.tooLargeBundleSize = true;
+      document.querySelector('.maxBundle').classList.add('maxBundleError');
+      document.querySelector('#download').classList.add('displayedDownload');
+
+      [].forEach.call(document.querySelectorAll('.addMedia'),
+        button => button.classList.remove('activeAddMedia'));
+
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = true);
+    } else {
+      this.tooLargeBundleSize = false;
+      document.querySelector('.maxBundle').classList.remove('maxBundleError');
+      document.querySelector('#download').classList.remove('displayedDownload');
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = false);
+    }
+  }
+
+  checkBundleSize(event) {
+    if (this.tooLargeBundleSize) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  addUrl(event, id, type) {
+    const { target, target: { value } } = event;
 
     if (value) {
       if ((!isUrl(value) && !isUrl('http://' + value)) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
@@ -190,10 +226,14 @@ export class AssetFormComponent implements OnInit {
       document.querySelector('#' + id).classList.remove('activeAddMedia');
     }
 
-    e.target.classList.remove('inputError');
+    event.target.classList.remove('inputError');
   }
 
-  addImage(input) {
+  addImage(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
     const value = input.value;
     const form = this.forms.asset.value;
     let name = value.split('/');
@@ -212,11 +252,20 @@ export class AssetFormComponent implements OnInit {
           url: new FormControl(value, []),
         }),
       );
+      input.value = '';
     }
-    input.value = '';
+
+    if (event) {
+      event.target.classList.remove('activeAddMedia');
+    }
+    this.calculateBundle();
   }
 
-  async addRawUrl(input) {
+  async addRawUrl(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
     const value = input.value;
 
     if (value) {
@@ -232,15 +281,25 @@ export class AssetFormComponent implements OnInit {
       );
       input.value = '';
     }
+    event.target.classList.remove('activeAddMedia');
+    this.calculateBundle();
   }
 
-  async addRawFile(input) {
-    const blob = input.path[0].files[0];
+  async addRawFile(event) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
+    const path = event.path || (event.composedPath && event.composedPath());
+
+    const blob = path[0].files[0];
 
     const reader = new FileReader();
     await reader.readAsDataURL(blob);
 
     reader.onloadend = () => {
+      if (!reader.result) { return; }
+
       (<FormArray>this.forms.asset.get('raws')).push(
         new FormGroup({
           name: new FormControl(blob.name, []),
@@ -248,9 +307,10 @@ export class AssetFormComponent implements OnInit {
           type: new FormControl(blob.type, []),
         }),
       );
+      this.calculateBundle();
     };
 
-    input.target.value = '';
+    event.target.value = '';
   }
 
   addIdentifier(name = null, value = null) {
@@ -325,7 +385,7 @@ export class AssetFormComponent implements OnInit {
     return asset;
   }
 
-  private generateInfoEvent(_assetId = this.assetId) {
+  private generateInfoEvent(_assetId = this.assetId, calculation = false) {
     const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     const assetForm = this.forms.asset.getRawValue();
@@ -414,17 +474,17 @@ export class AssetFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: assetForm.accessLevel,
       createdBy: address,
-      dataHash: this.assetsService.ambrosus.calculateHash(data),
+      dataHash: calculation ? '...' : this.assetsService.ambrosus.calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: this.assetsService.ambrosus.sign(idData, secret),
+      signature: calculation ? '...' : this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: this.assetsService.ambrosus.calculateHash(content),
+      eventId: calculation ? '...' : this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 
