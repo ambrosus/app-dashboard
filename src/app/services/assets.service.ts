@@ -220,7 +220,7 @@ export class AssetsService {
 
     // 1. Get events based on search query
 
-    let url = `${this.api.extended}/event/query`;
+    let url = `${this.api.extended}/event2/query`;
     let body: any = {
       query: [
         {
@@ -519,7 +519,7 @@ export class AssetsService {
   }): Promise<void> {
     const { assetId, limit, next } = options;
 
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
@@ -548,7 +548,7 @@ export class AssetsService {
   }): Promise<any> {
     const { assetId, limit } = options;
 
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
@@ -571,7 +571,7 @@ export class AssetsService {
   }
 
   getEvent(eventId: string): Observable<any> {
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
