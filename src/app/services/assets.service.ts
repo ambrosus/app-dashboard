@@ -362,7 +362,7 @@ export class AssetsService {
 
     // 3. Get latest info events for final assets
 
-    url = `${this.api.extended}/event/latest/type`;
+    url = `${this.api.extended}/event2/latest/type`;
     body = {
       type: 'ambrosus.asset.info',
       assets: ids,
@@ -430,7 +430,7 @@ export class AssetsService {
     }, []);
 
     // Get latest info events
-    url = `${this.api.extended}/event/latest/type`;
+    url = `${this.api.extended}/event2/latest/type`;
     body = {
       type: 'ambrosus.asset.info',
       assets: ids,
@@ -460,7 +460,7 @@ export class AssetsService {
   }
 
   getAsset(assetId: string): Observable<any> {
-    let url = `${this.api.extended}/asset/query`;
+    let url = `${this.api.extended}/asset2/query`;
     let body: any = {
       query: [
         {
@@ -479,7 +479,7 @@ export class AssetsService {
           }
 
           // Get latest info events
-          url = `${this.api.extended}/event/latest/type`;
+          url = `${this.api.extended}/event2/latest/type`;
           body = {
             type: 'ambrosus.asset.info',
             assets: [assetId],
