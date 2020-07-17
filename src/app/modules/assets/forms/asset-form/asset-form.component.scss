@@ -5,5 +5,9 @@ app-asset-form {
 
   .form {
     padding-bottom: 70px;
+
+    @media (max-width:600px) {
+      padding-bottom: 25px;
+    }
   }
 }

@@ -8,8 +8,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 <header class="header">
   <div class="flex between">
     <div class="flex">
-      <h2 class="title flex-0">New event</h2>
-      <h5 class="flex-0" style="color: #999">for {{ data.assetIds.length || assetIds.length }} Assets</h5>
+      <h2 class="title flex-0">
+        New event
+      </h2>
+      <h5 class="flex-0" style="color: #999">
+        for {{ data.assetIds.length || assetIds.length }} Assets
+      </h5>
     </div>
     <ul class="menu flex-0">
       <li [ngClass]="{ 'active': !json }" (click)="json = false">Form</li>

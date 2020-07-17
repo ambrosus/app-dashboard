@@ -216,7 +216,7 @@ export class AssetFormComponent implements OnInit {
     const { target, target: { value } } = event;
 
     if (value) {
-      if ((!isUrl(value) && !isUrl('http://' + value)) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
+      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value) ) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
         target.classList.add('inputError');
         document.querySelector('#' + id).classList.remove('activeAddMedia');
         return;

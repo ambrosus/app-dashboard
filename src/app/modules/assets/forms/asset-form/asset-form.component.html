@@ -29,6 +29,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <textarea formControlName="description" rows="1"></textarea>
     </label>
 
+    <hr>
     <h3 class="maxBundle">
       Maximum bundle size 16 megabytes.
       <br/>
@@ -85,7 +86,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
               <div class="fileImg">
                 <div class="closeFile" (click)="remove('raws', i)"></div>
               </div>
-              <p>
+              <p class="fileName">
                 {{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}
               </p>
             </div>
@@ -93,6 +94,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
         </ul>
       </div>
     </div>
+    <hr>
   </section>
 
   <section style="background: #fafafa;">
