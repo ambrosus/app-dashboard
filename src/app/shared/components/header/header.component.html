@@ -35,10 +35,10 @@
       </nav>
       <!-- Search (simple) -->
       <form class="form search" [formGroup]="forms.search" (ngSubmit)="search()">
-        <a class="advanced" (click)="advanced = !advanced">{{
-          advanced ? 'close' : 'advanced'
-        }}</a>
-        <input formControlName="name" type="search" placeholder="Search Assets (by name)" />
+        <a class="advanced" (click)="advanced = !advanced">
+          {{advanced ? 'close' : 'advanced'}}
+        </a>
+        <input class="searchInput" formControlName="name" type="search" placeholder="Search Assets (by name)" />
       </form>
       <!-- Search icon -->
       <app-svg-icon class="search__icon" name="search" width="30" height="30" fill="333" (click)="advanced = !advanced"></app-svg-icon>
