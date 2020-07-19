@@ -683,9 +683,11 @@ export class AssetsService {
 
         // Update _assets
         let assetsData = this._assets.getValue().data;
+
         assetsData = assetsData.map(asset => {
-          const assetEvents = data.created.filter(
-            _event => asset.assetId === _event.content.idData.assetId,
+          const assetEvents = data.created.filter(_event => {
+              return asset.assetId ? asset.assetId : asset.data.assetId  === _event.data.content.idData.assetId;
+            },
           );
           const info = this.ambrosus.utils.findEvent('info', assetEvents);
           if (info) {

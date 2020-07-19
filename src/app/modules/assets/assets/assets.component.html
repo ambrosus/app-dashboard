@@ -19,12 +19,18 @@
             <span class="selectAll" *ngIf="selected !== forms.table.get('assets')['controls'].length" (click)="select()">
               Select all
             </span>
-            <span class="selectAll" *ngIf="selected" (click)="select(false)">Unselect all</span>
+            <span class="selectAll" *ngIf="selected" (click)="select(false)">
+              Unselect all
+            </span>
           </p>
         </div>
         <div class="flex-0">
-          <button type="button" *ngIf="!selected && account.permissions.indexOf('create_asset') > -1" (click)="createAsset()">Create Asset</button>
-          <button type="button" class="outline" *ngIf="selected && account.permissions.indexOf('create_event') > -1" (click)="bulkEvent()">Bulk event</button>
+          <button type="button" *ngIf="!selected && account.permissions.indexOf('create_asset') > -1" (click)="createAsset()">
+            Create Asset
+          </button>
+          <button type="button" class="outline" *ngIf="selected && account.permissions.indexOf('create_event') > -1" (click)="bulkEvent()">
+            Bulk event
+          </button>
         </div>
       </div>
     </div>

@@ -57,23 +57,29 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
         // Table form
         this.initTableForm();
-        data.map(asset => {
-          (<FormArray>this.forms.table.get('assets')).push(
-            new FormGroup({
-              assetId: new FormControl(asset.assetId),
-              info: new FormControl(asset.info),
-              createdBy: new FormControl(asset.content.idData.createdBy),
-              createdAt: new FormControl(asset.content.idData.timestamp),
-              selected: new FormControl(false),
-            }),
-          );
+        data.forEach((asset, i) => {
+          if (data.length <= 15 || i !== 0) {
+            (<FormArray>this.forms.table.get('assets')).push(
+              new FormGroup({
+                assetId: new FormControl(asset.assetId),
+                info: new FormControl(asset.info),
+                createdBy: new FormControl( asset.content.idData.createdBy),
+                createdAt: new FormControl( asset.content.idData.timestamp),
+                selected: new FormControl(false),
+              }),
+            );
+          }
         });
       },
     );
 
     this.subs[this.subs.length] = this.assetsService.progress.status.start.subscribe(next => {
-      if (this.dialogs.asset) { this.dialogs.asset.close(); }
-      if (this.dialogs.event) { this.dialogs.event.close(); }
+      if (this.dialogs.asset) {
+        this.dialogs.asset.close();
+      }
+      if (this.dialogs.event) {
+        this.dialogs.event.close();
+      }
     });
 
     this.router.events.subscribe((e: any) => {
