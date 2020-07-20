@@ -167,6 +167,12 @@ body {
   z-index: 2000;
 }
 
+.cdk-overlay-pane {
+  @media (max-width:900px) {
+    max-width: 100vw !important;
+  }
+}
+
 .snack {
   .mat-simple-snackbar {
     word-break: break-all;
