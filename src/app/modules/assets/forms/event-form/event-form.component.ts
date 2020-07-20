@@ -8,6 +8,7 @@ import { autocomplete } from 'app/constant';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { ConfirmComponent } from 'app/shared/components/confirm/confirm.component';
 import { ProgressComponent } from 'app/shared/components/progress/progress.component';
+import isUrl from 'is-url';
 
 @Component({
   selector: 'app-event-form',
@@ -22,6 +23,8 @@ export class EventFormComponent implements OnInit {
   autocomplete: any[] = autocomplete;
   promise: any = {};
   hasPermission = true;
+  bundleSize: number|string = 0; // default bundle size
+  tooLargeBundleSize = false;
   dialogs: {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
@@ -50,6 +53,8 @@ export class EventFormComponent implements OnInit {
     this.prefill = this.prefill || this.data && this.data.prefill;
 
     this.initForm();
+    this.calculateBundle();
+
     if (this.prefill) {
       this.prefillForm();
     }
@@ -78,12 +83,7 @@ export class EventFormComponent implements OnInit {
     form.get('description').setValue(info.description);
     if (info.images) {
       Object.keys(info.images).map(key => {
-        this.addImage({ value: info.images[key].url });
-      });
-    }
-    if (info.documents) {
-      Object.keys(info.documents).map(key => {
-        this.addDocument({ value: info.documents[key].url });
+        this.addImage(null, { value: info.images[key].url });
       });
     }
     if (info.identifiers) {
@@ -168,10 +168,6 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  sanitizeUrlDocument(url) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
-  }
-
   sanitizeUrlImage(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
   }
@@ -182,7 +178,6 @@ export class EventFormComponent implements OnInit {
       name: new FormControl(null, [Validators.required]),
       description: new FormControl(null, []),
       accessLevel: new FormControl(0, []),
-      documents: new FormArray([]),
       images: new FormArray([]),
       raws: new FormArray([]),
       identifiers: new FormArray([
@@ -215,26 +210,60 @@ export class EventFormComponent implements OnInit {
     (<FormArray>this.forms.event.get(array)).removeAt(index);
   }
 
-  addDocument(input) {
-    const value = input.value;
-    let name = value.split('/');
-    name = name[name.length - 1];
-    if (value) {
-      (<FormArray>this.forms.event.get('documents')).push(
-        new FormGroup({
-          name: new FormControl(name, []),
-          url: new FormControl(value, []),
-        }),
-      );
+  calculateBundle() {
+    const event = this.generateEvent('', true );
+    const bundle = JSON.stringify(event);
+    const size = (encodeURI(bundle).split(/%..|./).length + 100000) / 1000000;
+
+    this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
+
+    if (this.bundleSize >= 16) {
+      this.tooLargeBundleSize = true;
+      document.querySelector('.maxBundle').classList.add('maxBundleError');
+      document.querySelector('#download').classList.add('displayedDownload');
+
+      [].forEach.call(document.querySelectorAll('.addMedia'),
+        button => button.classList.remove('activeAddMedia'));
+
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = true);
+    } else {
+      this.tooLargeBundleSize = false;
+      document.querySelector('.maxBundle').classList.remove('maxBundleError');
+      document.querySelector('#download').classList.remove('displayedDownload');
+      [].forEach.call(document.querySelectorAll('.urlInput'),
+        input => input.disabled = false);
     }
-    input.value = '';
   }
 
-  addImage(input) {
+  addUrl(event, id, type) {
+    const { target, target: { value } } = event;
+
+    if (value) {
+      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value) )
+        || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
+        target.classList.add('inputError');
+        document.querySelector('#' + id).classList.remove('activeAddMedia');
+        return;
+      }
+      document.querySelector('#' + id).classList.add('activeAddMedia');
+    } else {
+      document.querySelector('#' + id).classList.remove('activeAddMedia');
+    }
+
+    event.target.classList.remove('inputError');
+  }
+
+  addImage(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
     const value = input.value;
     const form = this.forms.event.value;
     let name = value.split('/');
     name = form.images.length ? name[name.length - 1] : 'default';
+
     if (name !== 'default') {
       name = name.split('.');
       name = name[0];
@@ -246,8 +275,71 @@ export class EventFormComponent implements OnInit {
           url: new FormControl(value, []),
         }),
       );
+      input.value = '';
     }
-    input.value = '';
+
+    if (event) {
+      event.target.classList.remove('activeAddMedia');
+    }
+    this.calculateBundle();
+  }
+
+  async addRawUrl(event, input) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
+    const value = input.value;
+
+    if (value) {
+      let name = value.split('/');
+      name = name[name.length - 1];
+
+      (<FormArray>this.forms.event.get('raws')).push(
+        new FormGroup({
+          name: new FormControl(name, []),
+          data: new FormControl(value, []),
+          type: new FormControl('url', []),
+        }),
+      );
+      input.value = '';
+    }
+    event.target.classList.remove('activeAddMedia');
+    this.calculateBundle();
+  }
+
+  async addRawFile(event) {
+    if (this.tooLargeBundleSize) {
+      return;
+    }
+
+    const path = event.path || (event.composedPath && event.composedPath());
+
+    const blob = path[0].files[0];
+
+    const reader = new FileReader();
+    await reader.readAsDataURL(blob);
+
+    reader.onloadend = () => {
+      if (!reader.result) { return; }
+
+      (<FormArray>this.forms.event.get('raws')).push(
+        new FormGroup({
+          name: new FormControl(blob.name, []),
+          data: new FormControl(reader.result, []),
+          type: new FormControl(blob.type, []),
+        }),
+      );
+      this.calculateBundle();
+    };
+
+    event.target.value = '';
+  }
+
+  checkBundleSize(event) {
+    if (this.tooLargeBundleSize) {
+      event.preventDefault();
+    }
   }
 
   addIdentifier(name = null, value = null) {
@@ -297,7 +389,7 @@ export class EventFormComponent implements OnInit {
     (<FormArray>groups.at(i).get('content')).removeAt(j);
   }
 
-  private generateEvent(assetId) {
+  private generateEvent(assetId, calculate = false) {
     const address = this.storageService.get('account')['address'];
     const secret = this.storageService.get('secret');
     const eventForm = this.forms.event.getRawValue();
@@ -332,28 +424,33 @@ export class EventFormComponent implements OnInit {
       info['description'] = description;
     }
 
-    // Documents
-    const documents = eventForm.documents;
-    if (documents.length > 0) {
-      const _documents = {};
-      documents.map((document, index, array) => {
-        if (document.name && document.url) {
-          _documents[document.name] = {};
-          _documents[document.name]['url'] = document.url;
-        }
-      });
-
-      if (Object.keys(_documents).length) {
-        info['documents'] = _documents;
-      }
-    }
-
     // Properties
     eventForm.properties.map(item => {
       if (item.name && item.value) {
         info[item.name] = item.value;
       }
     });
+
+    // Images
+    const images = eventForm.images;
+    if (images.length > 0) {
+      const _images = {};
+      images.forEach(image => {
+        if (image.name && image.url) {
+          _images[image.name] = {};
+          _images[image.name]['url'] = image.url;
+        }
+      });
+
+      if (Object.keys(_images).length) {
+        info['images'] = _images;
+      }
+    }
+
+    // Raws
+    if (eventForm.raws.length > 0) {
+      info['raws'] = eventForm.raws;
+    }
 
     // Groups
     const groups = eventForm.groups;
@@ -403,17 +500,17 @@ export class EventFormComponent implements OnInit {
       timestamp: Math.floor(new Date().getTime() / 1000),
       accessLevel: eventForm.accessLevel,
       createdBy: address,
-      dataHash: this.assetsService.ambrosus.calculateHash(data),
+      dataHash: calculate ? '...' : this.assetsService.ambrosus.calculateHash(data),
     };
 
     const content = {
       idData,
-      signature: this.assetsService.ambrosus.sign(idData, secret),
+      signature:  calculate ? '...' : this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId: this.assetsService.ambrosus.calculateHash(content),
+      eventId:  calculate ? '...' : this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 

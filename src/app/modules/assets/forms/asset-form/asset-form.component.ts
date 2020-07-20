@@ -61,6 +61,8 @@ export class AssetFormComponent implements OnInit {
     this.prefill = this.prefill || this.data && this.data.prefill;
 
     this.initForm();
+    this.calculateBundle();
+
     if (this.prefill) {
       this.prefillForm();
     }
@@ -208,7 +210,6 @@ export class AssetFormComponent implements OnInit {
   checkBundleSize(event) {
     if (this.tooLargeBundleSize) {
       event.preventDefault();
-      event.stopPropagation();
     }
   }
 

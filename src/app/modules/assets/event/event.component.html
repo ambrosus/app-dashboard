@@ -60,6 +60,23 @@
         <div class="image" *ngFor="let image of objectKeys(event.info.images)" [style.backgroundImage]="sanitizeUrl(event.info.images[image]['url'])"></div>
       </section>
 
+      <!-- Raws -->
+      <section class="raws" *ngIf="event.info?.raws" style="margin-bottom: 25px;">
+        <h5>Raws</h5>
+        <div class="rawsWrapper">
+          <div *ngFor="let raw of event.info.raws">
+            <div class="file"></div>
+            <a class="fileName"
+               href="{{raw.data}}"
+               download="{{raw.name}}"
+               target="_blank"
+            >
+              {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Description -->
       <section *ngIf="event.info?.description">
         <h5>Description</h5>
@@ -96,12 +113,20 @@
         <h5>Properties</h5>
         <ul class="properties">
           <li *ngFor="let property of event.info.properties">
-            <h6 *ngIf="!isArray(property.value)">{{ property.key }}</h6>
-            <p [ngClass]="{ 'json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></p>
+            <h6 *ngIf="!isArray(property.value)">
+              {{ property.key }}
+            </h6>
+            <p [ngClass]="{ 'json': isObject(property.value) }"
+               [innerHtml]="
+                 property.key === 'raws' ? '' :
+                 isObject(property.value)
+               ? valueJSON(stringify(property.value, null, 5))
+               : property.value"
+            >
+            </p>
           </li>
         </ul>
       </section>
-
       <section class="groups" *ngIf="event.info?.groups && event.info.groups.length">
         <div class="group" *ngFor="let group of event.info.groups">
           <h5>{{ group.key }}</h5>

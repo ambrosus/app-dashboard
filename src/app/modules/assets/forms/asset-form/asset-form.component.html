@@ -11,7 +11,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 <form class="form" [formGroup]="forms.asset" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
   <section>
-    <h5 style=" margin-bottom: 25px;">Information</h5>
+    <h5 style=" margin-bottom: 25px;">
+      Information
+    </h5>
     <label>
       <span>Name *</span>
       <input formControlName="name" type="text">
@@ -37,7 +39,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </h3>
 
     <div formArrayName="images" class="media">
-      <h5>Images</h5>
+      <h5>
+        Images
+      </h5>
       <input (input)="addUrl($event, 'addImage', 'image')"
              class="urlInput"
              type="url"
