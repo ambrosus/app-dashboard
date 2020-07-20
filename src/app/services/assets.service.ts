@@ -220,7 +220,7 @@ export class AssetsService {
 
     // 1. Get events based on search query
 
-    let url = `${this.api.extended}/event/query`;
+    let url = `${this.api.extended}/event2/query`;
     let body: any = {
       query: [
         {
@@ -362,7 +362,7 @@ export class AssetsService {
 
     // 3. Get latest info events for final assets
 
-    url = `${this.api.extended}/event/latest/type`;
+    url = `${this.api.extended}/event2/latest/type`;
     body = {
       type: 'ambrosus.asset.info',
       assets: ids,
@@ -404,7 +404,7 @@ export class AssetsService {
     limit = limit || 15;
     next = next || '';
 
-    let url = `${this.api.extended}/asset/query`;
+    let url = `${this.api.extended}/asset2/query`;
     let body: any = {
       query: [
         {
@@ -430,7 +430,7 @@ export class AssetsService {
     }, []);
 
     // Get latest info events
-    url = `${this.api.extended}/event/latest/type`;
+    url = `${this.api.extended}/event2/latest/type`;
     body = {
       type: 'ambrosus.asset.info',
       assets: ids,
@@ -460,7 +460,7 @@ export class AssetsService {
   }
 
   getAsset(assetId: string): Observable<any> {
-    let url = `${this.api.extended}/asset/query`;
+    let url = `${this.api.extended}/asset2/query`;
     let body: any = {
       query: [
         {
@@ -479,7 +479,7 @@ export class AssetsService {
           }
 
           // Get latest info events
-          url = `${this.api.extended}/event/latest/type`;
+          url = `${this.api.extended}/event2/latest/type`;
           body = {
             type: 'ambrosus.asset.info',
             assets: [assetId],
@@ -519,7 +519,7 @@ export class AssetsService {
   }): Promise<void> {
     const { assetId, limit, next } = options;
 
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
@@ -548,7 +548,7 @@ export class AssetsService {
   }): Promise<any> {
     const { assetId, limit } = options;
 
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
@@ -571,7 +571,7 @@ export class AssetsService {
   }
 
   getEvent(eventId: string): Observable<any> {
-    const url = `${this.api.extended}/event/query`;
+    const url = `${this.api.extended}/event2/query`;
     const body: any = {
       query: [
         {
