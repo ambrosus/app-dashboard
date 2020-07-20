@@ -69,12 +69,9 @@ export class AccountsService {
   }
 
   async modifyAccount(address: string, body: Account): Promise<any> {
-    let url = `${this.api.extended}/account/${address}`;
-    if (body.accessLevel || body.permissions) {
-      url = `${this.api.core}/accounts/${address}`;
-    }
+    let url = `${this.api.extended}/account2/modify/${address}`;
 
-    const account = await this.to(this.http.put(url, body));
+    const account = await this.to(this.http.post(url, body));
     if (account.error) {
       throw account.error;
     }
