@@ -57,7 +57,7 @@ export class AccountsService {
   }
 
   async getAccount(address: string): Promise<any> {
-    const url = `${this.api.extended}/account2/info/${address}`;
+    const url = `${this.api.extended}/account/${address}`;
 
     const account = await this.to(this.http.get(url));
     if (account.error) {
