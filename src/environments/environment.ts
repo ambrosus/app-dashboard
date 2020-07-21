@@ -43,8 +43,8 @@ if (location.hostname === 'localhost') {
 export const environment = {
   production: false,
   api: {
-    core: 'https://test-nop.ambrosus-test.com',
-    extended: `https://test-nop.ambrosus-test.com`,
+    core,
+    extended: `${core}`,
   },
   test: true,
   prod: false,
