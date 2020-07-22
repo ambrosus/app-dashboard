@@ -106,10 +106,10 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   </section>
 
   <section style="background: #fafafa;">
+    <!-- Properties -->
     <h2 style="margin-bottom: 24px;">
       Properties
     </h2>
-    <!-- Properties -->
     <div formArrayName="properties" class="right">
       <div class="group"
            *ngFor="let property of forms.event.get('properties')['controls']; let i = index"
@@ -119,7 +119,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           <span>
             Name
           </span>
-          <input formControlName="name" type="text"/>
+          <input (input)="checkPropertyName($event)" formControlName="name" type="text"/>
+          <span id="propertyError"></span>
         </label>
         <label class="w50">
           <span>
@@ -223,11 +224,12 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </div>
   </section>
 
+
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>
       Close
     </button>
-    <button type="submit" [disabled]="forms.event.invalid || assetsService.progress.status.inProgress"
+    <button type="submit" [disabled]="forms.event.invalid || tooLargeBundleSize || !propertyIsValid || assetsService.progress.status.inProgress"
             [promiseBtn]="promise.create">
       Create
     </button>

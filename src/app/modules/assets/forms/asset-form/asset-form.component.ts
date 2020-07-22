@@ -26,6 +26,7 @@ export class AssetFormComponent implements OnInit {
   hasPermission = true;
   bundleSize: number|string = 0;
   tooLargeBundleSize = false;
+  propertyIsValid = true;
   dialogs: {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
@@ -184,7 +185,7 @@ export class AssetFormComponent implements OnInit {
   calculateBundle() {
     const event = this.generateInfoEvent(this.assetId, true);
     const bundle = JSON.stringify(event);
-    const size = (encodeURI(bundle).split(/%..|./).length + 100000) / 1000000;
+    const size = (encodeURI(bundle).split(/%..|./).length + 200000) / 1000000;
 
     this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
 
@@ -321,6 +322,18 @@ export class AssetFormComponent implements OnInit {
         value: new FormControl(value, []),
       }),
     );
+  }
+
+  checkPropertyName(event) {
+    if (event.target.value === 'name' || event.target.value === 'description') {
+      event.target.classList.add('inputError');
+      document.querySelector('#propertyError').innerHTML = 'you cannot name a property by that name';
+     this.propertyIsValid = false;
+    } else {
+      event.target.classList.remove('inputError');
+      document.querySelector('#propertyError').innerHTML = '';
+      this.propertyIsValid = true;
+    }
   }
 
   addProperty(name = null, value = null) {

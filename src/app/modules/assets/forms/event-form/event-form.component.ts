@@ -23,8 +23,9 @@ export class EventFormComponent implements OnInit {
   autocomplete: any[] = autocomplete;
   promise: any = {};
   hasPermission = true;
-  bundleSize: number|string = 0; // default bundle size
+  bundleSize: number | string = 0; // default bundle size
   tooLargeBundleSize = false;
+  propertyIsValid = true;
   dialogs: {
     progress?: MatDialogRef<any>,
     confirm?: MatDialogRef<any>,
@@ -43,7 +44,8 @@ export class EventFormComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     const account: any = this.storageService.get('account') || {};
@@ -76,7 +78,8 @@ export class EventFormComponent implements OnInit {
           type = obj.type;
         }
       });
-    } catch (error) { }
+    } catch (error) {
+    }
 
     form.get('type').setValue(`ambrosus.${type === 'info' ? 'asset' : 'event'}.${type}`);
     form.get('name').setValue(info.name);
@@ -211,9 +214,9 @@ export class EventFormComponent implements OnInit {
   }
 
   calculateBundle() {
-    const event = this.generateEvent('', true );
+    const event = this.generateEvent('', true);
     const bundle = JSON.stringify(event);
-    const size = (encodeURI(bundle).split(/%..|./).length + 100000) / 1000000;
+    const size = (encodeURI(bundle).split(/%..|./).length + 200000) / 1000000;
 
     this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
 
@@ -240,7 +243,7 @@ export class EventFormComponent implements OnInit {
     const { target, target: { value } } = event;
 
     if (value) {
-      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value) )
+      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value))
         || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
         target.classList.add('inputError');
         document.querySelector('#' + id).classList.remove('activeAddMedia');
@@ -321,7 +324,9 @@ export class EventFormComponent implements OnInit {
     await reader.readAsDataURL(blob);
 
     reader.onloadend = () => {
-      if (!reader.result) { return; }
+      if (!reader.result) {
+        return;
+      }
 
       (<FormArray>this.forms.event.get('raws')).push(
         new FormGroup({
@@ -349,6 +354,18 @@ export class EventFormComponent implements OnInit {
         value: new FormControl(value, []),
       }),
     );
+  }
+
+  checkPropertyName(event) {
+    if (event.target.value === 'name' || event.target.value === 'description') {
+      event.target.classList.add('inputError');
+      document.querySelector('#propertyError').innerHTML = 'you cannot name a property by that name';
+      this.propertyIsValid = false;
+    } else {
+      event.target.classList.remove('inputError');
+      document.querySelector('#propertyError').innerHTML = '';
+      this.propertyIsValid = true;
+    }
   }
 
   addProperty(name = null, value = null) {
@@ -505,12 +522,12 @@ export class EventFormComponent implements OnInit {
 
     const content = {
       idData,
-      signature:  calculate ? '...' : this.assetsService.ambrosus.sign(idData, secret),
+      signature: calculate ? '...' : this.assetsService.ambrosus.sign(idData, secret),
       data,
     };
 
     const event = {
-      eventId:  calculate ? '...' : this.assetsService.ambrosus.calculateHash(content),
+      eventId: calculate ? '...' : this.assetsService.ambrosus.calculateHash(content),
       content,
     };
 

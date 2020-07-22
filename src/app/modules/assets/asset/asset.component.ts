@@ -24,6 +24,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   jsonEvents: any;
   account: any = {};
   noContent = false;
+  properties: any = [];
   dialogs: {
     event?: MatDialogRef<any>,
     asset?: MatDialogRef<any>,
@@ -43,7 +44,8 @@ export class AssetComponent implements OnInit, OnDestroy {
     public assetsService: AssetsService,
     public dialog: MatDialog,
     private sanitizer: DomSanitizer,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
@@ -54,16 +56,19 @@ export class AssetComponent implements OnInit, OnDestroy {
         this.asset = asset;
 
         if (asset.info) {
+          const { info } = asset;
           if (
-            !asset.info.images &&
-            !asset.info.raws &&
-            !asset.info.description &&
-            !asset.info.documents &&
-            !(asset.info.identifiers && asset.info.identifiers.identifiers) &&
-            !(asset.info.properties && asset.info.properties.length) &&
-            !(asset.info.groups && asset.info.groups.length)
+            !info.images &&
+            !info.raws &&
+            !info.description &&
+            !info.documents &&
+            !(info.identifiers && info.identifiers.identifiers) &&
+            !(info.properties && info.properties.length) &&
+            !(info.groups && info.groups.length)
           ) {
             this.noContent = true;
+          } else if (info.properties.length) {
+            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' );
           }
         }
       },
@@ -94,9 +99,13 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   async viewJSON() {
-    if (this.json) { return this.json = ''; }
+    if (this.json) {
+      return this.json = '';
+    }
     this.json = 'View as Data';
-    if (this.jsonEvents) { return this.jsonEvents; }
+    if (this.jsonEvents) {
+      return this.jsonEvents;
+    }
     try {
       this.jsonEventsRaw = await this.assetsService.getMaxEvents({ assetId: this.assetId, limit: 200 });
       this.jsonEventsRaw.data.map(event => {

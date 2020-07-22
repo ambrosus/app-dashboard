@@ -20,6 +20,8 @@ export class EventComponent implements OnInit, OnDestroy {
   eventPrefill;
   location: any = false;
   noContent = false;
+  properties: any = [];
+  raws: any = [];
   dialogs: {
     event?: MatDialogRef<any>,
   } = {};
@@ -31,6 +33,7 @@ export class EventComponent implements OnInit, OnDestroy {
   isObject(value) {
     return typeof value === 'object';
   }
+
   valueJSON(value) {
     return value.replace(/["{}\[\]]/g, '').replace(/^\s+/m, '');
   }
@@ -40,7 +43,8 @@ export class EventComponent implements OnInit, OnDestroy {
     public assetsService: AssetsService,
     private sanitizer: DomSanitizer,
     public dialog: MatDialog,
-  ) { }
+  ) {
+  }
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
@@ -50,33 +54,42 @@ export class EventComponent implements OnInit, OnDestroy {
     this.subs[this.subs.length] = this.assetsService.event.subscribe(
       event => {
         console.log('Event: ', event);
+
         this.event = event;
+        const { info } = event;
         this.eventPrefill = JSON.parse(JSON.stringify(event));
+
         console.log('Event prefill: ', this.eventPrefill);
 
-        if (this.event.info) {
+        if (info) {
           if (
-            !this.event.info.images &&
-            !this.event.info.rows &&
-            !this.event.info.description &&
-            !this.event.info.documents &&
-            !(this.event.info.identifiers && this.event.info.identifiers.identifiers) &&
-            !(this.event.info.properties && this.event.info.properties.length) &&
-            !(this.event.info.groups && this.event.info.groups.length)
+            !info.images &&
+            !info.rows &&
+            !info.description &&
+            !info.documents &&
+            !(info.identifiers && info.identifiers.identifiers) &&
+            !(info.properties && info.properties.length) &&
+            !(info.groups && info.groups.length)
           ) {
             this.noContent = true;
+          } else if (info.properties.length) {
+            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' );
+
+            const raws = info.properties.find(prop => prop.key === 'raws' );
+            this.raws = raws ? raws.value : [];
           }
         }
 
         try {
           this.location = {
-            lat: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[0] : this.event.info.location.location.geometry.coordinates[0],
-            lng: this.event.info.location.geoJson ? this.event.info.location.geoJson.coordinates[1] : this.event.info.location.location.geometry.coordinates[1],
+            lat: info.location.geoJson ? info.location.geoJson.coordinates[0] : info.location.location.geometry.coordinates[0],
+            lng: info.location.geoJson ? info.location.geoJson.coordinates[1] : info.location.location.geometry.coordinates[1],
           };
-          delete this.event.info.location.type;
-          delete this.event.info.location.location;
-          delete this.event.info.location.geoJson;
-        } catch (e) { }
+          delete info.location.type;
+          delete info.location.location;
+          delete info.location.geoJson;
+        } catch (e) {
+        }
       },
       err => console.error('Event: ', err),
     );
