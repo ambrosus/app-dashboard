@@ -29,7 +29,7 @@ import { IconLeftDirective, IconRightDirective } from './directives/icon.directi
 import { ErrorDirective } from './directives/error.directive';
 import { DropDownComponent } from './components/drop-down/drop-down.component';
 import { ToggleDropDownDirective } from './directives/toggle-drop-down.directive';
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 import { TabsComponent, TabComponent } from './components/tabs/tabs.component';
 
 import { Angular2PromiseButtonModule } from 'angular2-promise-buttons';
@@ -55,9 +55,9 @@ if (environment.prod) {
     HttpClientModule,
     MatDialogModule,
     ReactiveFormsModule,
-    AgmCoreModule.forRoot({
-      apiKey,
-    }),
+    // AgmCoreModule.forRoot({
+    //   apiKey,
+    // }),
     Angular2PromiseButtonModule.forRoot({
       spinnerTpl: '<span class="spinner"></span>',
       disableBtn: true,
@@ -87,7 +87,7 @@ if (environment.prod) {
     ErrorDirective,
     DropDownComponent,
     ToggleDropDownDirective,
-    AgmCoreModule,
+    // AgmCoreModule,
     TabComponent,
     TabsComponent,
     Angular2PromiseButtonModule,

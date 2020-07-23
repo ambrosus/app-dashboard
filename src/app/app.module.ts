@@ -23,7 +23,7 @@ import * as Sentry from '@sentry/browser';
 import { MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { ErrorHandlerService } from './services/error-handler.service';
 const { ambrosus, test, prod } = environment;
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 
 let env = 'test';
 if (test) { env = 'test'; }
@@ -50,10 +50,10 @@ if (ambrosus) {
       enabled: environment.production,
     }),
     MatSnackBarModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'your key',
-      libraries: ['places'],
-    }),
+    // AgmCoreModule.forRoot({
+    //   apiKey: 'your key',
+    //   libraries: ['places'],
+    // }),
   ],
   providers: [
     {
