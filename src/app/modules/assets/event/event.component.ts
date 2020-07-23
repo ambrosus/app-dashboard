@@ -78,6 +78,11 @@ export class EventComponent implements OnInit, OnDestroy {
             const raws = info.properties.find(prop => prop.key === 'raws' );
             this.raws = raws ? raws.value : [];
           }
+          if (this.raws) {
+            this.raws.forEach(raw => {
+              raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
+            });
+          }
         }
 
         try {

@@ -12,7 +12,9 @@
             <p class="createdBy">
               <span class="flex-0">by</span>
               <span class="image"></span>
-              <span *ngIf="event.content?.idData?.createdBy">{{ event.content.idData.createdBy }}</span>
+              <span *ngIf="event.content?.idData?.createdBy">
+                {{ event.content.idData.createdBy }}
+              </span>
             </p>
           </div>
           <div class="content">
@@ -21,7 +23,9 @@
                 <h5>Event metadata</h5>
                 <ul class="properties">
                   <li *ngIf="eventId">
-                    <h6>Event id</h6>
+                    <h6>
+                      Event id
+                    </h6>
                     <p>{{ eventId }}</p>
                   </li>
                   <li *ngFor="let prop of objectKeys(event.content.idData)">
@@ -67,8 +71,8 @@
           <div *ngFor="let raw of raws">
             <div class="file"></div>
             <a class="fileName"
-               href="{{raw.data}}"
-               download="{{raw.name}}"
+               [href]="raw.data"
+               [download]="raw.name"
                target="_blank"
             >
               {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}

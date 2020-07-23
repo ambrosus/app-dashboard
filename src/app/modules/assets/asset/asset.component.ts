@@ -68,7 +68,12 @@ export class AssetComponent implements OnInit, OnDestroy {
           ) {
             this.noContent = true;
           } else if (info.properties.length) {
-            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' );
+            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description');
+          }
+          if (info.raws) {
+            info.raws.forEach(raw => {
+              raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
+            });
           }
         }
       },

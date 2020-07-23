@@ -87,8 +87,8 @@
           <div *ngFor="let raw of asset.info.raws">
             <div class="file"></div>
             <a class="fileName"
-               href="{{raw.data}}"
-               download="{{raw.name}}"
+               [href]="raw.data"
+               [download]="raw.name"
                target="_blank"
             >
               {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
@@ -150,7 +150,9 @@
 
       <section class="groups" *ngIf="asset.info?.groups && asset.info.groups.length">
         <div class="group" *ngFor="let group of asset.info.groups">
-          <h5>{{ group.key }}</h5>
+          <h5>
+            {{ group.key }}
+          </h5>
           <ul class="properties">
             <li *ngFor="let property of objectKeys(group.value)">
               <h6 *ngIf="!isArray(group.value[property])">

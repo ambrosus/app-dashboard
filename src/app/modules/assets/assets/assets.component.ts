@@ -57,8 +57,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
         // Table form
         this.initTableForm();
-        data.forEach((asset, i) => {
-          if (data.length <= 15 || i !== 0) {
+        data.forEach(asset => {
+          if (asset.assetId) {
             (<FormArray>this.forms.table.get('assets')).push(
               new FormGroup({
                 assetId: new FormControl(asset.assetId),
