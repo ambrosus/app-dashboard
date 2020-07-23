@@ -59,6 +59,11 @@
     <div class="wrapper decoration">
       <app-svg-icon *ngIf="!noContent" name="content" height="40" width="40" fill="9198BB"></app-svg-icon>
 
+      <section class="encryption">
+        <h4>Encryption:</h4>
+        <h5>{{encryption}}</h5>
+      </section>
+
       <!-- Images -->
       <section class="images" *ngIf="event.info?.images" style="margin-bottom: 25px;">
         <div class="image" *ngFor="let image of objectKeys(event.info.images)" [style.backgroundImage]="sanitizeUrl(event.info.images[image]['url'])"></div>

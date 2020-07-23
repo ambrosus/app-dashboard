@@ -325,7 +325,7 @@ export class AssetFormComponent implements OnInit {
   }
 
   checkPropertyName(event) {
-    if (event.target.value === 'name' || event.target.value === 'description') {
+    if (event.target.value === 'name' || event.target.value === 'description' || event.target.value === 'encryption') {
       event.target.classList.add('inputError');
       document.querySelector('#propertyError').innerHTML = 'you cannot name a property by that name';
      this.propertyIsValid = false;
