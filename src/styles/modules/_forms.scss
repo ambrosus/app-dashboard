@@ -19,7 +19,12 @@
     }
   }
 
-  .maxBundleError {
+  .inputError {
+    position: relative;
+    border-color: $red !important;
+  }
+
+  .maxBundleError, #propertyError {
     color: $red;
   }
 
@@ -28,10 +33,6 @@
 
     input {
       padding-right: 50px !important;
-    }
-
-    .inputError {
-      border-color: $red !important;
     }
 
     > h5 {

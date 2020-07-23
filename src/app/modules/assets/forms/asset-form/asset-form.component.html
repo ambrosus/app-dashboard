@@ -11,7 +11,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
 <form class="form" [formGroup]="forms.asset" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
   <section>
-    <h5 style=" margin-bottom: 25px;">Information</h5>
+    <h5 style=" margin-bottom: 25px;">
+      Information
+    </h5>
     <label>
       <span>Name *</span>
       <input formControlName="name" type="text">
@@ -37,7 +39,9 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     </h3>
 
     <div formArrayName="images" class="media">
-      <h5>Images</h5>
+      <h5>
+        Images
+      </h5>
       <input (input)="addUrl($event, 'addImage', 'image')"
              class="urlInput"
              type="url"
@@ -105,7 +109,8 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
            [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
-          <input formControlName="name" type="text"/>
+          <input (input)="checkPropertyName($event)" formControlName="name" type="text"/>
+          <span id="propertyError"></span>
         </label>
         <label class="w50">
           <span>Value</span>
@@ -170,7 +175,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>Close</button>
-    <button type="submit" [disabled]="forms.asset.invalid || tooLargeBundleSize || assetsService.progress.status.inProgress"
+    <button type="submit" [disabled]="forms.asset.invalid || tooLargeBundleSize || !propertyIsValid || assetsService.progress.status.inProgress"
             [promiseBtn]="promise.create">
       Create
     </button>

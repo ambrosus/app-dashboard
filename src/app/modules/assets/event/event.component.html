@@ -12,7 +12,9 @@
             <p class="createdBy">
               <span class="flex-0">by</span>
               <span class="image"></span>
-              <span *ngIf="event.content?.idData?.createdBy">{{ event.content.idData.createdBy }}</span>
+              <span *ngIf="event.content?.idData?.createdBy">
+                {{ event.content.idData.createdBy }}
+              </span>
             </p>
           </div>
           <div class="content">
@@ -21,7 +23,9 @@
                 <h5>Event metadata</h5>
                 <ul class="properties">
                   <li *ngIf="eventId">
-                    <h6>Event id</h6>
+                    <h6>
+                      Event id
+                    </h6>
                     <p>{{ eventId }}</p>
                   </li>
                   <li *ngFor="let prop of objectKeys(event.content.idData)">
@@ -43,7 +47,7 @@
             <div class="right" style="margin-top: 15px;">
               <button class="transparent" (click)="editEvent()">
                 <app-svg-icon name="edit" height="25" width="25" style="margin-right: 7px"></app-svg-icon>
-                Edit event
+                Add similar event
               </button>
             </div>
           </div>
@@ -58,6 +62,23 @@
       <!-- Images -->
       <section class="images" *ngIf="event.info?.images" style="margin-bottom: 25px;">
         <div class="image" *ngFor="let image of objectKeys(event.info.images)" [style.backgroundImage]="sanitizeUrl(event.info.images[image]['url'])"></div>
+      </section>
+
+      <!-- Raws -->
+      <section class="raws" *ngIf="raws.length" style="margin-bottom: 25px;">
+        <h5>Raws</h5>
+        <div class="rawsWrapper">
+          <div *ngFor="let raw of raws">
+            <div class="file"></div>
+            <a class="fileName"
+               [href]="raw.data"
+               [download]="raw.name"
+               target="_blank"
+            >
+              {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
+            </a>
+          </div>
+        </div>
       </section>
 
       <!-- Description -->
@@ -92,16 +113,23 @@
       </section>
 
       <!-- Properties -->
-      <section *ngIf="event.info?.properties && event.info.properties.length">
+      <section *ngIf="properties.length">
         <h5>Properties</h5>
         <ul class="properties">
-          <li *ngFor="let property of event.info.properties">
-            <h6 *ngIf="!isArray(property.value)">{{ property.key }}</h6>
-            <p [ngClass]="{ 'json': isObject(property.value) }" [innerHtml]="isObject(property.value) ? valueJSON(stringify(property.value, null, 5)) : property.value"></p>
+          <li *ngFor="let property of properties">
+            <h6 *ngIf="!isArray(property.value)">
+              {{ property.key }}
+            </h6>
+            <p [ngClass]="{ 'json': isObject(property.value) }"
+               [innerHtml]="
+                 isObject(property.value)
+               ? valueJSON(stringify(property.value, null, 5))
+               : property.value"
+            >
+            </p>
           </li>
         </ul>
       </section>
-
       <section class="groups" *ngIf="event.info?.groups && event.info.groups.length">
         <div class="group" *ngFor="let group of event.info.groups">
           <h5>{{ group.key }}</h5>

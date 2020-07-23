@@ -46,10 +46,10 @@ export const environment = {
     core,
     extended: `${core}`,
   },
-  test: true,
-  prod: false,
-  dev: false,
-  ambrosus: true,
+  test,
+  prod,
+  dev,
+  ambrosus,
 };
 
 /*

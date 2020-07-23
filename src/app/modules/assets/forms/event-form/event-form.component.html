@@ -12,7 +12,8 @@ This Source Code Form is subject to the terms of the Mozilla Public License, v. 
 If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 This Source Code Form is “Incompatible With Secondary Licenses”, as defined by the Mozilla Public License, v. 2.0.
 -->
-<h3 *ngIf="assetsService.progress.status.inProgress" style="padding: 0 30px; text-align: center; color: #f7a120;">Please wait until current upload completes</h3>
+<h3 *ngIf="assetsService.progress.status.inProgress" style="padding: 0 30px; text-align: center; color: #f7a120;">Please
+  wait until current upload completes</h3>
 
 <form class="form" [formGroup]="forms.event" (ngSubmit)="create()" (keydown.enter)="$event.preventDefault()">
 
@@ -35,45 +36,106 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <textarea formControlName="description" rows="1"></textarea>
     </label>
 
-    <div formArrayName="images" class="media">
-      <h5>Images</h5>
-      <input type="url" placeholder="Enter an image url" #imageInput>
-      <a class="addMedia" (click)="addImage(imageInput)">Add</a>
-      <div class="image-preview">
-        <div *ngFor="let image of forms.event.value.images; let i = index" [formGroupName]="i" [style.backgroundImage]="sanitizeUrlImage(image.url)" (click)="remove('images', i)"></div>
-      </div>
-    </div>
+    <hr>
+    <h3 class="maxBundle">
+      Maximum bundle size 16 megabytes.
+      <br/>
+      {{'Used ' + this.bundleSize + ' megabytes.'}}
+    </h3>
 
-    <div formArrayName="documents" class="media">
-      <h5>Documents</h5>
-      <input type="url" placeholder="Enter a document url" #documentInput>
-      <a class="addMedia" (click)="addDocument(documentInput)">Add</a>
-      <div class="document-preview" *ngFor="let document of forms.event.value.documents; let i = index" [formGroupName]="i">
-        <a [href]="sanitizeUrlDocument(document.url)" target="_blank">{{ document.name }}</a>
-        <a class="remove" (click)="remove('documents', i)">&times;</a>
+    <div formArrayName="images" class="media">
+      <h5>
+        Images
+      </h5>
+      <input (input)="addUrl($event, 'addImage', 'image')"
+             type="url"
+             placeholder="Enter an image url"
+             #imageInput
+      >
+      <a id="addImage" class="addMedia" (click)="addImage($event, imageInput)">
+        Add
+      </a>
+      <div class="image-preview">
+        <div *ngFor="let image of forms.event.value.images; let i = index" [formGroupName]="i"
+             [style.backgroundImage]="sanitizeUrlImage(image.url)">
+          <div class="closeFile" (click)="remove('images', i)"></div>
+        </div>
       </div>
     </div>
+    <div formArrayName="raws" class="media">
+      <h5>
+        Raws
+      </h5>
+      <input (input)="addUrl($event, 'addRow','file')"
+             class="urlInput"
+             type="url"
+             placeholder="Enter a raw file url"
+             #rawInput
+      >
+      <a id="addRow"
+         class="addMedia"
+         (click)="addRawUrl($event, rawInput)"
+      >
+        Add
+      </a>
+      <div class="downloadRaw">
+        <p class="or">
+          or
+        </p>
+        <input style="display: none" id="rawFile" type="file" (change)="addRawFile($event)">
+        <label id="download" class="download" for="rawFile" (click)="checkBundleSize($event)">
+          Download raw file
+        </label>
+        <ul class="rawFiles">
+          <li *ngFor="let item of forms.event.value.raws; let i = index;"
+              [formGroupName]="i"
+          >
+            <div class="fileWrapper">
+              <div class="fileImg">
+                <div class="closeFile" (click)="remove('raws', i)"></div>
+              </div>
+              <p class="fileName">
+                {{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <hr>
   </section>
 
   <section style="background: #fafafa;">
-    <h2 style="margin-bottom: 24px;">Properties</h2>
     <!-- Properties -->
+    <h2 style="margin-bottom: 24px;">
+      Properties
+    </h2>
     <div formArrayName="properties" class="right">
-      <div class="group" *ngFor="let property of forms.event.get('properties')['controls']; let i = index" [formGroupName]="i">
+      <div class="group"
+           *ngFor="let property of forms.event.get('properties')['controls']; let i = index"
+           [formGroupName]="i"
+      >
         <label class="w50">
-          <span>Name</span>
-          <input formControlName="name" type="text" />
+          <span>
+            Name
+          </span>
+          <input (input)="checkPropertyName($event)" formControlName="name" type="text"/>
+          <span id="propertyError"></span>
         </label>
         <label class="w50">
-          <span>Value</span>
-          <input formControlName="value" type="text" />
+          <span>
+            Value
+          </span>
+          <input formControlName="value" type="text"/>
           <a class="remove" (click)="remove('properties', i)" *ngIf="i !== 0">&times;</a>
         </label>
       </div>
       <a class="addMore" (click)="addProperty()">+ Add property</a>
-      <hr />
+      <hr/>
       <div class="left">
-        <a class="addMore" (click)="addGroup()" style="font-size: 14px;">+ Add group</a>
+        <a class="addMore" (click)="addGroup()" style="font-size: 14px;">
+          + Add group
+        </a>
       </div>
     </div>
 
@@ -82,18 +144,19 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div *ngFor="let group of forms.event.get('groups')['controls']; let i = index" [formGroupName]="i">
         <label>
           <span>Group name</span>
-          <input formControlName="title" type="text" />
+          <input formControlName="title" type="text"/>
           <a class="remove" (click)="remove('groups', i)">&times;</a>
         </label>
         <div formArrayName="content">
-          <div class="group" *ngFor="let property of group.get('content')['controls']; let j = index" [formGroupName]="j">
+          <div class="group" *ngFor="let property of group.get('content')['controls']; let j = index"
+               [formGroupName]="j">
             <label class="w50">
               <span>Name</span>
-              <input formControlName="name" type="text" />
+              <input formControlName="name" type="text"/>
             </label>
             <label class="w50">
               <span>Value</span>
-              <input formControlName="value" type="text" />
+              <input formControlName="value" type="text"/>
               <a class="remove" (click)="removeGroupProperty(i, j)" *ngIf="j !== 0">&times;</a>
             </label>
           </div>
@@ -107,16 +170,18 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
   <section>
     <h5 style="margin-bottom: 25px;">Identifiers</h5>
     <div formArrayName="identifiers" class="right">
-      <div class="group" *ngFor="let identifier of forms.event.get('identifiers')['controls']; let i = index" [formGroupName]="i">
+      <div class="group" *ngFor="let identifier of forms.event.get('identifiers')['controls']; let i = index"
+           [formGroupName]="i">
         <label class="w50">
           <span>Name</span>
-          <input formControlName="name" [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text" />
+          <input formControlName="name"
+                 [appAutocompleteinput]="{ control: identifier.get('name'), array: autocomplete }" type="text"/>
         </label>
         <label class="w50">
           <span>
             Value
           </span>
-          <input formControlName="value" type="text" />
+          <input formControlName="value" type="text"/>
           <a class="remove" (click)="remove('identifiers', i)" *ngIf="i !== 0">&times;</a>
         </label>
       </div>
@@ -130,40 +195,42 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
     <div class="group">
       <label class="w50">
         <span>City</span>
-        <input formControlName="city" type="text" />
+        <input formControlName="city" type="text"/>
       </label>
       <label class="w50">
         <span>Country</span>
-        <input formControlName="country" type="text" />
+        <input formControlName="country" type="text"/>
       </label>
     </div>
     <div class="group">
       <label class="w50">
         <span>GLN</span>
-        <input formControlName="GLN" type="text" />
+        <input formControlName="GLN" type="text"/>
       </label>
       <label class="w50">
         <span>Location ID</span>
-        <input formControlName="locationId" type="text" />
+        <input formControlName="locationId" type="text"/>
       </label>
     </div>
     <div class="group">
       <label class="w50">
         <span>Latitude</span>
-        <input formControlName="lat" type="number" />
+        <input formControlName="lat" type="number"/>
       </label>
       <label class="w50">
         <span>Longitude</span>
-        <input formControlName="lng" type="number" />
+        <input formControlName="lng" type="number"/>
       </label>
     </div>
   </section>
+
 
   <div style="padding: 0 40px;" *ngIf="hasPermission">
     <button type="button" class="transparent light" mat-dialog-close>
       Close
     </button>
-    <button type="submit" [disabled]="forms.event.invalid || assetsService.progress.status.inProgress" [promiseBtn]="promise.create">
+    <button type="submit" [disabled]="forms.event.invalid || tooLargeBundleSize || !propertyIsValid || assetsService.progress.status.inProgress"
+            [promiseBtn]="promise.create">
       Create
     </button>
   </div>

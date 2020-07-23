@@ -87,8 +87,8 @@
           <div *ngFor="let raw of asset.info.raws">
             <div class="file"></div>
             <a class="fileName"
-               href="{{raw.data}}"
-               download="{{raw.name}}"
+               [href]="raw.data"
+               [download]="raw.name"
                target="_blank"
             >
               {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
@@ -119,7 +119,9 @@
         <h5>Documents</h5>
         <ul class="properties">
           <li class="property" *ngFor="let document of objectKeys(asset.info.documents)">
-            <h6 *ngIf="asset.info?.documents[document]?.name">{{ asset.info.documents[document].name }}</h6>
+            <h6 *ngIf="asset.info?.documents[document]?.name">
+              {{ asset.info.documents[document].name }}
+            </h6>
             <a *ngIf="asset.info?.documents[document]?.url" [href]="asset.info.documents[document].url" target="_blank">
               {{ assetsService.ambrosus.utils.getUrlName(asset.info.documents[document].url) }}
             </a>
@@ -128,16 +130,15 @@
       </section>
 
       <!-- Properties -->
-      <section *ngIf="asset.info?.properties && asset.info.properties.length">
+      <section *ngIf="properties.length">
         <h5>Properties</h5>
         <ul class="properties">
-          <li *ngFor="let property of asset.info.properties">
-            <h6 *ngIf="!isArray(property.value)">
+          <li *ngFor="let property of properties">
+            <h6>
               {{ property.key }}
             </h6>
             <p [ngClass]="{ 'json': isObject(property.value) }"
                [innerHtml]="
-                 property.key === 'raws' ? '' :
                  isObject(property.value)
                ? valueJSON(stringify(property.value, null, 5))
                : property.value"
@@ -149,7 +150,9 @@
 
       <section class="groups" *ngIf="asset.info?.groups && asset.info.groups.length">
         <div class="group" *ngFor="let group of asset.info.groups">
-          <h5>{{ group.key }}</h5>
+          <h5>
+            {{ group.key }}
+          </h5>
           <ul class="properties">
             <li *ngFor="let property of objectKeys(group.value)">
               <h6 *ngIf="!isArray(group.value[property])">
@@ -168,8 +171,13 @@
       <!-- QR code -->
       <section class="flex decoration">
         <app-svg-icon name="identificator" height="40" width="40" fill="9198BB"></app-svg-icon>
-        <app-qr-code class="qr flex-0" [value]="'https://amb.to/' + asset.assetId" [size]="300" #qrCode
-                     (click)="downloadQR(qrCode)" style="margin: 0"></app-qr-code>
+        <app-qr-code class="qr flex-0"
+                     [value]="'https://amb.to/' + asset.assetId"
+                     [size]="300"
+                     (click)="downloadQR(qrCode)" style="margin: 0"
+                     #qrCode
+        >
+        </app-qr-code>
         <a class="flex-0" [href]="'https://amb.to/' + asset.assetId" target="_blank" style="color: #0042ba;">
           Check on amb.to
         </a>
@@ -187,16 +195,20 @@
           <div class="flex-0">
             <button type="button" class="outline"
                     *ngIf="account.permissions && account.permissions.indexOf('create_event') > -1"
-                    (click)="openAddEventDialog()">Add event
+                    (click)="openAddEventDialog()">
+              Add event
             </button>
           </div>
         </div>
       </header>
 
-      <h4 *ngIf="!timeline; else timeline">No events</h4>
+      <h4 *ngIf="!timeline; else timeline">
+        No events
+      </h4>
       <ng-template #timeline>
         <app-events-timeline [assetId]="assetId"
-                             [name]="assetsService.ambrosus.utils.getName(asset.info)"></app-events-timeline>
+                             [name]="assetsService.ambrosus.utils.getName(asset.info)">
+        </app-events-timeline>
       </ng-template>
     </div>
   </div>
