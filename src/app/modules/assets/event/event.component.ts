@@ -73,14 +73,20 @@ export class EventComponent implements OnInit, OnDestroy {
           ) {
             this.noContent = true;
           } else if (info.properties.length) {
-            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' );
+            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description');
 
-            const raws = info.properties.find(prop => prop.key === 'raws' );
+            const raws = info.properties.find(prop => prop.key === 'raws');
             this.raws = raws ? raws.value : [];
           }
           if (this.raws) {
             this.raws.forEach(raw => {
               raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
+              if (!raw.background) {
+                raw.background = '/assets/svg/document.svg';
+              }
+              if (!raw.nameExpansion) {
+                raw.nameExpansion = raw.name.match(/\w[^.]*$/)[0];
+              }
             });
           }
         }
@@ -123,5 +129,9 @@ export class EventComponent implements OnInit, OnDestroy {
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
+  }
+
+  sanitizeData(data) {
+    return this.sanitizer.bypassSecurityTrustUrl(data);
   }
 }

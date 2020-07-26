@@ -4,6 +4,10 @@
   margin: 0 auto;
   text-align: left;
 
+  .hidden {
+    display: none;
+  }
+
   .maxBundle {
     width: 100%;
     position: sticky;
@@ -13,6 +17,7 @@
     color: $green;
     z-index: 3;
     padding: 4px 0;
+    margin-bottom: -40px;
 
     @media (max-width: 600px) {
       font-size: 16px;
@@ -24,8 +29,15 @@
     border-color: $red !important;
   }
 
-  .maxBundleError, #propertyError {
+  .maxBundleError, .propertyError {
     color: $red;
+  }
+
+  .propertyError {
+    bottom: -17px;
+    left: 1px;
+    text-align: center;
+    position: absolute;
   }
 
   .media {
@@ -39,13 +51,10 @@
       margin: 50px 0 25px;
     }
 
-    .closeFile{
+    .closeIcon{
       position: absolute;
-      top: -10px;
-      right: -5px;
-      background-image: url("/assets/svg/close.png");
-      background-repeat: no-repeat;
-      background-size: cover;
+      top: -15px;
+      right: -10px;
       width: 18px;
       height: 18px;
       z-index: 2;
@@ -128,11 +137,10 @@
           margin: 0 20px 10px;
         }
 
-        li .fileImg{
+        li .fileSize{
           position: relative;
           width: 75px;
           height: 75px;
-          background-image: url("/assets/svg/document.svg");
           background-repeat: no-repeat;
 
           @media (max-width: 600px) {
@@ -142,7 +150,6 @@
             height: 175px;
           }
         }
-
 
         li p{
           width: 75px;
@@ -156,7 +163,7 @@
           .fileWrapper {
             margin: 0 15px 7px;
 
-            .fileImg{
+            .fileSize{
               width: 150px;
               height: 150px;
             }
@@ -187,7 +194,7 @@
     flex-wrap: wrap;
     margin-top: 10px;
 
-    .closeFile {
+    .closeIcon {
       right: -20px;
 
       @media (max-width: 600px) {

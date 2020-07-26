@@ -69,13 +69,13 @@
         <h5>Raws</h5>
         <div class="rawsWrapper">
           <div *ngFor="let raw of raws">
-            <div class="file"></div>
-            <a class="fileName"
-               [href]="raw.data"
-               [download]="raw.name"
-               target="_blank"
-            >
-              {{raw.name.length > 20 ? raw.name.substring(0, 17) + '...' : raw.name}}
+            <a class="fileWrapper" [href]="sanitizeData(raw.data)" [download]="raw.name">
+              <img class="file" [src]='sanitizeData(raw.background)' alt="raw">
+              <p class="fileName">
+                {{raw.name.length > 20
+                ? raw.name.substring(0, (17 - raw.nameExpansion.length)) + '...' + raw.nameExpansion
+                : raw.name}}
+              </p>
             </a>
           </div>
         </div>

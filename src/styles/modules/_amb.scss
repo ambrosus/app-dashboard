@@ -160,17 +160,27 @@
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         grid-gap: 10px;
 
-        .file {
-          margin-bottom: 10px;
-          width: 75px;
-          height: 75px;
-          background-image: url("/assets/svg/document.svg");
-          background-repeat: no-repeat;
-        }
+        .fileWrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
 
-        .fileName {
-          text-align: center;
-          padding-bottom: 15px;
+          .file {
+            display: block;
+            margin-bottom: 10px;
+            width: 75px;
+            height: 75px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+          }
+
+          .fileName {
+            text-align: center;
+            padding-bottom: 15px;
+            color: $light-blue;
+          }
         }
       }
     }

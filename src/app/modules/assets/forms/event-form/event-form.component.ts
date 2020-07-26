@@ -175,6 +175,10 @@ export class EventFormComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
   }
 
+  sanitizeData(data) {
+    return this.sanitizer.bypassSecurityTrustUrl(data);
+  }
+
   private initForm() {
     this.forms.event = new FormGroup({
       type: new FormControl(null, [Validators.required]),
@@ -327,12 +331,54 @@ export class EventFormComponent implements OnInit {
       if (!reader.result) {
         return;
       }
+      const nameExpansion = blob.name.match(/\w[^.]*$/)[0];
+      const expansion = blob.type.match(/\w[^/]*$/) ? blob.type.match(/\w[^/]*$/)[0] : nameExpansion;
+      let background;
+
+      switch (expansion) {
+        case 'gif':
+        case 'jpeg':
+        case 'pjpeg':
+        case 'png':
+        case 'svg+xml':
+        case 'vnd.microsoft.icon':
+        case 'x-icon':
+          background = reader.result;
+          break;
+
+        case 'tiff':
+          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+            background = '/assets/svg/tiff.svg';
+          } else {
+            background = reader.result;
+          }
+          break;
+
+        case 'webp':
+          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+            background = reader.result;
+          } else {
+            background = '/assets/svg/webp.svg';
+          }
+          break;
+
+        case 'vnd.wap.wbmp':
+        case 'wbmp':
+          background = '/assets/svg/wbmp.svg';
+          break;
+
+        default:
+          background = '/assets/svg/document.svg';
+      }
 
       (<FormArray>this.forms.event.get('raws')).push(
         new FormGroup({
           name: new FormControl(blob.name, []),
           data: new FormControl(reader.result, []),
+          expansion: new FormControl(expansion, []),
+          nameExpansion: new FormControl(nameExpansion, []),
           type: new FormControl(blob.type, []),
+          background: new FormControl(background, []),
         }),
       );
       this.calculateBundle();
@@ -359,11 +405,11 @@ export class EventFormComponent implements OnInit {
   checkPropertyName(event) {
     if (event.target.value === 'name' || event.target.value === 'description') {
       event.target.classList.add('inputError');
-      document.querySelector('#propertyError').innerHTML = 'you cannot name a property by that name';
+      document.querySelector('.propertyError').classList.remove('hidden');
       this.propertyIsValid = false;
     } else {
       event.target.classList.remove('inputError');
-      document.querySelector('#propertyError').innerHTML = '';
+      document.querySelector('.propertyError').classList.add('hidden');
       this.propertyIsValid = true;
     }
   }

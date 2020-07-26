@@ -24,7 +24,7 @@ export class AssetFormComponent implements OnInit {
   sequenceNumber = 0;
   promise: any = {};
   hasPermission = true;
-  bundleSize: number|string = 0;
+  bundleSize: number | string = 0;
   tooLargeBundleSize = false;
   propertyIsValid = true;
   dialogs: {
@@ -52,6 +52,10 @@ export class AssetFormComponent implements OnInit {
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
+  }
+
+  sanitizeData(data) {
+    return this.sanitizer.bypassSecurityTrustUrl(data);
   }
 
   ngOnInit() {
@@ -218,7 +222,7 @@ export class AssetFormComponent implements OnInit {
     const { target, target: { value } } = event;
 
     if (value) {
-      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value) ) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
+      if ((!isUrl(value) && !isUrl('http://' + value) && !/base64/.test(value)) || (type === 'image' && !/(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg)/.test(value))) {
         target.classList.add('inputError');
         document.querySelector('#' + id).classList.remove('activeAddMedia');
         return;
@@ -300,13 +304,59 @@ export class AssetFormComponent implements OnInit {
     await reader.readAsDataURL(blob);
 
     reader.onloadend = () => {
-      if (!reader.result) { return; }
+      if (!reader.result) {
+        return;
+      }
+
+      const nameExpansion = blob.name.match(/\w[^.]*$/)[0];
+      const type = blob.type.match(/^\w*/) ? blob.type.match(/^\w*/)[0] : nameExpansion === 'wbmp' ? 'image' : 'unknown';
+      const expansion = blob.type.match(/\w[^/]*$/) ? blob.type.match(/\w[^/]*$/)[0] : nameExpansion;
+      let background;
+
+      switch (expansion) {
+        case 'gif':
+        case 'jpeg':
+        case 'pjpeg':
+        case 'png':
+        case 'svg+xml':
+        case 'vnd.microsoft.icon':
+        case 'x-icon':
+          background = reader.result;
+          break;
+
+        case 'tiff':
+          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+            background = '/assets/svg/tiff.svg';
+          } else {
+            background = reader.result;
+          }
+          break;
+
+        case 'webp':
+          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+            background = reader.result;
+          } else {
+            background = '/assets/svg/webp.svg';
+          }
+          break;
+
+        case 'vnd.wap.wbmp':
+        case 'wbmp':
+          background = '/assets/svg/wbmp.svg';
+          break;
+
+        default:
+          background = '/assets/svg/document.svg';
+      }
 
       (<FormArray>this.forms.asset.get('raws')).push(
         new FormGroup({
           name: new FormControl(blob.name, []),
           data: new FormControl(reader.result, []),
-          type: new FormControl(blob.type, []),
+          expansion: new FormControl(expansion, []),
+          nameExpansion: new FormControl(nameExpansion, []),
+          type: new FormControl(type, []),
+          background: new FormControl(background, []),
         }),
       );
       this.calculateBundle();
@@ -327,11 +377,11 @@ export class AssetFormComponent implements OnInit {
   checkPropertyName(event) {
     if (event.target.value === 'name' || event.target.value === 'description') {
       event.target.classList.add('inputError');
-      document.querySelector('#propertyError').innerHTML = 'you cannot name a property by that name';
-     this.propertyIsValid = false;
+      document.querySelector('.propertyError').classList.remove('hidden');
+      this.propertyIsValid = false;
     } else {
       event.target.classList.remove('inputError');
-      document.querySelector('#propertyError').innerHTML = '';
+      document.querySelector('.propertyError').classList.add('hidden');
       this.propertyIsValid = true;
     }
   }
@@ -518,7 +568,17 @@ export class AssetFormComponent implements OnInit {
           throw new Error('Please fill required fields');
         }
 
-        const confirm = await this.confirm(`Are you sure you want to proceed ${this.prefill ? 'editing' : 'creating'} this asset?`);
+        const confirm = await this.confirm(`
+  Are
+  you
+  sure
+  you
+  want
+  to
+  proceed ${this.prefill ? 'editing' : 'creating'}
+  this
+  asset?
+`);
         console.log('Confirm ->', confirm);
         if (!confirm) {
           return reject();
@@ -542,7 +602,9 @@ export class AssetFormComponent implements OnInit {
         });
 
         // Start progress
-        this.assetsService.progress.title = `${this.prefill ? 'Creating' : 'Editing'} asset`;
+        this.assetsService.progress.title = `${this.prefill ? 'Creating' : 'Editing'}
+  asset
+`;
         this.assetsService.progress.creating = this.prefill ? 1 : 2;
         this.assetsService.progress.for = 'assets';
         this.progress();
