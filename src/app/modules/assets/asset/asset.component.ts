@@ -73,6 +73,12 @@ export class AssetComponent implements OnInit, OnDestroy {
           if (info.raws) {
             info.raws.forEach(raw => {
               raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
+              if (!raw.background) {
+                raw.background = '/dashboard/assets/svg/document.svg';
+              }
+              if (!raw.nameExpansion) {
+                raw.nameExpansion = raw.name.match(/\w[^.]*$/)[0];
+              }
             });
           }
         }
@@ -154,6 +160,10 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   sanitizeUrl(url) {
     return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
+  }
+
+  sanitizeData(data) {
+    return this.sanitizer.bypassSecurityTrustUrl(data);
   }
 
   downloadQR(el: any) {

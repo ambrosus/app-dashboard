@@ -58,7 +58,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="image-preview">
         <div *ngFor="let image of forms.event.value.images; let i = index" [formGroupName]="i"
              [style.backgroundImage]="sanitizeUrlImage(image.url)">
-          <div class="closeFile" (click)="remove('images', i)"></div>
+          <img src="/dashboard/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
         </div>
       </div>
     </div>
@@ -87,15 +87,18 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           Download raw file
         </label>
         <ul class="rawFiles">
-          <li *ngFor="let item of forms.event.value.raws; let i = index;"
+          <li *ngFor="let raw of forms.event.value.raws; let i = index;"
               [formGroupName]="i"
           >
             <div class="fileWrapper">
-              <div class="fileImg">
-                <div class="closeFile" (click)="remove('raws', i)"></div>
+              <div class="fileSize">
+                <img src="/dashboard/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
+                <img [src]='sanitizeData(raw.background)' alt="raw">
               </div>
               <p class="fileName">
-                {{item.name.length > 20 ? item.name.substring(0, 17) + '...' : item.name}}
+                {{raw.name.length > 20
+                ? raw.name.substring(0, (17 - raw.nameExpansion.length)) + '...' + raw.nameExpansion
+                : raw.name}}
               </p>
             </div>
           </li>
@@ -120,7 +123,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
             Name
           </span>
           <input (input)="checkPropertyName($event)" formControlName="name" type="text"/>
-          <span id="propertyError"></span>
+          <span clas="propertyError hidden">You cannot name a property by that name</span>
         </label>
         <label class="w50">
           <span>
