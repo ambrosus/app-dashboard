@@ -82,7 +82,7 @@ export class EventComponent implements OnInit, OnDestroy {
             this.raws.forEach(raw => {
               raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
               if (!raw.background) {
-                raw.background = '/assets/svg/document.svg';
+                raw.background = '/dashboard/assets/svg/document.svg';
               }
               if (!raw.nameExpansion) {
                 raw.nameExpansion = raw.name.match(/\w[^.]*$/)[0];

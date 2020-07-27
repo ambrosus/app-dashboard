@@ -58,7 +58,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
       <div class="image-preview">
         <div *ngFor="let image of forms.event.value.images; let i = index" [formGroupName]="i"
              [style.backgroundImage]="sanitizeUrlImage(image.url)">
-          <img src="/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
+          <img src="/dashboard/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
           >
             <div class="fileWrapper">
               <div class="fileSize">
-                <img src="/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
+                <img src="/dashboard/assets/svg/close.png" class="closeIcon" (click)="remove('raws', i)" alt="x"/>
                 <img [src]='sanitizeData(raw.background)' alt="raw">
               </div>
               <p class="fileName">

@@ -326,7 +326,7 @@ export class AssetFormComponent implements OnInit {
 
         case 'tiff':
           if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
-            background = 'assets/svg/tiff.svg';
+            background = '/dashboard/assets/svg/tiff.svg';
           } else {
             background = reader.result;
           }
@@ -336,17 +336,17 @@ export class AssetFormComponent implements OnInit {
           if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
             background = reader.result;
           } else {
-            background = 'assets/svg/webp.svg';
+            background = '/dashboard/assets/svg/webp.svg';
           }
           break;
 
         case 'vnd.wap.wbmp':
         case 'wbmp':
-          background = 'assets/svg/wbmp.svg';
+          background = '/dashboard/assets/svg/wbmp.svg';
           break;
 
         default:
-          background = 'assets/svg/document.svg';
+          background = '/dashboard/assets/svg/document.svg';
       }
 
       (<FormArray>this.forms.asset.get('raws')).push(
