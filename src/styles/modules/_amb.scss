@@ -137,13 +137,13 @@
     }
 
     .encryption {
+      padding: 10px 0;
       display: flex;
-      align-items: end;
+      align-items: center;
 
-      h5 {
+      .encryptionValue {
         margin-left: 5px;
         text-transform: uppercase;
-        line-height: 20px;
       }
     }
 
