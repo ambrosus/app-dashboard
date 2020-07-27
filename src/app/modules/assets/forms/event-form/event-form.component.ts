@@ -291,6 +291,52 @@ export class EventFormComponent implements OnInit {
     this.calculateBundle();
   }
 
+  generateRawBackGround(expansion, value) {
+    let background;
+
+    switch (expansion) {
+      case 'gif':
+      case 'jpeg':
+      case 'pjpeg':
+      case 'png':
+      case 'svg+xml':
+      case 'vnd.microsoft.icon':
+      case 'x-icon':
+        background = value;
+        break;
+
+      case 'tiff':
+        if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+          background = '/dashboard/assets/svg/tiff.svg';
+        } else {
+          background = value;
+        }
+        break;
+
+      case 'webp':
+        if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
+          background = value;
+        } else {
+          background = '/dashboard/assets/svg/webp.svg';
+        }
+        break;
+
+      case 'vnd.wap.wbmp':
+      case 'wbmp':
+        background = '/dashboard/assets/svg/wbmp.svg';
+        break;
+
+      case 'pdf':
+        background = '/dashboard/assets/svg/pdf.svg';
+        break;
+
+      default:
+        background = '/dashboard/assets/svg/document.svg';
+    }
+
+    return background;
+  }
+
   async addRawUrl(event, input) {
     if (this.tooLargeBundleSize) {
       return;
@@ -309,7 +355,7 @@ export class EventFormComponent implements OnInit {
           data: new FormControl(value, []),
           type: new FormControl('url', []),
           nameExpansion: new FormControl(nameExpansion, []),
-          background: new FormControl(value, []),
+          background: new FormControl(this.generateRawBackGround(nameExpansion, value), []),
         }),
       );
       input.value = '';
@@ -336,43 +382,6 @@ export class EventFormComponent implements OnInit {
       }
       const nameExpansion = blob.name.match(/\w[^.]*$/)[0];
       const expansion = blob.type.match(/\w[^/]*$/) ? blob.type.match(/\w[^/]*$/)[0] : nameExpansion;
-      let background;
-
-      switch (expansion) {
-        case 'gif':
-        case 'jpeg':
-        case 'pjpeg':
-        case 'png':
-        case 'svg+xml':
-        case 'vnd.microsoft.icon':
-        case 'x-icon':
-          background = reader.result;
-          break;
-
-        case 'tiff':
-          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
-            background = '/dashboard/assets/svg/tiff.svg';
-          } else {
-            background = reader.result;
-          }
-          break;
-
-        case 'webp':
-          if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
-            background = reader.result;
-          } else {
-            background = '/dashboard/assets/svg/webp.svg';
-          }
-          break;
-
-        case 'vnd.wap.wbmp':
-        case 'wbmp':
-          background = '/dashboard/assets/svg/wbmp.svg';
-          break;
-
-        default:
-          background = '/dashboard/assets/svg/document.svg';
-      }
 
       (<FormArray>this.forms.event.get('raws')).push(
         new FormGroup({
@@ -381,7 +390,7 @@ export class EventFormComponent implements OnInit {
           expansion: new FormControl(expansion, []),
           nameExpansion: new FormControl(nameExpansion, []),
           type: new FormControl(blob.type, []),
-          background: new FormControl(background, []),
+          background: new FormControl(this.generateRawBackGround(expansion, reader.result), []),
         }),
       );
       this.calculateBundle();
