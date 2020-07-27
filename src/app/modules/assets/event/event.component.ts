@@ -22,6 +22,7 @@ export class EventComponent implements OnInit, OnDestroy {
   noContent = false;
   properties: any = [];
   raws: any = [];
+  encryption;
   dialogs: {
     event?: MatDialogRef<any>,
   } = {};
@@ -73,11 +74,15 @@ export class EventComponent implements OnInit, OnDestroy {
           ) {
             this.noContent = true;
           } else if (info.properties.length) {
-            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' );
+            this.properties = info.properties.filter(prop => prop.key !== 'raws' && prop.key !== 'description' && prop.key !== 'encryption' );
 
             const raws = info.properties.find(prop => prop.key === 'raws' );
+            const encryption = info.properties.find(prop => prop.key === 'encryption' );
+
             this.raws = raws ? raws.value : [];
+            this.encryption = encryption ? encryption.value : 'off';
           }
+
           if (this.raws) {
             this.raws.forEach(raw => {
               raw.data = this.sanitizer.bypassSecurityTrustUrl(raw.data);
