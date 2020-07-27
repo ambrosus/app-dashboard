@@ -273,6 +273,7 @@ export class AssetFormComponent implements OnInit {
     }
 
     const value = input.value;
+    const nameExpansion = value.match(/\w[^.]*$/)[0];
 
     if (value) {
       let name = value.split('/');
@@ -283,6 +284,7 @@ export class AssetFormComponent implements OnInit {
           name: new FormControl(name, []),
           data: new FormControl(value, []),
           type: new FormControl('url', []),
+          nameExpansion: new FormControl(nameExpansion, []),
           background: new FormControl(value, []),
         }),
       );
