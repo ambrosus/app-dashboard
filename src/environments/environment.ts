@@ -34,7 +34,7 @@ try {
 } catch (error) { }
 
 if (location.hostname === 'localhost') {
-  core = 'https://test-nop2.ambrosus-test.com';
+  core = 'https://hermes.ambrosus-dev.com';
   dev = true;
   prod = false;
   ambrosus = true;
