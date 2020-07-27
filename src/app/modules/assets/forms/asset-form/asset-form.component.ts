@@ -283,6 +283,7 @@ export class AssetFormComponent implements OnInit {
           name: new FormControl(name, []),
           data: new FormControl(value, []),
           type: new FormControl('url', []),
+          background: new FormControl(value, []),
         }),
       );
       input.value = '';
