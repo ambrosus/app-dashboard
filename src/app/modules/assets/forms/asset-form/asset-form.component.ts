@@ -273,10 +273,13 @@ export class AssetFormComponent implements OnInit {
     switch (expansion) {
       case 'gif':
       case 'jpeg':
+      case 'jpg':
       case 'pjpeg':
       case 'png':
       case 'svg+xml':
+      case 'svg':
       case 'vnd.microsoft.icon':
+      case 'icon':
       case 'x-icon':
         background = value;
         break;
