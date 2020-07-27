@@ -56,7 +56,7 @@ This Source Code Form is “Incompatible With Secondary Licenses”, as defined 
              [formGroupName]="i"
              [style.backgroundImage]="sanitizeUrl(image.url)"
         >
-          <div class="closeFile" (click)="remove('images', i)"></div>
+          <img src="/assets/svg/close.png" class="closeIcon" (click)="remove('images', i)" alt="x"/>
         </div>
       </div>
     </div>

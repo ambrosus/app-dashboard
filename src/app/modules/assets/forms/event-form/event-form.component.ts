@@ -348,7 +348,7 @@ export class EventFormComponent implements OnInit {
 
         case 'tiff':
           if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
-            background = '/assets/svg/tiff.svg';
+            background = 'assets/svg/tiff.svg';
           } else {
             background = reader.result;
           }
@@ -358,17 +358,17 @@ export class EventFormComponent implements OnInit {
           if (!(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent) && !/firefox/i.test(navigator.userAgent))) {
             background = reader.result;
           } else {
-            background = '/assets/svg/webp.svg';
+            background = 'assets/svg/webp.svg';
           }
           break;
 
         case 'vnd.wap.wbmp':
         case 'wbmp':
-          background = '/assets/svg/wbmp.svg';
+          background = 'assets/svg/wbmp.svg';
           break;
 
         default:
-          background = '/assets/svg/document.svg';
+          background = 'assets/svg/document.svg';
       }
 
       (<FormArray>this.forms.event.get('raws')).push(
