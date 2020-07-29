@@ -1,11 +1,12 @@
 import { StorageService } from 'app/services/storage.service';
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as AmbrosusSDK from 'ambrosus-javascript-sdk';
 import { environment } from 'environments/environment.prod';
 import * as moment from 'moment-timezone';
 import { MessageService } from 'app/services/message.service';
+
 declare let Web3: any;
 
 @Injectable({
@@ -349,9 +350,9 @@ export class AssetsService {
 
       return _assets;
     }, {
-        data: [],
-        pagination: events.pagination,
-      });
+      data: [],
+      pagination: events.pagination,
+    });
 
     const ids = assets.data.reduce((_ids, asset, index, array) => {
       if (_ids.indexOf(asset.assetId) === -1) {
@@ -400,15 +401,16 @@ export class AssetsService {
   } = {}): Promise<any> {
     let { limit, next } = options;
     const account = <any>this.storageService.get('account') || {};
-    const { address } = account;
+    const { address, organization } = account;
     limit = limit || 15;
     next = next || '';
+
 
     let url = `${this.api.extended}/asset2/query`;
     let body: any = {
       query: [
         {
-          field: 'content.idData.createdBy',
+          field: `${organization}`,
           value: address,
           operator: 'equal',
         },
@@ -416,8 +418,20 @@ export class AssetsService {
       limit,
       next,
     };
+    const token = this.storageService.get('token');
 
-    const assets = await this.to(this.http.post(url, body));
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `AMB_TOKEN ${token}`,
+        'Accept': 'application/json',
+      }),
+    };
+
+    httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN ${token}`);
+    httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
+
+
+    const assets = await this.to(this.http.post(url, body, httpOptions));
     if (assets.error) {
       this.messageService.error(assets.error);
       return;
@@ -679,14 +693,15 @@ export class AssetsService {
           if (data.created.length === 1 && eventData.content.idData.assetId === data.created[0].content.idData.assetId) {
             this.event.next(this.ambrosus.utils.parseEvent(JSON.parse(JSON.stringify(data.created[0]))));
           }
-        } catch (error) { }
+        } catch (error) {
+        }
 
         // Update _assets
         let assetsData = this._assets.getValue().data;
         assetsData = assetsData.map(asset => {
           const assetEvents = data.created.filter(_event => {
-            return asset.assetId ? asset.assetId : asset.data.assetId  === _event.data.content.idData.assetId;
-          },
+              return asset.assetId ? asset.assetId : asset.data.assetId === _event.data.content.idData.assetId;
+            },
           );
 
           const info = this.ambrosus.utils.findEvent('info', assetEvents);
@@ -711,7 +726,8 @@ export class AssetsService {
             this.ambrosus.utils.parseAsset(asset);
             this.asset.next(asset);
           }
-        } catch (error) { }
+        } catch (error) {
+        }
 
         resolve(options);
 
