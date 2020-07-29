@@ -330,6 +330,20 @@ export class EventFormComponent implements OnInit {
         background = '/dashboard/assets/svg/pdf.svg';
         break;
 
+      case 'plain':
+      case 'txt':
+        background = '/dashboard/assets/svg/txt.svg';
+        break;
+
+      case 'docx':
+      case 'vnd.openxmlformats-officedocument.wordprocessingml.document':
+        background = '/dashboard/assets/svg/docx.svg';
+        break;
+
+      case 'json':
+        background = '/dashboard/assets/svg/json.svg';
+        break;
+
       default:
         background = '/dashboard/assets/svg/document.svg';
     }
