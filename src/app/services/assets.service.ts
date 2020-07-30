@@ -401,7 +401,7 @@ export class AssetsService {
   } = {}): Promise<any> {
     let { limit, next } = options;
     const account = <any>this.storageService.get('account') || {};
-    const { address, organization } = account;
+    const { organization } = account;
     limit = limit || 15;
     next = next || '';
 
@@ -410,8 +410,8 @@ export class AssetsService {
     let body: any = {
       query: [
         {
-          field: `${organization}`,
-          value: address,
+          field: 'organizationId',
+          value: organization,
           operator: 'equal',
         },
       ],
