@@ -1,8 +1,20 @@
 import { Component, OnInit, ViewEncapsulation, ElementRef } from '@angular/core';
 import { AnalyticsService } from 'app/services/analytics.service';
-import { getTimestampSubHours, getTimestamp, getTimestampSubDays, getTimestampSubMonths, getTimestampMonthStart } from 'app/util';
+import { StorageService } from 'app/services/storage.service';
+
+import {
+  getTimestampSubHours,
+  getTimestamp,
+  getTimestampSubDays,
+  getTimestampSubMonths,
+  getTimestampMonthStart,
+} from 'app/util';
+import { environment } from 'environments/environment.prod';
 import { MessageService } from 'app/services/message.service';
 import * as moment from 'moment-timezone';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 declare let Web3: any;
 
 declare let Chart: any;
@@ -21,6 +33,8 @@ export class DashboardComponent implements OnInit {
     canvas: '',
   };
   total = 0;
+  api;
+  popUpIsOpen: boolean;
   timeSeries = {
     labels: [],
     data: [],
@@ -39,15 +53,26 @@ export class DashboardComponent implements OnInit {
   string = String;
 
   constructor(
+    private storageService: StorageService,
+    private http: HttpClient,
     private el: ElementRef,
     private analytisService: AnalyticsService,
     private messageService: MessageService,
-  ) { }
+  ) {
+    this.api = environment.api;
+    this.popUpIsOpen = false;
+  }
 
   ngOnInit() {
     this.web3 = new Web3();
     this.diagram.element = this.el.nativeElement.querySelector('#diagram');
     this.getMetrics();
+  }
+
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => response)
+      .catch(error => ({ error }));
   }
 
   formatAMB(val) {
@@ -79,6 +104,28 @@ export class DashboardComponent implements OnInit {
   changeGroupBy(to) {
     this.groupBy = to;
     this.generateDiagram();
+  }
+
+  changePopUp(value) {
+    this.popUpIsOpen = value;
+  }
+
+  async pushBundle() {
+    const url = `${this.api.extended}/bundle2/push`;
+    const body = {};
+    const token = this.storageService.get('token');
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `AMB_TOKEN ${token}`,
+        'Accept': 'application/json',
+      }),
+    };
+
+    httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN ${token}`);
+    httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
+
+    await this.to(this.http.post(url, body, httpOptions)).then(() => this.popUpIsOpen = false);
   }
 
   format() {

@@ -61,6 +61,12 @@
     margin: 15px 0 0;
   }
 
+  .push_bundle {
+    max-width: 100px;
+    margin-right: -10px;
+    font-size: 10px;
+  }
+
   &.wrap {
     flex-wrap: wrap;
   }

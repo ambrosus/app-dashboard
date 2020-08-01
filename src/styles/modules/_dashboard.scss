@@ -191,3 +191,45 @@
     }
   }
 }
+
+.pushBundlePopUp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .15);
+}
+
+.pushBundlePopUp > div{
+  position: sticky;
+  left: 40vw;
+  top: 35vh;
+  width: 29vw;
+  height: 17vh;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5% 3% 1.5%;
+  background-color: $white;
+  font-family: 'Rubik', sans-serif;
+  color: $black;
+
+  p {
+    text-align: center;
+    font-size: 1.2vw;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10%;
+    font-size: 12px;
+
+    button {
+      max-width: 33%;
+      font-size: .75vw;
+    }
+  }
+}
