@@ -22,7 +22,8 @@
             </p>
           </li>
           <li class="secondary" *ngIf="metrics.bundle.price">
-            <h2>{{ metrics.bundle.price / metrics.amb.price_usd | number: '1.0-2' }} <small style="color: #00b7f9">AMB</small></h2>
+            <h2>{{ metrics.bundle.price / metrics.amb.price_usd | number: '1.0-2' }} <small
+              style="color: #00b7f9">AMB</small></h2>
             <p>price per bundle <span style="color: #00b7f9">{{metrics.bundle.price}}$</span></p>
           </li>
           <li class="secondary" *ngIf="metrics.balance.balance && metrics.bundle.price">
@@ -38,12 +39,18 @@
   <div class="wrapper">
 
     <div class="flex between">
+      <button class="push_bundle" (click)="changePopUp(true)">Push Bundle</button>
       <ul class="showMenu">
-        <li *ngFor="let item of menus.display" [ngClass]="{ 'active': display === item }" (click)="changeDisplay(item)">{{ item }}s</li>
+        <li *ngFor="let item of menus.display"
+            [ngClass]="{ 'active': display === item }"
+            (click)="changeDisplay(item)">{{ item }}s
+        </li>
       </ul>
 
       <ul class="groupByMenu">
-        <li *ngFor="let item of menus.group" [ngClass]="{ 'active': groupBy === item }" (click)="changeGroupBy(item)">{{ item }}</li>
+        <li *ngFor="let item of menus.group"
+            [ngClass]="{ 'active': groupBy === item }"
+            (click)="changeGroupBy(item)">{{ item }}</li>
       </ul>
     </div>
 
@@ -59,3 +66,16 @@
     </div>
   </div>
 </main>
+<div class="pushBundlePopUp" *ngIf="popUpIsOpen">
+  <div>
+    <p>Аre you sure to send bundle out of order?</p>
+    <div class="buttons">
+      <button (click)="pushBundle()">
+        YES
+      </button>
+      <button (click)="changePopUp(false)">
+        NO
+      </button>
+    </div>
+  </div>
+</div>
