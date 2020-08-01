@@ -309,6 +309,20 @@ export class AssetFormComponent implements OnInit {
         background = '/dashboard/assets/svg/pdf.svg';
         break;
 
+      case 'plain':
+      case 'txt':
+        background = '/dashboard/assets/svg/txt.svg';
+        break;
+
+      case 'docx':
+      case 'vnd.openxmlformats-officedocument.wordprocessingml.document':
+        background = '/dashboard/assets/svg/docx.svg';
+        break;
+
+      case 'json':
+        background = '/dashboard/assets/svg/json.svg';
+        break;
+
       default:
         background = '/dashboard/assets/svg/document.svg';
     }
@@ -583,17 +597,7 @@ export class AssetFormComponent implements OnInit {
           throw new Error('Please fill required fields');
         }
 
-        const confirm = await this.confirm(`
-  Are
-  you
-  sure
-  you
-  want
-  to
-  proceed ${this.prefill ? 'editing' : 'creating'}
-  this
-  asset?
-`);
+        const confirm = await this.confirm(`Are you sure you want to proceed ${this.prefill ? 'editing' : 'creating'} this asset?`);
         console.log('Confirm ->', confirm);
         if (!confirm) {
           return reject();
