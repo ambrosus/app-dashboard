@@ -19,7 +19,6 @@ Dashboard's Angular app documentation overview.
 
 ## Overview:
 * [Development](#development)
-* [Deployment](#deployment)
 * [Dashboard API (node server)](#dashboard-api-node-server)
 * [Angular app](#angular-app)
 * [Todo](#todo)
@@ -40,27 +39,6 @@ node server.js
 ```
 npm run dev
 ```
-
-
-### Deployment
-
-There are 3 different deployment versions:
-
-1. Everything pushed on 'dev' branch. \
-**Purpose:** for developing new app features.
-
-    https://dashboard-dev.ambrosus.com
-
-2. Everything pushed on 'master' branch. \
-**Purpose:** for testing, staging before production.
-
-    https://dashboard-test.ambrosus.com
-
-3. Code from 'master' manually promoted to production. \
-**Purpose:** production version.
-
-    https://dashboard.ambrosus.com
-
 
 ### Dashboard API (node server)
 
