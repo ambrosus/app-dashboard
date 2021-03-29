@@ -193,7 +193,7 @@ export class AssetFormComponent implements OnInit {
 
     this.bundleSize = Number.isInteger(size) ? size : size.toFixed(5);
 
-    if (this.bundleSize >= 16) {
+    if (this.bundleSize >= 12) { // need to check for accessLevel if > 0  then 12, otherwise 16
       this.tooLargeBundleSize = true;
       document.querySelector('.maxBundle').classList.add('maxBundleError');
       document.querySelector('#download').classList.add('displayedDownload');
