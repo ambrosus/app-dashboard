@@ -45,7 +45,7 @@
                       type: 'action',
                       title: 'Disable',
                       click: actions,
-                      args: [self, 'accountModify', { address: acc.address, data: { permissions: [] } }]
+                      args: [self, 'accountModify', { address: acc.address, data: ( active: false } }]
                     }]
                   }"></app-drop-down>
                     </span>
@@ -140,7 +140,7 @@
                       type: 'action',
                       title: 'Activate',
                       click: actions,
-                      args: [self, 'accountModify', { address: acc.address, data: { permissions: ['create_asset', 'create_event'] } }]
+                      args: [self, 'accountModify', { address: acc.address, data: { active: true } }]
                     }]
                   }"></app-drop-down>
                     </span>
