@@ -101,6 +101,17 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           this.messageService.error(error);
         }
         break;
+      case 'organizationBackup':
+        try {
+          console.log('backup');
+          await this.organizationsService.backupOrganization(args[1].id);
+
+          this.messageService.success('Organization backuped');
+        } catch (error) {
+          console.error('[BACKUP] Organization: ', error);
+          this.messageService.error(error);
+        }
+        break;
       case 'organizationRequest':
         try {
           await this.organizationsService.handleOrganizationRequest(args[1].id, args[1].approved);

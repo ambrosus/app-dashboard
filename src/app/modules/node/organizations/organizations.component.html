@@ -50,6 +50,12 @@
                           title: 'Disable',
                           click: actions,
                           args: [self, 'organizationModify', { id: organization.organizationId, data: { active: false } }]
+                        },
+                        {
+                          type: 'action',
+                          title: 'Backup',
+                          click: actions,
+                          args: [self, 'organizationBackup', { id: organization.organizationId, data: {} }]
                         }]
                       }"></app-drop-down>
                     </span>

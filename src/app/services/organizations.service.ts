@@ -75,6 +75,12 @@ export class OrganizationsService {
     return organization.data;
   }
 
+  async backupOrganization(organizationId: number): Promise<any> {
+    const url = `${this.api.extended}/organization/backup/${organizationId}`;
+
+    window.open(url, '_self');
+  }
+
   async getOrganizationAccounts(organizationId: number): Promise<any> {
     const url = `${this.api.extended}/organization/${organizationId}/accounts`;
 
