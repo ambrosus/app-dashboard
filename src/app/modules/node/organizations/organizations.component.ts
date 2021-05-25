@@ -5,6 +5,9 @@ import { OrganizationsService } from 'app/services/organizations.service';
 import * as moment from 'moment-timezone';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
 import { MessageService } from 'app/services/message.service';
+import { environment } from '../../../../environments/environment.prod';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import download from '../../../util/download'
 
 @Component({
   selector: 'app-organizations',
@@ -21,12 +24,16 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   account: any = {};
   show = 'all';
   self = this;
+  download = this.downloadJSON.bind(this);
+  api;
 
   constructor(
     private storageService: StorageService,
     private organizationsService: OrganizationsService,
     private messageService: MessageService,
-  ) { }
+    private http: HttpClient,
+
+  ) { this.api = environment.api; }
 
   ngOnInit() {
     this.account = this.storageService.get('account') || {};
@@ -126,5 +133,33 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         }
         break;
     }
+  }
+
+  downloadJSON() {
+    console.log("THIS IS TEST!!!")
+
+    // const url = `${this.api.extended}/bundle2/push`;
+    const url = `${this.api.extended}/organization2/backup/9`; 
+
+    // const body = {};
+    const token = this.storageService.get('token');
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `AMB_TOKEN ${token}`,
+        'Accept': 'application/json',
+      }),
+    };
+
+    httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN ${token}`);
+    httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
+
+    this.http.get(url, httpOptions).subscribe((responseData) => {
+      const data = responseData['data']
+      console.log(responseData, 'realData:', data)
+      // this.download('test Json file')
+      if (data) download.bind(this)('test Json file.json', data)
+    });
+
+    // await this.to(this.http.post(url, body, httpOptions)).then(() => this.popUpIsOpen = false);
   }
 }
