@@ -12,6 +12,7 @@
         <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
         <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
         <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
+        <li [ngClass]="{ 'active': show === 'restore' }" (click)="show = 'restore'">Restore</li>
       </ul>
 
       <div class="table organizations">
