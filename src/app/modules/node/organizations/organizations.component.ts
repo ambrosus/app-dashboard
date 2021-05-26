@@ -4,10 +4,10 @@ import { StorageService } from 'app/services/storage.service';
 import { OrganizationsService } from 'app/services/organizations.service';
 import * as moment from 'moment-timezone';
 import { ViewEncapsulation } from '@angular/compiler/src/core';
-import { MessageService } from 'app/services/message.service';
 import { environment } from '../../../../environments/environment.prod';
+import { MessageService } from 'app/services/message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import download from '../../../util/download'
+import { download } from 'app/util';
 
 @Component({
   selector: 'app-organizations',
@@ -24,7 +24,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   account: any = {};
   show = 'all';
   self = this;
-  download = this.downloadJSON.bind(this);
   api;
 
   constructor(
@@ -32,7 +31,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     private organizationsService: OrganizationsService,
     private messageService: MessageService,
     private http: HttpClient,
-
   ) { this.api = environment.api; }
 
   ngOnInit() {
@@ -52,6 +50,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       const organizations = await this.organizationsService.getOrganizations(next);
       this.organizations = organizations.filter(organization => {
         organization.createdOn = moment.tz(organization.createdOn * 1000, this.account.timeZone || 'UTC').fromNow();
+        // downloadJSON(organizationId)
         return organization.active;
       });
       this.organizationsDisabled = organizations.filter(organization => !organization.active);
@@ -109,15 +108,17 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         }
         break;
       case 'organizationBackup':
-        try {
-          console.log('backup');
-          await this.organizationsService.backupOrganization(args[1].id);
+        const organizationId = args[1].id
+        this.backupJSON(organizationId)
+        // try {
+        //   console.log('backup');
+        //   await this.organizationsService.backupOrganization(args[1].id);
 
-          this.messageService.success('Organization backuped');
-        } catch (error) {
-          console.error('[BACKUP] Organization: ', error);
-          this.messageService.error(error);
-        }
+        //   this.messageService.success('Organization backuped');
+        // } catch (error) {
+        //   console.error('[BACKUP] Organization: ', error);
+        //   this.messageService.error(error);
+        // }
         break;
       case 'organizationRequest':
         try {
@@ -134,12 +135,12 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         break;
     }
   }
-
-  downloadJSON() {
+  
+  backupJSON(organizationId) {
     console.log("THIS IS TEST!!!")
 
     // const url = `${this.api.extended}/bundle2/push`;
-    const url = `${this.api.extended}/organization2/backup/9`; 
+    const url = `${this.api.extended}/organization2/backup/${organizationId}`; 
 
     // const body = {};
     const token = this.storageService.get('token');
@@ -152,14 +153,23 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
     httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN ${token}`);
     httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
-
-    this.http.get(url, httpOptions).subscribe((responseData) => {
-      const data = responseData['data']
-      console.log(responseData, 'realData:', data)
-      // this.download('test Json file')
-      if (data) download.bind(this)('test Json file.json', data)
-    });
-
+    
+    try {
+      if (organizationId !== 0) {
+      this.http.get(url, httpOptions).subscribe((responseData) => {
+          const data = responseData['data']
+          const test = this.http.get(url, httpOptions).subscribe()
+          console.log(responseData, 'realData:', data, 'test:', test)
+          if (data.data) download.bind(this)('Backup.json', data)
+          else console.log("No data received!")
+        })} else { 
+          // const test = this.http.get(url, httpOptions).subscribe()
+          const test = this.http.get(url, httpOptions)
+          console.log("400 error: ", test)
+         }
+      } catch(error) {
+        console.log(error)
+      }
     // await this.to(this.http.post(url, body, httpOptions)).then(() => this.popUpIsOpen = false);
   }
 }

@@ -1,25 +1,36 @@
 <nav class="dropDown">
   <ul>
-    <li [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index" (click)="item.click ? call(item.click, item.args) : ''">
-      <hr class="separator" *ngIf="item.type === 'separator'; else link">
-      <ng-template #link>
-        <a *ngIf="item.link; else noLink" [routerLink]="item.link">
-          <app-svg-icon class="icon" [name]="item.icon" width="18" height="18" fill="#333" *ngIf="item.icon"></app-svg-icon>
-          <div>
-            <span class="item__title" *ngIf="item.title">{{ item.title }}</span>
-            <span class="item__meta" *ngIf="item.meta">{{ item.meta }}</span>
-          </div>
-        </a>
-        <ng-template #noLink>
-          <a>
+    <li [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index">
+      <div *ngIf="item.title === 'Backup'; else Disable">
+        <button type="button" class="backup-btn" (click)="item.click ? call(item.click, item.args) : ''">
+          {{ item.title }}
+        </button>
+        <button type="button" class="backup-btn">
+          Restore
+        </button>
+      </div>
+    </li>
+
+    <ng-template #Disable>
+      <li [ngClass]="{ 'header': item.type === 'header' }" *ngFor="let item of items.items; let i = index" (click)="item.click ? call(item.click, item.args) : ''">
+        <hr class="separator" *ngIf="item.type === 'separator'; else link">
+          <a *ngIf="item.title === 'Disable'; else noLink" [routerLink]="item.link">
             <app-svg-icon class="icon" [name]="item.icon" width="18" height="18" fill="#333" *ngIf="item.icon"></app-svg-icon>
             <div>
               <span class="item__title" *ngIf="item.title">{{ item.title }}</span>
               <span class="item__meta" *ngIf="item.meta">{{ item.meta }}</span>
             </div>
           </a>
-        </ng-template>
-      </ng-template>
-    </li>
+          <ng-template #noLink>            
+            <a *ngIf="(item.title === 'Disable' || 'Activate') && (item.title != 'Backup');">
+              <app-svg-icon class="icon" [name]="item.icon" width="18" height="18" fill="#333" *ngIf="item.icon"></app-svg-icon>
+              <div>
+                <span class="item__title" *ngIf="item.title">{{ item.title }}</span>
+                <span class="item__meta" *ngIf="item.meta">{{ item.meta }}</span>
+              </div>
+            </a>
+          </ng-template>
+      </li>
+    </ng-template>
   </ul>
 </nav>
