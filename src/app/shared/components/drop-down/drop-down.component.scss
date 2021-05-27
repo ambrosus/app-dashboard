@@ -99,10 +99,17 @@ app-drop-down {
         }
       }
     }
-    
+
     .backup-btn {
       max-width: 100px;
       font-size: 10px;
     }
+  }
+}
+
+.btns-block {
+  display: flex;
+  &:first-child {
+    padding-left: 0.5rem;
   }
 }

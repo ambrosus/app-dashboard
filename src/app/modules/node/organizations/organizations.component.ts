@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { StorageService } from 'app/services/storage.service';
 import { OrganizationsService } from 'app/services/organizations.service';
 import * as moment from 'moment-timezone';
@@ -8,6 +8,7 @@ import { environment } from '../../../../environments/environment.prod';
 import { MessageService } from 'app/services/message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { download } from 'app/util';
+// import  os  from 'os';
 
 @Component({
   selector: 'app-organizations',
@@ -25,12 +26,15 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   show = 'all';
   self = this;
   api;
+  restoreData = this.restore.bind(this);
+  test;
 
   constructor(
     private storageService: StorageService,
     private organizationsService: OrganizationsService,
     private messageService: MessageService,
     private http: HttpClient,
+
   ) { this.api = environment.api; }
 
   ngOnInit() {
@@ -110,6 +114,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       case 'organizationBackup':
         const organizationId = args[1].id
         this.backupJSON(organizationId)
+        this.messageService.success('Organization backuped');
+
         // try {
         //   console.log('backup');
         //   await this.organizationsService.backupOrganization(args[1].id);
@@ -120,6 +126,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         //   this.messageService.error(error);
         // }
         break;
+
+      case 'organizationRestore':
+        break;
+
       case 'organizationRequest':
         try {
           await this.organizationsService.handleOrganizationRequest(args[1].id, args[1].approved);
@@ -136,13 +146,14 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     }
   }
   
+  to(O: Observable<any>) {
+    return O.toPromise()
+      .then(response => response)
+      .catch(error => ({ error }));
+  }
+
   backupJSON(organizationId) {
-    console.log("THIS IS TEST!!!")
-
-    // const url = `${this.api.extended}/bundle2/push`;
     const url = `${this.api.extended}/organization2/backup/${organizationId}`; 
-
-    // const body = {};
     const token = this.storageService.get('token');
     const httpOptions = {
       headers: new HttpHeaders({
@@ -151,8 +162,8 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       }),
     };
 
-    httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN ${token}`);
-    httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
+    // httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN`);
+    // httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
     
     try {
       if (organizationId !== 0) {
@@ -163,13 +174,58 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
           if (data.data) download.bind(this)('Backup.json', data)
           else console.log("No data received!")
         })} else { 
-          // const test = this.http.get(url, httpOptions).subscribe()
-          const test = this.http.get(url, httpOptions)
-          console.log("400 error: ", test)
+          try {
+            var test = this.http.get(url, httpOptions).subscribe()
+            console.log(test)
+          } catch(error) {
+            console.log("400 error: ", test)
+            console.log(error)
+          } 
          }
       } catch(error) {
+        console.log('TEST')
         console.log(error)
       }
-    // await this.to(this.http.post(url, body, httpOptions)).then(() => this.popUpIsOpen = false);
+  }
+
+  async uploadJSON(jsonData) {
+    const url = `${this.api.extended}/organization2/restore`; 
+    const body = jsonData
+    const token = this.storageService.get('token');
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `AMB_TOKEN ${token}`,
+        'Accept': 'application/json',
+      }),
+    };
+
+    await this.to(this.http.post(url, body, httpOptions)).then((response) => {
+      if (response.meta.code === 200) document.location.reload()
+      else console.log(`Status code of response: ${response.meta.code}`)
+    });
+  }
+
+  restore() {
+    const inputFile = document.getElementById('selectedFile')
+    inputFile.addEventListener('change', this.getFile);
+    document.getElementById('selectedFile').click()
+  }
+
+  getFile = (event) => {
+    // upload file from client
+    let jsonData = null
+    const file = event.target['files'][0];
+    const reader = new FileReader();
+
+    // read data from uploaded file
+    reader.addEventListener("load", e => {
+      jsonData = JSON.parse(e.target['result'] as string) 
+    });
+    reader.readAsText(file)
+
+    setTimeout( () => {
+      this.uploadJSON(jsonData)
+    }, 250 )  
   }
 }
