@@ -8,7 +8,6 @@ import { environment } from '../../../../environments/environment.prod';
 import { MessageService } from 'app/services/message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { download } from 'app/util';
-// import  os  from 'os';
 
 @Component({
   selector: 'app-organizations',
@@ -27,7 +26,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   self = this;
   api;
   restoreData = this.restore.bind(this);
-  test;
 
   constructor(
     private storageService: StorageService,
@@ -54,7 +52,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       const organizations = await this.organizationsService.getOrganizations(next);
       this.organizations = organizations.filter(organization => {
         organization.createdOn = moment.tz(organization.createdOn * 1000, this.account.timeZone || 'UTC').fromNow();
-        // downloadJSON(organizationId)
         return organization.active;
       });
       this.organizationsDisabled = organizations.filter(organization => !organization.active);
@@ -113,9 +110,13 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         break;
       case 'organizationBackup':
         const organizationId = args[1].id
-        this.backupJSON(organizationId)
-        this.messageService.success('Organization backuped');
-
+        try {
+          this.backupJSON(organizationId)
+          this.messageService.success('Organization backuped');
+        } catch(error) {
+          console.error('[BACKUP] Organization: ', error);
+          this.messageService.error(error);
+        };
         // try {
         //   console.log('backup');
         //   await this.organizationsService.backupOrganization(args[1].id);
@@ -161,9 +162,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         'Accept': 'application/json',
       }),
     };
-
-    // httpOptions.headers = httpOptions.headers.set('Authorization', `AMB_TOKEN`);
-    // httpOptions.headers = httpOptions.headers.set('Accept', 'application/json');
     
     try {
       if (organizationId !== 0) {
@@ -188,6 +186,12 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       }
   }
 
+  restore() {
+    const inputFile = document.getElementById('selectedFile')
+    inputFile.addEventListener('change', this.getFile);
+    document.getElementById('selectedFile').click()
+  }
+
   async uploadJSON(jsonData) {
     const url = `${this.api.extended}/organization2/restore`; 
     const body = jsonData
@@ -206,12 +210,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     });
   }
 
-  restore() {
-    const inputFile = document.getElementById('selectedFile')
-    inputFile.addEventListener('change', this.getFile);
-    document.getElementById('selectedFile').click()
-  }
-
   getFile = (event) => {
     // upload file from client
     let jsonData = null
@@ -219,13 +217,17 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
 
     // read data from uploaded file
-    reader.addEventListener("load", e => {
+    const getData = e => {
       jsonData = JSON.parse(e.target['result'] as string) 
-    });
+    }
+
+    reader.addEventListener("load", getData)
     reader.readAsText(file)
 
     setTimeout( () => {
       this.uploadJSON(jsonData)
-    }, 250 )  
+      reader.removeEventListener("load", getData)
+    }, 250 )
   }
+
 }

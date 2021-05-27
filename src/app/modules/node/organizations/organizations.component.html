@@ -16,13 +16,10 @@
           <!-- <li [ngClass]="{ 'active': show === 'restore' }" (click)="show = 'restore'">Restore</li> -->
         </ul>
         <div>
-          <input type="file" id="selectedFile" style="display: none;" />
-
-          <!-- <input type="button" value="Browse..." onclick="document.getElementById('selectedFile').click();" /> -->
+          <input type="file" id="selectedFile" class="selectedFile" />
           <button  type="button" class="restore-btn" (click)="restoreData()" name="" id="restoreBtnId">
             Restore
           </button>
-          <!-- <input type="file" class="custom-file-input restore-btn" (click)="restoreData()" name="" id="test"> -->
         </div>
       </div>
       <div class="table organizations">

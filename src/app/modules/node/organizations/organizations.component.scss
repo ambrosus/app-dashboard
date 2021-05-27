@@ -24,6 +24,10 @@ app-organizations {
       }
     }
 
+    .selectedFile {
+      display: none;
+    }
+
     .restore-btn {
       position: relative;
       width: 100px;
