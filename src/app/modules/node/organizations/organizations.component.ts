@@ -112,7 +112,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         const organizationId = args[1].id
         try {
           this.backupJSON(organizationId)
-          this.messageService.success('Organization backuped');
         } catch(error) {
           console.error('[BACKUP] Organization: ', error);
           this.messageService.error(error);
@@ -153,7 +152,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .catch(error => ({ error }));
   }
 
-  backupJSON(organizationId) {
+  async backupJSON(organizationId) {
     const url = `${this.api.extended}/organization2/backup/${organizationId}`; 
     const token = this.storageService.get('token');
     const httpOptions = {
@@ -163,33 +162,33 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       }),
     };
     
+    // await response from request
     try {
-      if (organizationId !== 0) {
-      this.http.get(url, httpOptions).subscribe((responseData) => {
-          const data = responseData['data']
-          const test = this.http.get(url, httpOptions).subscribe()
-          console.log(responseData, 'realData:', data, 'test:', test)
-          if (data.data) download.bind(this)('Backup.json', data)
-          else console.log("No data received!")
-        })} else { 
-          try {
-            var test = this.http.get(url, httpOptions).subscribe()
-            console.log(test)
-          } catch(error) {
-            console.log("400 error: ", test)
-            console.log(error)
-          } 
-         }
-      } catch(error) {
-        console.log('TEST')
-        console.log(error)
-      }
+        // await this.http.get(url, httpOptions).subscribe((responseData) => {
+      await this.to(this.http.get(url, httpOptions)).then((response) => {
+        const resp = response
+
+        if (resp.error) {
+          console.log("Invalid request:", resp)
+          return this.messageService.error({}, `Response status code: ${resp.error.status}`)
+        } else {
+          const data = response.data
+          if (data.data) {
+            download.bind(this)('Backup.json', data)
+            this.messageService.success('Organization backuped');
+          } else console.log("No data received!")
+        }
+      }) 
+    } catch(error) {
+        console.log("Error:", error)
+        this.messageService.error("Error:", error);
+    }
   }
 
   restore() {
     const inputFile = document.getElementById('selectedFile')
     inputFile.addEventListener('change', this.getFile);
-    document.getElementById('selectedFile').click()
+    inputFile.click()
   }
 
   async uploadJSON(jsonData) {
@@ -206,28 +205,34 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
     await this.to(this.http.post(url, body, httpOptions)).then((response) => {
       if (response.meta.code === 200) document.location.reload()
-      else console.log(`Status code of response: ${response.meta.code}`)
+      else console.log(`Invalid request! Status code of response: ${response.meta.code}`)
     });
   }
 
   getFile = (event) => {
     // upload file from client
-    let jsonData = null
-    const file = event.target['files'][0];
-    const reader = new FileReader();
+    const file = event.target.files[0];
 
-    // read data from uploaded file
-    const getData = e => {
-      jsonData = JSON.parse(e.target['result'] as string) 
+    // validate file type
+    if (file.type === 'application/json') {
+      let jsonData = null
+      const reader = new FileReader();
+
+      // read data from uploaded file
+      const getData = e => {
+        jsonData = JSON.parse(e.target.result as string) 
+      }
+
+      reader.addEventListener("load", getData)
+      reader.readAsText(file)
+
+      setTimeout( () => {
+        this.uploadJSON(jsonData)
+        reader.removeEventListener("load", getData)
+      }, 250 )
+    } else {
+      console.error("File`s type invalid! Please Use [json] type.");
+      return this.messageService.error({}, "File`s type invalid! Please Use [json] type.");
     }
-
-    reader.addEventListener("load", getData)
-    reader.readAsText(file)
-
-    setTimeout( () => {
-      this.uploadJSON(jsonData)
-      reader.removeEventListener("load", getData)
-    }, 250 )
   }
-
 }
