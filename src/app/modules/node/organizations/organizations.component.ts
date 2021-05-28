@@ -128,7 +128,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         break;
 
       case 'organizationRestore':
-        break;
+        const inputFile = document.getElementById('selectedFile')
+        inputFile.addEventListener('change', this.getFile);
+        inputFile.click()
+      break;
 
       case 'organizationRequest':
         try {
@@ -145,17 +148,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  
+
   to(O: Observable<any>) {
     return O.toPromise()
       .then(response => response)
       .catch(error => ({ error }));
-  }
-
-  restore() {
-    const inputFile = document.getElementById('selectedFile')
-    inputFile.addEventListener('change', this.getFile);
-    inputFile.click()
   }
 
   async backupJSON(organizationId) {
