@@ -25,7 +25,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
   show = 'all';
   self = this;
   api;
-  restoreData = this.restore.bind(this);
 
   constructor(
     private storageService: StorageService,
@@ -45,6 +44,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.map(sub => sub.unsubscribe());
+    document.getElementById('selectedFile').removeEventListener("change", this.getFile);
   }
 
   async getOrganizations(next = ''): Promise<any> {
@@ -111,7 +111,7 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       case 'organizationBackup':
         const organizationId = args[1].id
         try {
-          this.backupJSON(organizationId)
+          await this.backupJSON(organizationId)
         } catch(error) {
           console.error('[BACKUP] Organization: ', error);
           this.messageService.error(error);
@@ -152,6 +152,16 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       .catch(error => ({ error }));
   }
 
+  testing() {
+    this.actions(['organizationRestore'])
+  }
+
+  restore() {
+    const inputFile = document.getElementById('selectedFile')
+    inputFile.addEventListener('change', this.getFile);
+    inputFile.click()
+  }
+
   async backupJSON(organizationId) {
     const url = `${this.api.extended}/organization2/backup/${organizationId}`; 
     const token = this.storageService.get('token');
@@ -184,12 +194,6 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  restore() {
-    const inputFile = document.getElementById('selectedFile')
-    inputFile.addEventListener('change', this.getFile);
-    inputFile.click()
-  }
-
   async uploadJSON(jsonData) {
     const url = `${this.api.extended}/organization2/restore`; 
     const body = jsonData
@@ -220,15 +224,11 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       // read data from uploaded file
       const getData = e => {
         jsonData = JSON.parse(e.target.result as string) 
+        this.uploadJSON.bind(this)(jsonData)
+        reader.removeEventListener("load", getData)
       }
-
       reader.addEventListener("load", getData)
       reader.readAsText(file)
-
-      setTimeout( () => {
-        this.uploadJSON(jsonData)
-        reader.removeEventListener("load", getData)
-      }, 250 )
     } else {
       console.error("File`s type invalid! Please Use [json] type.");
       return this.messageService.error({}, "File`s type invalid! Please Use [json] type.");
