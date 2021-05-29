@@ -218,10 +218,10 @@ export class OrganizationsComponent implements OnInit, OnDestroy {
       const getData = e => {
         jsonData = JSON.parse(e.target.result as string) 
         this.uploadJSON.bind(this)(jsonData)
-        reader.removeEventListener("load", getData)
       }
       reader.addEventListener("load", getData)
       reader.readAsText(file)
+      setTimeout(() => reader.removeEventListener("load", getData), 100)
     } else {
       console.error("File`s type invalid! Please Use [json] type.");
       return this.messageService.error({}, "File`s type invalid! Please Use [json] type.");
