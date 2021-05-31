@@ -6,14 +6,22 @@
   </header>
   <main>
     <div class="wrapper">
-      <ul class="showMenu">
-        <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
-        <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
-        <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
-        <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
-        <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
-      </ul>
-
+      <div class="showMenu">
+        <ul>
+          <li [ngClass]="{ 'active': show === 'all' }" (click)="show = 'all'">All</li>
+          <li [ngClass]="{ 'active': show === 'active' }" (click)="show = 'active'">Active</li>
+          <li [ngClass]="{ 'active': show === 'pending' }" (click)="show = 'pending'">Pending</li>
+          <li [ngClass]="{ 'active': show === 'disabled' }" (click)="show = 'disabled'">Disabled</li>
+          <li [ngClass]="{ 'active': show === 'declined' }" (click)="show = 'declined'">Declined</li>
+          <!-- <li [ngClass]="{ 'active': show === 'restore' }" (click)="show = 'restore'">Restore</li> -->
+        </ul>
+        <div>
+          <input type="file" id="selectedFile" class="selectedFile" />
+          <button  type="button" class="restore-btn" (click)="actions('organizationRestore')" name="" id="restoreBtnId">
+            Restore
+          </button>
+        </div>
+      </div>
       <div class="table organizations">
         <!-- Active -->
         <div *ngIf="show === 'all' || show === 'active'">
@@ -50,6 +58,12 @@
                           title: 'Disable',
                           click: actions,
                           args: [self, 'organizationModify', { id: organization.organizationId, data: { active: false } }]
+                        },
+                        {
+                          type: 'action',
+                          title: 'Backup',
+                          click: actions,
+                          args: [self, 'organizationBackup', { id: organization.organizationId, data: {} }]
                         }]
                       }"></app-drop-down>
                     </span>

@@ -6,9 +6,12 @@ app-organizations {
   flex: 1 1 auto;
 
   .showMenu {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     margin-bottom: 20px;
 
-    > li {
+    li {
       display: inline-block;
       padding: 13px;
       font-weight: 500;
@@ -19,6 +22,65 @@ app-organizations {
       &.active {
         color: $blue;
       }
+    }
+
+    .selectedFile {
+      display: none;
+    }
+
+    .restore-btn {
+      position: relative;
+      width: 100px;
+      font-size: 10px;
+      line-height: 1.2;
+      color: #eeeef3;
+      background: linear-gradient(90deg,#253277 0,#4f299b 100%);
+      border-radius: 20px;
+      border: 1px solid #122283;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      word-break: keep-all;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      padding: 11px 15px;
+      transition-property: opacity,color,background,border;
+      transition-duration: .2s;
+    }
+
+    .custom-file-input::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+    .custom-file-input::before {
+      content: 'Restore';
+      display: inline-block;
+      position: relative;
+      width: 100px;
+      font-size: 10px;
+      line-height: 1.2;
+      color: #eeeef3;
+      background: linear-gradient(90deg,#253277 0,#4f299b 100%);
+      border-radius: 20px;
+      border: 1px solid #122283;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      word-break: keep-all;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      padding: 11px 15px;
+      transition-property: opacity,color,background,border;
+      transition-duration: .2s;
+    }
+    .custom-file-input:hover::before {
+      border-color: black;
+    }
+    .custom-file-input:active::before {
+      background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
     }
   }
 

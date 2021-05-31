@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { MessageService } from './message.service';
+import { StorageService } from './storage.service';
 
 interface Organization {
   _id?: string;
@@ -32,6 +33,7 @@ export class OrganizationsService {
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
+    private storageService: StorageService,
   ) {
     this.api = environment.api;
   }
@@ -73,6 +75,12 @@ export class OrganizationsService {
     }
 
     return organization.data;
+  }
+
+  async backupOrganization(organizationId: number): Promise<any> {
+    const url = `${this.api.extended}/organization2/backup/${organizationId}`;
+
+    window.open(url, '_self');
   }
 
   async getOrganizationAccounts(organizationId: number): Promise<any> {
