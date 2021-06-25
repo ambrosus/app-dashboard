@@ -8,11 +8,11 @@ on:
       - v*
 
 env:
-  IMAGE_NAME: dashboard-nginx
+  IMAGE_NAME: ${{ github.repository }}
   REGISTRY: ghcr.io
 
 jobs:
-  push:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       packages: write
